@@ -1,0 +1,37 @@
+<div class="export-modal-container">
+    <div class="header clearfix border-bottom-grey">
+        <h4 class="margin-zero">Threads</h4>
+        <span class="icon icon-cross2 close-modal" ng-click="cancel()"></span>
+    </div>
+    <div class="search-container">
+        <div class="col-md-10 pull-left">
+            <div class="form-group no-margin text-right">
+                <input ng-model="txtSearch" ng-keypress="keypress($event)" class="form-control" type="text" placeholder="Search">
+            </div>
+        </div>
+        <div class="col-md-2 pull-right text-right">
+            <div class="form-group no-margin">
+                <button type="button" class="btn btn-primary" ng-click="search()">
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="content-container clearfix">
+        <div class="content"
+             infinite-scroll-distance="0"
+             data-infinite-container=".content"
+             infinite-scroll="getMoreThreads()"
+             infinite-scroll-disabled="noMore">
+            <div class="row margin-bottom-ten" ng-repeat="pThread in privateThreads track by $index | filter:search">
+                <div class="col-md-10 pull-left">
+                    <span class="thread-title">{{pThread.data.threadTitle}}</span>
+                </div>
+                <div class="col-md-2 pull-right">
+                    <button ng-click="export(pThread)" class="btn btn-primary btn-export pull-right">Export</button>
+                </div>
+            </div>
+            <h3 class="text-center margin-bottom-five margin-top-five" ng-if="privateThreads.length == 0">No private chats found</h3>
+        </div>
+    </div>
+</div>

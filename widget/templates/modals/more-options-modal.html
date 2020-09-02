@@ -1,0 +1,16 @@
+<div class="modal-contain">
+ 	<div class="content text-center">
+		<div class="padded clearfix" style="padding-bottom:12px !important;">
+			<p class="text-center blackTheme margin-zero" style="font-weight:500;">More Options</p>
+		</div>
+		<div class="dynamic-links">
+			<a class="text-danger" ng-repeat="option in MoreOptionsPopup.options" ng-click="ok(option)">{{option}}</a>
+			<a class="text-danger" ng-if="socialItemUserId == userId" ng-click="deletePost(postId)">Delete Post</a>
+		</div>
+	</div>
+	<div class="bottom border-top-grey clearfix">
+	   	<div class="col-xs-12 pull-left text-center padding-zero">
+	       	<a class="blackTheme default-background-hover transition-third" ng-click="cancel()" style="display:block; padding:8px;">Cancel</a>
+	    </div>
+	</div>
+ </div>

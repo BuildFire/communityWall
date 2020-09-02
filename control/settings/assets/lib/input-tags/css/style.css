@@ -1,0 +1,43 @@
+.socialwall-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .socialwall-container button {
+    max-width: 300px;
+  }
+  
+  .socialwall-info-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .socialwall-info {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .socialwall-close {
+    margin: 0 0 5px 15px;
+    cursor: pointer;
+    font-size: 36px;
+  }
+  
+  .socialwall-info img {
+    width: 42px;
+  }
+  
+  .socialwall-info label {
+    font-weight: 300;
+    font-size: 16px;
+    margin: 0 0 0 20px;
+  }
+  
+  .socialwall-info span {
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  

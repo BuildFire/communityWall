@@ -1,0 +1,40 @@
+{
+  "name": "social-plugin",
+  "version": "0.0.0",
+  "authors": [
+    "rishabhdixit <rishabh.dixit123@gmail.com>",
+    "vineetasharma <vineetasharma18791@gmail.com>"
+  ],
+  "description": "\"social-plugin\"",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "social-plugin",
+    "testing",
+    "buildfire",
+    "karma",
+    "jasmine\""
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular": "~1.4.2",
+    "angular-mocks": "~1.4.2",
+    "jquery": "~2.1.4",
+    "angular-bootstrap": "~0.13.3",
+    "angular-route": "~1.4.0",
+    "angular-animate": "~1.4.3"
+  },
+  "dependencies": {
+    "ng-file-upload-shim": "~10.1.5",
+    "ng-file-upload": "~10.1.5",
+    "moment": "~2.10.6"
+  }
+}

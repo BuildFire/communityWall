@@ -1,0 +1,40 @@
+{
+  "name": "premium-social-plugin",
+  "version": "0.0.0",
+  "description": "\"premium-social-plugin\"",
+  "scripts": {
+    "postinstall": "./node_modules/.bin/bower install",
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
+    "build": "cd .. && rm -rf premiumSocialWallPlugin3.zip && zip -r premiumSocialWallPlugin3.zip premiumSocialWallPlugin3/ -x *node_modules/* *.git* *test/*"
+  },
+  "keywords": [
+    "angularjs",
+    "buildfire",
+    "testing",
+    "karma",
+    "jasmine"
+  ],
+  "author": "vineetasharma18791@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "bower": "^1.5.3",
+    "karma-cli": "^0.1.0",
+    "karma-coverage": "^0.5.0"
+  },
+  "devDependencies": {
+    "chai": "^3.0.0",
+    "gulp": "^3.9.0",
+    "gulp-eslint": "^1.0.0",
+    "gulp-util": "^3.0.6",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.9",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^0.5.3",
+    "karma-jasmine": "^0.3.6",
+    "karma-junit-reporter": "^0.3.8",
+    "karma-mocha": "^0.2.0",
+    "karma-phantomjs-launcher": "^0.2.2",
+    "mocha": "^2.2.5",
+    "phantomjs": "^1.9.17"
+  }
+}
