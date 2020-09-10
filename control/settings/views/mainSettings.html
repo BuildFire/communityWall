@@ -1,0 +1,47 @@
+<div ng-controller="MainSettingsCtrl" ng-init="init()">
+    <form name="mainSettingsForm">
+        <h2>Post Permission</h2>
+        <div class="form-group">
+            <div>
+                <input id="mainWallTag" type="checkbox" ng-model="data.allowMainThreadTags" ng-change="save()" />
+                <label for="mainWallTag">Allow posts on main wall only by users with tags
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <tags-input ng-model="data.mainThreadUserTags" min-tags="{{data.allowMainThreadTags ? 1 : 0}}"
+                on-tag-added="save()" on-tag-removed="save()"></tags-input>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <input id="sideThreadTag" type="checkbox" ng-model="data.allowSideThreadTags" ng-change="save()" />
+                <label for="sideThreadTag">
+                    Allow posts on side threads only by users with tags
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <tags-input ng-model="data.sideThreadUserTags" min-tags="{{data.allowSideThreadTags ? 1 : 0}}"
+                on-tag-added="save()" on-tag-removed="save()"></tags-input>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <input id="privateChat" type="checkbox" ng-model="data.disablePrivateChat" ng-change="save()" />
+                <label for="privateChat">Disable private chat</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <input id="followLeave" type="checkbox" ng-model="data.disableFollowLeaveGroup" ng-change="save()" />
+                <label for="followLeave">Disable Follow/Leave Group</label>
+            </div>
+        </div>
+        
+    </form>
+    <div id="actions"></div>
+</div>

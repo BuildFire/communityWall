@@ -1,2 +1,10 @@
-# communityWall
-New Social wall using only BF standard databases and services
+# socialPlugin ![](https://api.travis-ci.org/BuildFire/socialPlugin.svg)
+Social wall
+
+To pass a spcific Wall ID and Title to load make sure you navigate to this plugin using
+````
+ buildfire.navigation.navigateTo(
+  ...pluginInstanceData
+  ,querystring: 'wid=' + wid + "&wTitle=" + title 
+ )
+ ````

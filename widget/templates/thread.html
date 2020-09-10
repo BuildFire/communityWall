@@ -1,0 +1,136 @@
+<div class="padding-zero" style="height:100%;">
+    <div class="social-plugin social-thread" style="height: 100%;">
+
+        <div ng-if="Thread.allowFollowLeaveGroup" class="head-btn text-center backgroundColorTheme">
+
+            <a ng-click="Thread.followUnfollow()">
+                <p class="text-primary">
+                    {{Thread.followingStatus? Thread.languages.unfollowPost: Thread.languages.followPost }}
+                </p>
+            </a>
+        </div>
+        <div ng-class="{'has-comment-box':Thread.userDetails.userId == null || Thread.allowCreateThread,'has-group-header' : Thread.allowFollowLeaveGroup}"
+            class="post-section backgroundColorTheme">
+            <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
+                <div class="head">
+                    <div class="social-profile-photo">
+                        <div class="media-holder pull-left"
+                            ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">
+                            <img ng-if="Thread.post.userId && Thread.post.userDetails.imageUrl"
+                                load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
+                                crop-height="40" crop-type="crop">
+                            <img ng-if="!(Thread.post.userId && Thread.post.userDetails.imageUrl)"
+                                load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"
+                                data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
+                        </div>
+                        <div class="social-copy">
+                            <p class="text-primary ellipsis">
+                                <a ng-click="Thread.openChatOrProfile(Thread.post.userId)">{{Thread.post.userDetails.displayName
+                                    || 'No Name'}}</a>
+                            </p>
+                            <div ng-if="Thread.post.createdOn">
+                                <p class="time-ago opacity-seventy">
+                                    {{Thread.getDuration(Thread.post.createdOn) | convertTimeFormat}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="post-text copy" style="word-wrap: break-word">
+                    <p class="margin-zero" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p>
+                </div>
+                <div class="plugin-banner clearfix" ng-if="Thread.post.imageUrl">
+                    <div class="plugin-slide text-center" style="max-height: none !important; padding: 0px 10px 0px 10px;">
+                        <bf-image-list id="commentPostImage" token="czi3m2qn"></bf-image-list>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="status-footer">
+                        <a class="more-info social-icon ng-cloak" ng-click="Thread.showMoreOptions()">
+                            <span class="icon icon-ellipsis"></span>
+                        </a>
+                        <p class="social-icon margin-bottom-zero comments">
+                            <span class="icon icon-bubble"></span>
+                            <span class="iconsTheme">{{Thread.post.comments.length}}</span>
+                        </p>
+                        <a class="likes social-icon ng-cloak" ng-click="Thread.likeThread(Thread.post, 'thread')">
+                            <span class="icon icon-heart" ng-class="{active: Thread.post.isUserLikeActive}"></span>
+                            <span class="iconsTheme"
+                                ng-class="{active: Thread.post.isUserLikeActive}">{{Thread.post.likes.length}}</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="comments-list">
+                    <div class="social-comment" ng-repeat="comment in Thread.post.comments">
+                        <div class="thread-dot">
+                            <div class="primaryBackgroundTheme">
+                            </div>
+                        </div>
+                        <div class="comment-content ellipsis">
+                            <div class="social-profile-photo">
+                                <div class="social-copy">
+                                    <a class="social-name text-primary"
+                                        ng-click="Thread.openChatOrProfile(comment.userId)">{{comment.userDetails.firstName
+                                                || 'No Name'}}</a>
+                                    <div ng-if="comment.createdOn">
+                                        <p class="time-ago opacity-seventy">
+                                            {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="post-text copy">
+                                <p class="margin-zero"
+                                    ng-bind-html="Thread.util.injectAnchors(comment.comment)|newLine"></p>
+                            </div>
+                            <div class="plugin-banner ellipsis" ng-init="setupImageList(comment)">
+                                <div class="plugin-slide text-center" style="max-height: none !important;">
+                                    <bf-image-list ng-if="comment.imageListId" id="{{comment.imageListId}}"
+                                        token="czi3m2qn"></bf-image-list>
+                                </div>
+                            </div>
+                            <div ng-show="comment.threadId" class="status-footer">
+                                <a class="more-info social-icon" ng-if="Thread.userDetails.userId == comment.userId"
+                                    ng-click="Thread.showMoreOptionsComment(comment.threadId)">
+                                    <span class="icon icon-ellipsis"></span>
+                                </a>
+                                <a class="social-icon likes" ng-click="Thread.likeComment(comment, 'comment')">
+                                    <span class="icon icon-heart" ng-class="{active: comment.isUserLikeActive}"></span>
+                                    <span class="iconsTheme"
+                                        ng-class="{active: comment.isUserLikeActive}">{{comment.likes.length}}</span>
+                                </a>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-show="Thread.userDetails.userId == null || Thread.allowCreateThread" class="holder padding-zero bottom-post"
+    ng-class="{'full-post-section':Thread.goFullScreen}">
+    <div ng-click="Thread.openCommentSection()" on-touchend="Thread.openCommentSection()" class="small-post-box"
+        ng-show="!Thread.goFullScreen">
+        <div class="post-holder">
+            <div class="image-upload-queue ng-cloak" ng-if="Thread.imageSelected">
+                <div class="uploadifive-queue-item"><a ng-click="Thread.cancelImageSelect()"
+                        class="btn-delete-icon cross-icon"></a>
+                    <div><span class="filename">{{Thread.imageName}}</span></div>
+                    <div class="progress" ng-if="Thread.showImageLoader">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="add-message btn btn--fab btn--add btn-primary" id="addBtn">
+                <svg class="svgIcon" height="16px" fill="white" width="16px" version="1.1" viewBox="0 0 16 16" x="0px"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
+                    y="0px">
+                    <path
+                        d="M11,8.3L2.6,8.8C2.4,8.8,2.3,8.9,2.3,9l-1.2,4.1c-0.2,0.5,0,1.1,0.4,1.5C1.7,14.9,2,15,2.4,15c0.2,0,0.4,0,0.6-0.1l11.2-5.6 C14.8,9,15.1,8.4,15,7.8c-0.1-0.4-0.4-0.8-0.8-1L3,1.1C2.5,0.9,1.9,1,1.5,1.3C1,1.7,0.9,2.3,1.1,2.9L2.3,7c0,0.1,0.2,0.2,0.3,0.2 L11,7.7c0,0,0.3,0,0.3,0.3S11,8.3,11,8.3z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>

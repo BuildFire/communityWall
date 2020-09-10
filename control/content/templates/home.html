@@ -1,0 +1,127 @@
+<div>
+    <div  class="item clearfix row">
+
+        <div class="col-xs-3 text-right export-dropdown-group pull-right">
+            <div class="btn-group" dropdown>
+                <button ladda="ContentHome.exportingThreads" ng-click="ContentHome.exportMainWallPosts()" ng-disabled="ContentHome.exportingThreads"  data-style="zoom-in" id="export-button" type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle >
+                    Export 
+                </button>
+            </div>
+        </div>
+    </div>
+    <hr class="none">
+</div>
+
+<div ng-if="!ContentHome.posts.length">
+    <h4 class="text-center" style="font-size:16px; line-height:22px;">Looks like you do not have any posts yet. To add one, you can do so through the emulator to your right.</h4>
+    <br>
+</div>
+<div class="">
+    <h4 class="text-center" style="font-size:16px; line-height:22px;">Main topic subject</h4>
+    <textarea class="form-control" ui-tinymce="ContentHome.descriptionWYSIWYGOptions"
+    ng-model="ContentHome.descriptionWYSIWYG" placeholder="WYSIWYG" ng-change="ContentHome.setWYSIWYG()"></textarea>
+</div>
+
+<br>
+<div
+     style="overflow-y:auto;" class="infinite-scroll-parent">
+    <div class="wrapper social-plugin" infinite-scroll-distance="0"
+         data-infinite-container=".infinite-scroll-parent"
+         infinite-scroll="ContentHome.startLoadingPosts"
+         infinite-scroll-disabled="ContentHome.noMore">
+        <div class="social-item clearfix border-grey padded border-radius-three" ng-repeat="post in ContentHome.posts">
+            <div class="head clearfix margin-bottom-zero">
+                <div class="col-xs-8 padding-left-zero pull-left">
+                    <div class="media-holder pull-left">
+                        <img ng-if="post.userDetails.imageUrl" load-image="1x1" data-final-src="{{post.userDetails.imageUrl}}">
+                        <img ng-if="!post.userDetails.imageUrl" load-image="1x1" data-final-src="../../../../styles/media/avatar-placeholder.png">
+                    </div>
+                    <p class="ellipsis margin-bottom-zero padding-left-ten" style="margin-top:9px;">
+                        {{post.userDetails.firstName}}
+                    </p>
+                </div>
+                <div class="col-xs-3 padding-right-zero pull-right margin-top-ten text-right">
+                    <span class="time-ago opacity-seventy">{{ContentHome.getDuration(post.createdOn) | convertTimeFormat}}</span>
+                </div>
+            </div>
+            <div class="copy padded">
+                <p class="margin-zero" ng-bind-html="ContentHome.util.injectAnchors(post.text)|newLine"></a>
+                    <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
+                    <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a>
+                </p>
+            </div>
+            <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl" ng-init="setupImageList(post)">
+                <bf-image-list ng-if="post.imageListId" id="{{post.imageListId}}" token="czi3m2qn"></bf-image-list>
+            </div>
+            <div class="social-footer padded padding-top-zero clearfix">
+                <div class="icons col-xs-3 padding-left-zero pull-left">
+                    <span class="social-icon">
+                        <span class="icon icon-heart"></span>
+                        <span class="number">{{post.likes.length}}</span>
+                    </span>
+                    <a class="social-icon margin-left-twenty"
+                       ng-click="ContentHome.loadMoreComments(post,'viewComment')">
+                        <span class="icon icon-bubble"></span>
+                        <span class="number">{{post.comments.length}}</span>
+                    </a>
+                </div>
+                <div class="status col-xs-9 padding-right-zero pull-right" style="margin-top:1px;">
+                    <div class="pull-right">
+                        <p class="pull-left margin-bottom-zero" ng-show="post.viewComments && post.comments.length">
+							<a class="text-primary" ng-click="post.viewComments=post.viewComments==true?false:true">Hide Comments</a>
+						</p>
+                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.banUser(post.userId, post.id)">
+							<a class="text-danger">Ban User</a>
+                        </p>
+                        <p class="pull-left margin-bottom-zero margin-left-twenty" ng-click="ContentHome.deletePost(post.id)">
+							<a class="text-danger">Delete Post</a>
+						</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="small margin-zero" ng-if="post.comments.length && post.viewComments">
+            <div ng-if="post.comments.length % 10 == 0 && post.viewComments && !post.moreComments" class="padding-top-ten head-btn text-center padding-bottom-ten">
+                <a ng-click="ContentHome.loadMoreComments(post)">Show More Comments</a>
+            </div>
+            <div class="comments-list" ng-if="post.comments.length && post.viewComments">
+                <div class="social-comment padded" ng-repeat="comment in post.comments">
+                    <div class="head clearfix margin-bottom-zero">
+                        <div class="col-xs-8 padding-left-zero pull-left">
+                            <p class="text-primary ellipsis margin-bottom-zero">
+                                <a class="text-primary">{{comment.userDetails.displayName}}</a>
+                            </p>
+                        </div>
+                        <div class="col-xs-3 padding-right-zero pull-right text-right">
+                            <span class="time-ago opacity-seventy">{{ContentHome.getDuration(comment.createdOn) | convertTimeFormat}}</span>
+                        </div>
+                    </div>
+                    <div class="copy margin-bottom-five">
+                        <p class="margin-zero" ng-bind-html="(comment.comment) | newLine"></p>
+                    </div>
+                    <div class="plugin-banner margin-bottom-fifteen">
+                        <div ng-repeat="imageUrl in comment.attachedImage" class="plugin-slide text-center">
+                            <img  load-image="16x9" data-final-src="{{imageUrl | resizeImage : 555 : 337}}">
+                        </div>
+                    </div>
+                    <div class="social-footer clearfix">
+                        <div class="icons col-xs-3 padding-left-zero pull-left">
+                            <span class="social-icon">
+                                <span class="icon icon-heart"></span>
+                                <span class="number">{{comment.likes.length}}</span>
+                            </span>
+                        </div>
+                        <div class="status col-xs-9 padding-right-zero pull-right">
+                            <div class="pull-right">
+                                <p class="pull-left margin-bottom-zero"  ng-click="ContentHome.banUser(post.userId, comment._id)"><a class="text-danger">Ban User</a></p>
+
+                                <p class="pull-left margin-bottom-zero margin-left-twenty"
+                                   ng-click="ContentHome.deleteComment(post, comment)"><a class="text-danger">Delete
+                                    Comment</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

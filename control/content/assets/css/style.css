@@ -1,0 +1,88 @@
+.no-margin{
+    margin: 0 !important;
+}
+.text-white{
+    color:#fff !important;
+}
+
+/*Export Modal*/
+
+.export-dropdown-group .dropdown-toggle.btn-primary {
+    background-color: #09A3EE !important;
+}
+
+.export-dropdown-group .dropdown-menu{
+    right: 0px;
+    left: inherit;
+}
+
+.export-modal-container .search-container{
+    position: fixed;
+    width: 100%;
+    padding: 15px 15px;
+}
+
+.export-modal-container .content-container {
+    padding: 103px 15px 30px 15px;
+}
+
+.export-modal-container .content-container .content{
+    border-top: 1px solid #c1c1c1;
+    border-bottom: 1px solid #c1c1c1;
+    padding-top: 25px;
+    padding-bottom: 16px;
+    max-height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+/*#Export Modal*/
+.social-item:last-of-type{
+    margin-bottom: 40px;
+}
+.social-item .head{
+    background-color: rgba(150, 150, 150, .1);
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+.social-comment .head{
+    padding: 0 0 16px 0;
+    background-color: transparent;
+    border-bottom: 0;
+}
+
+.social-comment .plugin-banner{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 12px;
+    row-gap: 12px;
+    padding: 16px 0;
+}
+.social-comment .plugin-banner .plugin-slide{
+    border-radius: 8px;
+    height: 120px;
+    overflow: hidden;
+}
+.social-comment .plugin-slide img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*Animation*/
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
+/*#Animation*/
