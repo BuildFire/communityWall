@@ -108,6 +108,14 @@
                             buildfire.datastore.get("Social", (err, response) => {
                                 if (err) console.error('------------->cannot get app settings on init');
                                 WidgetWall.SocialItems.appSettings = response.data.appSettings;
+                                if(WidgetWall.SocialItems.appSettings.actionItem&&WidgetWall.SocialItems.appSettings.actionItem.iconUrl) {
+                                    WidgetWall.SocialItems.appSettings.actionItem.iconUrl = buildfire.imageLib.cropImage(WidgetWall.SocialItems.appSettings.actionItem.iconUrl, { size: 'xs', aspect:'1:1' }) 
+                                    angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important`);
+                                    if(!$scope.$$phase) $scope.$digest();
+                                }
+
+                                
+                                
                                 if (response.data.appSettings && response.data.appSettings.pinnedPost) {
                                     WidgetWall.pinnedPost = response.data.appSettings.pinnedPost;
                                     pinnedPost.innerHTML = WidgetWall.pinnedPost;
@@ -1148,6 +1156,11 @@
                         WidgetWall.pinnedPost = response.data.appSettings.pinnedPost;
                         pinnedPost.innerHTML = WidgetWall.pinnedPost;
                     } else pinnedPost.innerHTML = "";
+                    if(WidgetWall.SocialItems.appSettings.actionItem&&WidgetWall.SocialItems.appSettings.actionItem.iconUrl) {
+                        WidgetWall.SocialItems.appSettings.actionItem.iconUrl = buildfire.imageLib.cropImage(WidgetWall.SocialItems.appSettings.actionItem.iconUrl, { size: 'xs', aspect:'1:1' }) 
+                        angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important`);
+                        if(!$scope.$$phase) $scope.$digest();
+                    } else angular.element('#actionBtn').attr('style', `background-image: unset`);
 
                     WidgetWall.showHidePrivateChat();
                     WidgetWall.followLeaveGroupPermission();
