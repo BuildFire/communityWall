@@ -109,7 +109,7 @@
                                 if (err) console.error('------------->cannot get app settings on init');
                                 WidgetWall.SocialItems.appSettings = response.data.appSettings;
                                 if(WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.actionItem) {
-                                    var dldActionItem = util.getParameterByName("actionItem");
+                                    var dldActionItem = new URLSearchParams(window.location.search).get('actionItem');
                                     if (dldActionItem)
                                         WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
                                     if (WidgetWall.SocialItems.appSettings.actionItem.iconUrl) {
