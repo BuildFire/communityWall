@@ -108,10 +108,14 @@
                             buildfire.datastore.get("Social", (err, response) => {
                                 if (err) console.error('------------->cannot get app settings on init');
                                 WidgetWall.SocialItems.appSettings = response.data.appSettings;
-                                if(WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.actionItem&&WidgetWall.SocialItems.appSettings.actionItem.iconUrl) {
-                                    WidgetWall.SocialItems.appSettings.actionItem.iconUrl = buildfire.imageLib.cropImage(WidgetWall.SocialItems.appSettings.actionItem.iconUrl, { size: 'xs', aspect:'1:1' }) 
-                                    angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important`);
-                                    if(!$scope.$$phase) $scope.$digest();
+                                if(WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.actionItem) {
+                                    var dldActionItem = util.getParameterByName("actionItem");
+                                    if (dldActionItem)
+                                        WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
+                                    if (WidgetWall.SocialItems.appSettings.actionItem.iconUrl) {
+                                        WidgetWall.SocialItems.appSettings.actionItem.iconUrl = buildfire.imageLib.cropImage(WidgetWall.SocialItems.appSettings.actionItem.iconUrl, { size: 'xss', aspect: '1:1' })
+                                        angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important; background-size: cover !important;`);
+                                    }
                                 }
 
                                 
