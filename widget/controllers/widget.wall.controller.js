@@ -190,7 +190,9 @@
                         WidgetWall.groupFollowingStatus = true;
                         buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
                         WidgetWall.showHideCommentBox();
-                        //subscribeUsers();
+                        buildfire.auth.getCurrentUser(function(err, user) {
+                            WidgetWall.statusCheck(status, user);
+                        })
                         setTimeout(function () {
                             if (!$scope.$$phase) $scope.$digest();
                         }, 50);
@@ -215,7 +217,8 @@
                                     userDetails: {
                                         displayName: user.displayName,
                                         imageUrl: user.imageUrl,
-                                        email: user.email
+                                        email: user.email,
+                                        lastUpdated: new Date().getTime(),
                                     },
                                     wallId: WidgetWall.wid,
                                     posts: [],
@@ -288,7 +291,8 @@
                                             userDetails: {
                                                 displayName: user.displayName,
                                                 imageUrl: user.imageUrl,
-                                                email: user.email
+                                                email: user.email,
+                                                lastUpdated: new Date().getTime(),
                                             },
                                             wallId: wid,
                                             posts: [],
@@ -1007,53 +1011,6 @@
                 }
             };
 
-            var subscribeUsers = function () {
-                if (
-                    WidgetWall.SocialItems
-                    && WidgetWall.SocialItems.appSettings
-                    && WidgetWall.SocialItems.appSettings.disableFollowLeaveGroup
-                ) return;
-
-                let targetUsers = util.getParameterByName("targetUsers") || null;
-                var pushTitle = util.getParameterByName("pushTitle") || null;
-
-                if (!targetUsers) return;
-                var users = JSON.parse(targetUsers);
-
-                if (!users) return;
-                var wallIdValue = util.getParameterByName("wid");
-                var wallId = wallIdValue ? wallIdValue : '';
-                users.forEach(usr => {
-                    if (usr.userId !== WidgetWall.SocialItems.userDetails.userId) {
-                        buildfire.auth.getUserProfile({ userId: usr.userId }, (err, user) => {
-                            if (err) console.log('Error while saving subscribed user data.');
-                            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                            if (re.test(String(user.firstName).toLowerCase()))
-                                user.firstName = 'Someone';
-                            if (re.test(String(user.displayName).toLowerCase()))
-                                user.displayName = 'Someone';
-
-                            var params = {
-                                userId: user.userId,
-                                userDetails: {
-                                    displayName: user.displayName,
-                                    imageUrl: user.imageUrl,
-                                    email: user.email
-                                },
-                                wallId: wallId,
-                                posts: [],
-                                _buildfire: {
-                                    index: { text: user.userId + '-' + wallId, string1: wallId }
-                                }                            
-                            };
-                            SubscribedUsersData.save(params, function (err) {
-                                if (err) console.log('Error while saving subscribed user data.');
-                            });
-                        })
-                    }
-                });
-            }
-
             var updateFollowUnfollow = function () {
                 if (WidgetWall.groupFollowingStatus) {
                     SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, result) {
@@ -1188,6 +1145,58 @@
                     }
                 }, 100);
             });
+
+            WidgetWall.statusCheck = function(status, user) {
+                if (status && status[0]) {
+                    if (!status[0].data.userDetails.lastUpdated) {
+                        console.log('nema updated');
+                        status[0].data.userDetails.lastUpdated = user.lastUpdated;
+                        window.buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
+                            if (err) return console.error(err);
+                            console.log("UPDEJTOVAN", data);
+                        });
+                    } else {
+                        var lastUpdated = new Date(status[0].data.userDetails.lastUpdated).getTime();
+                        var dbLastUpdate = new Date(user.lastUpdated).getTime();
+                        if (dbLastUpdate > lastUpdated) {
+                            status[0].data.userDetails.displayName = user.displayName;
+                            status[0].data.userDetails.email = user.email;
+                            status[0].data.userDetails.imageUrl = user.imageUrl;
+                            status[0].data.userDetails.lastUpdated = user.lastUpdated;
+                            window.buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
+                                if (err) return console.error(err);
+                            });
+
+                            WidgetWall.SocialItems.items.map(item => {
+                                var needsUpdate = false;
+                                if (item.userId === user._id) {
+                                    item.userDetails = status[0].data.userDetails;
+                                    // item.userDetails.displayName = status[0].data.userDetails.displayName;
+                                    // item.userDetails.email = status[0].data.userDetails.email;
+                                    // item.userDetails.imageUrl = status[0].data.userDetails.imageUrl;
+                                    needsUpdate = true;
+                                }
+                                item.comments.map(comment => {
+                                    if (comment.userId === user._id) {
+                                        comment.userDetails = status[0].data.userDetails;
+                                        comment.userDetails.firstName = user.firstName;
+                                        comment.userDetails.lastName = user.lastName;
+                                        needsUpdate = true;
+                                    }
+                                })
+                                if (needsUpdate)
+                                    buildfire.publicData.update(item.id, item, 'posts', (err, updatedPost) => {
+                                        console.log("UPDATED ITEM", updatedPost)
+                                    });
+
+                            });
+                            console.log("ITEMS", WidgetWall.SocialItems.items)
+                        }
+
+                        console.log('ima updated')
+                    }
+                }
+            }
             // On Login
             Buildfire.auth.onLogin(function (user) {
 
@@ -1215,6 +1224,7 @@
                             WidgetWall.groupFollowingStatus = true;
                         }
                         WidgetWall.showHideCommentBox();
+                        WidgetWall.statusCheck(status, user)
                         buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
                         $scope.$digest();
                     })
