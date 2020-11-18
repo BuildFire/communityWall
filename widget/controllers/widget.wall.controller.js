@@ -117,6 +117,7 @@
                                         WidgetWall.SocialItems.appSettings.actionItem.iconUrl = buildfire.imageLib.cropImage(WidgetWall.SocialItems.appSettings.actionItem.iconUrl, { size: 'xss', aspect: '1:1' })
                                         angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important; background-size: cover !important;`);
                                     }
+                                    console.log("GOT ACTION ITEM", WidgetWall.SocialItems.appSettings.actionItem)
                                 }
 
                                 if (response.data.appSettings && response.data.appSettings.pinnedPost) {
@@ -822,7 +823,7 @@
                 console.log("QUERY", query)
                 if (!WidgetWall.SocialItems.appSettings.actionItem.queryString)
                     WidgetWall.SocialItems.appSettings.actionItem.queryString = query;
-
+                console.log("ACTION ITEM", WidgetWall.SocialItems.appSettings.actionItem)
                 buildfire.actionItems.execute(WidgetWall.SocialItems.appSettings.actionItem, (err, action) => {
                     if (err) return console.error(err);
                 });
