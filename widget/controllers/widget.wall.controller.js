@@ -824,9 +824,16 @@
                 if (!WidgetWall.SocialItems.appSettings.actionItem.queryString)
                     WidgetWall.SocialItems.appSettings.actionItem.queryString = query;
                 console.log("ACTION ITEM", WidgetWall.SocialItems.appSettings.actionItem)
-                buildfire.actionItems.execute(WidgetWall.SocialItems.appSettings.actionItem, (err, action) => {
-                    if (err) return console.error(err);
-                });
+                if(WidgetWall.SocialItems.appSettings.actionItem.type === 'navigation') {
+                    buildfire.actionItems.execute(WidgetWall.SocialItems.appSettings.actionItem, (err, action) => {
+                        if (err) return console.error(err);
+                    });    
+                } else {
+                    Buildfire.navigation.navigateTo({
+                        pluginId: WidgetWall.SocialItems.appSettings.actionItem.pluginId,
+                        queryString: WidgetWall.SocialItems.appSettings.actionItem.queryString
+                    });
+                }
             }
 
             WidgetWall.showMembers = function () {
