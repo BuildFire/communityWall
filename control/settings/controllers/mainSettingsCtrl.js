@@ -1,7 +1,7 @@
 /**
  * Created by ahmadfhamed on 2/5/2017.
  */
-app.controller('MainSettingsCtrl', function ($scope) {
+app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
     var _pluginData = {
         data: {}
     };
@@ -12,7 +12,7 @@ app.controller('MainSettingsCtrl', function ($scope) {
         sideThreadUserTags: []
     };
 
-    load = function () {
+    var load = function () {
         var editor = new buildfire.components.actionItems.sortableList("#actions");
         buildfire.datastore.get('Social', function (err, result) {
             if (err) {
@@ -90,4 +90,4 @@ app.controller('MainSettingsCtrl', function ($scope) {
     $scope.init = function () {
         load()
     }
-});
+}]);

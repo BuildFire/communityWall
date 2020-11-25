@@ -22,7 +22,7 @@
             WidgetWall.threadTag = "thread";
             WidgetWall.wid = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
             WidgetWall.appTheme = null;
-            WidgetWall.pageSize = 50;
+            WidgetWall.pageSize = 5;
             WidgetWall.page = 0;
             WidgetWall.showMorePosts = false;
             WidgetWall.loadedPlugin = false;

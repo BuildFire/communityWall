@@ -6,25 +6,26 @@
     <!-- Load helper.css to use our helper classes.
     -->
     <link href="../../../../styles/helper.css" rel="stylesheet">
-    <!-- input tags -->
-    <link href="assets/lib/input-tags/css/ng-tags-input.min.css" rel="stylesheet">
-    <link href="assets/lib/input-tags/css/ng-tags-input.bootstrap.min.css" rel="stylesheet">
-    <link href="assets/lib/input-tags/css/style.css" rel="stylesheet">
+    <!-- build:bundleCSSFiles  -->
+    <link href="assets/css/ng-tags-input.min.css" rel="stylesheet">
+    <link href="assets/css/ng-tags-input.bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <!-- endbuild -->
 
     <!-- JS -->
     <script src="../../../../scripts/buildfire.js"></script>
     <script src="../../../../scripts/angular/angular.min.js"></script>
     <script src="../../../../scripts/angular/angular-route.min.js"></script>
-    <!-- input tags -->
-    <script src="assets/lib/input-tags/js/ng-tags-input.min.js"></script>
-    <script src="app.js"></script>
-    <script src="controllers/mainSettingsCtrl.js"></script>
     <script src="../../../../scripts/sortable.min.js"></script>
     <script src="../../../../scripts/buildfire/components/actionItems/sortableList.js"></script>
     <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
-    <!--
-        <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
-        -->
+    
+    <!-- build:bundleJSFiles  -->
+    <script src="app.js"></script>
+    <script src="controllers/mainSettingsCtrl.js"></script>
+    <script src="assets/js/ng-tags-input.min.js"></script>
+    <!-- endbuild -->
+
 </head>
 <body class="scrollable">
 <div class="settings" ng-view></div>

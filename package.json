@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "description": "\"premium-social-plugin\"",
   "scripts": {
-    "postinstall": "./node_modules/.bin/bower install",
     "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
-    "build": "cd .. && rm -rf communityWall.zip && zip -r communityWall.zip communityWall/ -x *node_modules/* *.git* *test/*"
+    "build": "gulp build && cd ../ && rm -rf communityWall.zip && zip -r communityWall.zip communityWall_release && rm -rf communityWall_release"
   },
   "keywords": [
     "angularjs",
@@ -14,7 +13,7 @@
     "karma",
     "jasmine"
   ],
-  "author": "vineetasharma18791@gmail.com",
+  "author": "developer@buildfire.com",
   "license": "ISC",
   "dependencies": {
     "bower": "^1.5.3",
@@ -23,8 +22,18 @@
   },
   "devDependencies": {
     "chai": "^3.0.0",
-    "gulp": "^3.9.0",
-    "gulp-eslint": "^1.0.0",
+    "del": "^3.0.0",
+    "gulp": "^4.0.2",
+    "gulp-bytediff": "^1.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^3.0.0",
+    "gulp-eslint": "^4.0.0",
+    "gulp-html-replace": "^1.6.2",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-imagemin": "^6.0.0",
+    "gulp-minify": "^3.1.0",
+    "gulp-strip-comments": "^2.5.1",
+    "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.6",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.9",
@@ -35,6 +44,7 @@
     "karma-mocha": "^0.2.0",
     "karma-phantomjs-launcher": "^0.2.2",
     "mocha": "^2.2.5",
-    "phantomjs": "^1.9.17"
+    "phantomjs": "^1.9.17",
+    "uglify-es": "^3.3.9"
   }
 }

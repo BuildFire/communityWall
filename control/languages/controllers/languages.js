@@ -1,4 +1,4 @@
-app.controller('LanguagesCtrl', function ($scope) {
+app.controller('LanguagesCtrl', ['$scope', function ($scope) {
 
     $scope.data = {};
 
@@ -22,8 +22,8 @@ app.controller('LanguagesCtrl', function ($scope) {
         return false;
     }
 
-    save = () => {
+    $scope.save = function() {
         strings.save();
     }
 
-});
+}]);
