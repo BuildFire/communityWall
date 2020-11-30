@@ -737,7 +737,7 @@
                         } else {
                             options.text = 'Someone added new post on ' + WidgetWall.SocialItems.context.title;
                         }
-
+                        options.inAppMessage = options.text;
                         if (wallId.length) options.queryString = `wid=${wallId}`;
                         buildfire.notifications.pushNotification.schedule(
                             options,
@@ -954,7 +954,7 @@
                             }
 
                             if (wallId.length) options.queryString = `wid=${wallId}`;
-
+                            options.inAppMessage = options.text;
                             options.users.push(post.userId);
                             buildfire.notifications.pushNotification.schedule(
                                 options,
