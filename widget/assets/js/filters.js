@@ -39,38 +39,6 @@
 
             };
         }])
-        .filter('resizeImage', [function () {
-            filter.$stateful = true;
-            function filter(url, width, height) {
-                var _imgUrl;
-                if (!_imgUrl) {
-                    buildfire.imageLib.local.resizeImage(url, {
-                        width: width,
-                        height: height
-                    }, function (err, imgUrl) {
-                        _imgUrl = imgUrl;
-                    });
-                }
-                return _imgUrl;
-            }
-            return filter;
-        }])
-        .filter('cropImage', [function () {
-            filter.$stateful = true;
-            function filter(url, width, height) {
-                var _imgUrl;
-                if (!_imgUrl) {
-                    buildfire.imageLib.local.cropImage(url, {
-                        width: width,
-                        height: height
-                    }, function (err, imgUrl) {
-                        _imgUrl = imgUrl;
-                    });
-                }
-                return _imgUrl;
-            }
-            return filter;
-        }])
         .filter('newLine', ['$sce', function ($sce) {
             return function (html) {
                 if (html) {

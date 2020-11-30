@@ -4,7 +4,8 @@
 var app = angular.module('socialPluginSettings', [
     'ngRoute',
     'ngTagsInput'
-]).config(['$locationProvider', '$routeProvider', 'tagsInputConfigProvider', function ($locationProvider, $routeProvider, tagsInputConfigProvider) {
+]);
+app.config(['$locationProvider', '$routeProvider', 'tagsInputConfigProvider', function ($locationProvider, $routeProvider, tagsInputConfigProvider) {
     //config for tag-input plugin
     tagsInputConfigProvider.setActiveInterpolation('tagsInput', { minTags: true });
 
@@ -13,3 +14,5 @@ var app = angular.module('socialPluginSettings', [
         controller: 'MainSettingsCtrl'
     }).otherwise({redirectTo: '/'});
 }]);
+
+

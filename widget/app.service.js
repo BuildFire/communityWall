@@ -262,7 +262,7 @@
                 }
             }
         })
-        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout', 'Util', '$http', 'Upload', function (Buildfire, $q, $timeout, Util, $http, Upload) {
+        .factory("SocialDataStore", ['Buildfire', '$q', '$timeout', 'Util', '$http', function (Buildfire, $q, $timeout, Util, $http) {
             var _this = this;
             _this.pageSize = 1;
             _this.page = 0;

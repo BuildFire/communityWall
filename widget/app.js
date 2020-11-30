@@ -1,7 +1,7 @@
 'use strict';
 
 (function (angular, buildfire) {
-    angular.module('socialPluginWidget', ['ngRoute', 'infinite-scroll', 'ngAnimate', 'socialModals', 'ngFileUpload', 'socialPluginFilters', 'angular-ladda'])
+    angular.module('socialPluginWidget', ['ngRoute', 'ngAnimate', 'socialModals', 'socialPluginFilters'])
         .config(['$routeProvider', '$compileProvider', '$httpProvider', function ($routeProvider, $compileProvider, $httpProvider) {
 
             /**
