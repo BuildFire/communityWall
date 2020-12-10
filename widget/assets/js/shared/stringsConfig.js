@@ -29,9 +29,9 @@ const stringsConfig = {
 			},
 			membersBlankState: {
 				title: "Members Blank State Message"
-				, placeholder: "There is no other members except you."
+				, placeholder: "There are no other members except you."
 				, maxLength: 60
-				, defaultValue: "There is no other members except you."
+				, defaultValue: "There are no other members except you."
 			},
 			membersNoResults: {
 				title: "Members No Results Found"

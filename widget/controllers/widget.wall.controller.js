@@ -119,6 +119,9 @@
                                     }
                                     console.log("GOT ACTION ITEM", WidgetWall.SocialItems.appSettings.actionItem)
                                 }
+                                if(typeof (WidgetWall.SocialItems.appSettings.showMembers) == 'undefined') {
+                                    WidgetWall.SocialItems.appSettings.showMembers = true;
+                                }
 
                                 if (response.data.appSettings && response.data.appSettings.pinnedPost) {
                                     WidgetWall.pinnedPost = response.data.appSettings.pinnedPost;
@@ -1130,7 +1133,7 @@
                         angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important`);
                         if (!$scope.$$phase) $scope.$digest();
                     } else angular.element('#actionBtn').attr('style', `background-image: unset`);
-
+                    console.log("UPDATEAAAA", response)
                     WidgetWall.showHidePrivateChat();
                     WidgetWall.followLeaveGroupPermission();
                     WidgetWall.showHideCommentBox();

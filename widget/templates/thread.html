@@ -14,8 +14,7 @@
             <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
                 <div class="head">
                     <div class="social-profile-photo">
-                        <div class="media-holder pull-left"
-                            ng-click="Thread.buildfire.auth.openProfile(Thread.post.userId)">
+                        <div class="media-holder pull-left">
                             <img ng-if="Thread.post.userId && Thread.post.userDetails.imageUrl"
                                 load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
                                 crop-height="40" crop-type="crop">
