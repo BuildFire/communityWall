@@ -33,9 +33,15 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                             items.push(result.data.appSettings.actionItem);
                             editor.loadItems(items);
                         }
-                        $scope.data = result.data.appSettings;
-                        $scope.$digest();
-                    }
+                        if(typeof (result.data.appSettings.showMembers) == 'undefined') {
+                            result.data.appSettings.showMembers = true;
+                        }
+                    } else if(!result.data.appSettings) {
+                        result.data.appSettings = {};
+                        result.data.appSettings.showMembers = true;
+                    }    
+                    $scope.data = result.data.appSettings;
+                    $scope.$digest();
                 }
             }
         });

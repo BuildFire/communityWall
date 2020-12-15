@@ -41,7 +41,13 @@
                 <label for="followLeave">Disable Follow/Leave Group</label>
             </div>
         </div>
-        
+
+        <div class="form-group">
+            <div>
+                <input id="showMembers" type="checkbox" ng-model="data.showMembers" ng-change="save()" />
+                <label for="showMembers">Show Members</label>
+            </div>
+        </div>  
     </form>
     <div id="actions"></div>
 </div>
