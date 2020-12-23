@@ -729,7 +729,9 @@
                         if (WidgetWall.SocialItems.isPrivateChat) {
                             SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, wallId, function (err, users) {
                                 if (err) return console.log(err);
-                                users.map(el => { options.users.push(el.userId) })
+                                users.map(el => { 
+                                  el.userId ? options.users.push(el.userId) : options.users.push(el.data.userId);
+                                });
                             });
                         } else {
                             options.groupName = WidgetWall.wid;
