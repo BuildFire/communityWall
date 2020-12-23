@@ -21,6 +21,7 @@
             WidgetWall.groupFollowingStatus = false;
             WidgetWall.threadTag = "thread";
             WidgetWall.wid = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
+            WidgetWall.sendPNTo = util.getParameterByName("sendPNTo") ? util.getParameterByName("sendPNTo") : [];
             WidgetWall.appTheme = null;
             WidgetWall.pageSize = 5;
             WidgetWall.page = 0;
@@ -729,7 +730,10 @@
                         if (WidgetWall.SocialItems.isPrivateChat) {
                             SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, wallId, function (err, users) {
                                 if (err) return console.log(err);
-                                users.map(el => { options.users.push(el.userId) })
+                                users.map(el => { options.users.push(el.userId) });
+                                if(options.users.length === 0) {
+                                    options.users = WidgetWall.sendPNTo.filter(userId => userId !== result._id);
+                                }
                             });
                         } else {
                             options.groupName = WidgetWall.wid;
