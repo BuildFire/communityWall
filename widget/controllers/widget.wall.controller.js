@@ -726,28 +726,34 @@
                             users: [],
                         };
 
+                        var sendNotification = function() {
+                            if (WidgetWall.SocialItems.userDetails.firstName) {
+                                options.text = WidgetWall.SocialItems.userDetails.firstName + ' added new post on ' + WidgetWall.SocialItems.context.title;
+                            } else {
+                                options.text = 'Someone added new post on ' + WidgetWall.SocialItems.context.title;
+                            }
+                            options.inAppMessage = options.text;
+                            if (wallId.length) options.queryString = `wid=${wallId}`;
+                            console.log("SENT NOTIFICATION", options)
+                            buildfire.notifications.pushNotification.schedule(
+                                options,
+                                function (e) {
+                                    if (e) console.error('Error while setting PN schedule.', e);
+                                }
+                            );
+                        }
+
                         if (WidgetWall.SocialItems.isPrivateChat) {
                             SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, wallId, function (err, users) {
                                 if (err) return console.log(err);
                                 users.map(el => { options.users.push(el.userId) })
+                                sendNotification();
                             });
                         } else {
                             options.groupName = WidgetWall.wid;
+                            sendNotification();
                         }
 
-                        if (WidgetWall.SocialItems.userDetails.firstName) {
-                            options.text = WidgetWall.SocialItems.userDetails.firstName + ' added new post on ' + WidgetWall.SocialItems.context.title;
-                        } else {
-                            options.text = 'Someone added new post on ' + WidgetWall.SocialItems.context.title;
-                        }
-                        options.inAppMessage = options.text;
-                        if (wallId.length) options.queryString = `wid=${wallId}`;
-                        buildfire.notifications.pushNotification.schedule(
-                            options,
-                            function (e) {
-                                if (e) console.error('Error while setting PN schedule.', e);
-                            }
-                        );
 
                         WidgetWall.waitAPICompletion = false;
                         $location.hash('top');
