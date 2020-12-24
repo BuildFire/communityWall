@@ -148,7 +148,20 @@
                                     else
                                         WidgetWall.followWall();
 
-
+                                    if (WidgetWall.SocialItems.isPrivateChat) {
+                                        SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, function (err, users) {
+                                            if (err) return console.log(err);
+                                            console.log("USERS", users)
+                                            const user1Id = WidgetWall.wid.slice(0, 24);
+                                            const user2Id = WidgetWall.wid.slice(24, 48);
+                                            if(!users.length) {
+                                                var otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
+                                                ? user2Id : user1Id;
+                                                WidgetWall.subscribeUser(otherUser, WidgetWall.wid);
+                                            }
+                                        });
+ 
+                                    }
                                     buildfire.appearance.getAppTheme((err, obj) => {
                                         let elements = document.getElementsByTagName('svg');
                                         for (var i = 0; i < elements.length; i++) {
@@ -244,6 +257,48 @@
                 });
             };
 
+            WidgetWall.subscribeUser = function (userId, wid, userName = null) {
+                buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
+                    if (err) console.log('Error while saving subscribed user data.');
+                    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (re.test(String(user.firstName).toLowerCase()))
+                        user.firstName = 'Someone';
+                    if (re.test(String(user.displayName).toLowerCase()))
+                        user.displayName = 'Someone';
+
+                    var params = {
+                        userId: userId,
+                        userDetails: {
+                            displayName: user.displayName,
+                            imageUrl: user.imageUrl,
+                            email: user.email,
+                            lastUpdated: new Date().getTime(),
+                        },
+                        wallId: wid,
+                        posts: [],
+                        _buildfire: {
+                            index: { text: userId + '-' + wid, string1: wid }
+                        }
+                    };
+                    console.log("SACUVAVA KORISNIKA ZA PRIVATE", params)
+                    SubscribedUsersData.save(params, function (err) {
+                        if (err) console.log('Error while saving subscribed user data.');
+                        if(userName) {
+                            Buildfire.history.push("Main Social Wall");
+
+                            Buildfire.navigation.navigateTo({
+                                pluginId: WidgetWall.SocialItems.context.pluginId,
+                                instanceId: WidgetWall.SocialItems.context.instanceId,
+                                //folderName: plugin._buildfire.pluginType.result[0].folderName,
+                                title: WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName,
+                                queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent(WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName)
+                            });
+                        }
+ 
+                    });
+                })
+            } 
+
             WidgetWall.openChatOrProfile = function (userId) {
                 if (WidgetWall.allowPrivateChat) {
                     buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
@@ -279,49 +334,12 @@
                                 console.log('error while getting initial group following status.', err);
                             } else
                                 if (!status.length) {
-                                    buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
-                                        if (err) console.log('Error while saving subscribed user data.');
-                                        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                                        if (re.test(String(user.firstName).toLowerCase()))
-                                            user.firstName = 'Someone';
-                                        if (re.test(String(user.displayName).toLowerCase()))
-                                            user.displayName = 'Someone';
-
-                                        var params = {
-                                            userId: userId,
-                                            userDetails: {
-                                                displayName: user.displayName,
-                                                imageUrl: user.imageUrl,
-                                                email: user.email,
-                                                lastUpdated: new Date().getTime(),
-                                            },
-                                            wallId: wid,
-                                            posts: [],
-                                            _buildfire: {
-                                                index: { text: userId + '-' + wid, string1: wid }
-                                            }
-                                        };
-                                        console.log("SACUVAVA KORISNIKA ZA PRIVATE", params)
-                                        SubscribedUsersData.save(params, function (err) {
-                                            if (err) console.log('Error while saving subscribed user data.');
-
-                                            Buildfire.history.push("Main Social Wall");
-
-                                            Buildfire.navigation.navigateTo({
-                                                pluginId: WidgetWall.SocialItems.context.pluginId,
-                                                instanceId: WidgetWall.SocialItems.context.instanceId,
-                                                //folderName: plugin._buildfire.pluginType.result[0].folderName,
-                                                title: WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName,
-                                                queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent(WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName)
-                                            });
-                                        });
-                                    })
+                                  WidgetWall.subscribeUser(userId, wid, userName);                                
                                 } else {
                                     Buildfire.history.push("Main Social Wall");
                                     Buildfire.navigation.navigateTo({
                                         pluginId: WidgetWall.SocialItems.context.pluginId,
                                         instanceId: WidgetWall.SocialItems.context.instanceId,
-                                        //folderName: plugin._buildfire.pluginType.result[0].folderName,
                                         title: WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName,
                                         queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent(WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName)
                                     });
