@@ -709,7 +709,7 @@
                         }
                     }
                     WidgetWall.SocialItems.items.unshift(postData);
-                    SocialDataStore.createPost(postData).then(success, error);
+                    WidgetWall.onSendMessage({ _id: postData.userId }, postData.text, () => {SocialDataStore.createPost(postData).then(success, error);})
                 });
 
                 var success = function (response) {
@@ -722,7 +722,6 @@
                         var _postIndex = WidgetWall.SocialItems.items.indexOf(postData);
                         WidgetWall.SocialItems.items.splice(_postIndex, 1);
                     } else if (response.data) {
-                        WidgetWall.onSendMessage({ _id: postData.userId }, postData.text, () => { })
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.POST_CREATED,
                             status: 'Success',
