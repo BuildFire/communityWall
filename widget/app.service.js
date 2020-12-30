@@ -392,7 +392,7 @@
 
 
             SocialItems.prototype.getPosts = function (pageSize, page, callback) {
-                let searchOptions = { pageSize, page, sort: { "createdOn": -1 } }
+                let searchOptions = { pageSize, page, sort: { "id": -1 } }
                 if (_this.wid === null)
                     searchOptions.filter = { '_buildfire.index.string1': "" }
                 else
@@ -425,7 +425,7 @@
             function startBackgroundService() {
                 if (!_this.newPostTimerChecker) {
                     _this.newPostTimerChecker = setInterval(function () {
-                        let searchOptions = { sort: { "createdOn": -1 } }
+                        let searchOptions = { sort: { "id": -1 } }
                         if (_this.wid === null)
                             searchOptions.filter = { "_buildfire.index.string1": "" }
                         else
