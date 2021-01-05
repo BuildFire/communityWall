@@ -57,6 +57,7 @@
                                 selectedImage[0].name = selectedImage[0].name;
                             buildfire.imagePreviewer.show({ images: selectedImage });
                         });
+                        imageList.width = 280; //width in px
                     }, 0);
                 }
             };
@@ -217,6 +218,7 @@
                                             selectedImage[0].name = selectedImage[0].name;
                                         buildfire.imagePreviewer.show({ images: selectedImage });
                                     });
+                                    imageList.width = '100'
                                 });
                             }
                             Buildfire.history.push('Post', { post: Thread.post });

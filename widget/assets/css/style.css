@@ -45,6 +45,8 @@ html{
     padding-bottom: 65px !important;
 }
 
+
+
 button,
 .btn {
     font-family: 'Helvetica', 'Sans-Serif', 'Arial';
@@ -458,11 +460,7 @@ button.btn--lg,
     color: #444 !important;
 }
 
-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+
 
 /* End Plugin CSS */
 
@@ -1285,3 +1283,10 @@ html[buildfire][safe-area="true"] body {
 /* add padding  */
 .left-addon input  { padding-left:  30px; }
 .right-addon input { padding-right: 30px; }
+
+
+.hydrated img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+}
