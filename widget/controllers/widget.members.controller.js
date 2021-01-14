@@ -151,7 +151,7 @@
             });
 
             Members.openPrivateChat = function (user) {
-                if (Members.appSettings && !Members.appSettings.disablePrivateChat) return;
+                if (Members.appSettings && Members.appSettings.disablePrivateChat) return;
                 let wid = null;
 
                 if (Members.userDetails._id && Members.userDetails._id != user.userId) {
