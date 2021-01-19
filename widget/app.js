@@ -53,6 +53,14 @@
         .run(['$location', '$rootScope', 'Location', 'Buildfire', function ($location, $rootScope, Location, Buildfire) {
             Buildfire.history.onPop(function (breadcrumb) {
                 var path = $location.path();
+                if($rootScope.wasPrivateChat) {
+                    buildfire.history.get({
+                        pluginBreadcrumbsOnly: true
+                    },function(err, result){
+                        result.map(item => buildfire.history.pop())
+                        buildfire.navigation._goBackOne();
+                    });
+                }
                 if (path.indexOf('/thread') == 0 && (breadcrumb.label && breadcrumb.label.toLowerCase() != "post")) {
                     $rootScope.showThread = true;
                     $location.path('/');

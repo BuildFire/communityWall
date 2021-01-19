@@ -162,7 +162,7 @@
                                                 }
                                             });
                                         });
-                                        
+
 
                                     }
                                     buildfire.appearance.getAppTheme((err, obj) => {
@@ -1292,14 +1292,21 @@
                             WidgetWall.wid = null;
                             WidgetWall.SocialItems.wid = null;
                             WidgetWall.SocialItems.items = [];
-                            return WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                                if (data && data.length) {
-                                    if (data.length === WidgetWall.pageSize) {
-                                        WidgetWall.page++;
-                                        WidgetWall.showMorePosts = true;
+                            WidgetWall.SocialItems.isPrivateChat = false;
+                            $rootScope.wasPrivateChat = true;
+                            var instanceId = buildfire.getContext().instanceId;
+                            buildfire.pluginInstance.get(instanceId,function(error,instances){
+                                buildfire.history.push(instances.title, { showLabelInTitlebar: true });
+                                buildfire.appearance.titlebar.show();
+                                return WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
+                                    if (data && data.length) {
+                                        if (data.length === WidgetWall.pageSize) {
+                                            WidgetWall.page++;
+                                            WidgetWall.showMorePosts = true;
+                                        }
+                                        $scope.$digest();
                                     }
-                                    $scope.$digest();
-                                }
+                                });
                             });
                         }
                     }
@@ -1321,6 +1328,7 @@
             // On Logout
             Buildfire.auth.onLogout(function () {
                 console.log('User loggedOut from Widget Wall Page');
+                buildfire.appearance.titlebar.show();
                 WidgetWall.SocialItems.userDetails = {};
                 WidgetWall.groupFollowingStatus = false;
                 buildfire.notifications.pushNotification.unsubscribe({ groupName: WidgetWall.wid }, () => { });
