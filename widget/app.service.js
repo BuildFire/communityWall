@@ -121,12 +121,10 @@
                             }
                         }, 'subscribedUsersData', function (err, data) {
                             if (err) return console.error(err)
-                            console.log("NASAO GA", data)
                             if (data && data.length) {
                                 buildfire.publicData.delete(data[0].id, 'subscribedUsersData', function (err, status) {
                                     if (err) return console.error(err)
                                     else {
-                                        console.log("IZBRISAN", status)
                                         callback(null, status);
                                     }
                                 });
