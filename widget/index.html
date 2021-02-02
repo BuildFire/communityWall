@@ -4,10 +4,11 @@
 <head>
     <meta name="buildfire" content="disableFastClick,disableSelect">
     <!-- Plugin CSS -->
-    <link rel="stylesheet" href="../../../styles/siteIcons.css">
+    
     <!-- build:bundleCSSFiles  -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- endbuild -->
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <!-- JS -->
     <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
@@ -147,15 +148,15 @@
                                             <span
                                                 ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 ng-bind-html="(WidgetWall.decodeText(post.text) | limitTo : (post.limit || 150) :0) | newLine"></span>
-                                            <span ng-if="(post.text.length>150 && !post.seeMore)"
+                                            <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 class="ng-cloak">...</span>
-                                            <a ng-if="(post.text.length>150 && !post.seeMore)"
+                                            <a ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 ng-click="WidgetWall.seeMore(post)" class="text-info ng-cloak">Read
                                                 More</a>
                                         </p>
                                     </div>
                                     <div class="plugin-banner">
-                                        <div class="plugin-slide text-center" style="max-height: none !important; padding: 0px 20px 0px 20px;">
+                                        <div class="plugin-slide text-center" style="max-height: none !important;">
                                             <a ng-click="openThread($event,post)" ng-init="setupImageList(post)">
                                                 <bf-image-list ng-if="post.imageListId" id="{{post.imageListId}}"
                                                     token="czi3m2qn"></bf-image-list>
@@ -165,23 +166,22 @@
                                     <div ng-show="post.userId" class="footer clearfix">
                                         <div class="status">
                                             <div class="status-footer">
-                                                <a class="social-icon more-info ng-cloak"
-                                                    ng-click="WidgetWall.showMoreOptions(post)">
-                                                    <span class="icon icon-ellipsis"></span>
-                                                </a>
-                                                <a ng-if="!WidgetWall.SocialItems.isPrivateChat"
-                                                    href="#/thread/{{post.id}}"
-                                                    class="social-icon comments ng-cloak">
-                                                    <span class="icon icon-bubble"></span>
-                                                    <span class="iconsTheme">{{post.comments.length}}</span>
-                                                </a>
-                                                <a class="likes social-icon ng-cloak"
-                                                    ng-click="WidgetWall.likeThread(post, 'thread')">
-                                                    <span class="icon icon-heart"
-                                                        ng-class="{active: post.isUserLikeActive}"></span>
-                                                    <span class="iconsTheme"
-                                                        ng-class="{active: post.isUserLikeActive}">{{post.likes.length}}</span>
-                                                </a>
+                                                <a class="social-icon ng-cloak"
+                                                ng-click="WidgetWall.likeThread(post, 'thread')">
+                                                <i class="material-icons-outlined" ng-class="{notActive: !post.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                                                <span class="iconsTheme iconsFont"
+                                                ng-class="{notActive: !post.isUserLikeActive}">{{post.likes.length}}</span>
+                                            </a>
+                                            
+                                            <a ng-if="!WidgetWall.SocialItems.isPrivateChat"
+                                                href="#/thread/{{post.id}}"
+                                                class="social-icon comments ng-cloak">
+                                                <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
+                                                <span class="iconsTheme iconsFont">{{post.comments.length}}</span>
+                                            </a>
+                                            <a class="likes social-icon ng-cloak" ng-click="WidgetWall.showMoreOptions(post)">
+                                                <span class="material-icons-outlined">more_horiz</span>
+                                            </a>
                                             </div>
                                         </div>
                                     </div>
