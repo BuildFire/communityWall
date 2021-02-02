@@ -5,6 +5,6 @@ To pass a spcific Wall ID and Title to load make sure you navigate to this plugi
 ````
  buildfire.navigation.navigateTo(
   ...pluginInstanceData
-  ,querystring: 'wid=' + wid + "&wTitle=" + title 
+  ,queryString: 'wid=' + wid + "&wTitle=" + title 
  )
  ````
