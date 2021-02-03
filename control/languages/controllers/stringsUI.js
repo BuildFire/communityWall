@@ -66,6 +66,7 @@ const stringsUI = {
 
 		inputElement.autocomplete=false;
 		inputElement.placeholder = labelObj.placeholder || "";
+		inputElement.value = labelObj.value ? labelObj.value : labelObj.defaultValue;
 
 
 		if(labelObj.maxLength>0)
