@@ -60,12 +60,14 @@
             console.log('MoreOptionsModalPopup Controller called-----');
             var MoreOptionsPopup=this;
             MoreOptionsPopup.option='';
-            MoreOptionsPopup.options=['Report Post'];
+            MoreOptionsPopup.options = []
             console.log("MoreOptionsModalPopupCtrl", Info)
             $scope.postId=Info.postId;
             $scope.userId=Info.userId;
             $scope.socialItemUserId=Info.socialItemUserId;
-//if(info.members) $scope.members =Info.members;
+            $scope.languages = Info.languages;
+            let reportPost = Info.languages.reportPost;
+            MoreOptionsPopup.options.push(reportPost);
 
             $scope.ok = function (option) {
                 $modalInstance.close(option);
@@ -93,6 +95,7 @@
             var MoreOptionsPopup=this;
 
             $scope.commentId=Info.commentId;
+            $scope.languages = Info.languages;
 
             $scope.ok = function (option) {
                 $modalInstance.close(option);

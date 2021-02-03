@@ -587,9 +587,9 @@
                 checkUserPromise.then(function () {
                     if (!WidgetWall.allowCreateThread) return;
                     buildfire.input.showTextDialog({
-                        "placeholder": "Write a post…",
-                        "saveText": "Post",
-                        "cancelText": "Cancel",
+                        "placeholder": WidgetWall.languages.writePost,
+                        "saveText": WidgetWall.languages.confirmPost,
+                        "cancelText": WidgetWall.languages.cancelPost,
                         "attachments": {
                             "images": { enable: true, multiple: true },
                             "gifs": { enable: true }
@@ -629,6 +629,7 @@
                 Buildfire.history.pop();
             };
             Buildfire.history.onPop(function (breadcrumb) {
+                WidgetWall.init();
                 WidgetWall.goFullScreen = false;
                 if (!$scope.$$phase) $scope.$digest();
             }, true);
@@ -878,7 +879,8 @@
                     Modals.showMoreOptionsModal({
                         'postId': post.id,
                         'userId': post.userId,
-                        'socialItemUserId': WidgetWall.SocialItems.userDetails.userId
+                        'socialItemUserId': WidgetWall.SocialItems.userDetails.userId,
+                        'languages': WidgetWall.languages
                     })
                         .then(function (data) {
                             switch (data) {
@@ -1161,6 +1163,12 @@
                     WidgetWall.showHidePrivateChat();
                     WidgetWall.followLeaveGroupPermission();
                     WidgetWall.showHideCommentBox();
+                    
+                    setTimeout(function () {
+                        if (!response.data.appSettings.disableFollowLeaveGroup) {
+                            document.getElementById("membersSvg").style.setProperty("fill", WidgetWall.appTheme.icons, "important");
+                        }
+                    }, 100);
                 }
 
                 if (response.tag === "languages") {
@@ -1172,11 +1180,6 @@
                 }
                 $scope.$digest();
 
-                setTimeout(function () {
-                    if (!response.data.appSettings.disableFollowLeaveGroup) {
-                        document.getElementById("membersSvg").style.setProperty("fill", WidgetWall.appTheme.icons, "important");
-                    }
-                }, 100);
             });
 
             WidgetWall.statusCheck = function (status, user) {

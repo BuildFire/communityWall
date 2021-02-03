@@ -40,6 +40,19 @@
             var instanceId;
             var pluginTitle;
             var init = function () {
+                buildfire.datastore.get("languages", (err, result) => {
+                    if (result.data && result.data.screenOne) {
+                        let data = result.data;
+                        if(Object.keys(data.screenOne).length <= 6) {
+                            Object.keys(data.screenOne).forEach((key) => {
+                                if(data.screenOne[key].value) {
+                                    stringsConfig.screenOne.labels[key].value = data.screenOne[key].value;
+                                }
+                            });
+                            buildfire.datastore.save({ screenOne: stringsConfig.screenOne.labels }, "languages", (err, data) => { console.log(data) });
+                        }
+                    }
+                });
                 Buildfire.getContext(function (err, context) {
                     if (err) return console.log(err);
                     datastoreWriteKey = context.datastoreWriteKey;
