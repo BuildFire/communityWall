@@ -128,13 +128,9 @@
                                     pinnedPost.innerHTML = WidgetWall.pinnedPost;
                                 }
                                 WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                                    if (data && data.length) {
-                                        if (data.length === WidgetWall.pageSize) {
-                                            WidgetWall.page++;
-                                            WidgetWall.showMorePosts = true;
-                                        }
-                                        //data.map(item => WidgetWall.SocialItems.items.push(item.data))
-                                        $scope.$digest();
+                                    if(data.totalRecord > WidgetWall.SocialItems.items.length) {
+                                        WidgetWall.page++;
+                                        WidgetWall.showMorePosts = true;
                                     }
                                 });
                                 WidgetWall.showHidePrivateChat();
@@ -555,14 +551,11 @@
             }
             WidgetWall.loadMorePosts = function () {
                 WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                    if (data && data.length) {
-                        if (data.length === WidgetWall.pageSize) {
-                            WidgetWall.page++;
-                        } else {
-                            WidgetWall.showMorePosts = false;
-                        }
-                        $scope.$digest();
-                    }
+                    if(data.totalRecord > WidgetWall.SocialItems.items.length) {
+                        WidgetWall.showMorePosts = true;
+                        WidgetWall.page++;
+                    } else WidgetWall.showMorePosts = false;
+                    $scope.$digest();
                 });
             }
 
