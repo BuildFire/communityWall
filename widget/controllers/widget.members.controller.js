@@ -84,7 +84,7 @@
                 if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
                 Members.searchOptions.filter = {
-                    '_buildfire.index.string1': Members.wallId,
+                    '_buildfire.index.string1': Members.wallId ? Members.wallId : {"$ne": null},
                     $or: [
                         { "$json.userDetails.displayName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.email": { $regex: $scope.searchInput, $options: 'i' } },
@@ -97,7 +97,6 @@
 
             Members.executeSearch = function (query) {
                 Buildfire.spinner.show();
-                console.log("AAAAAAAA")
                 SubscribedUsersData.searchForUsers(query, function (err, users) {
                     if (err) return console.log(err);
                     if (users.length === Members.searchOptions.pageSize) {
@@ -129,7 +128,6 @@
                         Members.showMore = false;
                     }
                     $scope.$digest();
-                    console.log("LOAD MORE", users)
                 });
             }
 
