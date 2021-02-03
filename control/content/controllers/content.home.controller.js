@@ -288,78 +288,75 @@
 
             ContentHome.exportMainWallPosts = function (mainCallback) {
                 var allPosts = [];
-                const pageSize = 5
+                const pageSize = 50;
                 var page = 0;
                 let wid = ContentHome.posts[0].wid;
 
                 ContentHome.exportingThreads = true;
+                function parseToCSV() {
+                    var lineArray = [];
 
+                    allPosts.forEach(function (threadData) {
+                        var _data = [];
+                        _data.push('post');
+                        _data.push(moment(threadData.data.createdOn).format('DD/MM/YYYY hh:mm a'));
+                        _data.push(threadData.data.userDetails.displayName);
+                        _data.push(ContentHome.util.injectAnchors(threadData.data.text));
+                        lineArray.push(_data);
+                        if (threadData.data.comments.length > 0) {
+                            threadData.data.comments.forEach(function (commentData) {
+                                var _data = [];
+                                _data.push('comment');
+                                _data.push(moment(commentData.createdOn).format('DD/MM/YYYY hh:mm a'));
+                                _data.push(commentData.userDetails.displayName);
+                                _data.push(commentData.comment);
+                                lineArray.push(_data);
+                            })
+                        }
+                    });
+                    var csv = Papa.unparse({
+                        fields: ["type", "date", "username", "text"],
+                        data: lineArray,
+                        config: {
+                            quotes: true,
+                            quoteChar: '"',
+                            delimiter: ",",
+                            header: true,
+                            newline: "\r\n"
+                        }
+                    });
+
+                    csv = "data:text/csv;charset=utf-8," + csv;
+                    var csvContent = csv;
+                    var encodedUri = encodeURI(csvContent);
+                    var link = document.createElement("a");
+                    var _fileName = "Social App Chat" + ".csv";
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", _fileName);
+                    link.setAttribute("id", "exportThreadsLink");
+                    document.body.appendChild(link); // Required for FF
+                    link.click(); // This will download the data file named "my_data.csv".
+                    link.parentNode.removeChild(link);
+                    ContentHome.exportingThreads = false;
+                    buildfire.spinner.hide();
+                    if (!$scope.$$phase) $scope.$digest();
+                }
                 const loadPage = () => {
+                    buildfire.spinner.show();
                     let searchOptions = {
-                        page, pageSize,
-                        sort: { "createdOn": -1 },
+                        page, pageSize, sort: { "createdOn": -1 }, recordCount: true,
                     }
                     if (wid === null)
-                        searchOptions.filter = { "_buildfire.index.string1": "" }
+                        searchOptions.filter = { "_buildfire.index.string1": {"$ne": null} }
                     else
                         searchOptions.filter = { "_buildfire.index.string1": { "$regex": wid, "$options": "i" } }
-                    console.log('Loading posts', searchOptions.page);
-                    buildfire.publicData.search(
-                        searchOptions
-                        , 'posts', (error, data) => {
-                            if (error) return console.log(error);
-                            if (data && data.length) {
-                                //allPosts.concatdata;
-                                data.map(item => allPosts.push(item))
-                                if (data.length === pageSize) {
-                                    page++;
-                                    loadPage()
+                        buildfire.publicData.search(searchOptions, 'posts', function(err, data) {
+                            if(data && data.result.length) {
+                                data.result.map(item => allPosts.push(item));
+                                if(data.totalRecord > allPosts.length) {
+                                    page++; loadPage();
                                 } else {
-                                    var lineArray = [];
-
-                                    allPosts.forEach(function (threadData) {
-                                        var _data = [];
-                                        _data.push('post');
-                                        _data.push(moment(threadData.data.createdOn).format('DD/MM/YYYY hh:mm a'));
-                                        _data.push(threadData.data.userDetails.displayName);
-                                        _data.push(ContentHome.util.injectAnchors(threadData.data.text));
-                                        lineArray.push(_data);
-                                        if (threadData.data.comments.length > 0) {
-                                            threadData.data.comments.forEach(function (commentData) {
-                                                var _data = [];
-                                                _data.push('comment');
-                                                _data.push(moment(commentData.createdOn).format('DD/MM/YYYY hh:mm a'));
-                                                _data.push(commentData.userDetails.displayName);
-                                                _data.push(commentData.comment);
-                                                lineArray.push(_data);
-                                            })
-                                        }
-                                    });
-                                    var csv = Papa.unparse({
-                                        fields: ["type", "date", "username", "text"],
-                                        data: lineArray,
-                                        config: {
-                                            quotes: true,
-                                            quoteChar: '"',
-                                            delimiter: ",",
-                                            header: true,
-                                            newline: "\r\n"
-                                        }
-                                    });
-
-                                    csv = "data:text/csv;charset=utf-8," + csv;
-                                    var csvContent = csv;
-                                    var encodedUri = encodeURI(csvContent);
-                                    var link = document.createElement("a");
-                                    var _fileName = "Social App Chat" + ".csv";
-                                    link.setAttribute("href", encodedUri);
-                                    link.setAttribute("download", _fileName);
-                                    link.setAttribute("id", "exportThreadsLink");
-                                    document.body.appendChild(link); // Required for FF
-                                    link.click(); // This will download the data file named "my_data.csv".
-                                    link.parentNode.removeChild(link);
-                                    ContentHome.exportingThreads = false;
-                                    if (!$scope.$$phase) $scope.$digest();
+                                    parseToCSV();
                                 }
                             }
                         });
