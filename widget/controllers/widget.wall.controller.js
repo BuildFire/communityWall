@@ -192,7 +192,7 @@
                 WidgetWall.groupFollowingStatus = false;
                 buildfire.notifications.pushNotification.unsubscribe({ groupName: WidgetWall.wid }, () => { });
                 const options = {
-                    text: 'You have been unsubscribed from this group',
+                    text: 'You have left this group',
                 };
                 buildfire.components.toast.showToastMessage(options, (error, result) => { });
             }
@@ -1085,6 +1085,7 @@
                         if (err) return console.error(err);
                         else {
                             WidgetWall.groupFollowingStatus = false;
+                            WidgetWall.unfollowWall();
                             if (!$scope.$$phase) $scope.$digest();
                         }
                     })

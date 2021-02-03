@@ -25,7 +25,7 @@
                         <div class="social-copy">
                             <p class="text-primary ellipsis">
                                 <a ng-click="Thread.openChatOrProfile(Thread.post.userId)">{{Thread.post.userDetails.displayName
-                                    || 'No Name'}}</a>
+                                    || 'Someone'}}</a>
                             </p>
                             <div ng-if="Thread.post.createdOn">
                                 <p class="time-ago opacity-seventy">
@@ -70,7 +70,7 @@
                                 <div class="social-copy">
                                     <a class="social-name text-primary"
                                         ng-click="Thread.openChatOrProfile(comment.userId)">{{comment.userDetails.firstName
-                                                || 'No Name'}}</a>
+                                                || 'Someone'}}</a>
                                     <div ng-if="comment.createdOn">
                                         <p class="time-ago opacity-seventy">
                                             {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>
