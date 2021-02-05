@@ -998,26 +998,12 @@
                             'userId': liked
                         });
                     }
-                    buildfire.publicData.update(post.id, post, 'posts', (err, updatedPost) => {
-                        let wallId = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
-                        let oldPost = WidgetWall.SocialItems.items.find(element => element.id === updatedPost.id);
-                        oldPost = updatedPost;
-                        if (postUpdate.isUserLikeActive) {
-                            var options = {
-                                title: 'Notification',
-                                text: '',
-                                at: new Date(),
-                                users: []
-                            };
-                            if (WidgetWall.SocialItems.userDetails.firstName) {
-                                options.text = WidgetWall.SocialItems.userDetails.firstName + ' liked a post on ' + WidgetWall.SocialItems.context.title;
-                            } else {
-                                options.text = 'Someone liked a post on ' + WidgetWall.SocialItems.context.title;
-                            }
+                    let wallId = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
 
-                            if (wallId.length) options.queryString = `wid=${wallId}`;
-                            options.inAppMessage = options.text;
-                            options.users.push(post.userId);
+                    SubscribedUsersData.getGroupFollowingStatus(post.userId, wallId, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+
+                        let sendPN = function(options) {
+                            if(options.users[0] === WidgetWall.SocialItems.userDetails.userId) return;
                             buildfire.notifications.pushNotification.schedule(
                                 options,
                                 function (e) {
@@ -1025,6 +1011,31 @@
                                 }
                             );
                         }
+
+                        buildfire.publicData.update(post.id, post, 'posts', (err, updatedPost) => {
+                            let oldPost = WidgetWall.SocialItems.items.find(element => element.id === updatedPost.id);
+                            oldPost = updatedPost;
+                            if (postUpdate.isUserLikeActive) {
+                                var options = {
+                                    title: 'Notification',
+                                    text: '',
+                                    at: new Date(),
+                                    users: []
+                                };
+                                if (WidgetWall.SocialItems.userDetails.firstName) {
+                                    options.text = WidgetWall.SocialItems.userDetails.firstName + ' liked a post on ' + WidgetWall.SocialItems.context.title;
+                                } else {
+                                    options.text = 'Someone liked a post on ' + WidgetWall.SocialItems.context.title;
+                                }
+    
+                                if (wallId.length) options.queryString = `wid=${wallId}`;
+                                options.inAppMessage = options.text;
+                                options.users.push(post.userId);
+                                if(status.length)  {
+                                   sendPN(options);
+                                }
+                            }
+                        });
                     });
                 });
             };

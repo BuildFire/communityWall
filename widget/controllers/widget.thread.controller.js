@@ -449,39 +449,52 @@
                             'userId': Thread.SocialItems.userDetails.userId
                         });
                     }
+                    let wallId = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
 
-                    buildfire.publicData.update(post.id, post, 'posts', (err, updatedPost) => {
-                        if (err) return console.log(err);
-                        let wallId = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
-                        let oldPost = Thread.SocialItems.items.find(element => element.id === updatedPost.id);
-                        oldPost = updatedPost;
-                        var options = {
-                            title: 'Notification',
-                            text: '',
-                            at: new Date(),
-                            users: [],
-                            queryString: 'threadPostUniqueLink=' + Thread.post.id
-                        };
-
-                        if (Thread.SocialItems.userDetails.firstName) {
-                            options.text = Thread.SocialItems.userDetails.firstName + ' liked a post on ' + Thread.SocialItems.context.title;
-                        } else {
-                            options.text = 'Someone liked a post on ' + Thread.SocialItems.context.title;
+                    SubscribedUsersData.getGroupFollowingStatus(post.userId, wallId, Thread.SocialItems.context.instanceId, function (err, status) {
+                        let sendPN = function (options) {
+                            if (options.users[0] === Thread.SocialItems.userDetails.userId) return;
+                            buildfire.notifications.pushNotification.schedule(
+                                options,
+                                function (e) {
+                                    if (e) console.error('Error while setting PN schedule.', e);
+                                }
+                            );
                         }
+                        buildfire.publicData.update(post.id, post, 'posts', (err, updatedPost) => {
+                            if (err) return console.log(err);
+                            let oldPost = Thread.SocialItems.items.find(element => element.id === updatedPost.id);
+                            oldPost = updatedPost;
+                            if (oldPost.data.isUserLikeActive) {
+                                var options = {
+                                    title: 'Notification',
+                                    text: '',
+                                    at: new Date(),
+                                    users: [],
+                                    queryString: 'threadPostUniqueLink=' + Thread.post.id
+                                };
 
-                        options.users.push(post.userId);
+                                if (Thread.SocialItems.userDetails.firstName) {
+                                    options.text = Thread.SocialItems.userDetails.firstName + ' liked a post on ' + Thread.SocialItems.context.title;
+                                } else {
+                                    options.text = 'Someone liked a post on ' + Thread.SocialItems.context.title;
+                                }
 
-                        buildfire.notifications.pushNotification.schedule(
-                            options,
-                            function (e) {
-                                if (e) console.error('Error while setting PN schedule.', e);
+                                options.users.push(post.userId);
+                                if (status.length) {
+                                    SubscribedUsersData.getThreadFollowingStatus(post.userId, post.id, wallId, Thread.SocialItems.instanceId, function (err, status) {
+                                        if (status)
+                                            sendPN(options);
+                                    });
+                                }
                             }
-                        );
 
-                        post.waitAPICompletion = false;
-                        $rootScope.$broadcast(EVENTS.POST_LIKED, post);
-                        if (!$scope.$$phase) $scope.$digest();
+                            post.waitAPICompletion = false;
+                            $rootScope.$broadcast(EVENTS.POST_LIKED, post);
+                            if (!$scope.$$phase) $scope.$digest();
+                        });
                     });
+
                 });
 
             };
@@ -539,39 +552,52 @@
 
                 let commentIndex = Thread.post.comments.indexOf(comment)
                 Thread.post.comments[commentIndex] = comment;
-                buildfire.publicData.update(Thread.post.id, Thread.post, 'posts', function (err, data) {
-                    if (err) return console.log("something went wrong");
-                    if (data && data.data) {
-                        let options = {
-                            title: 'Notification',
-                            text: '',
-                            at: new Date(),
-                            users: [],
-                            queryString: 'threadPostUniqueLink=' + Thread.post.id
-                        };
-                        let wallId = util.getParameterByName("wid");
-                        wallId = wallId ? wallId : '';
-                        options.users.push(comment.userId)
-
-                        if (Thread.userDetails.firstName)
-                            options.text = Thread.userDetails.firstName + ' liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                        else
-                            options.text = 'Someone liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-
-                        $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
-                        if (!$scope.$$phase) $scope.$digest();
-                        Buildfire.messaging.sendMessageToControl({
-                            'name': EVENTS.COMMENT_LIKED,
-                            'userId': comment.userId,
-                            'comment': comment,
-                            'postId': Thread.post.id
-                        });
-
-                        buildfire.notifications.pushNotification.schedule(options, function (err, data) {
-                            if (err) console.error('Error while setting PN schedule.', e);
-                        }
+                let wallId = util.getParameterByName("wid");
+                wallId = wallId ? wallId : '';
+                SubscribedUsersData.getGroupFollowingStatus(comment.userId, wallId, Thread.SocialItems.context.instanceId, function (err, status) {
+                    let sendPN = function (options) {
+                        if (options.users[0] === Thread.SocialItems.userDetails.userId) return;
+                        buildfire.notifications.pushNotification.schedule(
+                            options,
+                            function (e) {
+                                if (e) console.error('Error while setting PN schedule.', e);
+                            }
                         );
                     }
+                    buildfire.publicData.update(Thread.post.id, Thread.post, 'posts', function (err, data) {
+                        if (err) return console.log("something went wrong");
+                        if (data && data.data) {
+                            let options = {
+                                title: 'Notification',
+                                text: '',
+                                at: new Date(),
+                                users: [],
+                                queryString: 'threadPostUniqueLink=' + Thread.post.id
+                            };
+                            options.users.push(comment.userId)
+    
+                            if (Thread.userDetails.firstName)
+                                options.text = Thread.userDetails.firstName + ' liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+                            else
+                                options.text = 'Someone liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+    
+                            $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
+                            if (!$scope.$$phase) $scope.$digest();
+                            Buildfire.messaging.sendMessageToControl({
+                                'name': EVENTS.COMMENT_LIKED,
+                                'userId': comment.userId,
+                                'comment': comment,
+                                'postId': Thread.post.id
+                            });
+                            
+                            if (status.length && comment.isUserLikeActive) {
+                                SubscribedUsersData.getThreadFollowingStatus(comment.userId, Thread.post.id, wallId, Thread.SocialItems.instanceId, function (err, status) {
+                                    if (status)
+                                        sendPN(options);
+                                });
+                            }
+                        }
+                    });
                 });
             };
 
@@ -647,29 +673,42 @@
                                 'comment': commentData
                             });
                             Thread.post.comments.push(commentData);
-                            var wallId = util.getParameterByName("wid");
+
+                            let wallId = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
                             wallId = wallId ? wallId : '';
-                            var options = {
-                                title: 'Notification',
-                                text: '',
-                                at: new Date(),
-                                users: [],
-                                queryString: 'threadPostUniqueLink=' + Thread.post.id
-                            };
-                            options.users.push(Thread.post.userId)
 
-                            if (Thread.userDetails.firstName) {
-                                options.text = Thread.userDetails.firstName + ' commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                            } else {
-                                options.text = 'Someone commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                            }
-
-                            buildfire.notifications.pushNotification.schedule(
-                                options,
-                                function (e) {
-                                    if (e) console.error('Error while setting PN schedule.', e);
+                            SubscribedUsersData.getGroupFollowingStatus(Thread.post.userId, wallId, Thread.SocialItems.context.instanceId, function (err, status) {
+                                let sendPN = function (options) {
+                                    if (options.users[0] === Thread.SocialItems.userDetails.userId) return;
+                                    buildfire.notifications.pushNotification.schedule(
+                                        options,
+                                        function (e) {
+                                            if (e) console.error('Error while setting PN schedule.', e);
+                                        }
+                                    );
                                 }
-                            );
+                                var options = {
+                                    title: 'Notification',
+                                    text: '',
+                                    at: new Date(),
+                                    users: [],
+                                    queryString: 'threadPostUniqueLink=' + Thread.post.id
+                                };
+                                options.users.push(Thread.post.userId)
+
+                                if (Thread.userDetails.firstName) {
+                                    options.text = Thread.userDetails.firstName + ' commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+                                } else {
+                                    options.text = 'Someone commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+                                }
+                                if (status.length) {
+                                    SubscribedUsersData.getThreadFollowingStatus(Thread.post.userId, Thread.post.id, wallId, Thread.SocialItems.instanceId, function (err, status) {
+                                        if (status)
+                                            sendPN(options);
+                                    });
+                                }
+
+                            });
 
                         },
                         function (err) {
