@@ -56,12 +56,12 @@
             <div class="social-footer padded padding-top-zero clearfix">
                 <div class="icons col-xs-3 padding-left-zero pull-left">
                     <span class="social-icon">
-                        <span class="icon icon-heart"></span>
+                        <i class="material-icons-outlined likes-count" aria-hidden="true">thumb_up_off_alt</i>
                         <span class="number">{{post.likes.length}}</span>
                     </span>
                     <a class="social-icon margin-left-twenty"
                        ng-click="ContentHome.loadMoreComments(post,'viewComment')">
-                        <span class="icon icon-bubble"></span>
+                       <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
                         <span class="number">{{post.comments.length}}</span>
                     </a>
                 </div>
