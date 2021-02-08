@@ -629,6 +629,8 @@
                 Buildfire.history.pop();
             };
             Buildfire.history.onPop(function (breadcrumb) {
+                WidgetWall.SocialItems.items = [];
+                WidgetWall.page = 0;
                 WidgetWall.init();
                 WidgetWall.goFullScreen = false;
                 if (!$scope.$$phase) $scope.$digest();
