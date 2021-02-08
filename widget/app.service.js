@@ -434,7 +434,7 @@
                         buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                             if (error) return console.log(error);
                             if (data && data.length) {
-                                if(data[0].data.id === _this.items[0].id) return;
+                                if(data[0].data.id ===(_this.items.length && _this.items[0].id)) return;
                                 let items = [];                                
                                 data.map(item => items.push(item.data))
                                 _this.items = items;
