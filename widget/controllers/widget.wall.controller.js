@@ -127,12 +127,7 @@
                                     WidgetWall.pinnedPost = response.data.appSettings.pinnedPost;
                                     pinnedPost.innerHTML = WidgetWall.pinnedPost;
                                 }
-                                WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                                    if(data.totalRecord > WidgetWall.SocialItems.items.length) {
-                                        WidgetWall.page++;
-                                        WidgetWall.showMorePosts = true;
-                                    }
-                                });
+
                                 WidgetWall.showHidePrivateChat();
                                 WidgetWall.followLeaveGroupPermission();
                                 const checkUserAuthPromise = checkUserIsAuthenticated();
@@ -171,8 +166,14 @@
                                         document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
                                         document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
                                         document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
-                                    })
-                                    WidgetWall.loadedPlugin = true;
+                                    });
+                                    WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
+                                        if(data.totalRecord > WidgetWall.SocialItems.items.length) {
+                                            WidgetWall.page++;
+                                            WidgetWall.showMorePosts = true;
+                                        }
+                                        WidgetWall.loadedPlugin = true;
+                                    });
                                     buildfire.spinner.hide();
                                 })
                             })
