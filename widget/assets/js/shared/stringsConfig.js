@@ -46,43 +46,43 @@ const stringsConfig = {
 			deleteComment: {
 				title: "Delete Comment"
 				, placeholder: "Delete Comment"
-				, maxLength: 60
+				, maxLength: 35
 				, defaultValue: "Delete Comment"
 			},
 			moreOptions: {
 				title: "More Options"
 				, placeholder: "More Options"
-				, maxLength: 60
+				, maxLength: 35
 				, defaultValue: "More Options"
 			},
 			reportPost: {
 				title: "Report Post"
 				, placeholder: "Report Post"
-				, maxLength: 60
+				, maxLength: 35
 				, defaultValue: "Report Post"
 			},
 			deletePost: {
 				title: "Delete Post"
 				, placeholder: "Delete Post"
-				, maxLength: 60
+				, maxLength: 35
 				, defaultValue: "Delete Post"
 			},
 			cancelPost: {
 				title: "Cancel Post"
 				, placeholder: "Cancel"
-				, maxLength: 60
+				, maxLength: 9
 				, defaultValue: "Cancel"
 			},
 			confirmPost: {
 				title: "Confirm Post"
 				, placeholder: "Post"
-				, maxLength: 60
+				, maxLength: 9
 				, defaultValue: "Post"
 			},
 			writePost: {
 				title: "Input Placeholder"
 				, placeholder: "Write a post"
-				, maxLength: 60
+				, maxLength: 30
 				, defaultValue: "Write a post"
 			}
 		}
