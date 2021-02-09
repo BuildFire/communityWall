@@ -617,8 +617,8 @@
                     if (!WidgetWall.allowCreateThread) return;
                     buildfire.input.showTextDialog({
                         "placeholder": WidgetWall.languages.writePost,
-                        "saveText": WidgetWall.languages.confirmPost,
-                        "cancelText": WidgetWall.languages.cancelPost,
+                        "saveText": WidgetWall.languages.confirmPost.length > 9 ? WidgetWall.languages.confirmPost.substring(0, 9): WidgetWall.languages.confirmPost,
+                        "cancelText": WidgetWall.languages.cancelPost.length > 9 ? WidgetWall.languages.cancelPost.substring(0, 9): WidgetWall.languages.cancelPost,
                         "attachments": {
                             "images": { enable: true, multiple: true },
                             "gifs": { enable: true }

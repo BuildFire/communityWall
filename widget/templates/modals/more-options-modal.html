@@ -1,11 +1,20 @@
 <div class="modal-contain">
  	<div class="content text-center">
 		<div class="padded clearfix" style="padding-bottom:12px !important;">
-			<p class="text-center blackTheme margin-zero" style="font-weight:500;">{{languages.moreOptions}}</p>
+			<p class="text-center blackTheme margin-zero" style="font-weight:500;     
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;">{{languages.moreOptions}}</p>
 		</div>
 		<div class="dynamic-links">
-			<a class="text-danger" ng-repeat="option in MoreOptionsPopup.options" ng-click="ok(option)">{{option}}</a>
-			<a class="text-danger" ng-if="socialItemUserId == userId" ng-click="deletePost(postId)">{{languages.deletePost}}</a>
+			<a class="text-danger" ng-repeat="option in MoreOptionsPopup.options" ng-click="ok(option)"
+			style="white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;">{{option}}</a>
+			<a class="text-danger" ng-if="socialItemUserId == userId" ng-click="deletePost(postId)"
+			style="white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;">{{languages.deletePost}}</a>
 		</div>
 	</div>
 	<div class="bottom border-top-grey clearfix">

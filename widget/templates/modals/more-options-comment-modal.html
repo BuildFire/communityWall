@@ -1,10 +1,16 @@
 <div class="modal-contain">
  	<div class="content text-center">
 		<div class="padded clearfix" style="padding-bottom:12px !important;">
-			<p class="text-center blackTheme margin-zero" style="font-weight:500;">{{languages.moreOptions}}</p>
+			<p class="text-center blackTheme margin-zero" style="font-weight:500;"
+			style="white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;">{{languages.moreOptions}}</p>
 		</div>
 		<div class="dynamic-links">
-			<a class="text-danger"  ng-click="deleteComment(commentId)">{{languages.deleteComment}}</a>
+			<a class="text-danger"  ng-click="deleteComment(commentId)"
+			style="white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;">{{languages.deleteComment}}</a>
 		</div>
 	</div>
 	<div class="bottom border-top-grey clearfix">
