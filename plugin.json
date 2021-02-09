@@ -11,7 +11,7 @@
       "enabled": true
     },
     "design": {
-      "enabled": false
+      "enabled": true
     },
     "settings": {
       "enabled": true
@@ -20,7 +20,9 @@
       {
         "title": "Languages",
         "url": "languages/index.html"
-      }
+      },
+      { "title": "Tests", "url": "/tests/index.html" }
+
     ]
   },
   "widget": {
