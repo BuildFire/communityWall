@@ -156,17 +156,7 @@
 
 
                                     }
-                                    buildfire.appearance.getAppTheme((err, obj) => {
-                                        let elements = document.getElementsByTagName('svg');
-                                        for (var i = 0; i < elements.length; i++) {
-                                            elements[i].style.setProperty("fill", obj.colors.icons, "important");
-                                        }
-                                        WidgetWall.appTheme = obj.colors;
-                                        elements[2].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
-                                        document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
-                                        document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
-                                        document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
-                                    });
+                                    WidgetWall.setAppTheme();
                                     WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
                                         if(data.totalRecord > WidgetWall.SocialItems.items.length) {
                                             WidgetWall.page++;
@@ -175,13 +165,28 @@
                                         WidgetWall.loadedPlugin = true;
                                     });
                                     buildfire.spinner.hide();
-                                })
+                                });
                             })
                         }
                     })
                 });
 
             };
+
+            WidgetWall.setAppTheme = function() {
+                buildfire.appearance.getAppTheme((err, obj) => {
+                    WidgetWall.loadedPlugin = true;
+                    let elements = document.getElementsByTagName('svg');
+                    for (var i = 0; i < elements.length; i++) {
+                        elements[i].style.setProperty("fill", obj.colors.icons, "important");
+                    }
+                    WidgetWall.appTheme = obj.colors;
+                    elements[2].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
+                    document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
+                });
+            }
 
             WidgetWall.init();
 
@@ -1278,7 +1283,7 @@
             }
             // On Login
             Buildfire.auth.onLogin(function (user) {
-
+                WidgetWall.setAppTheme();
                 console.log('New user loggedIN from Widget Wall Page', user);
                 if (user && user._id) {
                     WidgetWall.SocialItems.userDetails.userToken = user.userToken;
@@ -1325,6 +1330,7 @@
                         if (err) {
                             console.log('error while getting initial group following status.', err);
                         } else {
+                            WidgetWall.loadedPlugin = true;
                             if (!status.length) return WidgetWall.newInitSubscribe();
                             WidgetWall.groupFollowingStatus = true;
                         }
