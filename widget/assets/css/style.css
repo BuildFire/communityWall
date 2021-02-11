@@ -521,7 +521,7 @@ button.btn--lg,
     font-size: 12px;
 }
 .social-item .post-text{
-    margin-left: 52px;
+    margin-left: 20px;
     margin-right: 16px;
 }
 .social-item .post-text-user{
@@ -554,7 +554,7 @@ button.btn--lg,
 
 .status-footer .icon,
 .footer .icon {
-    font-size:1.25rem;
+    font-size:1.4rem;
     margin-right: .25rem;
 }
 
@@ -1290,4 +1290,26 @@ html[buildfire][safe-area="true"] body {
     object-fit: cover;
     width: 100%;
     height: auto;
+}
+
+.material-icons {
+    font-family: "Material Icons" !important;
+    --webkit-font-feature-settings: "liga" !important;
+}
+
+.material-icons-outlined {
+    font-family: "Material Icons" !important;
+    --webkit-font-feature-settings: "liga" !important;
+    font-size: 28px;
+}
+
+.notActive {
+    color: rgba(150,150,150,.8) !important;
+}
+
+.iconsFont {
+    padding-left: 5px;
+}
+.icons2Font {
+    font-size: 22px !important;
 }

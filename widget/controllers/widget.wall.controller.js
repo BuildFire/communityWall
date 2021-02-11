@@ -127,16 +127,7 @@
                                     WidgetWall.pinnedPost = response.data.appSettings.pinnedPost;
                                     pinnedPost.innerHTML = WidgetWall.pinnedPost;
                                 }
-                                WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                                    if (data && data.length) {
-                                        if (data.length === WidgetWall.pageSize) {
-                                            WidgetWall.page++;
-                                            WidgetWall.showMorePosts = true;
-                                        }
-                                        //data.map(item => WidgetWall.SocialItems.items.push(item.data))
-                                        $scope.$digest();
-                                    }
-                                });
+
                                 WidgetWall.showHidePrivateChat();
                                 WidgetWall.followLeaveGroupPermission();
                                 const checkUserAuthPromise = checkUserIsAuthenticated();
@@ -165,26 +156,37 @@
 
 
                                     }
-                                    buildfire.appearance.getAppTheme((err, obj) => {
-                                        let elements = document.getElementsByTagName('svg');
-                                        for (var i = 0; i < elements.length; i++) {
-                                            elements[i].style.setProperty("fill", obj.colors.icons, "important");
+                                    WidgetWall.setAppTheme();
+                                    WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
+                                        if(data.totalRecord > WidgetWall.SocialItems.items.length) {
+                                            WidgetWall.page++;
+                                            WidgetWall.showMorePosts = true;
                                         }
-                                        WidgetWall.appTheme = obj.colors;
-                                        elements[2].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
-                                        document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
-                                        document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
-                                        document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
-                                    })
-                                    WidgetWall.loadedPlugin = true;
+                                        WidgetWall.loadedPlugin = true;
+                                    });
                                     buildfire.spinner.hide();
-                                })
+                                });
                             })
                         }
                     })
                 });
 
             };
+
+            WidgetWall.setAppTheme = function() {
+                buildfire.appearance.getAppTheme((err, obj) => {
+                    WidgetWall.loadedPlugin = true;
+                    let elements = document.getElementsByTagName('svg');
+                    for (var i = 0; i < elements.length; i++) {
+                        elements[i].style.setProperty("fill", obj.colors.icons, "important");
+                    }
+                    WidgetWall.appTheme = obj.colors;
+                    elements[2].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
+                    document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
+                });
+            }
 
             WidgetWall.init();
 
@@ -591,14 +593,11 @@
             }
             WidgetWall.loadMorePosts = function () {
                 WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                    if (data && data.length) {
-                        if (data.length === WidgetWall.pageSize) {
-                            WidgetWall.page++;
-                        } else {
-                            WidgetWall.showMorePosts = false;
-                        }
-                        $scope.$digest();
-                    }
+                    if(data.totalRecord > WidgetWall.SocialItems.items.length) {
+                        WidgetWall.showMorePosts = true;
+                        WidgetWall.page++;
+                    } else WidgetWall.showMorePosts = false;
+                    $scope.$digest();
                 });
             }
 
@@ -623,9 +622,9 @@
                 checkUserPromise.then(function () {
                     if (!WidgetWall.allowCreateThread) return;
                     buildfire.input.showTextDialog({
-                        "placeholder": "Write a post…",
-                        "saveText": "Post",
-                        "cancelText": "Cancel",
+                        "placeholder": WidgetWall.languages.writePost,
+                        "saveText": WidgetWall.languages.confirmPost.length > 9 ? WidgetWall.languages.confirmPost.substring(0, 9): WidgetWall.languages.confirmPost,
+                        "cancelText": WidgetWall.languages.cancelPost.length > 9 ? WidgetWall.languages.cancelPost.substring(0, 9): WidgetWall.languages.cancelPost,
                         "attachments": {
                             "images": { enable: true, multiple: true },
                             "gifs": { enable: true }
@@ -665,6 +664,9 @@
                 Buildfire.history.pop();
             };
             Buildfire.history.onPop(function (breadcrumb) {
+                WidgetWall.SocialItems.items = [];
+                WidgetWall.page = 0;
+                WidgetWall.init();
                 WidgetWall.goFullScreen = false;
                 if (!$scope.$$phase) $scope.$digest();
             }, true);
@@ -914,7 +916,8 @@
                     Modals.showMoreOptionsModal({
                         'postId': post.id,
                         'userId': post.userId,
-                        'socialItemUserId': WidgetWall.SocialItems.userDetails.userId
+                        'socialItemUserId': WidgetWall.SocialItems.userDetails.userId,
+                        'languages': WidgetWall.languages
                     })
                         .then(function (data) {
                             switch (data) {
@@ -1208,6 +1211,12 @@
                     WidgetWall.showHidePrivateChat();
                     WidgetWall.followLeaveGroupPermission();
                     WidgetWall.showHideCommentBox();
+                    
+                    setTimeout(function () {
+                        if (!response.data.appSettings.disableFollowLeaveGroup) {
+                            document.getElementById("membersSvg").style.setProperty("fill", WidgetWall.appTheme.icons, "important");
+                        }
+                    }, 100);
                 }
 
                 if (response.tag === "languages") {
@@ -1219,11 +1228,6 @@
                 }
                 $scope.$digest();
 
-                setTimeout(function () {
-                    if (!response.data.appSettings.disableFollowLeaveGroup) {
-                        document.getElementById("membersSvg").style.setProperty("fill", WidgetWall.appTheme.icons, "important");
-                    }
-                }, 100);
             });
 
             WidgetWall.statusCheck = function (status, user) {
@@ -1279,7 +1283,7 @@
             }
             // On Login
             Buildfire.auth.onLogin(function (user) {
-
+                WidgetWall.setAppTheme();
                 console.log('New user loggedIN from Widget Wall Page', user);
                 if (user && user._id) {
                     WidgetWall.SocialItems.userDetails.userToken = user.userToken;
@@ -1326,6 +1330,7 @@
                         if (err) {
                             console.log('error while getting initial group following status.', err);
                         } else {
+                            WidgetWall.loadedPlugin = true;
                             if (!status.length) return WidgetWall.newInitSubscribe();
                             WidgetWall.groupFollowingStatus = true;
                         }

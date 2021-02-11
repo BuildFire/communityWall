@@ -143,7 +143,7 @@
                             {
                                 pageSize, page,
                                 filter: {
-                                    '_buildfire.index.string1': wallId
+                                    '_buildfire.index.string1': wallId ? wallId : {"$ne": null}
                                 }
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) {
@@ -392,15 +392,15 @@
 
 
             SocialItems.prototype.getPosts = function (pageSize, page, callback) {
-                let searchOptions = { pageSize, page, sort: { "id": -1 } }
+                let searchOptions = { pageSize, page, sort: { "id": -1 }, recordCount: true }
                 if (_this.wid === null)
-                    searchOptions.filter = { '_buildfire.index.string1': "" }
+                    searchOptions.filter = { '_buildfire.index.string1': {"$ne": null} }
                 else
                     searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                     if (error) return console.log(error);
-                    if (data && data.length) {
-                        data.map(item => _this.items.push(item.data))
+                    if (data && data.result.length) {
+                        data.result.map(item => _this.items.push(item.data))
                         window.buildfire.messaging.sendMessageToControl({
                             name: 'SEND_POSTS_TO_CP',
                             posts: _this.items,
@@ -427,7 +427,7 @@
                     _this.newPostTimerChecker = setInterval(function () {
                         let searchOptions = { sort: { "id": -1 } }
                         if (_this.wid === null)
-                            searchOptions.filter = { "_buildfire.index.string1": "" }
+                            searchOptions.filter = { "_buildfire.index.string1": {"$ne": null} }
                         else
                             searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
 
