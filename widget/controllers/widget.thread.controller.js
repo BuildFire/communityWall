@@ -57,7 +57,7 @@
                                 selectedImage[0].name = selectedImage[0].name;
                             buildfire.imagePreviewer.show({ images: selectedImage });
                         });
-                        imageList.width = 280; //width in px
+                        
                     }, 0);
                 }
             };
@@ -218,7 +218,7 @@
                                             selectedImage[0].name = selectedImage[0].name;
                                         buildfire.imagePreviewer.show({ images: selectedImage });
                                     });
-                                    imageList.width = '100'
+                                    
                                 });
                             }
                             Buildfire.history.push('Post', { post: Thread.post });
@@ -390,7 +390,9 @@
                 Thread.modalPopupThreadId = Thread.post._id;
                 var checkUserPromise = checkAuthenticatedUser(false);
                 checkUserPromise.then(function () {
-                    Modals.showMoreOptionsModal({ postId: Thread.post._id }).then(function (data) {
+                    Modals.showMoreOptionsModal({ postId: Thread.post._id,
+                        'languages': Thread.languages
+                    }).then(function (data) {
                         console.log('Data in Successs------------------data');
                     },
                         function (err) {
@@ -409,7 +411,9 @@
                 Thread.modalPopupThreadId = commentId;
                 var checkUserPromise = checkAuthenticatedUser(false);
                 checkUserPromise.then(function () {
-                    Modals.showMoreOptionsCommentModal({ 'commentId': commentId }).then(function (data) {
+                    Modals.showMoreOptionsCommentModal({ 'commentId': commentId,
+                    'languages': Thread.languages
+                    }).then(function (data) {
                         console.log('Data in Successs------------------data');
                     },
                         function (err) {
@@ -870,6 +874,7 @@
                     Object.keys(response.data.screenOne).forEach(e => {
                         response.data.screenOne[e].value ? languages[e] = response.data.screenOne[e].value : languages[e] = response.data.screenOne[e].defaultValue;
                     });
+                    $rootScope.languages = languages;
                     Thread.languages = languages;
                 }
                 Thread.init();

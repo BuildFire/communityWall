@@ -137,8 +137,12 @@ buildfire.services.Strings = class {
 		});
 	}
 
-	save() {
-		buildfire.datastore.save(this._data, "languages", (err, data) => {});
+	save(data) {
+		buildfire.datastore.save({screenOne:data}, "languages", (err, ee) => {console.log(ee)});
+	}
+
+	getData(){
+		return this._data.screenOne;
 	}
 };
 

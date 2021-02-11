@@ -39,22 +39,19 @@
                     <p class="margin-zero" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p>
                 </div>
                 <div class="plugin-banner clearfix" ng-if="Thread.post.imageUrl">
-                    <div class="plugin-slide text-center" style="max-height: none !important; padding: 0px 10px 0px 10px;">
+                    <div class="plugin-slide text-center" style="max-height: none !important;">
                         <bf-image-list id="commentPostImage" token="czi3m2qn"></bf-image-list>
                     </div>
                 </div>
                 <div class="footer">
                     <div class="status-footer">
                         <a class="more-info social-icon ng-cloak" ng-click="Thread.showMoreOptions()">
-                            <span class="icon icon-ellipsis"></span>
+                            <span class="material-icons-outlined">more_horiz</span>
                         </a>
-                        <p class="social-icon margin-bottom-zero comments">
-                            <span class="icon icon-bubble"></span>
-                            <span class="iconsTheme">{{Thread.post.comments.length}}</span>
-                        </p>
+                        
                         <a class="likes social-icon ng-cloak" ng-click="Thread.likeThread(Thread.post, 'thread')">
-                            <span class="icon icon-heart" ng-class="{active: Thread.post.isUserLikeActive}"></span>
-                            <span class="iconsTheme"
+                            <i class="material-icons-outlined" ng-class="{notActive: !Thread.post.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                            <span class="iconsTheme iconsFont"
                                 ng-class="{active: Thread.post.isUserLikeActive}">{{Thread.post.likes.length}}</span>
                         </a>
                     </div>
@@ -90,11 +87,11 @@
                             <div ng-show="comment.threadId" class="status-footer">
                                 <a class="more-info social-icon" ng-if="Thread.userDetails.userId == comment.userId"
                                     ng-click="Thread.showMoreOptionsComment(comment.threadId)">
-                                    <span class="icon icon-ellipsis"></span>
+                                    <span class="material-icons-outlined">more_horiz</span>
                                 </a>
                                 <a class="social-icon likes" ng-click="Thread.likeComment(comment, 'comment')">
-                                    <span class="icon icon-heart" ng-class="{active: comment.isUserLikeActive}"></span>
-                                    <span class="iconsTheme"
+                                    <i class="material-icons-outlined" ng-class="{notActive: !comment.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                                    <span class="iconsTheme iconsFont"
                                         ng-class="{active: comment.isUserLikeActive}">{{comment.likes.length}}</span>
                                 </a>
 

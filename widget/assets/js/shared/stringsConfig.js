@@ -1,8 +1,6 @@
 const stringsConfig = {
 	screenOne: {
-		title: "Customizable labels"
-		, subtitle: "Change values to update labels and messages displayed in the application"
-		, labels: {
+		 labels: {
 			leaveGroup: {
 				title: "Leave Group"
 				, placeholder: "Leave Group"
@@ -39,6 +37,54 @@ const stringsConfig = {
 				, maxLength: 60
 				, defaultValue: "No results found."
 			},
+			postsNoResults: {
+				title: "Posts No Results Found"
+				, placeholder: "You do not have any posts yet."
+				, maxLength: 60
+				, defaultValue: "You do not have any posts yet."
+			},
+			deleteComment: {
+				title: "Delete Comment"
+				, placeholder: "Delete Comment"
+				, maxLength: 30
+				, defaultValue: "Delete Comment"
+			},
+			moreOptions: {
+				title: "More Options"
+				, placeholder: "More Options"
+				, maxLength: 30
+				, defaultValue: "More Options"
+			},
+			reportPost: {
+				title: "Report Post"
+				, placeholder: "Report Post"
+				, maxLength: 30
+				, defaultValue: "Report Post"
+			},
+			deletePost: {
+				title: "Delete Post"
+				, placeholder: "Delete Post"
+				, maxLength: 30
+				, defaultValue: "Delete Post"
+			},
+			cancelPost: {
+				title: "Cancel Post"
+				, placeholder: "Cancel"
+				, maxLength: 9
+				, defaultValue: "Cancel"
+			},
+			confirmPost: {
+				title: "Confirm Post"
+				, placeholder: "Post"
+				, maxLength: 9
+				, defaultValue: "Post"
+			},
+			writePost: {
+				title: "Input Placeholder"
+				, placeholder: "Write a post"
+				, maxLength: 30
+				, defaultValue: "Write a post"
+			}
 		}
 	}
 };
