@@ -709,8 +709,11 @@
                                 console.log('Login called---------------------------------', user, err);
                                 if (err) {
                                     return deferredObject.reject(err);
-                                } else if (user)
-                                    WidgetWall.openPostSection();
+                                } else if (user) {
+                                        if(WidgetWall.SocialItems.items.length !== 0)
+                                            WidgetWall.openPostSection();   
+                                }
+                                    
                             });
                         }
                     }
