@@ -143,7 +143,7 @@
                             {
                                 pageSize, page,
                                 filter: {
-                                    '_buildfire.index.string1': wallId ? wallId : {"$ne": null}
+                                    '_buildfire.index.string1': wallId ? wallId : {"$eq" : ""}
                                 }
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) {
@@ -394,7 +394,7 @@
             SocialItems.prototype.getPosts = function (pageSize, page, callback) {
                 let searchOptions = { pageSize, page, sort: { "id": -1 }, recordCount: true }
                 if (_this.wid === null)
-                    searchOptions.filter = { '_buildfire.index.string1': {"$ne": null} }
+                    searchOptions.filter = { '_buildfire.index.string1': {"$eq" : ""} }
                 else
                     searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
@@ -427,7 +427,7 @@
                     _this.newPostTimerChecker = setInterval(function () {
                         let searchOptions = { sort: { "id": -1 } }
                         if (_this.wid === null)
-                            searchOptions.filter = { "_buildfire.index.string1": {"$ne": null} }
+                            searchOptions.filter = { "_buildfire.index.string1": {"$eq" : ""} }
                         else
                             searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
 
