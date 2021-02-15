@@ -45,7 +45,12 @@
             <div class="backgroundColorTheme content">
                 <div class="padding-zero" style="height: 100%;">
                     <div class="social-plugin social-wall">
-                        <div ng-show="WidgetWall.loadedPlugin" ng-class="{'head-btn': WidgetWall.allowFollowLeaveGroup, 'head-btn2': !WidgetWall.allowFollowLeaveGroup}" class="text-center" id="socialHeader">
+                        <div ng-show="WidgetWall.loadedPlugin && 
+                        WidgetWall.allowFollowLeaveGroup 
+                        || 
+                        (!WidgetWall.allowFollowLeaveGroup && WidgetWall.SocialItems.appSettings.showMembers) 
+                        " 
+                        ng-class="{'head-btn': WidgetWall.allowFollowLeaveGroup, 'head-btn2': !WidgetWall.allowFollowLeaveGroup}" class="text-center" id="socialHeader">
                             <a>
                                 <div>
                                     <p class="text-primary" ng-click="WidgetWall.followUnfollow()"  ng-show="WidgetWall.allowFollowLeaveGroup"

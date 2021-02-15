@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, util, GROUP_STATUS, SubscribedUsersData) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', '$location', '$anchorScroll', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, $location, $anchorScroll, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, util, GROUP_STATUS, SubscribedUsersData) {
             var Thread = this;
             Thread.usersData = [];
             Thread.comments = [];
@@ -186,6 +186,9 @@
             };
 
             Thread.init = function () {
+                $rootScope.$on("$routeChangeSuccess", function(){
+                    window.scrollTo(0,0);
+               })
                 Thread.SocialItems.comments = [];
                 Thread.SocialItems.newCommentsAvailable = false;
                 buildfire.appearance.getAppTheme((err, obj) => {

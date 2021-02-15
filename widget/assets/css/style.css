@@ -1072,6 +1072,7 @@ textarea {
 
 .side-thread-section{
     height:100%;
+    overflow: hidden;
 }
 
 .side-thread-section .post-section{

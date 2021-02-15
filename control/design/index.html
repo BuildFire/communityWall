@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-	<!-- Load helper.css to use our helper classes.
-	<link href="../../../../styles/helper.css" rel="stylesheet">
-	-->
-	
-	<!-- JS -->
-	<script src="../../../../scripts/buildfire.js"></script>
-   
- 	<!--
-    <script src="../../../../scripts/angular/angular.min.js"></script>
-    <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
-
-    <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
-    -->
+    <script src="../../../../scripts/buildfire.js"></script>
+    <script src="../../../../scripts/tinymce/tinymce.min.js"></script>
 </head>
+
 <body>
-    <span>Design - Hello world!</span>
+    <h4 class="text-center" style="font-size:16px; line-height:22px;">Main topic subject</h4>
+    <textarea name="content"></textarea>
 </body>
+
+<script>
+    let appSettings = null;
+    tinymce.init({
+        selector: "textarea",
+        setup: function (ed) {
+            ed.on('change', function (e) {
+                appSettings.pinnedPost = ed.getContent();
+                buildfire.datastore.save({ appSettings: appSettings }, "Social", console.log)
+            });
+        }
+    });
+
+    window.onload = function () {
+        buildfire.datastore.get("Social", function (err, result) {
+            if (result.data.appSettings && result.data.appSettings.pinnedPost) {
+                appSettings = result.data.appSettings;
+                tinymce.activeEditor.setContent(result.data.appSettings.pinnedPost);
+            }
+        });
+    }
+</script>
+
 </html>
