@@ -187,7 +187,6 @@
 
             Thread.init = function () {
                 $rootScope.$on("$routeChangeSuccess", function(){
-                    console.log("AAAAAAAAAAA")
                     window.scrollTo(0,0);
                })
                 console.log("THREAD INIT")
