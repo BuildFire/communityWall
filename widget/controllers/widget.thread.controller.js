@@ -189,7 +189,6 @@
                 $rootScope.$on("$routeChangeSuccess", function(){
                     window.scrollTo(0,0);
                })
-                console.log("THREAD INIT")
                 Thread.SocialItems.comments = [];
                 Thread.SocialItems.newCommentsAvailable = false;
                 buildfire.appearance.getAppTheme((err, obj) => {
