@@ -409,8 +409,9 @@
                         else clearInterval(_this.newPostTimerChecker);
                         $rootScope.$digest();
                         callback(null, data);
-                    }
+                    } 
                     else {
+                        $rootScope.$digest();
                         //Checking if user comming from notification for thread comment.
                         startBackgroundService();
                         if (window.URLSearchParams && window.location.search) {
