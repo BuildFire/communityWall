@@ -709,8 +709,21 @@
                                 console.log('Login called---------------------------------', user, err);
                                 if (err) {
                                     return deferredObject.reject(err);
-                                } else if (user)
-                                    WidgetWall.openPostSection();
+                                } else if (user) {
+                                        if(WidgetWall.SocialItems.items.length !== 0)
+                                            WidgetWall.openPostSection();   
+                                } else {
+                                    WidgetWall.setAppTheme();
+                                    WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
+                                        if(data.totalRecord > WidgetWall.SocialItems.items.length) {
+                                            WidgetWall.page++;
+                                            WidgetWall.showMorePosts = true;
+                                        }
+                                        WidgetWall.loadedPlugin = true;
+                                        $rootScope.$digest();
+                                    });
+                                }
+                                    
                             });
                         }
                     }
