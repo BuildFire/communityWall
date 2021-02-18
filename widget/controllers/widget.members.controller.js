@@ -17,7 +17,18 @@
             Members.context = null;
             Members.languages = null;
             Members.appSettings = null;
-            
+            $scope.getUserName = function(userDetails) {
+                let name = null;
+                if (userDetails.displayName !== 'Someone'
+                && userDetails.displayName) {
+                    name = userDetails.displayName;
+                }
+                else if (userDetails.firstName !== 'Someone' &&
+                    userDetails.firstName && userDetails.lastName)
+                    name = userDetails.firstName + ' ' + userDetails.lastName;
+                else name = 'Someone';
+                return name;
+            }
             Members.init = function () {
                 $rootScope.showThread = false;
                 Buildfire.history.push('Members');

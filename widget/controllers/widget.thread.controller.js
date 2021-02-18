@@ -185,6 +185,19 @@
                 return deferred.promise;
             };
 
+            $scope.getUserName = function (userDetails) {
+                let name = null;
+                if (userDetails.displayName !== 'Someone'
+                && userDetails.displayName) {
+                    name = userDetails.displayName;
+                }
+                else if (userDetails.firstName !== 'Someone' &&
+                    userDetails.firstName && userDetails.lastName)
+                    name = userDetails.firstName + ' ' + userDetails.lastName;
+                else name = 'Someone';
+                return name;
+            }
+
             Thread.init = function () {
                 $rootScope.$on("$routeChangeSuccess", function(){
                     window.scrollTo(0,0);
@@ -656,10 +669,11 @@
                     if (re.test(String(result.firstName).toLowerCase()))
                         result.displayName = 'Someone';
                     commentData.userDetails = {
+                        displayName: result.displayName,
                         firstName: result.firstName,
                         lastName: result.lastName,
                         email: result.email,
-                        displayName: result.firstName + " " + result.lastName,
+                        
                         imageUrl: result.imageUrl,
                     }
 
