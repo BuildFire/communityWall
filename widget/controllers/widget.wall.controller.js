@@ -812,11 +812,12 @@
                         }
 
                         if (WidgetWall.SocialItems.isPrivateChat) {
-                            SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, wallId, function (err, users) {
-                                if (err) return console.log(err);
-                                users.map(el => { options.users.push(el.userId) })
-                                sendNotification();
-                            });
+                            const user1Id = wallId.slice(0, 24);
+                            const user2Id = wallId.slice(24, 48);
+                            let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId 
+                            ? user2Id : user1Id;
+                            options.users.push(userToSend);
+                            sendNotification();
                         } else {
                             options.groupName = WidgetWall.wid;
                             sendNotification();
