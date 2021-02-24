@@ -238,7 +238,6 @@
             }
 
             $scope.getUserName = function (userDetails) {
-                console.log("AAAAAAAAAAAAAA", userDetails)
                 let name = null;
                 if (userDetails.displayName !== 'Someone'
                 && userDetails.displayName) {
@@ -1245,14 +1244,66 @@
 
             });
 
+            function updatePostsWithNames(user, status) {
+                let page = 0, pageSize = 50, allPosts = [];
+                function get() {
+                    buildfire.publicData.search({
+                        filter: {
+                            $or: [
+                                { "$json.userId": user._id},
+                                { "$json.comments.userId": user._id },
+                            ]
+                        }, page, pageSize, recordCount:true
+                    }, 'posts', (err, posts) => {
+                        console.log(err, posts);
+                        allPosts = allPosts.concat(posts.result);
+                        if(posts.totalRecord > allPosts.length) {
+                            page++;
+                            get();
+                        } else {
+                            allPosts.map(item => {
+                                var needsUpdate = false;
+                                console.log(item)
+                                if (item.data.userId === user._id) {
+                                    item.data.userDetails = status[0].data.userDetails;
+                                    needsUpdate = true;
+                                }
+                                item.data.comments.map(comment => {
+                                    console.log(comment)
+                                    if (comment.userId === user._id) {
+                                        comment.userDetails = status[0].data.userDetails;
+                                        needsUpdate = true;
+                                    }
+                                    console.log("KOMENTAR UPDEJT")
+                                })
+                                 needsUpdate ? console.log("POSTS TO UPDATE",item) : null
+                                if (needsUpdate) {
+                                    let postUpdate = WidgetWall.SocialItems.items.find(post => post.id === item.id);
+                                    if(postUpdate) {
+                                        let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
+                                        WidgetWall.SocialItems.items[postIndex] = item.data;
+                                    }
+                                    buildfire.publicData.update(item.id, item.data, 'posts', (err, updatedPost) => {
+                                        console.log(updatedPost)
+                                        if(!$scope.$$phase) $scope.$digest();
+
+                                    });
+                                }
+
+                            })
+                            if(!$scope.$$phase) $scope.$digest();
+                        }
+                    });
+                }
+                get();
+            }
+
             WidgetWall.statusCheck = function (status, user) {
                 if (status && status[0]) {
                     if (!status[0].data.userDetails.lastUpdated) {
-                        console.log('nema updated');
                         status[0].data.userDetails.lastUpdated = user.lastUpdated;
                         window.buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
                             if (err) return console.error(err);
-                            console.log("UPDEJTOVAN", data);
                         });
                     } else {
                         var lastUpdated = new Date(status[0].data.userDetails.lastUpdated).getTime();
@@ -1269,51 +1320,17 @@
 
                             window.buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
                                 if (err) return console.error(err);
+                                updatePostsWithNames(user, status);
                             });
-                            buildfire.publicData.search({
-                                filter: {
-                                    "_buildfire.index.string1": { "$eq": "" },
-                                }
-                            },
-                                'posts', (err, posts) => {
-                                    posts.map(item => {
-                                        var needsUpdate = false;
-                                        console.log(item)
-                                        if (item.data.userId === user._id) {
-                                            item.data.userDetails = status[0].data.userDetails;
-                                            needsUpdate = true;
-                                        }
-                                        item.data.comments.map(comment => {
-                                            console.log(comment)
-                                            if (comment.userId === user._id) {
-                                                comment.userDetails = status[0].data.userDetails;
-                                                needsUpdate = true;
-                                            }
-                                            console.log("KOMENTAR UPDEJT")
-                                        })
-                                         needsUpdate ? console.log("POSTS TO UPDATE",item) : null
-                                        if (needsUpdate) {
-                                            let postUpdate = WidgetWall.SocialItems.items.find(post => post.id === item.id);
-                                            if(postUpdate) {
-                                                let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
-                                                WidgetWall.SocialItems.items[postIndex] = item.data;
-                                                console.log("UPDEJTOVAN POST AAAAAAAAAAAA", WidgetWall.SocialItems.items[postIndex])
-                                            }
-                                        }
-                                        buildfire.publicData.update(item.id, item.data, 'posts', (err, updatedPost) => {
-                                            console.log("UPDATED ITEM", updatedPost)
-                                        });
-                                    })
-                                    $scope.$digest();
-
-                                });
-                            console.log("ITEMS", WidgetWall.SocialItems.items)
+                           
                         }
 
                         console.log('ima updated')
                     }
+
                 }
             }
+
             // On Login
             Buildfire.auth.onLogin(function (user) {
                 WidgetWall.setAppTheme();
