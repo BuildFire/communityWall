@@ -238,6 +238,7 @@
             }
 
             $scope.getUserName = function (userDetails) {
+                console.log("AAAAAAAAAAAAAA", userDetails)
                 let name = null;
                 if (userDetails.displayName !== 'Someone'
                 && userDetails.displayName) {
@@ -317,8 +318,8 @@
                         userId: userId,
                         userDetails: {
                             displayName: user.displayName,
-                            // firstName: user.firstName,
-                            // lastName: user.lastName,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
                             imageUrl: user.imageUrl,
                             email: user.email,
                             lastUpdated: new Date().getTime(),
@@ -329,6 +330,7 @@
                             index: { text: userId + '-' + wid, string1: wid }
                         }
                     };
+                    userName = $scope.getUserName(params.userDetails)
                     if (WidgetWall.SocialItems.isPrivateChat) {
                         const user1Id = WidgetWall.wid.slice(0, 24);
                         const user2Id = WidgetWall.wid.slice(24, 48);
@@ -347,8 +349,8 @@
                                 pluginId: WidgetWall.SocialItems.context.pluginId,
                                 instanceId: WidgetWall.SocialItems.context.instanceId,
                                 //folderName: plugin._buildfire.pluginType.result[0].folderName,
-                                title: WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName,
-                                queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent(WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName)
+                                title: $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName,
+                                queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent($scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName)
                             });
                         }
 
@@ -359,9 +361,8 @@
             WidgetWall.openChatOrProfile = function (userId) {
                 if (WidgetWall.allowPrivateChat) {
                     buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
-                        WidgetWall.openPrivateChat(userId, user.displayName);
+                        WidgetWall.openPrivateChat(userId, $scope.getUserName(user));
                     })
-
                 }
             };
 
@@ -397,8 +398,8 @@
                                     Buildfire.navigation.navigateTo({
                                         pluginId: WidgetWall.SocialItems.context.pluginId,
                                         instanceId: WidgetWall.SocialItems.context.instanceId,
-                                        title: WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName,
-                                        queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent(WidgetWall.SocialItems.userDetails.displayName + ' | ' + userName)
+                                        title: $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName,
+                                        queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent($scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName)
                                     });
 
                                 }
@@ -804,11 +805,7 @@
                         };
 
                         var sendNotification = function () {
-                            if (WidgetWall.SocialItems.userDetails.firstName) {
-                                options.text = WidgetWall.SocialItems.userDetails.firstName + ' added new post on ' + WidgetWall.SocialItems.context.title;
-                            } else {
-                                options.text = 'Someone added new post on ' + WidgetWall.SocialItems.context.title;
-                            }
+                            options.text = $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + WidgetWall.SocialItems.context.title;
                             options.inAppMessage = options.text;
                             if (wallId.length) options.queryString = `wid=${wallId}`;
                             console.log("SENT NOTIFICATION", options)
@@ -1047,11 +1044,7 @@
                                     at: new Date(),
                                     users: []
                                 };
-                                if (WidgetWall.SocialItems.userDetails.firstName) {
-                                    options.text = WidgetWall.SocialItems.userDetails.firstName + ' liked a post on ' + WidgetWall.SocialItems.context.title;
-                                } else {
-                                    options.text = 'Someone liked a post on ' + WidgetWall.SocialItems.context.title;
-                                }
+                                options.text = $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
 
                                 if (wallId.length) options.queryString = `wid=${wallId}`;
                                 options.inAppMessage = options.text;

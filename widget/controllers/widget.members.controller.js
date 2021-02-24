@@ -173,8 +173,8 @@
                     Buildfire.navigation.navigateTo({
                         pluginId: Members.context.pluginId,
                         instanceId: Members.context.instanceId,
-                        title: Members.userDetails.displayName + ' | ' + user.userDetails.displayName,
-                        queryString: 'wid=' + wid + "&wTitle=" + encodeURIComponent(Members.userDetails.displayName + ' | ' + user.userDetails.displayName)
+                        title: $scope.getUserName(Members.userDetails) + ' | ' + $scope.getUserName(user.userDetails),
+                        queryString: 'wid=' + wid + "&wTitle=" + encodeURIComponent($scope.getUserName(Members.userDetails) + ' | ' + $scope.getUserName(user.userDetails))
                     });
                 }
             };

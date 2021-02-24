@@ -493,12 +493,8 @@
                                     users: [],
                                     queryString: 'threadPostUniqueLink=' + Thread.post.id
                                 };
+                                options.text = $scope.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
 
-                                if (Thread.SocialItems.userDetails.firstName) {
-                                    options.text = Thread.SocialItems.userDetails.firstName + ' liked a post on ' + Thread.SocialItems.context.title;
-                                } else {
-                                    options.text = 'Someone liked a post on ' + Thread.SocialItems.context.title;
-                                }
 
                                 options.users.push(post.userId);
                                 if (status.length) {
@@ -596,11 +592,8 @@
                             };
                             options.users.push(comment.userId)
     
-                            if (Thread.userDetails.firstName)
-                                options.text = Thread.userDetails.firstName + ' liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                            else
-                                options.text = 'Someone liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-    
+                            options.text = $scope.getUserName(Thread.SocialItems.userDetails) + ' liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+
                             $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
                             if (!$scope.$$phase) $scope.$digest();
                             Buildfire.messaging.sendMessageToControl({
@@ -717,11 +710,9 @@
                                 };
                                 options.users.push(Thread.post.userId)
 
-                                if (Thread.userDetails.firstName) {
-                                    options.text = Thread.userDetails.firstName + ' commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                                } else {
-                                    options.text = 'Someone commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                                }
+                                options.text = $scope.getUserName(Thread.SocialItems.userDetails) + ' commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+
+
                                 if (status.length) {
                                     SubscribedUsersData.getThreadFollowingStatus(Thread.post.userId, Thread.post.id, wallId, Thread.SocialItems.instanceId, function (err, status) {
                                         if (status)
