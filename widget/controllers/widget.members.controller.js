@@ -17,7 +17,18 @@
             Members.context = null;
             Members.languages = null;
             Members.appSettings = null;
-            
+            $scope.getUserName = function(userDetails) {
+                let name = null;
+                if (userDetails.displayName !== 'Someone'
+                && userDetails.displayName) {
+                    name = userDetails.displayName;
+                }
+                else if (userDetails.firstName !== 'Someone' &&
+                    userDetails.firstName && userDetails.lastName)
+                    name = userDetails.firstName + ' ' + userDetails.lastName;
+                else name = 'Someone';
+                return name;
+            }
             Members.init = function () {
                 $rootScope.showThread = false;
                 Buildfire.history.push('Members');
@@ -162,8 +173,8 @@
                     Buildfire.navigation.navigateTo({
                         pluginId: Members.context.pluginId,
                         instanceId: Members.context.instanceId,
-                        title: Members.userDetails.displayName + ' | ' + user.userDetails.displayName,
-                        queryString: 'wid=' + wid + "&wTitle=" + encodeURIComponent(Members.userDetails.displayName + ' | ' + user.userDetails.displayName)
+                        title: $scope.getUserName(Members.userDetails) + ' | ' + $scope.getUserName(user.userDetails),
+                        queryString: 'wid=' + wid + "&wTitle=" + encodeURIComponent($scope.getUserName(Members.userDetails) + ' | ' + $scope.getUserName(user.userDetails))
                     });
                 }
             };
