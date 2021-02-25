@@ -1324,6 +1324,11 @@
                         var dbLastUpdate = new Date(user.lastUpdated).getTime();
                         if (dbLastUpdate > lastUpdated || (typeof status[0].data.userDetails.firstName === 'undefined'
                             || typeof status[0].data.userDetails.lastName === 'undefined')) {
+                            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                            if (re.test(String(user.firstName).toLowerCase()))
+                                user.firstName = 'Someone';
+                            if (re.test(String(user.displayName).toLowerCase()))
+                                user.displayName = 'Someone';
                             status[0].data.userDetails.displayName = user.displayName;
                             status[0].data.userDetails.firstName = user.firstName;
                             status[0].data.userDetails.lastName = user.lastName;
