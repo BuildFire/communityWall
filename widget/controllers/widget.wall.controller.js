@@ -730,8 +730,10 @@
                                 if (err) {
                                     return deferredObject.reject(err);
                                 } else if (user) {
-                                        if(WidgetWall.SocialItems.items.length !== 0)
+                                        if(WidgetWall.SocialItems.items.length !== 0) {
                                             WidgetWall.openPostSection();   
+                                        }
+                                        deferredObject.resolve(user);
                                 } else {
                                     WidgetWall.setAppTheme();
                                     WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
@@ -1329,9 +1331,9 @@
                                 user.firstName = 'Someone';
                             if (re.test(String(user.displayName).toLowerCase()))
                                 user.displayName = 'Someone';
-                            status[0].data.userDetails.displayName = user.displayName;
-                            status[0].data.userDetails.firstName = user.firstName;
-                            status[0].data.userDetails.lastName = user.lastName;
+                            status[0].data.userDetails.displayName = user.displayName ? user.displayName : "";
+                            status[0].data.userDetails.firstName = user.firstName ? user.firstName : "";
+                            status[0].data.userDetails.lastName = user.lastName ? user.lastName : "";
                             status[0].data.userDetails.email = user.email;
                             status[0].data.userDetails.imageUrl = user.imageUrl;
                             status[0].data.userDetails.lastUpdated = user.lastUpdated;
