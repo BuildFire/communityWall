@@ -14,6 +14,13 @@ hgroup,menu,nav,section {
 }
 body {
     line-height: 1;
+    height: 100%;
+    overflow: hidden !important;
+    position: absolute;
+    top: 0%;
+    right: 0;
+    left: 0%;
+    width: 100%;
 }
 ol,ul {
     list-style: none;
@@ -36,7 +43,7 @@ html{
     font-size: 16px !important;
 }
 /* Fixed Bottom */
-.main_view,.main-thread-section{height: 100%}
+.main_view,.main-thread-section{height: 100%; overflow: hidden !important;}
 .holder.has-bottom {
     padding-bottom: 38px !important;
 }
@@ -1312,4 +1319,8 @@ html[buildfire][safe-area="true"] body {
 }
 .icons2Font {
     font-size: 22px !important;
+}
+
+.head-btn, .post-section, .social-wall {
+    overflow: hidden;
 }
