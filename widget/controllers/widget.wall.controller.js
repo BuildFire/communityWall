@@ -26,6 +26,7 @@
             WidgetWall.page = 0;
             WidgetWall.showMorePosts = false;
             WidgetWall.loadedPlugin = false;
+            WidgetWall.firstLogin = false;
             WidgetWall.SocialItems = SocialItems.getInstance();
             $scope.users = {};
 
@@ -163,6 +164,10 @@
                                             WidgetWall.showMorePosts = true;
                                         }
                                         WidgetWall.loadedPlugin = true;
+                                        if(WidgetWall.SocialItems.items.length !== 0 && WidgetWall.firstLogin) {
+                                            WidgetWall.firstLogin = false;
+                                            WidgetWall.openPostSection();
+                                        }
                                     });
                                     buildfire.spinner.hide();
                                 });
@@ -710,8 +715,8 @@
                                 if (err) {
                                     return deferredObject.reject(err);
                                 } else if (user) {
-                                        if(WidgetWall.SocialItems.items.length !== 0)
-                                            WidgetWall.openPostSection();   
+                                        WidgetWall.firstLogin = true;
+                                        deferredObject.resolve(user);
                                 } else {
                                     WidgetWall.setAppTheme();
                                     WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {

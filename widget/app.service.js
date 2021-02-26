@@ -419,6 +419,7 @@
                             var postId = queryParamsInstance.get('threadPostUniqueLink');
                             if (postId) location.href = '#/thread/' + postId;
                         }
+                        callback(null, []);
                     }
                 });
             }
