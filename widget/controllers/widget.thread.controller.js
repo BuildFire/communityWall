@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, util, GROUP_STATUS, SubscribedUsersData) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', '$location', '$anchorScroll', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, $location, $anchorScroll, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, util, GROUP_STATUS, SubscribedUsersData) {
             var Thread = this;
             Thread.usersData = [];
             Thread.comments = [];
@@ -185,7 +185,23 @@
                 return deferred.promise;
             };
 
+            $scope.getUserName = function (userDetails) {
+                let name = null;
+                if (userDetails.displayName !== 'Someone'
+                && userDetails.displayName) {
+                    name = userDetails.displayName;
+                }
+                else if (userDetails.firstName !== 'Someone' &&
+                    userDetails.firstName && userDetails.lastName)
+                    name = userDetails.firstName + ' ' + userDetails.lastName;
+                else name = 'Someone';
+                return name;
+            }
+
             Thread.init = function () {
+                $rootScope.$on("$routeChangeSuccess", function(){
+                    window.scrollTo(0,0);
+               })
                 Thread.SocialItems.comments = [];
                 Thread.SocialItems.newCommentsAvailable = false;
                 buildfire.appearance.getAppTheme((err, obj) => {
@@ -477,12 +493,8 @@
                                     users: [],
                                     queryString: 'threadPostUniqueLink=' + Thread.post.id
                                 };
+                                options.text = $scope.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
 
-                                if (Thread.SocialItems.userDetails.firstName) {
-                                    options.text = Thread.SocialItems.userDetails.firstName + ' liked a post on ' + Thread.SocialItems.context.title;
-                                } else {
-                                    options.text = 'Someone liked a post on ' + Thread.SocialItems.context.title;
-                                }
 
                                 options.users.push(post.userId);
                                 if (status.length) {
@@ -580,11 +592,8 @@
                             };
                             options.users.push(comment.userId)
     
-                            if (Thread.userDetails.firstName)
-                                options.text = Thread.userDetails.firstName + ' liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                            else
-                                options.text = 'Someone liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-    
+                            options.text = $scope.getUserName(Thread.SocialItems.userDetails) + ' liked comment on a post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+
                             $rootScope.$broadcast(EVENTS.COMMENT_LIKED);
                             if (!$scope.$$phase) $scope.$digest();
                             Buildfire.messaging.sendMessageToControl({
@@ -653,10 +662,11 @@
                     if (re.test(String(result.firstName).toLowerCase()))
                         result.displayName = 'Someone';
                     commentData.userDetails = {
+                        displayName: result.displayName,
                         firstName: result.firstName,
                         lastName: result.lastName,
                         email: result.email,
-                        displayName: result.firstName + " " + result.lastName,
+                        
                         imageUrl: result.imageUrl,
                     }
 
@@ -700,11 +710,9 @@
                                 };
                                 options.users.push(Thread.post.userId)
 
-                                if (Thread.userDetails.firstName) {
-                                    options.text = Thread.userDetails.firstName + ' commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                                } else {
-                                    options.text = 'Someone commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
-                                }
+                                options.text = $scope.getUserName(Thread.SocialItems.userDetails) + ' commented on post: ' + Thread.post.text.substring(0, 50) + ' on ' + Thread.SocialItems.context.title;
+
+
                                 if (status.length) {
                                     SubscribedUsersData.getThreadFollowingStatus(Thread.post.userId, Thread.post.id, wallId, Thread.SocialItems.instanceId, function (err, status) {
                                         if (status)

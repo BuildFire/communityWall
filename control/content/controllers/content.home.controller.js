@@ -365,6 +365,19 @@
 
             }
 
+            $scope.getUserName = function(userDetails) {
+                let name = null;
+                if (userDetails.displayName !== 'Someone'
+                && userDetails.displayName) {
+                    name = userDetails.displayName;
+                }
+                else if (userDetails.firstName !== 'Someone' &&
+                    userDetails.firstName && userDetails.lastName)
+                    name = userDetails.firstName + ' ' + userDetails.lastName;
+                else name = 'Someone';
+                return name;
+            }
+
             Buildfire.messaging.onReceivedMessage = function (event) {
                 if (event) {
                     switch (event.name) {
