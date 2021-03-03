@@ -63,6 +63,7 @@
                                         margin-left: 0;
                                         text-transform: uppercase;"
                                         >
+                                        
                                         <button class="btn btn-primary" id="followBtn" style="display: flex; font-size: 13px; text-transform: uppercase;">
                                             <span class="plusMinusIcon" >{{WidgetWall.groupFollowingStatus ? '&#8722;' : '&#43;'}}</span>
                                             {{WidgetWall.groupFollowingStatus ? (WidgetWall.SocialItems.languages.leaveGroup) : WidgetWall.SocialItems.languages.joinGroup}}
@@ -83,7 +84,6 @@
 
                             </a>
                         </div>
-
                         <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
                             class="post-section backgroundColorTheme">
                             <div class="post-infinite-scroll" id="top">
@@ -94,7 +94,7 @@
                                     </div>
                                 </div>
                                 <div ng-show="WidgetWall.SocialItems.items.length<=0 && WidgetWall.loadedPlugin">
-                                    <!-- <h5 class="text-center blankState">{{WidgetWall.SocialItems.languages.postsNoResults}}</h5> -->
+                                    <!-- <h5 class="text-center blankState">{{WidgetWall.languages.postsNoResults}}</h5> -->
                                     <div class="empty_state"></div>
                                 </div>
                                 <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items">
@@ -175,7 +175,7 @@
                                             </a>
                                             
                                             <a ng-if="!WidgetWall.SocialItems.isPrivateChat"
-                                                href="#/thread/{{post.id}}"
+                                                ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 class="social-icon comments ng-cloak">
                                                 <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
                                                 <span class="iconsTheme iconsFont">{{post.comments.length}}</span>

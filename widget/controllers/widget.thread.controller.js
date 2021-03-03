@@ -365,13 +365,6 @@
             /**
              * follow method is used to follow the thread/post.
              */
-
-            Thread.followThread = function (res) {
-                res.data.posts.push(Thread.post.id);
-                buildfire.publicData.update(res.id, res.data, 'subscribedUsersData', (err, posts) => {
-                    console.log("EEEEEEEEEEEEEEE", posts);
-                });
-            }
             Thread.followUnfollow = function () {
                 let params = {
                     userId: Thread.SocialItems.userDetails.userId,

@@ -116,11 +116,24 @@
 
             WidgetWall.getPosts = function () {
                 WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
+
                     if (data.totalRecord > WidgetWall.SocialItems.items.length) {
                         WidgetWall.page++;
                         WidgetWall.showMorePosts = true;
                     }
+
+                    WidgetWall.showUserLikes();
                 });
+            }
+
+            WidgetWall.showUserLikes = function() {
+                WidgetWall.SocialItems.items.map(item => {
+                    let liked = item.likes.find(like => like === WidgetWall.SocialItems.userDetails.userId);
+                    console.log("AAAAAAAAA", liked, item)
+                    if(liked) item.isUserLikeActive = true;
+                    else item.isUserLikeActive = false;
+                });
+                $scope.$digest();
             }
             //======================================================================================
             WidgetWall.checkFollowingStatus = function (user = null) {
@@ -203,8 +216,8 @@
                 
                 if (WidgetWall.SocialItems.isPrivateChat) {
                     //console.assert()
-                    const user1Id = wallId.slice(0, 24);
-                    const user2Id = wallId.slice(24, 48);
+                    const user1Id = WidgetWall.wid.slice(0, 24);
+                    const user2Id = WidgetWall.wid.slice(24, 48);
                     let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId
                         ? user2Id : user1Id;
                     options.users.push(userToSend);
@@ -255,6 +268,9 @@
                             if (err) return console.error("Getting user failed.", err);
                             if (user) {
                                 WidgetWall.checkFollowingStatus(user);
+                            } else {
+                                console.log("GGGGGGGGGGGGGGG")
+                                WidgetWall.groupFollowingStatus = false;
                             }
                         });
                     }
@@ -672,9 +688,9 @@
                 Buildfire.history.pop();
             };
             Buildfire.history.onPop(function (breadcrumb) {
-                WidgetWall.SocialItems.items = [];
-                WidgetWall.page = 0;
-                WidgetWall.init();
+                // WidgetWall.SocialItems.items = [];
+                // WidgetWall.page = 0;
+                // WidgetWall.init();
                 WidgetWall.goFullScreen = false;
                 if (!$scope.$$phase) $scope.$digest();
             }, true);
@@ -821,8 +837,13 @@
             };
 
             WidgetWall.goInToThread = function (threadId) {
-                if (threadId)
+                WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    WidgetWall.checkFollowingStatus();
+                    console.log("UUUUUUUUUUUU")
+                    if (threadId)
                     Location.go('#/thread/' + threadId);
+                });
             };
 
             WidgetWall.deletePost = function (postId) {
@@ -1054,6 +1075,8 @@
                         }
                     });
                 } else WidgetWall.SocialItems.forcedToLogin = false;
+                WidgetWall.showUserLikes();
+                if($scope.$$phase) $scope.$digest();
             });
             // On Logout
             Buildfire.auth.onLogout(function () {
