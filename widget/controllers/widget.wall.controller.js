@@ -4,21 +4,16 @@
     angular.module('socialPluginWidget')
         .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Modals', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', 'Util', 'SubscribedUsersData', function ($scope, SocialDataStore, Modals, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, $modal, SocialItems, $q, $anchorScroll, $location, $timeout, util, SubscribedUsersData) {
             var WidgetWall = this;
-            WidgetWall.usersData = [];
+
             WidgetWall.userDetails = {};
-            WidgetWall.height = window.innerHeight;
-            WidgetWall.noMore = false;
             WidgetWall.postText = '';
-            WidgetWall.picFile = '';
-            WidgetWall.imageSelected = false;
-            WidgetWall.imageName = '';
-            WidgetWall.showImageLoader = true;
             WidgetWall.modalPopupThreadId;
-            $rootScope.showThread = true;
+
             WidgetWall.allowCreateThread = true;
             WidgetWall.allowPrivateChat = false;
             WidgetWall.allowFollowLeaveGroup = true;
             WidgetWall.groupFollowingStatus = false;
+
             WidgetWall.threadTag = "thread";
             WidgetWall.wid = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
             WidgetWall.appTheme = null;
@@ -26,16 +21,15 @@
             WidgetWall.page = 0;
             WidgetWall.showMorePosts = false;
             WidgetWall.loadedPlugin = false;
-            WidgetWall.SocialItems = SocialItems.getInstance();
-            $scope.users = {};
 
-            var masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
+
+            WidgetWall.SocialItems = SocialItems.getInstance();
+
+            $rootScope.showThread = true;
+            //======================================================================================
             WidgetWall.showHideCommentBox = function () {
-                if (WidgetWall.SocialItems &&
-                    WidgetWall.SocialItems.appSettings &&
-                    WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
-                    WidgetWall.SocialItems.appSettings.mainThreadUserTags &&
-                    WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
+                if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
+                    WidgetWall.SocialItems.appSettings.mainThreadUserTags && WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
                 ) {
                     var _userTagsObj = WidgetWall.SocialItems.userDetails.userTags;
                     var _userTags = [];
@@ -64,10 +58,7 @@
             };
 
             WidgetWall.showHidePrivateChat = function () {
-                if (WidgetWall.SocialItems &&
-                    WidgetWall.SocialItems.appSettings &&
-                    WidgetWall.SocialItems.appSettings.disablePrivateChat
-                ) {
+                if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.disablePrivateChat) {
                     WidgetWall.allowPrivateChat = false;
                 } else {
                     WidgetWall.allowPrivateChat = true;
@@ -75,107 +66,41 @@
             };
 
             WidgetWall.followLeaveGroupPermission = function () {
-                if (WidgetWall.SocialItems &&
-                    WidgetWall.SocialItems.appSettings &&
-                    WidgetWall.SocialItems.appSettings.disableFollowLeaveGroup
-                ) {
+                if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.disableFollowLeaveGroup) {
                     WidgetWall.allowFollowLeaveGroup = false;
                 } else {
                     WidgetWall.allowFollowLeaveGroup = true;
                 }
             };
-
-            WidgetWall.init = function () {
-                buildfire.spinner.show();
-                buildfire.datastore.get("languages", (err, result) => {
-                    if (err) return console.log(err)
-                    let strings = {};
-                    if (result.data && result.data.screenOne)
-                        strings = result.data.screenOne;
-                    else
-                        strings = stringsConfig.screenOne.labels;
-
-                    let languages = {};
-                    Object.keys(strings).forEach(e => {
-                        strings[e].value ? languages[e] = strings[e].value : languages[e] = strings[e].defaultValue;
-                    });
-                    WidgetWall.languages = languages;
-                    WidgetWall.SocialItems.init(function (err, result) {
-                        if (err) {
-                            console.error('------------->cannot get app settings on init');
-                        } else {
-
-                            buildfire.datastore.get("Social", (err, response) => {
-                                if (err) console.error('------------->cannot get app settings on init');
-                                WidgetWall.SocialItems.appSettings = response.data.appSettings;
-                                var dldActionItem = new URLSearchParams(window.location.search).get('actionItem');
-                                if (!WidgetWall.SocialItems.appSettings) WidgetWall.SocialItems.appSettings = {};
-                                if (WidgetWall.SocialItems.appSettings) {
-                                    if (dldActionItem)
-                                        WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
-                                    if (WidgetWall.SocialItems.appSettings.actionItem && WidgetWall.SocialItems.appSettings.actionItem.iconUrl) {
-                                        WidgetWall.SocialItems.appSettings.actionItem.iconUrl = buildfire.imageLib.cropImage(WidgetWall.SocialItems.appSettings.actionItem.iconUrl, { size: 'xss', aspect: '1:1' })
-                                        angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important; background-size: cover !important;`);
-                                    }
-                                    console.log("GOT ACTION ITEM", WidgetWall.SocialItems.appSettings.actionItem)
-                                }
-                                if (typeof (WidgetWall.SocialItems.appSettings.showMembers) == 'undefined') {
-                                    WidgetWall.SocialItems.appSettings.showMembers = true;
-                                }
-
-                                if (response.data.appSettings && response.data.appSettings.pinnedPost) {
-                                    WidgetWall.pinnedPost = response.data.appSettings.pinnedPost;
-                                    pinnedPost.innerHTML = WidgetWall.pinnedPost;
-                                }
-
-                                WidgetWall.showHidePrivateChat();
-                                WidgetWall.followLeaveGroupPermission();
-                                const checkUserAuthPromise = checkUserIsAuthenticated();
-                                checkUserAuthPromise.then(function (user) {
-                                    let unsubscribed = util.getParameterByName("unsubscribed");
-
-                                    if (unsubscribed !== null)
-                                        WidgetWall.unfollowWall();
-                                    else
-                                        WidgetWall.followWall();
-
-                                    if (WidgetWall.SocialItems.isPrivateChat) {
-                                        WidgetWall.sanitizeWall(function (err, result) {
-                                            SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, function (err, users) {
-                                                if (err) return console.log(err);
-                                                console.log("USERS", users)
-                                                const user1Id = WidgetWall.wid.slice(0, 24);
-                                                const user2Id = WidgetWall.wid.slice(24, 48);
-                                                if (!users.length) {
-                                                    var otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
-                                                        ? user2Id : user1Id;
-                                                    WidgetWall.subscribeUser(otherUser, WidgetWall.wid);
-                                                }
-                                            });
-                                        });
-
-
-                                    }
-                                    WidgetWall.setAppTheme();
-                                    WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                                        if (data.totalRecord > WidgetWall.SocialItems.items.length) {
-                                            WidgetWall.page++;
-                                            WidgetWall.showMorePosts = true;
-                                        }
-                                        WidgetWall.loadedPlugin = true;
-                                    });
-                                    buildfire.spinner.hide();
-                                });
-                            })
-                        }
-                    })
+            //======================================================================================
+            WidgetWall.formatLanguages = function (strings) {
+                Object.keys(strings).forEach(e => {
+                    strings[e].value ? WidgetWall.SocialItems.languages[e] = strings[e].value : WidgetWall.SocialItems.languages[e] = strings[e].defaultValue;
                 });
+            }
 
-            };
+            WidgetWall.setSettings = function (settings) {
+                WidgetWall.SocialItems.appSettings = settings ? settings : {};
+                let dldActionItem = new URLSearchParams(window.location.search).get('actionItem');
+                if (dldActionItem)
+                    WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
+
+                let actionItem = WidgetWall.SocialItems.appSettings.actionItem;
+                if (actionItem && actionItem.iconUrl) {
+                    actionItem.iconUrl = buildfire.imageLib.cropImage(actionItem.iconUrl, { size: 'xss', aspect: '1:1' })
+                    angular.element('#actionBtn').attr('style', `background-image: url(${actionItem.iconUrl}) !important; background-size: cover !important;`);
+                }
+
+                if (typeof (WidgetWall.SocialItems.appSettings.showMembers) == 'undefined')
+                    WidgetWall.SocialItems.appSettings.showMembers = true;
+                if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.pinnedPost) {
+                    WidgetWall.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
+                    pinnedPost.innerHTML = WidgetWall.pinnedPost;
+                }
+            }
 
             WidgetWall.setAppTheme = function () {
                 buildfire.appearance.getAppTheme((err, obj) => {
-                    WidgetWall.loadedPlugin = true;
                     let elements = document.getElementsByTagName('svg');
                     for (var i = 0; i < elements.length; i++) {
                         elements[i].style.setProperty("fill", obj.colors.icons, "important");
@@ -185,18 +110,196 @@
                     document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
                     document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
                     document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
+                    WidgetWall.loadedPlugin = true;
                 });
             }
 
-            WidgetWall.init();
+            WidgetWall.getPosts = function () {
+                WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
+                    if (data.totalRecord > WidgetWall.SocialItems.items.length) {
+                        WidgetWall.page++;
+                        WidgetWall.showMorePosts = true;
+                    }
+                });
+            }
+            //======================================================================================
+            WidgetWall.checkFollowingStatus = function (user = null) {
+                SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                    if (err) console.log('error while getting initial group following status.', err);
+                    else {
+                        if (!status.length) return WidgetWall.followWall();
+                        WidgetWall.groupFollowingStatus = true;
+                        WidgetWall.showHideCommentBox();
+                        if(user) WidgetWall.statusCheck(status, user);
+                        $scope.$digest();
+                    }
+                });
+            }
 
             WidgetWall.unfollowWall = function () {
-                WidgetWall.groupFollowingStatus = false;
-                buildfire.notifications.pushNotification.unsubscribe({ groupName: WidgetWall.wid }, () => { });
-                const options = {
-                    text: 'You have left this group',
+                SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, result) {
+                    if (err) return console.error(err);
+                    else {
+                        WidgetWall.groupFollowingStatus = false;
+                        buildfire.notifications.pushNotification.unsubscribe({ groupName: WidgetWall.wid }, () => { });
+                        const options = { text: 'You have left this group' };
+                        buildfire.components.toast.showToastMessage(options, () => { });
+                        $scope.$digest();
+                    }
+                });
+            }
+
+            WidgetWall.followWall = function () {
+                let user = WidgetWall.SocialItems.userDetails;
+                var params = {
+                    userId: user.userId,
+                    userDetails: {
+                        displayName: user.displayName,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        imageUrl: user.imageUrl,
+                        email: user.email,
+                        lastUpdated: new Date().getTime(),
+                    },
+                    wallId: WidgetWall.wid,
+                    posts: [],
+                    _buildfire: {
+                        index: { text: user.userId + '-' + WidgetWall.wid, string1: WidgetWall.wid }
+                    }
                 };
-                buildfire.components.toast.showToastMessage(options, (error, result) => { });
+                SubscribedUsersData.save(params, function (err) {
+                    if (err) console.log('Error while saving subscribed user data.');
+                    else {
+                        WidgetWall.groupFollowingStatus = true;
+                        buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
+                        $scope.$digest();
+                    }
+                });
+            }
+
+            WidgetWall.followUnfollow = function () {
+                if (WidgetWall.groupFollowingStatus) return WidgetWall.unfollowWall();
+                else {
+                    WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                        if (err) return console.error("Getting user failed.", err);
+                        WidgetWall.checkFollowingStatus();
+                    });
+                }
+            }
+
+            WidgetWall.scheduleNotification = function (post, text) {
+                let options = {
+                    title: 'Notification',
+                    text: '',
+                    at: new Date(),
+                    users: [],
+                };
+
+                if (text === 'post')
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + WidgetWall.SocialItems.context.title;
+                else if (text === 'like')
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
+
+                
+                if (WidgetWall.SocialItems.isPrivateChat) {
+                    //console.assert()
+                    const user1Id = wallId.slice(0, 24);
+                    const user2Id = wallId.slice(24, 48);
+                    let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId
+                        ? user2Id : user1Id;
+                    options.users.push(userToSend);
+                }  
+                else if (text === 'like') {
+                    options.users.push(post.userId);
+                }
+                else options.groupName = WidgetWall.wid;
+
+                options.inAppMessage = options.text;
+                options.queryString = `wid=${WidgetWall.wid}`;
+                buildfire.dialog.alert({
+                    title: "Access Denied!",
+                    subtitle: "Operation not allowed!",
+                    message: JSON.stringify(options)
+                });
+                buildfire.notifications.pushNotification.schedule(options, function (err) {
+                    if (err) return console.error('Error while setting PN schedule.', err);
+                    console.log("SENT NOTIFICATION", options);
+                });
+            }
+            //======================================================================================
+            WidgetWall.openChat = function (userId) {
+                if (WidgetWall.allowPrivateChat) {
+                    WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                        if (err) return console.error("Getting user failed.", err);
+                        console.log(user);
+                        buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
+                            if (err) return console.error("Getting user profile failed.", err);
+                            WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
+                        });
+                    });
+                }
+            };
+            //======================================================================================
+
+            //======================================================================================
+            WidgetWall.init = function () {
+                WidgetWall.SocialItems.getSettings((err, result) => {
+                    if (err) return console.error("Fetching settings failed.", err);
+                    if (result) {
+                        WidgetWall.setSettings(result.appSettings);
+                        WidgetWall.showHidePrivateChat();
+                        WidgetWall.followLeaveGroupPermission();
+                        WidgetWall.setAppTheme();
+                        WidgetWall.getPosts();
+                        WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                            if (err) return console.error("Getting user failed.", err);
+                            if (user) {
+                                WidgetWall.checkFollowingStatus(user);
+                            }
+                        });
+                    }
+                });
+            };
+
+            WidgetWall.init();
+            //======================================================================================
+            /* 
+            first step
+            creating services for notifications and authentication
+            identifying and removing unused fields and variables
+            simplifying logic
+            comment in code in controllers on the next steps
+
+            second step
+            check widgetwall for unused service methods
+            check app service for unused methods
+            refactor app service to get more efficient code
+
+            third step
+            thread controller refactor
+            */
+            //======================================================================================
+
+
+
+            //======================================================================================
+
+            WidgetWall.checkForPrivateChat = function () {
+                if (WidgetWall.SocialItems.isPrivateChat) {
+                    WidgetWall.sanitizeWall(function (err, result) {
+                        SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, function (err, users) {
+                            if (err) return console.log(err);
+                            console.log("USERS", users)
+                            const user1Id = WidgetWall.wid.slice(0, 24);
+                            const user2Id = WidgetWall.wid.slice(24, 48);
+                            if (!users.length) {
+                                var otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
+                                    ? user2Id : user1Id;
+                                WidgetWall.followPrivateWall(otherUser, WidgetWall.wid);
+                            }
+                        });
+                    });
+                }
             }
 
             WidgetWall.sanitizeWall = function (callback) {
@@ -216,95 +319,7 @@
                     });
             }
 
-
-            WidgetWall.followWall = function () {
-                SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                    if (err) {
-                        console.log('error while getting initial group following status.', err);
-                    } else {
-                        if (!status.length) return WidgetWall.newInitSubscribe()
-                        WidgetWall.groupFollowingStatus = true;
-                        buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
-                        WidgetWall.showHideCommentBox();
-                        buildfire.auth.getCurrentUser(function (err, user) {
-                            WidgetWall.statusCheck(status, user);
-                        })
-                        setTimeout(function () {
-                            if (!$scope.$$phase) $scope.$digest();
-                        }, 50);
-                    }
-                });
-
-            }
-
-            $scope.getUserName = function (userDetails) {
-                let name = null;
-                if (userDetails.displayName !== 'Someone'
-                && userDetails.displayName) {
-                    name = userDetails.displayName;
-                }
-                else if (userDetails.firstName !== 'Someone' &&
-                    userDetails.firstName && userDetails.lastName)
-                    name = userDetails.firstName + ' ' + userDetails.lastName;
-                else name = 'Someone';
-                return name;
-            }
-
-            WidgetWall.newInitSubscribe = function () {
-                window.buildfire.auth.getCurrentUser(function (err, user) {
-                    console.log("=============INIT SUBSCRIBE", user)
-                    if (user) {
-                        SubscribedUsersData.getGroupFollowingStatus(user._id, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                            if (status.length === 0) {
-                                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                                if (re.test(String(user.firstName).toLowerCase()))
-                                    user.firstName = 'Someone';
-                                if (re.test(String(user.displayName).toLowerCase()))
-                                    user.displayName = 'Someone';
-
-                                var params = {
-                                    userId: user._id,
-                                    userDetails: {
-                                        displayName: user.displayName,
-                                        firstName: user.firstName,
-                                        lastName: user.lastName,
-                                        imageUrl: user.imageUrl,
-                                        email: user.email,
-                                        lastUpdated: new Date().getTime(),
-                                    },
-                                    wallId: WidgetWall.wid,
-                                    posts: [],
-                                    _buildfire: {
-                                        index: { text: user._id + '-' + WidgetWall.wid, string1: WidgetWall.wid }
-                                    }
-                                };
-                                console.log(params)
-                                if (WidgetWall.SocialItems.isPrivateChat) {
-                                    const user1Id = WidgetWall.wid.slice(0, 24);
-                                    const user2Id = WidgetWall.wid.slice(24, 48);
-                                    var loggedUser = WidgetWall.SocialItems.userDetails.userId;
-
-                                    if (loggedUser !== user1Id && loggedUser !== user2Id)
-                                        return new Error("Logged in user must be one of the wall users")
-                                }
-                                SubscribedUsersData.save(params, function (err) {
-                                    if (err) {
-                                        console.log('Error while saving subscribed user data.');
-                                    } else {
-                                        WidgetWall.groupFollowingStatus = true;
-                                        buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
-                                        console.log("SACUVAVA KORISNIKA", user._id)
-                                        if (!$scope.$$phase) $scope.$digest();
-                                    }
-                                });
-                            }
-                        })
-
-                    }
-                });
-            };
-
-            WidgetWall.subscribeUser = function (userId, wid, userName = null) {
+            WidgetWall.followPrivateWall = function (userId, wid, userName = null) {
                 buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
                     if (err) console.log('Error while saving subscribed user data.');
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -329,87 +344,45 @@
                             index: { text: userId + '-' + wid, string1: wid }
                         }
                     };
-                    userName = $scope.getUserName(params.userDetails)
-                    if (WidgetWall.SocialItems.isPrivateChat) {
-                        const user1Id = WidgetWall.wid.slice(0, 24);
-                        const user2Id = WidgetWall.wid.slice(24, 48);
-                        var loggedUser = WidgetWall.SocialItems.userDetails.userId;
-
-                        if (loggedUser !== user1Id && loggedUser !== user2Id)
-                            return new Error("Logged in user must be one of the wall users")
-                    }
+                    userName = WidgetWall.SocialItems.getUserName(params.userDetails)
                     console.log("SACUVAVA KORISNIKA ZA PRIVATE", params)
                     SubscribedUsersData.save(params, function (err) {
                         if (err) console.log('Error while saving subscribed user data.');
-                        if (userName) {
-                            Buildfire.history.push("Main Social Wall");
-
-                            Buildfire.navigation.navigateTo({
-                                pluginId: WidgetWall.SocialItems.context.pluginId,
-                                instanceId: WidgetWall.SocialItems.context.instanceId,
-                                //folderName: plugin._buildfire.pluginType.result[0].folderName,
-                                title: $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName,
-                                queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent($scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName)
-                            });
-                        }
-
+                        if (userName)
+                            WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
                     });
                 })
             }
 
-            WidgetWall.openChatOrProfile = function (userId) {
-                if (WidgetWall.allowPrivateChat) {
-                    buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
-                        WidgetWall.openPrivateChat(userId, $scope.getUserName(user));
-                    })
-                }
-            };
+            WidgetWall.navigateToPrivateChat = function (user) {
+                Buildfire.navigation.navigateTo({
+                    pluginId: WidgetWall.SocialItems.context.pluginId,
+                    instanceId: WidgetWall.SocialItems.context.instanceId,
+                    title: WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name,
+                    queryString: 'wid=' + user.wid + '&targetUser=' + JSON.stringify({ userId: user.id, userName: user.name })
+                        + "&wTitle=" + encodeURIComponent(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name)
+                });
+            }
 
             WidgetWall.openPrivateChat = function (userId, userName) {
-
-                var checkUserAuthPromise = checkUserIsAuthenticated();
-                checkUserAuthPromise.then(function (response) {
-                    var wid = null;
-                    //check if user logged in and avoid self chatting
-                    if (WidgetWall.SocialItems.userDetails.userId && WidgetWall.SocialItems.userDetails.userId != userId) {
-                        if (WidgetWall.SocialItems.userDetails.userId > userId) {
-                            wid = WidgetWall.SocialItems.userDetails.userId + userId;
-                        } else {
-                            wid = userId + WidgetWall.SocialItems.userDetails.userId;
-                        }
-
-                        //prevent opening same private chat when it's already opened
-                        var _instanceId = util.getParameterByName("wid");
-
-                        if (_instanceId && _instanceId == wid) {
-                            return;
-                        }
-                        //#
-
-                        SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                            if (err) {
-                                console.log('error while getting initial group following status.', err);
-                            } else
-                                if (!status.length) {
-                                    WidgetWall.subscribeUser(userId, wid, userName);
-                                } else {
-                                    Buildfire.history.push("Main Social Wall");
-                                    Buildfire.navigation.navigateTo({
-                                        pluginId: WidgetWall.SocialItems.context.pluginId,
-                                        instanceId: WidgetWall.SocialItems.context.instanceId,
-                                        title: $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName,
-                                        queryString: 'wid=' + wid + '&targetUser=' + JSON.stringify({ userId: userId, userName: userName }) + "&wTitle=" + encodeURIComponent($scope.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + userName)
-                                    });
-
-                                }
-                        })
-
-
+                let wid = null;
+                if (WidgetWall.SocialItems.userDetails.userId && WidgetWall.SocialItems.userDetails.userId != userId) {
+                    if (WidgetWall.SocialItems.userDetails.userId > userId) {
+                        wid = WidgetWall.SocialItems.userDetails.userId + userId;
+                    } else {
+                        wid = userId + WidgetWall.SocialItems.userDetails.userId;
                     }
-                }, function (err) {
-                    console.log('error is ------', err);
+                }
+                SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                    if (err) console.error('Error while getting initial group following status.', err);
+                    if (!status.length) {
+                        WidgetWall.followPrivateWall(userId, wid, userName);
+                    } else {
+                        WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                    }
                 });
-            };
+            }
+
             var counter = 0;
             $scope.setupImageList = function (post) {
                 if (post.imageUrl) {
@@ -620,64 +593,80 @@
                 });
             }
 
-            WidgetWall.createPost = function ($event) {
-                var checkuserAuthPromise = checkUserIsAuthenticated();
-                checkuserAuthPromise.then(function (response) {
-                    if (!$rootScope.$$phase) $rootScope.$digest();
-                    WidgetWall.closePostSection();
+            function finalPostCreation(imageUrl) {
+                let postData = {};
+                postData.userDetails = WidgetWall.SocialItems.userDetails;
+                postData.imageUrl = imageUrl || null;
+                postData.images = WidgetWall.images ? $scope.WidgetWall.images : [];
+                postData.wid = WidgetWall.wid;
+                postData.text = WidgetWall.postText ? WidgetWall.postText.replace(/[#&%+!@^*()-]/g, function (match) {
+                    return encodeURIComponent(match)
+                }) : '';
 
-                    if ((WidgetWall.postText || ($scope.WidgetWall.images && $scope.WidgetWall.images.length > 0)) && !WidgetWall.waitAPICompletion) {                        // text post
-                        WidgetWall.waitAPICompletion = true;
-                        finalPostCreation($scope.WidgetWall.images);
+                WidgetWall.onSendMessage({ _id: postData.userId }, postData.text, () =>
+                    SocialDataStore.createPost(postData).then((response) => {
+                        WidgetWall.SocialItems.items.unshift(postData);
+                        Buildfire.messaging.sendMessageToControl({
+                            name: EVENTS.POST_CREATED,
+                            status: 'Success',
+                            post: response.data
+                        });
+                        postData.id = response.data.id;
+                        postData.uniqueLink = response.data.uniqueLink;
+                        WidgetWall.scheduleNotification(postData, 'post');
+                        window.scrollTo(0, 0);
+                        $location.hash('test');
+                        $anchorScroll();
+                    }, (err) => {
+                        console.error("Something went wrong.", err)
+                        WidgetWall.postText = '';
+                    })
+                );
+            }
+
+            WidgetWall.getPostContent = function (data) {
+                if (data && data.results && data.results.length > 0 && !data.cancelled) {
+                    $scope.WidgetWall.postText = data.results["0"].textValue;
+                    $scope.WidgetWall.images = data.results["0"].images;
+
+                    var gif = getGifUrl(data.results["0"].gifs);
+                    if (gif && $scope.WidgetWall.images && $scope.WidgetWall.images.push) {
+                        $scope.WidgetWall.images.push(gif);
                     }
-
-                }, function (err) {
-                    console.log('error is ------', err);
-                });
-
-            };
-            WidgetWall.openPostSection = function () {
-                var checkUserPromise = checkUserIsAuthenticated(false);
-                checkUserPromise.then(function () {
-                    if (!WidgetWall.allowCreateThread) return;
-                    buildfire.input.showTextDialog({
-                        "placeholder": WidgetWall.languages.writePost,
-                        "saveText": WidgetWall.languages.confirmPost.length > 9 ? WidgetWall.languages.confirmPost.substring(0, 9) : WidgetWall.languages.confirmPost,
-                        "cancelText": WidgetWall.languages.cancelPost.length > 9 ? WidgetWall.languages.cancelPost.substring(0, 9) : WidgetWall.languages.cancelPost,
-                        "attachments": {
-                            "images": { enable: true, multiple: true },
-                            "gifs": { enable: true }
+                    function getGifUrl(gifs) {
+                        if (gifs["0"] && gifs["0"].images.downsided_medium && gifs["0"].images.downsided_medium.url) {
+                            return gifs["0"].images.downsided_medium.url;
+                        } else if (gifs["0"] && gifs["0"].images.original && gifs["0"].images.original.url) {
+                            return gifs["0"].images.original.url;
                         }
-                    }, function (err, data) {
-                        if (err)
-                            console.error(err);
-                        else
-                            if (data && data.results && data.results.length > 0 && !data.cancelled) {
-                                $scope.WidgetWall.postText = data.results["0"].textValue;
-                                $scope.WidgetWall.images = data.results["0"].images;
+                    }
+                }
+            }
 
-                                var gif = getGifUrl(data.results["0"].gifs);
-                                if (gif && $scope.WidgetWall.images && $scope.WidgetWall.images.push) {
-                                    $scope.WidgetWall.images.push(gif);
-                                }
-
-                                WidgetWall.createPost();
-
-                                function getGifUrl(gifs) {
-                                    if (gifs["0"] && gifs["0"].images.downsided_medium && gifs["0"].images.downsided_medium.url) {
-                                        return gifs["0"].images.downsided_medium.url;
-                                    } else if (gifs["0"] && gifs["0"].images.original && gifs["0"].images.original.url) {
-                                        return gifs["0"].images.original.url;
-                                    }
-                                }
+            WidgetWall.openPostSection = function () {
+                WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (user) {
+                        WidgetWall.checkFollowingStatus();
+                        buildfire.input.showTextDialog({
+                            "placeholder": WidgetWall.SocialItems.languages.writePost,
+                            "saveText": WidgetWall.SocialItems.languages.confirmPost.length > 9 ? WidgetWall.SocialItems.languages.confirmPost.substring(0, 9) : WidgetWall.SocialItems.languages.confirmPost,
+                            "cancelText": WidgetWall.SocialItems.languages.cancelPost.length > 9 ? WidgetWall.SocialItems.languages.cancelPost.substring(0, 9) : WidgetWall.SocialItems.languages.cancelPost,
+                            "attachments": {
+                                "images": { enable: true, multiple: true },
+                                "gifs": { enable: true }
                             }
-                    });
-                }, function (err) {
-                    console.log('error is::::', err);
+                        }, (err, data) => {
+                            if (err) return console.error("Something went wrong.", err);
+                            WidgetWall.getPostContent(data);
+                            if ((WidgetWall.postText || ($scope.WidgetWall.images && $scope.WidgetWall.images.length > 0))) {
+                                finalPostCreation($scope.WidgetWall.images);
+                            }
+                        });
+                    }
                 });
+            }
 
-
-            };
             WidgetWall.closePostSection = function () {
                 WidgetWall.goFullScreen = false;
                 Buildfire.history.pop();
@@ -690,229 +679,6 @@
                 if (!$scope.$$phase) $scope.$digest();
             }, true);
 
-            var getImageSizeInMB = function (size) {
-                return (size / (1024 * 1024));       // return size in MB
-            };
-
-
-            var checkUserIsAuthenticated = function () {
-                var deferredObject = $q.defer();
-                Buildfire.auth.getCurrentUser(function (err, userData) {
-
-                    if (userData) {
-                        WidgetWall.SocialItems.userDetails.userToken = userData.userToken;
-                        WidgetWall.SocialItems.userDetails.userId = userData._id;
-                        WidgetWall.SocialItems.userDetails.email = userData.email;
-                        WidgetWall.SocialItems.userDetails.firstName = userData.firstName;
-                        WidgetWall.SocialItems.userDetails.lastName = userData.lastName;
-                        WidgetWall.SocialItems.userDetails.displayName = userData.displayName;
-
-                        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-                        if (re.test(String(userData.firstName).toLowerCase()))
-                            WidgetWall.SocialItems.userDetails.firstName = 'Someone';
-
-                        if (re.test(String(userData.displayName).toLowerCase()))
-                            WidgetWall.SocialItems.userDetails.displayName = 'Someone';
-
-                        console.info('Current Logged In user details are -----------------', WidgetWall.SocialItems.userDetails);
-                        WidgetWall.showHideCommentBox();
-                        deferredObject.resolve(userData);
-                    }
-                    else if (err) {
-                        return deferredObject.reject(err);
-                    } else {
-                        if (err) {
-                            return deferredObject.reject(err);
-                        } else {
-                            Buildfire.auth.login(null, function (err, user) {
-                                console.log('Login called---------------------------------', user, err);
-                                if (err) {
-                                    return deferredObject.reject(err);
-                                } else if (user) {
-                                        if(WidgetWall.SocialItems.items.length !== 0) {
-                                            WidgetWall.openPostSection();   
-                                        }
-                                        deferredObject.resolve(user);
-                                } else {
-                                    WidgetWall.setAppTheme();
-                                    WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                                        if(data.totalRecord > WidgetWall.SocialItems.items.length) {
-                                            WidgetWall.page++;
-                                            WidgetWall.showMorePosts = true;
-                                        }
-                                        WidgetWall.loadedPlugin = true;
-                                        $rootScope.$digest();
-                                    });
-                                }
-                                    
-                            });
-                        }
-                    }
-                });
-                return deferredObject.promise;
-            };
-
-            function finalPostCreation(imageUrl) {
-                var postData = {};
-                postData.text = WidgetWall.postText ? WidgetWall.postText.replace(/[#&%+!@^*()-]/g, function (match) {
-                    return encodeURIComponent(match)
-                }) : '';
-                buildfire.auth.getCurrentUser(function (err, result) {
-                    postData.userDetails = {
-                        email: result.email,
-                        displayName: WidgetWall.SocialItems.userDetails.displayName,
-                        firstName: WidgetWall.SocialItems.userDetails.firstName,
-                        lastName: WidgetWall.SocialItems.userDetails.lastName,
-                        imageUrl: result.imageUrl,
-                    }
-                    postData.images = WidgetWall.images ? $scope.WidgetWall.images : [];
-                    postData.title = '';
-                    postData.imageUrl = imageUrl || null;
-                    postData.userToken = WidgetWall.SocialItems.userDetails.userToken;
-                    postData.userId = WidgetWall.SocialItems.userDetails.userId;
-                    // postData.userName = WidgetWall.SocialItems.userDetails.displayName;
-                    postData.isUserLikeActive = false;
-                    postData.likes = [];
-                    postData.comments = [];
-                    postData.wid = WidgetWall.wid;
-                    postData.createdOn = new Date();
-                    postData.createdBy = result._id;
-                    postData._buildfire = {
-                        index: {
-                            string1: WidgetWall.wid,
-                        }
-                    }
-                    WidgetWall.SocialItems.items.unshift(postData);
-                    WidgetWall.onSendMessage({ _id: postData.userId }, postData.text, () => { SocialDataStore.createPost(postData).then(success, error); })
-                });
-
-                var success = function (response) {
-                    console.log("POST", response)
-                    WidgetWall.postText = '';
-                    WidgetWall.picFile = '';
-                    if (response.data.error) {
-                        console.error('Error while creating post ', response.data.error);
-                        WidgetWall.waitAPICompletion = false;
-                        var _postIndex = WidgetWall.SocialItems.items.indexOf(postData);
-                        WidgetWall.SocialItems.items.splice(_postIndex, 1);
-                    } else if (response.data) {
-                        Buildfire.messaging.sendMessageToControl({
-                            name: EVENTS.POST_CREATED,
-                            status: 'Success',
-                            post: response.data
-                        });
-                        postData.id = response.data.id;
-                        WidgetWall.imageName = '';
-                        WidgetWall.imageSelected = false;
-                        postData.uniqueLink = response.data.uniqueLink;
-
-                        if (!$scope.$$phase) $scope.$digest();
-
-                        var wallIdValue = util.getParameterByName("wid");
-                        var wallId = wallIdValue ? wallIdValue : '';
-                        var options = {
-                            title: 'Notification',
-                            text: '',
-                            at: new Date(),
-                            users: [],
-                        };
-
-                        var sendNotification = function () {
-                            options.text = $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + WidgetWall.SocialItems.context.title;
-                            options.inAppMessage = options.text;
-                            if (wallId.length) options.queryString = `wid=${wallId}`;
-                            console.log("SENT NOTIFICATION", options)
-                            buildfire.notifications.pushNotification.schedule(
-                                options,
-                                function (e) {
-                                    if (e) console.error('Error while setting PN schedule.', e);
-                                }
-                            );
-                        }
-
-                        if (WidgetWall.SocialItems.isPrivateChat) {
-                            const user1Id = wallId.slice(0, 24);
-                            const user2Id = wallId.slice(24, 48);
-                            let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId 
-                            ? user2Id : user1Id;
-                            options.users.push(userToSend);
-                            sendNotification();
-                        } else {
-                            options.groupName = WidgetWall.wid;
-                            sendNotification();
-                        }
-
-
-                        WidgetWall.waitAPICompletion = false;
-                        $location.hash('top');
-                        $anchorScroll();
-                        Buildfire.navigation.scrollTop();
-                    }
-                };
-                var error = function (err) {
-                    var _postIndex = WidgetWall.SocialItems.items.indexOf(postData);
-                    WidgetWall.SocialItems.items.splice(_postIndex, 1);
-                    console.log('Error while creating post ', err);
-                    WidgetWall.postText = '';
-                    WidgetWall.picFile = '';
-                    WidgetWall.waitAPICompletion = false;
-                    if (err.status == 0) {
-                        console.log('------------->INTERNET CONNECTION PROBLEM')
-                        $modal
-                            .open({
-                                template: [
-                                    '<div class="padded clearfix">',
-                                    '<div class="content text-center">',
-                                    '<p>No internet connection was found. please try again later</p>',
-                                    '<a class="margin-zero"  ng-click="ok(option)">OK</a>',
-                                    '</div>',
-                                    '</div></div>'
-                                ].join(''),
-                                controller: 'MoreOptionsModalPopupCtrl',
-                                controllerAs: 'MoreOptionsPopup',
-                                size: 'sm',
-                                resolve: {
-                                    Info: function () {
-                                        return {};
-                                    }
-                                }
-                            });
-
-                    }
-                    if (!$scope.$$phase) $scope.$digest();
-
-                };
-            };
-
-            WidgetWall.getUserName = function (userId) {
-                if (!userId)
-                    return;
-
-                var userName = '';
-                WidgetWall.usersData.some(function (userData) {
-                    if (userData.userObject && userData.userObject._id == userId) {
-                        userName = userData.userObject.displayName;
-                        return true;
-                    }
-                });
-
-                return userName;
-            };
-            WidgetWall.getUserImage = function (userId) {
-                if (!userId)
-                    return;
-
-                var userImageUrl = '';
-                WidgetWall.usersData.some(function (userData) {
-                    if (userData.userObject && userData.userObject._id == userId) {
-                        userImageUrl = userData.userObject.imageUrl || '';
-                        return true;
-                    }
-                });
-
-                return userImageUrl;
-            };
             WidgetWall.navigateTo = function () {
                 let privacy = util.getParameterByName("privacy") ? util.getParameterByName("privacy") : null;
                 console.log(privacy)
@@ -927,7 +693,6 @@
                         pluginId: WidgetWall.SocialItems.appSettings.actionItem.pluginId,
                         queryString: WidgetWall.SocialItems.appSettings.actionItem.queryString
                     });
-
                 } else {
                     buildfire.actionItems.execute(WidgetWall.SocialItems.appSettings.actionItem, (err, action) => {
                         if (err) return console.error(err);
@@ -945,29 +710,50 @@
 
             WidgetWall.showMoreOptions = function (post) {
                 WidgetWall.modalPopupThreadId = post.id;
-                var checkuserAuthPromise = checkUserIsAuthenticated();
-                checkuserAuthPromise.then(function (response) {
-                    Modals.showMoreOptionsModal({
-                        'postId': post.id,
-                        'userId': post.userId,
-                        'socialItemUserId': WidgetWall.SocialItems.userDetails.userId,
-                        'languages': WidgetWall.languages
-                    })
-                        .then(function (data) {
-                            switch (data) {
-
-                                case MORE_MENU_POPUP.REPORT:
-
-                                    var reportPostPromise = SocialDataStore.reportPost(post.id);
-                                    reportPostPromise.then(function (response) {
-                                        for (var index in WidgetWall.SocialItems.items)
-                                            if (WidgetWall.SocialItems.items[index].id == post.id) {
-                                                WidgetWall.SocialItems.items.splice(index, 1);
-                                                break;
-                                            }
+                WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        Modals.showMoreOptionsModal({
+                            'postId': post.id,
+                            'userId': post.userId,
+                            'socialItemUserId': WidgetWall.SocialItems.userDetails.userId,
+                            'languages': WidgetWall.SocialItems.languages
+                        })
+                            .then(function (data) {
+                                switch (data) {
+        
+                                    case MORE_MENU_POPUP.REPORT:
+        
+                                        var reportPostPromise = SocialDataStore.reportPost(post.id);
+                                        reportPostPromise.then(function (response) {
+                                            for (var index in WidgetWall.SocialItems.items)
+                                                if (WidgetWall.SocialItems.items[index].id == post.id) {
+                                                    WidgetWall.SocialItems.items.splice(index, 1);
+                                                    break;
+                                                }
+                                            $modal
+                                                .open({
+                                                    templateUrl: 'templates/modals/report-generated-modal.html',
+                                                    controller: 'MoreOptionsModalPopupCtrl',
+                                                    controllerAs: 'MoreOptionsPopup',
+                                                    size: 'sm',
+                                                    resolve: {
+                                                        Info: function () {
+                                                            return post.id;
+                                                        }
+                                                    }
+                                                });
+        
+                                        }, function () {
+        
+                                        });
+        
+                                        break;
+                                    case MORE_MENU_POPUP.BLOCK:
+        
                                         $modal
                                             .open({
-                                                templateUrl: 'templates/modals/report-generated-modal.html',
+                                                templateUrl: 'templates/modals/delete-post-modal.html',
                                                 controller: 'MoreOptionsModalPopupCtrl',
                                                 controllerAs: 'MoreOptionsPopup',
                                                 size: 'sm',
@@ -977,114 +763,64 @@
                                                     }
                                                 }
                                             });
+                                        break;
+                                    default:
+                                }
+        
+                            },
+                                function (err) {
+                                    console.log('Error in Error handler--------------------------', err);
+                                });
+                    }
+                });
+            };
 
-                                    }, function () {
-
-                                    });
-
-                                    break;
-                                case MORE_MENU_POPUP.BLOCK:
-
-                                    $modal
-                                        .open({
-                                            templateUrl: 'templates/modals/delete-post-modal.html',
-                                            controller: 'MoreOptionsModalPopupCtrl',
-                                            controllerAs: 'MoreOptionsPopup',
-                                            size: 'sm',
-                                            resolve: {
-                                                Info: function () {
-                                                    return post.id;
-                                                }
-                                            }
-                                        });
-                                    break;
-                                default:
-                            }
-
-                        },
-                            function (err) {
-                                console.log('Error in Error handler--------------------------', err);
+            WidgetWall.likeThread = function (post) {
+                WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        let liked = post.likes.find(element => element === WidgetWall.SocialItems.userDetails.userId);
+                        let index = post.likes.indexOf(WidgetWall.SocialItems.userDetails.userId)
+                        let postUpdate = WidgetWall.SocialItems.items.find(element => element.id === post.id)
+                        if (liked !== undefined) {
+                            post.likes.splice(index, 1)
+                            postUpdate.isUserLikeActive = false;
+                            Buildfire.messaging.sendMessageToControl({
+                                'name': EVENTS.POST_UNLIKED,
+                                'id': postUpdate.id,
+                                'userId': liked
                             });
-                }, function (err) {
-                    console.log('Error is ::::::', err);
-                });
-            };
-
-            WidgetWall.likeThread = function (post, type) {
-                let pushNotification = false;
-                var checkuserAuthPromise = checkUserIsAuthenticated();
-                checkuserAuthPromise.then(function () {
-                    let liked = post.likes.find(element => element === WidgetWall.SocialItems.userDetails.userId);
-                    let index = post.likes.indexOf(WidgetWall.SocialItems.userDetails.userId)
-                    let postUpdate = WidgetWall.SocialItems.items.find(element => element.id === post.id)
-                    if (liked !== undefined) {
-                        post.likes.splice(index, 1)
-                        postUpdate.isUserLikeActive = false;
-                        Buildfire.messaging.sendMessageToControl({
-                            'name': EVENTS.POST_UNLIKED,
-                            'id': postUpdate.id,
-                            'userId': liked
-                        });
-                    }
-                    else {
-                        post.likes.push(WidgetWall.SocialItems.userDetails.userId);
-                        postUpdate.isUserLikeActive = true;
-                        Buildfire.messaging.sendMessageToControl({
-                            'name': EVENTS.POST_LIKED,
-                            'id': postUpdate.id,
-                            'userId': liked
-                        });
-                    }
-                    let wallId = util.getParameterByName("wid") ? util.getParameterByName("wid") : '';
-
-                    SubscribedUsersData.getGroupFollowingStatus(post.userId, wallId, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-
-                        let sendPN = function (options) {
-                            if (options.users[0] === WidgetWall.SocialItems.userDetails.userId) return;
-                            buildfire.notifications.pushNotification.schedule(
-                                options,
-                                function (e) {
-                                    if (e) console.error('Error while setting PN schedule.', e);
-                                }
-                            );
                         }
-
-                        buildfire.publicData.update(post.id, post, 'posts', (err, updatedPost) => {
-                            let oldPost = WidgetWall.SocialItems.items.find(element => element.id === updatedPost.id);
-                            oldPost = updatedPost;
-                            if (postUpdate.isUserLikeActive) {
-                                var options = {
-                                    title: 'Notification',
-                                    text: '',
-                                    at: new Date(),
-                                    users: []
-                                };
-                                options.text = $scope.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
-
-                                if (wallId.length) options.queryString = `wid=${wallId}`;
-                                options.inAppMessage = options.text;
-                                options.users.push(post.userId);
-                                if (status.length) {
-                                    sendPN(options);
-                                }
-                            }
-                        });
-                    });
+                        else {
+                            post.likes.push(WidgetWall.SocialItems.userDetails.userId);
+                            postUpdate.isUserLikeActive = true;
+                            Buildfire.messaging.sendMessageToControl({
+                                'name': EVENTS.POST_LIKED,
+                                'id': postUpdate.id,
+                                'userId': liked
+                            });
+                        }
+                        SocialDataStore.updatePost(post).then(() => {
+                            SubscribedUsersData.getGroupFollowingStatus(post.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                                if (status.length && !liked) WidgetWall.scheduleNotification(post, 'like');
+                            });
+                        }, (err) => console.log(err));
+                    }
                 });
-            };
+            }
 
             WidgetWall.seeMore = function (post) {
                 post.seeMore = true;
                 post.limit = 10000000;
                 if (!$scope.$$phase) $scope.$digest();
             };
+
             WidgetWall.getDuration = function (timestamp) {
                 if (timestamp)
                     return moment(timestamp.toString()).fromNow();
             };
 
             WidgetWall.goInToThread = function (threadId) {
-
                 if (threadId)
                     Location.go('#/thread/' + threadId);
             };
@@ -1108,39 +844,13 @@
                 SocialDataStore.deletePost(postId).then(success, error);
             };
 
-            WidgetWall.followUnfollow = function (isFollow) {
-                if (WidgetWall.SocialItems.userDetails.userToken && WidgetWall.SocialItems.userDetails.userId) {
-                    updateFollowUnfollow(isFollow);
-                } else {
-                    Buildfire.auth.login(null, function (err, user) {
-                        console.log('Login called---------------------------------', user, err);
-                        if (err) {
-                            console.log('Error while logging in---------', err);
-                        } else {
-                            updateFollowUnfollow(isFollow);
-                        }
-                    });
-                }
-            };
-
-            var updateFollowUnfollow = function () {
-                if (WidgetWall.groupFollowingStatus) {
-                    SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, result) {
-                        if (err) return console.error(err);
-                        else {
-                            WidgetWall.groupFollowingStatus = false;
-                            WidgetWall.unfollowWall();
-                            if (!$scope.$$phase) $scope.$digest();
-                        }
-                    })
-                } else WidgetWall.newInitSubscribe();
-            };
-
             Buildfire.messaging.onReceivedMessage = function (event) {
                 if (event) {
                     switch (event.name) {
                         case EVENTS.POST_DELETED:
-                            WidgetWall.deletePost(event.id);
+                            WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
+                                return el.id != event.id;
+                            });
 
                             if (WidgetWall.modalPopupThreadId == event.id)
                                 Modals.close('Post already deleted');
@@ -1184,80 +894,32 @@
                 }
             };
 
-            WidgetWall.uploadImage = function (file) {
-                var fileSize;
-                if (file) {
-                    fileSize = getImageSizeInMB(file.size);      // get image size in MB
-                    WidgetWall.imageSelected = true;
-                    if (fileSize > FILE_UPLOAD.MAX_SIZE) {
-                        WidgetWall.imageName = file.name + ' - ' + FILE_UPLOAD.SIZE_EXCEED;
-                        WidgetWall.showImageLoader = false;
-                    } else {
-                        WidgetWall.imageName = file.name;
-                        WidgetWall.showImageLoader = true;
-                    }
-                }
-            };
-
             WidgetWall.decodeText = function (text) {
                 return decodeURIComponent(text);
             };
 
-            WidgetWall.cancelImageSelect = function () {
-                WidgetWall.imageName = WidgetWall.imageName.replace(' - ' + FILE_UPLOAD.SIZE_EXCEED, '') + ' - ' + FILE_UPLOAD.CANCELLED;
-                $timeout(function () {
-                    WidgetWall.imageSelected = false;
-                    WidgetWall.imageName = '';
-                    WidgetWall.picFile = '';
-                    WidgetWall.showImageLoader = true;
-                    if (!$scope.$$phase)
-                        $scope.$digest();
-                }, 500);
-            };
-
-            $scope.$watch(function () {
-                return WidgetWall.SocialItems.items;
-            }, function () {
-                if (masterItems && WidgetWall.SocialItems.items && masterItems.length != WidgetWall.SocialItems.items.length) {
-                    masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
-                }
-            }, true);
+            // $scope.$watch(function () {
+            //     return WidgetWall.SocialItems.items;
+            // }, function () {
+            //     if (masterItems && WidgetWall.SocialItems.items && masterItems.length != WidgetWall.SocialItems.items.length) {
+            //         masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
+            //     }
+            // }, true);
 
             Buildfire.datastore.onUpdate(function (response) {
-                WidgetWall.SocialItems.parentThreadId = response && response.data.parentThreadId;
-                WidgetWall.SocialItems.socialAppId = response && response.data.socialAppId;
-                if (response.data.appSettings) {
-                    WidgetWall.SocialItems.appSettings = response.data.appSettings;
-                    if (response.data.appSettings.pinnedPost) {
-                        WidgetWall.pinnedPost = response.data.appSettings.pinnedPost;
-                        pinnedPost.innerHTML = WidgetWall.pinnedPost;
-                    } else pinnedPost.innerHTML = "";
-                    if (WidgetWall.SocialItems.appSettings.actionItem && WidgetWall.SocialItems.appSettings.actionItem.iconUrl) {
-                        WidgetWall.SocialItems.appSettings.actionItem.iconUrl = buildfire.imageLib.cropImage(WidgetWall.SocialItems.appSettings.actionItem.iconUrl, { size: 'xs', aspect: '1:1' })
-                        angular.element('#actionBtn').attr('style', `background-image: url(${WidgetWall.SocialItems.appSettings.actionItem.iconUrl}) !important`);
-                        if (!$scope.$$phase) $scope.$digest();
-                    } else angular.element('#actionBtn').attr('style', `background-image: unset`);
-                    console.log("UPDATEAAAA", response)
+                if (response.tag === "Social") {
+                    WidgetWall.setSettings(response.data.appSettings);
                     WidgetWall.showHidePrivateChat();
                     WidgetWall.followLeaveGroupPermission();
                     WidgetWall.showHideCommentBox();
-
                     setTimeout(function () {
                         if (!response.data.appSettings.disableFollowLeaveGroup) {
                             document.getElementById("membersSvg").style.setProperty("fill", WidgetWall.appTheme.icons, "important");
                         }
                     }, 100);
                 }
-
-                if (response.tag === "languages") {
-                    let languages = {};
-                    Object.keys(response.data.screenOne).forEach(e => {
-                        response.data.screenOne[e].value ? languages[e] = response.data.screenOne[e].value : languages[e] = response.data.screenOne[e].defaultValue;
-                    });
-                    WidgetWall.languages = languages;
-                }
-                $scope.$digest();
-
+                else if (response.tag === "languages")
+                    WidgetWall.SocialItems.formatLanguages(response.data.screenOne);
             });
 
             function updatePostsWithNames(user, status) {
@@ -1266,14 +928,14 @@
                     buildfire.publicData.search({
                         filter: {
                             $or: [
-                                { "$json.userId": user._id},
+                                { "$json.userId": user._id },
                                 { "$json.comments.userId": user._id },
                             ]
-                        }, page, pageSize, recordCount:true
+                        }, page, pageSize, recordCount: true
                     }, 'posts', (err, posts) => {
                         console.log(err, posts);
                         allPosts = allPosts.concat(posts.result);
-                        if(posts.totalRecord > allPosts.length) {
+                        if (posts.totalRecord > allPosts.length) {
                             page++;
                             get();
                         } else {
@@ -1291,23 +953,23 @@
                                         needsUpdate = true;
                                     }
                                     console.log("KOMENTAR UPDEJT")
-                                })
-                                 needsUpdate ? console.log("POSTS TO UPDATE",item) : null
+                                });
+                                needsUpdate ? console.log("POSTS TO UPDATE", item) : null
                                 if (needsUpdate) {
                                     let postUpdate = WidgetWall.SocialItems.items.find(post => post.id === item.id);
-                                    if(postUpdate) {
+                                    if (postUpdate) {
                                         let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
                                         WidgetWall.SocialItems.items[postIndex] = item.data;
                                     }
                                     buildfire.publicData.update(item.id, item.data, 'posts', (err, updatedPost) => {
                                         console.log(updatedPost)
-                                        if(!$scope.$$phase) $scope.$digest();
+                                        if (!$scope.$$phase) $scope.$digest();
 
                                     });
                                 }
 
                             })
-                            if(!$scope.$$phase) $scope.$digest();
+                            if (!$scope.$$phase) $scope.$digest();
                         }
                     });
                 }
@@ -1343,7 +1005,7 @@
                                 if (err) return console.error(err);
                                 updatePostsWithNames(user, status);
                             });
-                           
+
                         }
 
                         console.log('ima updated')
@@ -1352,71 +1014,46 @@
                 }
             }
 
+            WidgetWall.privateChatSecurity = function () {
+                if (WidgetWall.SocialItems.isPrivateChat) {
+                    const user1Id = WidgetWall.wid.slice(0, 24);
+                    const user2Id = WidgetWall.wid.slice(24, 48);
+                    var loggedUser = WidgetWall.SocialItems.userDetails.userId;
+
+                    if (loggedUser !== user1Id && loggedUser !== user2Id) {
+                        WidgetWall.wid = null;
+                        WidgetWall.SocialItems.wid = null;
+                        WidgetWall.SocialItems.items = [];
+                        WidgetWall.SocialItems.isPrivateChat = false;
+                        $rootScope.wasPrivateChat = true;
+                        var instanceId = buildfire.getContext().instanceId;
+                        buildfire.pluginInstance.get(instanceId, function (error, instances) {
+                            buildfire.history.push(instances.title, { showLabelInTitlebar: true });
+                            buildfire.appearance.titlebar.show();
+                            return WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
+                                if (data && data.length) {
+                                    if (data.length === WidgetWall.pageSize) {
+                                        WidgetWall.page++;
+                                        WidgetWall.showMorePosts = true;
+                                    }
+                                    $scope.$digest();
+                                }
+                            });
+                        });
+                    }
+                }
+            }
             // On Login
             Buildfire.auth.onLogin(function (user) {
-                WidgetWall.setAppTheme();
-                console.log('New user loggedIN from Widget Wall Page', user);
-                if (user && user._id) {
-                    WidgetWall.SocialItems.userDetails.userToken = user.userToken;
-                    WidgetWall.SocialItems.userDetails.userId = user._id;
-                    WidgetWall.SocialItems.userDetails.email = user.email;
-                    WidgetWall.SocialItems.userDetails.userTags = user.tags;
-
-                    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-                    if (re.test(String(user.firstName).toLowerCase()))
-                        WidgetWall.SocialItems.userDetails.firstName = 'Someone';
-
-                    if (re.test(String(user.displayName).toLowerCase()))
-                        WidgetWall.SocialItems.userDetails.displayName = 'Someone';
-
-                    if (WidgetWall.SocialItems.isPrivateChat) {
-                        const user1Id = WidgetWall.wid.slice(0, 24);
-                        const user2Id = WidgetWall.wid.slice(24, 48);
-                        var loggedUser = WidgetWall.SocialItems.userDetails.userId;
-
-                        if (loggedUser !== user1Id && loggedUser !== user2Id) {
-                            WidgetWall.wid = null;
-                            WidgetWall.SocialItems.wid = null;
-                            WidgetWall.SocialItems.items = [];
-                            WidgetWall.SocialItems.isPrivateChat = false;
-                            $rootScope.wasPrivateChat = true;
-                            var instanceId = buildfire.getContext().instanceId;
-                            buildfire.pluginInstance.get(instanceId, function (error, instances) {
-                                buildfire.history.push(instances.title, { showLabelInTitlebar: true });
-                                buildfire.appearance.titlebar.show();
-                                return WidgetWall.SocialItems.getPosts(WidgetWall.pageSize, WidgetWall.page, function (err, data) {
-                                    if (data && data.length) {
-                                        if (data.length === WidgetWall.pageSize) {
-                                            WidgetWall.page++;
-                                            WidgetWall.showMorePosts = true;
-                                        }
-                                        $scope.$digest();
-                                    }
-                                });
-                            });
+                console.log("NEW USER LOGGED IN", WidgetWall.SocialItems.forcedToLogin)
+                if (!WidgetWall.SocialItems.forcedToLogin) {
+                    WidgetWall.SocialItems.authenticateUser(user, (err, userData) => {
+                        if (err) return console.error("Getting user failed.", err);
+                        if (userData) {
+                            WidgetWall.checkFollowingStatus();
                         }
-                    }
-                    SubscribedUsersData.getGroupFollowingStatus(user._id, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                        if (err) {
-                            console.log('error while getting initial group following status.', err);
-                        } else {
-                            WidgetWall.loadedPlugin = true;
-                            if (!status.length) return WidgetWall.newInitSubscribe();
-                            WidgetWall.groupFollowingStatus = true;
-                            if (typeof status[0].data.userDetails.firstName === 'undefined'
-                                || typeof status[0].data.userDetails.lastName === 'undefined') {
-                                console.log("NEMA USER DETAILS");
-
-                            }
-                        }
-                        WidgetWall.showHideCommentBox();
-                        WidgetWall.statusCheck(status, user)
-                        buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
-                        $scope.$digest();
                     });
-
-                }
+                } else WidgetWall.SocialItems.forcedToLogin = false;
             });
             // On Logout
             Buildfire.auth.onLogout(function () {
@@ -1426,13 +1063,6 @@
                 WidgetWall.groupFollowingStatus = false;
                 buildfire.notifications.pushNotification.unsubscribe({ groupName: WidgetWall.wid }, () => { });
                 $scope.$digest();
-            });
-
-            /**
-             * Implementation of pull down to refresh
-             */
-            var onRefresh = Buildfire.datastore.onRefresh(function () {
-                Location.goToHome();
             });
 
         }])

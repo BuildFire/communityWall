@@ -5,7 +5,7 @@
 
             <a ng-click="Thread.followUnfollow()">
                 <p class="text-primary">
-                    {{Thread.followingStatus? Thread.languages.unfollowPost: Thread.languages.followPost }}
+                    {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
                 </p>
             </a>
         </div>
@@ -25,7 +25,7 @@
                         <div class="social-copy">
                             <p class="text-primary ellipsis">
                                 <a ng-click="Thread.openChatOrProfile(Thread.post.userId)">
-                                    {{getUserName(Thread.post.userDetails)}}</a>
+                                    {{Thread.SocialItems.getUserName(Thread.post.userDetails)}}</a>
                             </p>
                             <div ng-if="Thread.post.createdOn">
                                 <p class="time-ago opacity-seventy">
@@ -66,7 +66,7 @@
                             <div class="social-profile-photo">
                                 <div class="social-copy">
                                     <a class="social-name text-primary"
-                                        ng-click="Thread.openChatOrProfile(comment.userId)">{{getUserName(comment.userDetails)}}</a>
+                                        ng-click="Thread.openChatOrProfile(comment.userId)">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
                                     <div ng-if="comment.createdOn">
                                         <p class="time-ago opacity-seventy">
                                             {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>
@@ -108,15 +108,6 @@
     <div ng-click="Thread.openCommentSection()" on-touchend="Thread.openCommentSection()" class="small-post-box"
         ng-show="!Thread.goFullScreen">
         <div class="post-holder">
-            <div class="image-upload-queue ng-cloak" ng-if="Thread.imageSelected">
-                <div class="uploadifive-queue-item"><a ng-click="Thread.cancelImageSelect()"
-                        class="btn-delete-icon cross-icon"></a>
-                    <div><span class="filename">{{Thread.imageName}}</span></div>
-                    <div class="progress" ng-if="Thread.showImageLoader">
-                        <div class="progress-bar"></div>
-                    </div>
-                </div>
-            </div>
             <button class="add-message btn btn--fab btn--add btn-primary" id="addBtn">
                 <svg class="svgIcon" height="16px" fill="white" width="16px" version="1.1" viewBox="0 0 16 16" x="0px"
                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"

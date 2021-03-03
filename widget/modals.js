@@ -66,6 +66,7 @@
             $scope.userId=Info.userId;
             $scope.socialItemUserId=Info.socialItemUserId;
             $scope.languages = Info.languages;
+            console.log("INFO LANGUAGES", Info.languages)
             let reportPost = Info.languages.reportPost;
             MoreOptionsPopup.options.push(reportPost);
 

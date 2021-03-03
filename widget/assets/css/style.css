@@ -532,8 +532,8 @@ button.btn--lg,
     margin-right: 16px;
 }
 .social-item .post-text-user{
-    text-align: end;
-    margin-right: 20px;
+    margin-left: 30px;
+    margin-right: 0;
 }
 .post-text p{
     word-break: break-word;
@@ -1269,8 +1269,9 @@ html[buildfire][safe-area="true"] body {
 
 .wallMembers {
     margin-top: 5em;
-    /* display: block; */
     padding: 10px;
+    overflow: scroll;
+    max-height: calc(100vh - 50px);
 }
 
 .inner-addon { 
@@ -1323,4 +1324,12 @@ html[buildfire][safe-area="true"] body {
 
 .head-btn, .post-section, .social-wall {
     overflow: hidden;
+}
+
+.empty_state {
+    height: 50vh;
+    background-image: url('./.images/empty_page.svg') !important;
+    background-repeat: no-repeat !important;
+    background-attachment: absolute !important;
+    background-position: center !important;
 }
