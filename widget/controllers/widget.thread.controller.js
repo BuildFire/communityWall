@@ -190,6 +190,7 @@
                 if (Thread.allowPrivateChat) {
                     Thread.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
+                        if(userId === Thread.SocialItems.userDetails.userId) return;
                         buildfire.auth.getUserProfile({ userId: userId }, function (err, otherUser) {
                             if (err) return console.error("Getting user profile failed.", err);
                             Thread.openPrivateChat(userId, Thread.SocialItems.getUserName(otherUser));
@@ -487,6 +488,7 @@
                             }
                         }, (err, data) => {
                             if (err) return console.error("Something went wrong.", err);
+                            if(data.cancelled) return console.error('User canceled.')
                             Thread.getPostContent(data);
                             if ((Thread.comment || ($scope.Thread.images && $scope.Thread.images.length > 0))) {
                                 Thread.addComment($scope.Thread.imageUrl);

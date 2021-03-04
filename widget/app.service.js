@@ -96,6 +96,7 @@
                             if (data && data.length) {
                                 let count = 0;
                                 data.map(item => {
+                                    console.log("DELETE", item)
                                     buildfire.publicData.delete(item.id, 'subscribedUsersData', function (err, status) {
                                         if (err) return console.error(err)
                                         count++;
@@ -117,12 +118,16 @@
                                 pageSize, page, recordCount: true,
                                 filter: { '_buildfire.index.string1': wallId ? wallId : { "$eq": "" } }
                             }, 'subscribedUsersData', function (err, data) {
+                                console.log("AAAAAAA", data)
                                 if (err) return cb(err, null);
-                                data = data.result.filter((item) => { return item.data.userId !== userId });
-                                allUsers = allUsers.concat(data);
-                                if (allUsers.length === data.totalRecord)
+                                //data = data.result.filter((item) => { return item.data.userId !== userId });
+                                data.result.map(item => allUsers.push(item.data));
+                                if (allUsers.length === data.totalRecord) {
+                                    allUsers = allUsers.filter((item) => { return item.userId !== userId });
                                     cb(null, allUsers);
-                                else if (allUsers.length) {
+                                }
+                                    
+                                else {
                                     page++;
                                     getUsers();
                                 }
@@ -321,16 +326,18 @@
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
                 let name = null;
-                if (userDetails.displayName !== 'Someone'
+                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase())
                     && userDetails.displayName) {
                     name = userDetails.displayName;
                 }
-                else if (userDetails.firstName !== 'Someone' &&
-                    userDetails.firstName && userDetails.lastName)
+                else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase())
+                && userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
                 else name = 'Someone';
                 if (name.length > 25)
                     name = name.substring(0, 25) + '...';
+                    console.log("NAMEEEEEEEEEE", name)
                 return name;
             }
             SocialItems.prototype.authenticateUser = function (loggedUser, callback) {
@@ -370,7 +377,7 @@
 
             SocialItems.prototype.getPosts = function (pageSize, page, callback) {
                 let searchOptions = { pageSize, page, sort: { "id": -1 }, recordCount: true }
-                if (_this.wid === null || typeof (_this.wid) === 'undefined')
+                if (_this.wid === "")
                     searchOptions.filter = { '_buildfire.index.string1': { "$eq": "" } }
                 else
                     searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
@@ -404,7 +411,7 @@
                 if (!_this.newPostTimerChecker) {
                     _this.newPostTimerChecker = setInterval(function () {
                         let searchOptions = { sort: { "id": -1 } }
-                        if (_this.wid === null)
+                        if (_this.wid === "")
                             searchOptions.filter = { "_buildfire.index.string1": { "$eq": "" } }
                         else
                             searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }

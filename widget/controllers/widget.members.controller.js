@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('MembersCtrl', ['$scope', '$rootScope', '$routeParams', 'Buildfire', 'SubscribedUsersData', function ($scope, $rootScope, $routeParams, Buildfire, SubscribedUsersData) {
+        .controller('MembersCtrl', ['$scope', '$rootScope', '$routeParams', 'Buildfire', 'SubscribedUsersData', 'SocialItems', function ($scope, $rootScope, $routeParams, Buildfire, SubscribedUsersData, SocialItems) {
 
             var Members = this;
             Members.userDetails = {};
@@ -17,10 +17,12 @@
             Members.context = null;
             Members.languages = null;
             Members.appSettings = null;
-            $scope.getUserName = function(userDetails) {
+            Members.SocialItems = SocialItems.getInstance();
+            console.log("EEEEEEEEEEE", Members.SocialItems)
+            $scope.getUserName = function (userDetails) {
                 let name = null;
                 if (userDetails.displayName !== 'Someone'
-                && userDetails.displayName) {
+                    && userDetails.displayName) {
                     name = userDetails.displayName;
                 }
                 else if (userDetails.firstName !== 'Someone' &&
@@ -37,44 +39,39 @@
                     if (err) return console.log(err);
                     document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
                 });
-                Buildfire.datastore.get("Social", (err, result) => {
-                    if (err) return console.log(err);
-                    if (result.data && result.data.appSettings)
-                        Members.appSettings = result.data.appSettings;
-                    console.log("REZULT", result)
-                });
-                Buildfire.datastore.get("languages", (err, result) => {
-                    if (err) return console.log(err)
-                    let strings = {};
-                    if (result.data && result.data.screenOne)
-                        strings = result.data.screenOne;
-                    else
-                        strings = stringsConfig.screenOne.labels;
 
-                    let languages = {};
-                    Object.keys(strings).forEach(e => {
-                        strings[e].value ? languages[e] = strings[e].value : languages[e] = strings[e].defaultValue;
-                    });
-                    Members.languages = languages;
-                    Members.noResultsText = languages.membersBlankState;
-                });
-
+                Members.appSettings = Members.SocialItems.appSettings;
+                Members.languages = Members.SocialItems.languages.membersBlankState;
+                console.log("REZULT", Members.SocialItems.languages.membersBlankState)
+ 
                 if ($routeParams.wallId === "home") Members.wallId = "";
                 else Members.wallId = $routeParams.wallId;
-                Buildfire.auth.getCurrentUser(function (err, user) {
-                    if (err) return console.log(err);
-                    Members.userDetails = user;
-                    Buildfire.getContext((err, context) => {
-                        if (err) return console.log(err);
-                        Members.context = context;
+                Members.SocialItems.authenticateUser(null, (err, user) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    console.log(user);
+                    if(user) {
                         SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
                             if (err) return console.log(err);
                             Members.users = users;
                             console.log("MEMBERS", users)
                             $scope.$digest();
                         });
-                    });
+                    }
                 });
+                // Buildfire.auth.getCurrentUser(function (err, user) {
+                //     if (err) return console.log(err);
+                //     Members.userDetails = user;
+                //     Buildfire.getContext((err, context) => {
+                //         if (err) return console.log(err);
+                //         Members.context = context;
+                //         SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
+                //             if (err) return console.log(err);
+                //             Members.users = users;
+                //             console.log("MEMBERS", users)
+                //             $scope.$digest();
+                //         });
+                //     });
+                // });
             }
 
             $scope.clear = function () {
@@ -95,7 +92,7 @@
                 if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
                 Members.searchOptions.filter = {
-                    '_buildfire.index.string1': Members.wallId ? Members.wallId : {"$eq" : ""},
+                    '_buildfire.index.string1': Members.wallId ? Members.wallId : { "$eq": "" },
                     $or: [
                         { "$json.userDetails.displayName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.email": { $regex: $scope.searchInput, $options: 'i' } },
@@ -161,22 +158,34 @@
 
             Members.openPrivateChat = function (user) {
                 if (Members.appSettings && Members.appSettings.disablePrivateChat) return;
-                let wid = null;
+                Members.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    console.log("AAAAAAAAAAAAAAAAAAAAAAAAA", user, Members.SocialItems.userDetails.userId);
+                    if(userData) {
+                        let wid = null;
 
-                if (Members.userDetails._id && Members.userDetails._id != user.userId) {
-                    if (Members.userDetails._id > user.userId)
-                        wid = Members.userDetails._id + user.userId;
-                    else
-                        wid = user.userId + Members.userDetails._id;
-
-                    Buildfire.history.push("Main Social Wall");
-                    Buildfire.navigation.navigateTo({
-                        pluginId: Members.context.pluginId,
-                        instanceId: Members.context.instanceId,
-                        title: $scope.getUserName(Members.userDetails) + ' | ' + $scope.getUserName(user.userDetails),
-                        queryString: 'wid=' + wid + "&wTitle=" + encodeURIComponent($scope.getUserName(Members.userDetails) + ' | ' + $scope.getUserName(user.userDetails))
-                    });
-                }
+                        if (Members.SocialItems.userDetails.userId && Members.SocialItems.userDetails.userId 
+                            != user.userId) {
+                            if (Members.SocialItems.userDetails.userId > user.userId)
+                                wid = Members.SocialItems.userDetails.userId + user.userId;
+                            else
+                                wid = user.userId + Members.SocialItems.userDetails.userId;
+                            console.log("WALL ID", wid);
+                            buildfire.dialog.alert({
+                                title: "Access Denied!",
+                                subtitle: "Operation not allowed!",
+                                message: wid
+                            });
+                            Buildfire.history.push("Main Social Wall");
+                            Buildfire.navigation.navigateTo({
+                                pluginId: Members.SocialItems.context.pluginId,
+                                instanceId: Members.SocialItems.context.instanceId,
+                                title: $scope.getUserName(Members.SocialItems.userDetails) + ' | ' + $scope.getUserName(user.userDetails),
+                                queryString: 'wid=' + wid + "&wTitle=" + encodeURIComponent($scope.getUserName(Members.SocialItems.userDetails) + ' | ' + $scope.getUserName(user.userDetails))
+                            });
+                        }
+                    }
+                });
             };
 
             Members.init();

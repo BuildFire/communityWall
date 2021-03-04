@@ -27,7 +27,7 @@
               <div class="social-copy">
                 <p class="text-primary ellipsis">
                   <a ng-click="Members.openPrivateChat(user)">
-                    {{getUserName(user.userDetails)}}
+                    {{Members.SocialItems.getUserName(user.userDetails)}}
                   </a>
                 </p>
               </div>
@@ -40,7 +40,7 @@
         <button><a>Show More</a></button>
     </div>
     <div ng-show="Members.users.length<=0">
-      <h5 class="text-center" style="padding-top: 40px;">{{Members.noResultsText}}</h5>
+      <h5 class="text-center" style="padding-top: 40px;">{{Members.SocialItems.languages.membersBlankState}}</h5>
   </div>
     </div>
 
