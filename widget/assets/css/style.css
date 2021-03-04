@@ -1328,7 +1328,7 @@ html[buildfire][safe-area="true"] body {
 
 .empty_state {
     height: 50vh;
-    background-image: url('./.images/empty_page.svg') !important;
+    background-image: url('./images/empty_page.svg') !important;
     background-repeat: no-repeat !important;
     background-attachment: absolute !important;
     background-position: center !important;

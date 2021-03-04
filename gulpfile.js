@@ -141,7 +141,8 @@ gulp.task("resources", function () {
 });
 
 gulp.task("images", function () {
-  return gulp.src(["**/.images/**"], { base: "." }).pipe(imagemin()).pipe(gulp.dest(destinationFolder));
+  console.log(destinationFolder)
+  return gulp.src(["widget/images/*"], { base: "." }).pipe(imagemin()).pipe(gulp.dest(destinationFolder));
 });
 
 var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS"];
