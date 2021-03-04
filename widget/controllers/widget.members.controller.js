@@ -95,10 +95,13 @@
                     '_buildfire.index.string1': Members.wallId ? Members.wallId : { "$eq": "" },
                     $or: [
                         { "$json.userDetails.displayName": { $regex: $scope.searchInput, $options: 'i' } },
+                        { "$json.userDetails.firstName": { $regex: $scope.searchInput, $options: 'i' } },
+                        { "$json.userDetails.lastName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.email": { $regex: $scope.searchInput, $options: 'i' } },
                     ]
                 }
                 Members.searchOptions.page = 0;
+                Members.searchOptions.sort = {"id":1 }
 
                 Members.executeSearch(Members.searchOptions);
             };
