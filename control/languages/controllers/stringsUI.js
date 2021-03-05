@@ -71,8 +71,8 @@ const stringsUI = {
 
 		if(labelObj.maxLength>0)
 			inputElement.maxLength = labelObj.maxLength;
-		console.log(labelObj.maxLength)
-		inputElement.required = labelObj.required;
+		
+ 		inputElement.required = labelObj.required;
 
 		inputElement.setAttribute("bfString", prop);
 

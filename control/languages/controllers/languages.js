@@ -3,95 +3,62 @@ app.controller('LanguagesCtrl', ['$scope', function ($scope) {
     $scope.data = {};
 
     let strings;
-    let screens = {};
-    $scope.activeScreen = 1;
-
-    let toInject = null;
-
-    function checkOld(data) {
-        if(Object.keys(data.screenOne).length <= 6) {
-         
-            Object.keys(data.screenOne).forEach((key) => {
-                if(data.screenOne[key].value) {
-                    stringsConfig.screenOne.labels[key].value = data.screenOne[key].value;
-                }
-            });
-            toInject = stringsConfig.screenOne.labels;
-            buildfire.datastore.save({ screenOne: stringsConfig.screenOne.labels }, "languages", (err, data) => { console.log(data) });
-        }
-    }
-
-    function init() {
+    const stringsCopy = JSON.parse(JSON.stringify(stringsConfig));
+    function loadLanguage(lang) {
+        
         buildfire.datastore.get("languages", (err, result) => {
             if (result.data && result.data.screenOne) {
-                toInject = result.data.screenOne;
-                checkOld(result.data);
+                Object.keys(result.data.screenOne).forEach((oldKey) => {
+                    Object.keys(stringsConfig).forEach((defaultKey) => {
+                        Object.keys(stringsCopy[defaultKey].labels).forEach((newKey) => {
+                            if(stringsCopy[defaultKey].labels[newKey].defaultValue === result.data.screenOne[oldKey].defaultValue && result.data.screenOne[oldKey].value) 
+                                stringsCopy[defaultKey].labels[newKey].value = result.data.screenOne[oldKey].value
+                        }); 
+                    });
+                });
+                Object.keys(stringsConfig).forEach((defaultKey) => {
+                    delete stringsCopy[defaultKey].title;
+                    delete stringsCopy[defaultKey].subtitle;
+                    Object.keys(stringsCopy[defaultKey].labels).forEach((newKey) => {
+                        let defaultValue = stringsCopy[defaultKey].labels[newKey].defaultValue;
+                        let value = stringsCopy[defaultKey].labels[newKey].value;
+                        stringsCopy[defaultKey][newKey] = {defaultValue };
+                        if(value) stringsCopy[defaultKey][newKey].value = value;
+                    });
+                    delete stringsCopy[defaultKey].labels;
+                });
+
+                buildfire.datastore.save(stringsCopy, "languages", (err, res) => {
+                    strings = new buildfire.services.Strings(lang, stringsConfig);
+                    strings.init().then(() => {
+                        strings.inject();
+                    });
+                    stringsUI.init("stringsContainer", strings, stringsConfig);
+                })
             }
             else { 
-                toInject = stringsConfig.screenOne.labels;
+                strings = new buildfire.services.Strings(lang, stringsConfig);
+                strings.init().then(() => {
+                    strings.inject();
+                });
+                stringsUI.init("stringsContainer", strings, stringsConfig);
             }
-            loadLanguage();
         });
+        
     }
 
-    init();
-    
-    function setupScreens(data) {
-        screens = {
-            screenOne: {
-                labels: {
-                }
-            }
-        }
-        if ($scope.activeScreen === 1) {
-            screens.screenOne.labels.leaveGroup = data.leaveGroup;
-            screens.screenOne.labels.joinGroup = data.joinGroup;
-            screens.screenOne.labels.postsNoResults = data.postsNoResults;
-        }
-        if ($scope.activeScreen === 2) {
-            screens.screenOne.labels.followPost = data.followPost;
-            screens.screenOne.labels.unfollowPost = data.unfollowPost;
-            screens.screenOne.labels.deleteComment = data.deleteComment;
-        }
-        if ($scope.activeScreen === 3) {
-            screens.screenOne.labels.membersBlankState = data.membersBlankState;
-            screens.screenOne.labels.membersNoResults = data.membersNoResults;
-        }
-        if ($scope.activeScreen === 4) {
-            screens.screenOne.labels.cancelPost = data.cancelPost;
-            screens.screenOne.labels.confirmPost = data.confirmPost;
-            screens.screenOne.labels.writePost = data.writePost;
-        }
-        if ($scope.activeScreen === 5) {
-            screens.screenOne.labels.moreOptions = data.moreOptions;
-            screens.screenOne.labels.reportPost = data.reportPost;
-            screens.screenOne.labels.deletePost = data.deletePost;
-        }
-        return screens;
-    }
+    loadLanguage("en-us");
 
-    function loadLanguage(lang) {
-        let t = setupScreens(toInject);
-        strings = new buildfire.services.Strings(lang, t);
-        strings.init().then(() => {
-            strings._data.screenOne = t.screenOne.labels
-            stringsUI.init("stringsContainer", strings, t);
-            strings.inject();
+    $scope.createLanguage = function (language) {
+        stringsContainer.disabled = true;
+        strings.createLanguage(language, () => {
+            stringsContainer.disabled = false;
         });
+        return false;
     }
 
-    $scope.setScreen = function (screen) {
-        if (screen == $scope.activeScreen) return;
-        $scope.activeScreen = screen;
-        loadLanguage();
-    }
-
-    $scope.save = function () {
-        let data = strings.getData();
-        Object.keys(data).forEach(function (key) {
-            toInject[key] = data[key];
-        });
-        strings.save(toInject);
+    $scope.save = function() {
+        strings.save();
     }
 
 }]);

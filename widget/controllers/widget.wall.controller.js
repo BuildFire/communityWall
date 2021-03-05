@@ -129,7 +129,6 @@
             WidgetWall.showUserLikes = function () {
                 WidgetWall.SocialItems.items.map(item => {
                     let liked = item.likes.find(like => like === WidgetWall.SocialItems.userDetails.userId);
-                    console.log("AAAAAAAAA", liked, item)
                     if (liked) item.isUserLikeActive = true;
                     else item.isUserLikeActive = false;
                 });
@@ -137,6 +136,7 @@
             }
             //======================================================================================
             WidgetWall.checkFollowingStatus = function (user = null) {
+                buildfire.spinner.show();
                 SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.log('error while getting initial group following status.', err);
                     else {
@@ -144,6 +144,7 @@
                         WidgetWall.groupFollowingStatus = true;
                         WidgetWall.showHideCommentBox();
                         if (user) WidgetWall.statusCheck(status, user);
+                        buildfire.spinner.hide();
                         $scope.$digest();
                     }
                 });
@@ -187,6 +188,7 @@
                         WidgetWall.groupFollowingStatus = true;
                         buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
                         $scope.$digest();
+                        buildfire.spinner.hide();
                     }
                 });
             }
@@ -876,7 +878,6 @@
                 WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     WidgetWall.checkFollowingStatus();
-                    console.log("UUUUUUUUUUUU")
                     if (threadId)
                         Location.go('#/thread/' + threadId);
                 });
@@ -955,14 +956,6 @@
                 return decodeURIComponent(text);
             };
 
-            // $scope.$watch(function () {
-            //     return WidgetWall.SocialItems.items;
-            // }, function () {
-            //     if (masterItems && WidgetWall.SocialItems.items && masterItems.length != WidgetWall.SocialItems.items.length) {
-            //         masterItems = WidgetWall.SocialItems && WidgetWall.SocialItems.items && WidgetWall.SocialItems.items.slice(0, WidgetWall.SocialItems.items.length);
-            //     }
-            // }, true);
-
             Buildfire.datastore.onUpdate(function (response) {
                 if (response.tag === "Social") {
                     WidgetWall.setSettings(response.data.appSettings);
@@ -975,8 +968,9 @@
                         }
                     }, 100);
                 }
-                else if (response.tag === "languages")
-                    WidgetWall.SocialItems.formatLanguages(response.data.screenOne);
+                else if (response.tag === "languages") 
+                    WidgetWall.SocialItems.formatLanguages(response);
+                console.log(WidgetWall.SocialItems.languages)
             });
 
             function updatePostsWithNames(user, status) {
@@ -1082,7 +1076,6 @@
                         WidgetWall.SocialItems.wid = null;
                         WidgetWall.SocialItems.items = [];
                         WidgetWall.SocialItems.isPrivateChat = false;
-                        $rootScope.wasPrivateChat = true;
                         var instanceId = buildfire.getContext().instanceId;
                         buildfire.pluginInstance.get(instanceId, function (error, instances) {
                             Buildfire.navigation.navigateTo({

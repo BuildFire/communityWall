@@ -14,6 +14,11 @@
             return {
                 go: function (path) {
                     _location.href = path;
+                    console.log("PATH", path)
+                    let label = null;
+                    path.includes('thread') ? label = 'thread' : label = 'members';
+                    console.log(label)
+                    buildfire.history.push(label, {});
                 },
                 goToHome: function () {
                     _location.href = _location.href.substr(0, _location.href.indexOf('#'));
@@ -82,7 +87,6 @@
                     window.buildfire.publicData.insert(params, 'subscribedUsersData', function (err, data) {
                         if (err) callback(err);
                         else {
-                            console.log("SAVED DATA", data)
                             callback();
                         }
                     }
@@ -96,7 +100,6 @@
                             if (data && data.length) {
                                 let count = 0;
                                 data.map(item => {
-                                    console.log("DELETE", item)
                                     buildfire.publicData.delete(item.id, 'subscribedUsersData', function (err, status) {
                                         if (err) return console.error(err)
                                         count++;
@@ -112,13 +115,11 @@
                     var allUsers = [];
                     let page = 0;
                     function getUsers() {
-                        console.log("LOADING USERS", page)
                         window.buildfire.publicData.search(
                             {
                                 pageSize, page, recordCount: true,
                                 filter: { '_buildfire.index.string1': wallId ? wallId : { "$eq": "" } }
                             }, 'subscribedUsersData', function (err, data) {
-                                console.log("AAAAAAA", data)
                                 if (err) return cb(err, null);
                                 //data = data.result.filter((item) => { return item.data.userId !== userId });
                                 data.result.map(item => allUsers.push(item.data));
@@ -126,7 +127,7 @@
                                     allUsers = allUsers.filter((item) => { return item.userId !== userId });
                                     cb(null, allUsers);
                                 }
-                                    
+
                                 else {
                                     page++;
                                     getUsers();
@@ -142,6 +143,7 @@
                             var allUsers = [];
                             if (data && data.length) {
                                 data.map(user => allUsers.push(user.data));
+                                console.log("ALL USERS", allUsers)
                                 callback(null, allUsers)
                             } else callback(null, [])
                         }
@@ -253,12 +255,11 @@
                 },
                 addComment: function (data) {
                     var deferred = $q.defer();
-                    if(data.userDetails.userTags) {
+                    if (data.userDetails.userTags) {
                         delete data.userDetails.userTags
                         delete data.userDetails.userToken
                     }
-                    console.log(data, "AAAAAAAAAAAAA")
-                    
+
                     buildfire.publicData.getById(data.threadId, 'posts', function (err, post) {
                         if (err) return deferred.reject(err);
                         post.data.comments.push(data);
@@ -332,12 +333,11 @@
                     name = userDetails.displayName;
                 }
                 else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase())
-                && userDetails.firstName && userDetails.lastName)
+                    && userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
                 else name = 'Someone';
                 if (name.length > 25)
                     name = name.substring(0, 25) + '...';
-                    console.log("NAMEEEEEEEEEE", name)
                 return name;
             }
             SocialItems.prototype.authenticateUser = function (loggedUser, callback) {
@@ -434,11 +434,45 @@
                 }
             }
 
-            SocialItems.prototype.formatLanguages = function (strings) {
+            SocialItems.prototype.formatLanguages = function (response) {
+                const stringsCopy = JSON.parse(JSON.stringify(stringsConfig));
                 _this.languages = {};
-                Object.keys(strings).forEach(e => {
-                    strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
-                });
+                if (response.data && response.data.screenOne) {
+                    Object.keys(response.data.screenOne).forEach((oldKey) => {
+                        Object.keys(stringsConfig).forEach((defaultKey) => {
+                            Object.keys(stringsCopy[defaultKey].labels).forEach((newKey) => {
+                                if (stringsCopy[defaultKey].labels[newKey].defaultValue === response.data.screenOne[oldKey].defaultValue && response.data.screenOne[oldKey].value)
+                                    stringsCopy[defaultKey].labels[newKey].value = response.data.screenOne[oldKey].value
+                            });
+                        });
+                    });
+                    Object.keys(stringsConfig).forEach((defaultKey) => {
+                        delete stringsCopy[defaultKey].title;
+                        delete stringsCopy[defaultKey].subtitle;
+                        Object.keys(stringsCopy[defaultKey].labels).forEach((newKey) => {
+                            let defaultValue = stringsCopy[defaultKey].labels[newKey].defaultValue;
+                            let value = stringsCopy[defaultKey].labels[newKey].value;
+                            stringsCopy[defaultKey][newKey] = { defaultValue };
+                            if (value) stringsCopy[defaultKey][newKey].value = value;
+                        });
+                        delete stringsCopy[defaultKey].labels;
+                    });
+                    let strings = {}
+                    strings = Object.assign({}, stringsCopy.mainWall, stringsCopy.sideThread, stringsCopy.members, stringsCopy.input, stringsCopy.modal);
+                    Object.keys(strings).forEach(e => {
+                        strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
+                    });
+                } else {
+                    let strings = {};
+                    if (response.data && response.data.mainWall && response.data.sideThread && response.data.members && response.data.input && response.data.modal)
+                        strings = Object.assign({}, response.data.mainWall, response.data.sideThread, response.data.members, response.data.input, response.data.modal);
+                    else
+                        strings = Object.assign({}, stringsConfig.mainWall.labels, stringsConfig.sideThread.labels, stringsConfig.members.labels, stringsConfig.input.labels, stringsConfig.modal.labels);
+                    Object.keys(strings).forEach(e => {
+                        strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
+                    });
+                }
+                console.log(_this.languages);
                 $rootScope.$digest();
             }
 
@@ -447,17 +481,16 @@
                     if (error) return console.error("Fetching app context failed.", err);
                     _this.context = context;
                     _this.wid = Util.getParameterByName("wid") ? Util.getParameterByName("wid") : '';
-                    if (_this.wid.length === 48)
+                    if (_this.wid.length === 48) {
+                        $rootScope.isPrivateChat = true;
                         _this.isPrivateChat = true;
+                    }
+
 
                     buildfire.datastore.get("languages", (err, languages) => {
                         if (err) return console.log(err)
-                        let strings = {};
-                        if (languages.data && languages.data.screenOne)
-                            strings = languages.data.screenOne;
-                        else
-                            strings = stringsConfig.screenOne.labels;
-                        _this.formatLanguages(strings);
+                        _this.formatLanguages(languages);
+
                         buildfire.datastore.get("Social", (err, response) => {
                             callback(err, { appSettings: response.data });
                         });

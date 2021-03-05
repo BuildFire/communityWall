@@ -13,8 +13,8 @@
             Thread.showImageLoader = true;
             Thread.modalPopupThreadId;
             Thread.followingStatus = false;
-            console.log(Util)
-            Thread.util = Util
+            Thread.util = Util;
+            Thread.loaded = false;
             var counter = 0;
             $scope.setupImageList = function (comment) {
                 if (comment.imageUrl.length) {
@@ -112,8 +112,6 @@
                     console.log(Thread.SocialItems.items)
                     let post = Thread.SocialItems.items.find(el => el.id === $routeParams.threadId);
                     Thread.post = post || {};
-                    Thread.setupThreadImage();
-                    Buildfire.history.push('Post', { post: Thread.post });
                     $rootScope.showThread = false;
 
                     Thread.SocialItems.authenticateUser(null, (err, userData) => {
@@ -132,6 +130,8 @@
                                 else {
                                     Thread.followUnfollow();
                                 }
+                                Thread.loaded = true;
+                                Thread.setupThreadImage();
                                 $scope.$digest();
                             });
                         }
