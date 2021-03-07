@@ -532,8 +532,7 @@ button.btn--lg,
     margin-right: 16px;
 }
 .social-item .post-text-user{
-    margin-left: 30px;
-    margin-right: 0;
+    text-align: end;
 }
 .post-text p{
     word-break: break-word;

@@ -60,11 +60,10 @@
                                         position: absolute;
                                         padding-left: 15px;
                                         margin: 5px;
-                                        margin-left: 0;
-                                        text-transform: uppercase;"
+                                        margin-left: 0;"
                                         >
                                         
-                                        <button class="btn btn-primary" id="followBtn" style="display: flex; font-size: 13px; text-transform: uppercase;">
+                                        <button class="btn btn-primary" id="followBtn" style="display: flex; font-size: 13px;">
                                             <span class="plusMinusIcon" >{{WidgetWall.groupFollowingStatus ? '&#8722;' : '&#43;'}}</span>
                                             {{WidgetWall.groupFollowingStatus ? (WidgetWall.SocialItems.languages.leaveGroup) : WidgetWall.SocialItems.languages.joinGroup}}
                                         </button>                                    
@@ -196,8 +195,8 @@
                 </div>
             </div>
             <div
-                class="holder padding-zero bottom-post" ng-class="{'full-post-section':WidgetWall.goFullScreen}">
-                <div class="small-post-box" ng-submit="" handle-phone-submit ng-show="!WidgetWall.goFullScreen">
+                class="holder padding-zero bottom-post" ng-class="full-post-section">
+                <div class="small-post-box" ng-submit="" handle-phone-submit>
                     <div class="post-holder">
 
                         <div id="actionBtn"  ng-show="WidgetWall.SocialItems.appSettings.actionItem" class="add-message btn btn--act btn--add btn-primary" ng-click="WidgetWall.navigateTo()"

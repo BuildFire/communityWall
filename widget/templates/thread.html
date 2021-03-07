@@ -104,9 +104,8 @@
     </div>
 </div>
 <div ng-show="Thread.userDetails.userId == null || Thread.allowCreateThread" class="holder padding-zero bottom-post"
-    ng-class="{'full-post-section':Thread.goFullScreen}">
-    <div ng-click="Thread.openCommentSection()" on-touchend="Thread.openCommentSection()" class="small-post-box"
-        ng-show="!Thread.goFullScreen">
+    ng-class="full-post-section">
+    <div ng-click="Thread.openCommentSection()" on-touchend="Thread.openCommentSection()" class="small-post-box">
         <div class="post-holder">
             <button class="add-message btn btn--fab btn--add btn-primary" id="addBtn">
                 <svg class="svgIcon" height="16px" fill="white" width="16px" version="1.1" viewBox="0 0 16 16" x="0px"

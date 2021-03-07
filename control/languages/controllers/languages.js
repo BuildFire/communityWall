@@ -29,12 +29,8 @@ app.controller('LanguagesCtrl', ['$scope', function ($scope) {
                 });
 
                 buildfire.datastore.save(stringsCopy, "languages", (err, res) => {
-                    strings = new buildfire.services.Strings(lang, stringsConfig);
-                    strings.init().then(() => {
-                        strings.inject();
-                    });
-                    stringsUI.init("stringsContainer", strings, stringsConfig);
-                })
+                    window.location.reload();
+                });
             }
             else { 
                 strings = new buildfire.services.Strings(lang, stringsConfig);
