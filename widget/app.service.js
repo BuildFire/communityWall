@@ -14,10 +14,7 @@
             return {
                 go: function (path) {
                     _location.href = path;
-                    console.log("PATH", path)
-                    let label = null;
-                    path.includes('thread') ? label = 'thread' : label = 'members';
-                    console.log(label)
+                    let label = path.includes('thread') ? 'thread' : 'members';
                     buildfire.history.push(label, {});
                 },
                 goToHome: function () {
@@ -121,7 +118,6 @@
                                 filter: { '_buildfire.index.string1': wallId ? wallId : { "$eq": "" } }
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) return cb(err, null);
-                                //data = data.result.filter((item) => { return item.data.userId !== userId });
                                 data.result.map(item => allUsers.push(item.data));
                                 if (allUsers.length === data.totalRecord) {
                                     allUsers = allUsers.filter((item) => { return item.userId !== userId });
@@ -143,7 +139,6 @@
                             var allUsers = [];
                             if (data && data.length) {
                                 data.map(user => allUsers.push(user.data));
-                                console.log("ALL USERS", allUsers)
                                 callback(null, allUsers)
                             } else callback(null, [])
                         }
@@ -482,7 +477,6 @@
                     _this.context = context;
                     _this.wid = Util.getParameterByName("wid") ? Util.getParameterByName("wid") : '';
                     if (_this.wid.length === 48) {
-                        $rootScope.isPrivateChat = true;
                         _this.isPrivateChat = true;
                     }
 

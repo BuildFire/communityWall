@@ -286,11 +286,6 @@
                                 options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + Thread.SocialItems.context.title;
                             options.inAppMessage = options.text;
                             options.queryString = `wid=${Thread.SocialItems.wid}`;
-                            buildfire.dialog.alert({
-                                title: "Access Denied!",
-                                subtitle: "Operation not allowed!",
-                                message: JSON.stringify(options)
-                            });
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
                                 if (err) return console.error('Error while setting PN schedule.', err);
                                 console.log("SENT NOTIFICATION", options);
@@ -574,7 +569,7 @@
             Buildfire.datastore.onUpdate(function (response) {
                 console.log('----------- on Update Side Thread ----', response);
                 if (response.tag === "languages")
-                    Thread.SocialItems.formatLanguages(response.data.screenOne);
+                    Thread.SocialItems.formatLanguages(response);
                 //Thread.init();
             });
 

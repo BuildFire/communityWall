@@ -136,7 +136,6 @@ buildfire.services.Strings = class {
 	}
 
 	save() {
-		console.log("AAAAAAAAAAA", this._data)
 		buildfire.datastore.save(this._data, "languages", (err, data) => {});
 	}
 

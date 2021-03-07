@@ -54,11 +54,9 @@
              var goBack = buildfire.navigation.onBackButtonClick;
 
             buildfire.navigation.onBackButtonClick = function () {
-                console.log("AAAAAAA")
                 buildfire.history.get({
                     pluginBreadcrumbsOnly: true
                 }, function (err, result) {
-                    console.log("BREADCRUMBS", result)
                     if(!result.length) return goBack();
                     else {
                          if(result[0].label === 'thread' || result[0].label === 'members') {
@@ -72,34 +70,6 @@
                 });
 
             }
-
-            // Buildfire.history.onPop(function (breadcrumb) {
-            //     var path = $location.path();
-            //     if ($rootScope.isPrivateChat) {
-            //         buildfire.history.get({
-            //             pluginBreadcrumbsOnly: true
-            //         }, function (err, result) {
-            //             result.map(item => buildfire.history.pop());
-            //             $rootScope.isPrivateChat = false;
-            //             buildfire.dialog.alert({
-            //                 title: "Access Denied!",
-            //                 subtitle: "Navigating away",
-            //                 message: "navigating away"
-            //             });
-            //             goBack();
-            //         });
-            //     }
-            //     if (path.indexOf('/thread') == 0 && (breadcrumb.label && breadcrumb.label.toLowerCase() != "post")) {
-            //         $rootScope.showThread = true;
-            //         $location.path('/');
-            //         $rootScope.$digest();
-            //     }
-            //     if (path.indexOf('/members') == 0 && (breadcrumb.label && breadcrumb.label.toLowerCase() != "members")) {
-            //         $rootScope.showThread = true;
-            //         $location.path('/');
-            //         $rootScope.$digest();
-            //     }
-            // }, true);
         }])
         .directive('handlePhoneSubmit', function () {
             return function (scope, element, attr) {

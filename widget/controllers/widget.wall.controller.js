@@ -26,7 +26,7 @@
             WidgetWall.SocialItems = SocialItems.getInstance();
 
             $rootScope.showThread = true;
-            //======================================================================================
+
             WidgetWall.showHideCommentBox = function () {
                 if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
                     WidgetWall.SocialItems.appSettings.mainThreadUserTags && WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
@@ -72,7 +72,7 @@
                     WidgetWall.allowFollowLeaveGroup = true;
                 }
             };
-            //======================================================================================
+
             WidgetWall.formatLanguages = function (strings) {
                 Object.keys(strings).forEach(e => {
                     strings[e].value ? WidgetWall.SocialItems.languages[e] = strings[e].value : WidgetWall.SocialItems.languages[e] = strings[e].defaultValue;
@@ -134,7 +134,7 @@
                 });
                 $scope.$digest();
             }
-            //======================================================================================
+
             WidgetWall.checkFollowingStatus = function (user = null) {
                 buildfire.spinner.show();
                 SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
@@ -232,11 +232,6 @@
                         if (err) console.error('Error while getting initial group following status.', err);
                         if (status.length) {
                             options.users.push(userToSend);
-                            buildfire.dialog.alert({
-                                title: "Access Denied!",
-                                subtitle: "Operation not allowed!",
-                                message: JSON.stringify(options)
-                            });
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
                                 if (err) return console.error('Error while setting PN schedule.', err);
                                 console.log("SENT NOTIFICATION", options);
@@ -248,18 +243,13 @@
                         options.users.push(post.userId);
                     }
                     else options.groupName = WidgetWall.wid;    
-                    buildfire.dialog.alert({
-                        title: "Access Denied!",
-                        subtitle: "Operation not allowed!",
-                        message: JSON.stringify(options)
-                    });
                     buildfire.notifications.pushNotification.schedule(options, function (err) {
                         if (err) return console.error('Error while setting PN schedule.', err);
                         console.log("SENT NOTIFICATION", options);
                     });
                 } 
             }
-            //======================================================================================
+
             WidgetWall.openChat = function (userId) {
                 if (WidgetWall.allowPrivateChat) {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
@@ -268,17 +258,12 @@
                         buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
                             if (err) return console.error("Getting user profile failed.", err);
                             if(userId === WidgetWall.SocialItems.userDetails.userId) return;
-                            // console.log("==============================", user);
-                            // console.log(WidgetWall.SocialItems.getUserName(user))
-                            // console.log("==============================");
                             WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
                         });
                     });
                 }
             };
-            //======================================================================================
 
-            //======================================================================================
             WidgetWall.init = function () {
                 WidgetWall.SocialItems.getSettings((err, result) => {
                     if (err) return console.error("Fetching settings failed.", err);
@@ -293,7 +278,6 @@
                             if (user) {
                                 WidgetWall.checkFollowingStatus(user);
                             } else {
-                                console.log("GGGGGGGGGGGGGGG")
                                 WidgetWall.groupFollowingStatus = false;
                             }
                         });
@@ -302,27 +286,6 @@
             };
 
             WidgetWall.init();
-            //======================================================================================
-            /* 
-            first step
-            creating services for notifications and authentication
-            identifying and removing unused fields and variables
-            simplifying logic
-            comment in code in controllers on the next steps
-
-            second step
-            check widgetwall for unused service methods
-            check app service for unused methods
-            refactor app service to get more efficient code
-
-            third step
-            thread controller refactor
-            */
-            //======================================================================================
-
-
-
-            //======================================================================================
 
             WidgetWall.checkForPrivateChat = function () {
                 if (WidgetWall.SocialItems.isPrivateChat) {
@@ -396,11 +359,6 @@
 
             WidgetWall.navigateToPrivateChat = function (user) {
                 Buildfire.history.push("Main Social Wall");
-                buildfire.dialog.alert({
-                    title: "Access Denied!",
-                    subtitle: "Operation not allowed!",
-                    message: user.wid
-                });
                 Buildfire.navigation.navigateTo({
                     pluginId: WidgetWall.SocialItems.context.pluginId,
                     instanceId: WidgetWall.SocialItems.context.instanceId,
@@ -662,7 +620,7 @@
                         postData.uniqueLink = response.data.uniqueLink;
                         WidgetWall.scheduleNotification(postData, 'post');
                         window.scrollTo(0, 0);
-                        $location.hash('test');
+                        $location.hash('top');
                         $anchorScroll();
                     }, (err) => {
                         console.error("Something went wrong.", err)

@@ -77,9 +77,7 @@
 
             Members.executeSearch = function (query) {
                 Buildfire.spinner.show();
-                console.log("EEEEEEEEEE")
                 SubscribedUsersData.searchForUsers(query, function (err, users) {
-                    console.log(query)
                     if (err) return console.log(err);
                     if (users.length === Members.searchOptions.pageSize) {
                         Members.searchOptions.page++;
@@ -93,7 +91,6 @@
                     }
                     
                     Members.users = users.filter(el => el.userId !== Members.SocialItems.userDetails.userId);
-                    console.log("AAA", users)
                     Buildfire.spinner.hide();
                     $scope.$digest();
                 })
@@ -145,11 +142,7 @@
                                 wid = Members.SocialItems.userDetails.userId + user.userId;
                             else
                                 wid = user.userId + Members.SocialItems.userDetails.userId;
-                            buildfire.dialog.alert({
-                                title: "Access Denied!",
-                                subtitle: "Operation not allowed!",
-                                message: wid
-                            });
+
                             Buildfire.history.push("Main Social Wall");
                             Buildfire.navigation.navigateTo({
                                 pluginId: Members.SocialItems.context.pluginId,
