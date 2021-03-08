@@ -570,6 +570,12 @@
                 console.log('----------- on Update Side Thread ----', response);
                 if (response.tag === "languages")
                     Thread.SocialItems.formatLanguages(response);
+                else if(response.tag === "Social") {
+                    Thread.SocialItems.appSettings.allowSideThreadTags = response.data.appSettings.allowSideThreadTags;
+                    Thread.SocialItems.appSettings.sideThreadUserTags = response.data.appSettings.sideThreadUserTags;
+                    Thread.showHideCommentBox();
+                    $scope.$digest();
+                }
                 //Thread.init();
             });
 
