@@ -486,7 +486,7 @@
                         _this.formatLanguages(languages);
 
                         buildfire.datastore.get("Social", (err, response) => {
-                            callback(err, { appSettings: response.data });
+                            callback(err, response);
                         });
                     });
                 });
