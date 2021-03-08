@@ -1,29 +1,5 @@
 <div ng-controller="LanguagesCtrl">
-    <div style="margin-left: auto; margin-right: auto; border-bottom: 1px solid #ddd !important;">
-        <ul class="nav nav-tabs nav-justified">
-            <li class="ng-scope">
-                <a id="btnLoadContent" ng-class="{'active' : activeScreen === 1}"
-                    ng-click="setScreen(1)">Main Wall</a>
-            </li>
-            <li class="ng-scope">
-                <a id="btnLoadContent" ng-class="{'active' : activeScreen === 2}"
-                    ng-click="setScreen(2)">Thread</a>
-            </li>
-            <li class="ng-scope">
-                <a id="btnLoadContent" ng-class="{'active' : activeScreen === 3}"
-                    ng-click="setScreen(3)">Members</a>
-            </li>
-            <li class="ng-scope">
-                <a id="btnLoadContent" ng-class="{'active' : activeScreen === 4}"
-                    ng-click="setScreen(4)">Input</a>
-            </li>
-            <li class="ng-scope">
-                <a id="btnLoadContent" ng-class="{'active' : activeScreen === 5}"
-                    ng-click="setScreen(5)">Modal</a>
-            </li>
-        </ul>
-    </div>
-    <br>
+
     <div id="stringsContainer">
     </div>
     <a id="saveButton" class="btn btn-success pull-right" ng-click="save()">Save</a>

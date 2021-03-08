@@ -19,7 +19,6 @@ buildfire.services.Strings = class {
 			}
 		}
 		this._data = obj;
-
 	}
 
 	get collectionName() {
@@ -87,7 +86,6 @@ buildfire.services.Strings = class {
 					obj = objs[0];
 					this.id = obj.id;
 				}
-
 				for (let sectionKey in obj.data) {
 					if (!this._data[sectionKey]) this._data[sectionKey] = this._data[sectionKey] = {};
 					for (let labelKey in obj.data[sectionKey]) {
@@ -137,8 +135,8 @@ buildfire.services.Strings = class {
 		});
 	}
 
-	save(data) {
-		buildfire.datastore.save({screenOne:data}, "languages", (err, ee) => {console.log(ee)});
+	save() {
+		buildfire.datastore.save(this._data, "languages", (err, data) => {});
 	}
 
 	getData(){

@@ -38,7 +38,7 @@
 
 </head>
 
-<body>
+<body id="test">
     <div class="main_view">
         <div class="slide-right main-thread-section" ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall"
             ng-cloak>
@@ -60,12 +60,12 @@
                                         position: absolute;
                                         padding-left: 15px;
                                         margin: 5px;
-                                        margin-left: 0;
-                                        text-transform: uppercase;"
+                                        margin-left: 0;"
                                         >
-                                        <button class="btn btn-primary" id="followBtn" style="display: flex; font-size: 13px; text-transform: uppercase;">
+                                        
+                                        <button class="btn btn-primary" id="followBtn" style="display: flex; font-size: 13px;">
                                             <span class="plusMinusIcon" >{{WidgetWall.groupFollowingStatus ? '&#8722;' : '&#43;'}}</span>
-                                            {{WidgetWall.groupFollowingStatus ? (WidgetWall.languages.leaveGroup) : WidgetWall.languages.joinGroup}}
+                                            {{WidgetWall.groupFollowingStatus ? (WidgetWall.SocialItems.languages.leaveGroup) : WidgetWall.SocialItems.languages.joinGroup}}
                                         </button>                                    
                                     </p>
                                     <p class="text-primary" ng-show="WidgetWall.SocialItems.appSettings.showMembers" ng-click="WidgetWall.showMembers()" style="margin-bottom :0px;
@@ -83,15 +83,9 @@
 
                             </a>
                         </div>
-
                         <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
                             class="post-section backgroundColorTheme">
                             <div class="post-infinite-scroll" id="top">
-                                <div ng-if="WidgetWall.SocialItems.newPostAvailable" class="new-post-hud">
-                                    <a ng-click="WidgetWall.init()" class="ng-cloak"><span
-                                            class="glyphicon glyphicon-arrow-up padding-right-ten hud-icon"></span> New
-                                        Posts</a>
-                                </div>
                                 <div class="social-item">
                                     <div class="head"
                                         ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
@@ -99,7 +93,8 @@
                                     </div>
                                 </div>
                                 <div ng-show="WidgetWall.SocialItems.items.length<=0 && WidgetWall.loadedPlugin">
-                                    <h5 class="text-center blankState">{{WidgetWall.languages.postsNoResults}}</h5>
+                                    <!-- <h5 class="text-center blankState">{{WidgetWall.languages.postsNoResults}}</h5> -->
+                                    <div class="empty_state"></div>
                                 </div>
                                 <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items">
                                     
@@ -112,7 +107,7 @@
                                                     class="social-copy">
                                                     <p class="text-primary ellipsis">
                                                         <a class="ng-cloak"
-                                                            ng-click="WidgetWall.openChatOrProfile(post.userId)">{{getUserName(post.userDetails)}}</a>
+                                                            ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
                                                     </p>
                                                     <div ng-if="post.createdOn">
                                                         <p class="time-ago opacity-seventy ng-cloak">
@@ -136,7 +131,7 @@
                                                 <div class="social-copy">
                                                     <p class="text-primary ellipsis">
                                                         <a class="ng-cloak"
-                                                            ng-click="WidgetWall.openChatOrProfile(post.userId)">{{getUserName(post.userDetails)}}</a>
+                                                            ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
                                                     </p>
                                                     <div ng-if="post.createdOn">
                                                         <p class="time-ago opacity-seventy ng-cloak">
@@ -172,14 +167,14 @@
                                         <div class="status">
                                             <div class="status-footer">
                                                 <a class="social-icon ng-cloak"
-                                                ng-click="WidgetWall.likeThread(post, 'thread')">
+                                                ng-click="WidgetWall.likeThread(post)">
                                                 <i class="material-icons-outlined" ng-class="{notActive: !post.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
                                                 <span class="iconsTheme iconsFont"
                                                 ng-class="{notActive: !post.isUserLikeActive}">{{post.likes.length}}</span>
                                             </a>
                                             
                                             <a ng-if="!WidgetWall.SocialItems.isPrivateChat"
-                                                href="#/thread/{{post.id}}"
+                                                ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 class="social-icon comments ng-cloak">
                                                 <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
                                                 <span class="iconsTheme iconsFont">{{post.comments.length}}</span>
@@ -200,18 +195,9 @@
                 </div>
             </div>
             <div
-                class="holder padding-zero bottom-post" ng-class="{'full-post-section':WidgetWall.goFullScreen}">
-                <div class="small-post-box" ng-submit="" handle-phone-submit ng-show="!WidgetWall.goFullScreen">
+                class="holder padding-zero bottom-post" ng-class="full-post-section">
+                <div class="small-post-box" ng-submit="" handle-phone-submit>
                     <div class="post-holder">
-                        <div class="image-upload-queue ng-cloak" ng-if="WidgetWall.imageSelected">
-                            <div class="uploadifive-queue-item"><a ng-click="WidgetWall.cancelImageSelect()"
-                                    class="btn-delete-icon cross-icon"></a>
-                                <div><span class="filename">{{WidgetWall.imageName}}</span></div>
-                                <div class="progress" ng-if="WidgetWall.showImageLoader">
-                                    <div class="progress-bar"></div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div id="actionBtn"  ng-show="WidgetWall.SocialItems.appSettings.actionItem" class="add-message btn btn--act btn--add btn-primary" ng-click="WidgetWall.navigateTo()"
                             on-touchend="WidgetWall.navigateTo()">                            
