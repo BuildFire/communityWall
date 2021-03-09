@@ -80,7 +80,10 @@
             }
 
             WidgetWall.setSettings = function (settings) {
-                WidgetWall.SocialItems.appSettings = settings ? settings : {};
+                WidgetWall.SocialItems.appSettings = settings.data && settings.data.appSettings? settings.data.appSettings : {};
+                WidgetWall.showHidePrivateChat();
+                WidgetWall.followLeaveGroupPermission();
+                WidgetWall.showHideCommentBox();
                 let dldActionItem = new URLSearchParams(window.location.search).get('actionItem');
                 if (dldActionItem)
                     WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
@@ -97,6 +100,9 @@
                     WidgetWall.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
                     pinnedPost.innerHTML = WidgetWall.pinnedPost;
                 }
+                WidgetWall.loadedPlugin = true;
+                $scope.$digest();
+                
             }
 
             WidgetWall.setAppTheme = function () {
@@ -268,7 +274,7 @@
                 WidgetWall.SocialItems.getSettings((err, result) => {
                     if (err) return console.error("Fetching settings failed.", err);
                     if (result) {
-                        WidgetWall.setSettings(result.appSettings);
+                        WidgetWall.setSettings(result);
                         WidgetWall.showHidePrivateChat();
                         WidgetWall.followLeaveGroupPermission();
                         WidgetWall.setAppTheme();
@@ -904,10 +910,7 @@
 
             Buildfire.datastore.onUpdate(function (response) {
                 if (response.tag === "Social") {
-                    WidgetWall.setSettings(response.data.appSettings);
-                    WidgetWall.showHidePrivateChat();
-                    WidgetWall.followLeaveGroupPermission();
-                    WidgetWall.showHideCommentBox();
+                    WidgetWall.setSettings(response);
                     setTimeout(function () {
                         if (!response.data.appSettings.disableFollowLeaveGroup) {
                             document.getElementById("membersSvg").style.setProperty("fill", WidgetWall.appTheme.icons, "important");
@@ -916,7 +919,7 @@
                 }
                 else if (response.tag === "languages") 
                     WidgetWall.SocialItems.formatLanguages(response);
-                console.log(WidgetWall.SocialItems.languages)
+                $scope.$digest();
             });
 
             function updatePostsWithNames(user, status) {

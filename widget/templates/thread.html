@@ -103,7 +103,7 @@
         </div>
     </div>
 </div>
-<div ng-show="Thread.userDetails.userId == null || Thread.allowCreateThread" class="holder padding-zero bottom-post"
+<div ng-show="Thread.allowCreateThread" class="holder padding-zero bottom-post"
     ng-class="full-post-section">
     <div ng-click="Thread.openCommentSection()" on-touchend="Thread.openCommentSection()" class="small-post-box">
         <div class="post-holder">
