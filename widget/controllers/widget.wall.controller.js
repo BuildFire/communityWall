@@ -614,7 +614,7 @@
                     return encodeURIComponent(match)
                 }) : '';
 
-                WidgetWall.onSendMessage({ _id: postData.userId }, postData.text, () =>
+                WidgetWall.onSendMessage({ _id: postData.userId ? postData.userId : postData.userDetails.userId ? postData.userDetails.userId : null }, postData.text, () =>
                     SocialDataStore.createPost(postData).then((response) => {
                         WidgetWall.SocialItems.items.unshift(postData);
                         Buildfire.messaging.sendMessageToControl({
