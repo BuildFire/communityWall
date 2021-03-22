@@ -36,9 +36,13 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                         if(typeof (result.data.appSettings.showMembers) == 'undefined') {
                             result.data.appSettings.showMembers = true;
                         }
+                        if(typeof (result.data.appSettings.allowAutoSubscribe) == 'undefined') {
+                            result.data.appSettings.allowAutoSubscribe = true;
+                        }
                     } else if(!result.data.appSettings) {
                         result.data.appSettings = {};
                         result.data.appSettings.showMembers = true;
+                        result.data.appSettings.allowAutoSubscribe = true;
                     }    
                     $scope.data = result.data.appSettings;
                     $scope.$digest();

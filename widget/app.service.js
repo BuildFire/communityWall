@@ -94,15 +94,33 @@
                         { filter: { '_buildfire.index.text': userId + '-' + wallId } },
                         'subscribedUsersData', function (err, data) {
                             if (err) return console.error(err)
-                            if (data && data.length) {
+                            if (data && data.length > 1) {
                                 let count = 0;
+                                let allPosts = [];
+                                let update = function () {
+                                    let toSave = data[0].data;
+                                    toSave.posts = allPosts;
+                                    toSave.leftWall = true;
+                                    console.log("AAA", toSave, allPosts);
+                                    buildfire.publicData.save(toSave, 'subscribedUsersData', (err, result) => {
+                                        callback(null, true);
+                                    });
+                                }
                                 data.map(item => {
+                                    console.log(item.data.posts)
+                                    allPosts = allPosts.concat(item.data.posts);
+                                    console.log(item)
                                     buildfire.publicData.delete(item.id, 'subscribedUsersData', function (err, status) {
                                         if (err) return console.error(err)
                                         count++;
                                         if (count === data.length)
-                                            callback(null, status);
+                                            update();
                                     });
+                                });
+                            } else {
+                                data[0].data.leftWall = true;
+                                buildfire.publicData.update(data[0].id, data[0].data, 'subscribedUsersData', (err, result) => {
+                                    callback(null, result);
                                 });
                             }
                         })

@@ -96,6 +96,8 @@
 
                 if (typeof (WidgetWall.SocialItems.appSettings.showMembers) == 'undefined')
                     WidgetWall.SocialItems.appSettings.showMembers = true;
+                if (typeof (WidgetWall.SocialItems.appSettings.allowAutoSubscribe) == 'undefined')
+                    WidgetWall.SocialItems.appSettings.allowAutoSubscribe = true;
                 if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.pinnedPost) {
                     WidgetWall.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
                     pinnedPost.innerHTML = WidgetWall.pinnedPost;
@@ -146,8 +148,21 @@
                 SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.log('error while getting initial group following status.', err);
                     else {
-                        if (!status.length) return WidgetWall.followWall();
-                        WidgetWall.groupFollowingStatus = true;
+                        if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
+                            console.log("FOLLOW WALL", status);
+                            buildfire.spinner.hide();
+                            return WidgetWall.followWall();
+                        } 
+                        console.log("nije subskrajbo")
+                        if(status.length && !status[0].data.leftWall) {
+                            buildfire.notifications.pushNotification.subscribe(
+                                { groupName: WidgetWall.wid === '' ? 
+                                WidgetWall.SocialItems.context.instanceId : WidgetWall.wid
+                            }, () => { });
+                            WidgetWall.groupFollowingStatus = true;
+                            console.log("IMA LEFT WALL FALSE")
+                        }
+                        console.log(status)
                         WidgetWall.showHideCommentBox();
                         if (user) WidgetWall.statusCheck(status, user);
                         buildfire.spinner.hide();
@@ -162,7 +177,10 @@
                     else {
                         console.log("result", result)
                         WidgetWall.groupFollowingStatus = false;
-                        buildfire.notifications.pushNotification.unsubscribe({ groupName: WidgetWall.wid }, () => { });
+                        buildfire.notifications.pushNotification.unsubscribe(
+                            { groupName: WidgetWall.wid === '' ? 
+                            WidgetWall.SocialItems.context.instanceId : WidgetWall.wid
+                        }, () => { });
                         const options = { text: 'You have left this group' };
                         buildfire.components.toast.showToastMessage(options, () => { });
                         $scope.$digest();
@@ -191,8 +209,12 @@
                 SubscribedUsersData.save(params, function (err) {
                     if (err) console.log('Error while saving subscribed user data.');
                     else {
+                        console.log("SACUVAVA", params);
                         WidgetWall.groupFollowingStatus = true;
-                        buildfire.notifications.pushNotification.subscribe({ groupName: WidgetWall.wid }, () => { });
+                        buildfire.notifications.pushNotification.subscribe(
+                            { groupName: WidgetWall.wid === '' ? 
+                            WidgetWall.SocialItems.context.instanceId : WidgetWall.wid
+                        }, () => { });
                         $scope.$digest();
                         buildfire.spinner.hide();
                     }
@@ -204,7 +226,29 @@
                 else {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
-                        WidgetWall.checkFollowingStatus();
+                        buildfire.spinner.show();
+                        SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                            if (err) console.log('error while getting initial group following status.', err);
+                            else {
+                                if (!status.length) return WidgetWall.followWall();
+                                else if(status.length && status[0].data.leftWall) {
+                                    status[0].data.leftWall = false;
+                                    buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
+                                    buildfire.notifications.pushNotification.subscribe(
+                                        { groupName: WidgetWall.wid === '' ? 
+                                        WidgetWall.SocialItems.context.instanceId : WidgetWall.wid
+                                    }, () => { });
+                                    WidgetWall.groupFollowingStatus = true;
+                                    console.log("ZAPRATIO");
+                                }
+                                else if(status.length && !status[0].data.leftWall) 
+                                    return WidgetWall.unfollowWall();
+                                WidgetWall.showHideCommentBox();
+                                if (user) WidgetWall.statusCheck(status, user);
+                                buildfire.spinner.hide();
+                                $scope.$digest();
+                            }
+                        });
                     });
                 }
             }
@@ -1057,7 +1101,10 @@
                 buildfire.appearance.titlebar.show();
                 WidgetWall.SocialItems.userDetails = {};
                 WidgetWall.groupFollowingStatus = false;
-                buildfire.notifications.pushNotification.unsubscribe({ groupName: WidgetWall.wid }, () => { });
+                buildfire.notifications.pushNotification.unsubscribe(
+                    { groupName: WidgetWall.wid === '' ? 
+                    WidgetWall.SocialItems.context.instanceId : WidgetWall.wid
+                }, () => { });
                 WidgetWall.privateChatSecurity();
                 $scope.$digest();
             });
