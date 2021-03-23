@@ -267,7 +267,8 @@
                     options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
 
                 options.inAppMessage = options.text;
-                options.queryString = `wid=${WidgetWall.wid}`;
+                options.queryString = `wid=${WidgetWall.wid === '' ? 
+                WidgetWall.SocialItems.context.instanceId : WidgetWall.wid}`;
 
                 if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
@@ -280,7 +281,8 @@
                     //options.users.push(userToSend);
                     SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                         if (err) console.error('Error while getting initial group following status.', err);
-                        if (status.length) {
+                        if (status.length &&
+                            status[0].data && !status[0].data.leftWall) {
                             options.users.push(userToSend);
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
                                 if (err) return console.error('Error while setting PN schedule.', err);
@@ -292,7 +294,8 @@
                     if (text === 'like') {
                         options.users.push(post.userId);
                     }
-                    else options.groupName = WidgetWall.wid;    
+                    else options.groupName = WidgetWall.wid === '' ? 
+                    WidgetWall.SocialItems.context.instanceId : WidgetWall.wid  
                     buildfire.notifications.pushNotification.schedule(options, function (err) {
                         if (err) return console.error('Error while setting PN schedule.', err);
                         console.log("SENT NOTIFICATION", options);
@@ -852,7 +855,9 @@
                         }
                         SocialDataStore.updatePost(post).then(() => {
                             SubscribedUsersData.getGroupFollowingStatus(post.userId, WidgetWall.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                                if (status.length && !liked) WidgetWall.scheduleNotification(post, 'like');
+                                console.log(status)
+                                if (status.length &&
+                                    status[0].data && !status[0].data.leftWall && !liked) WidgetWall.scheduleNotification(post, 'like');
                             });
                         }, (err) => console.log(err));
                     }
@@ -873,9 +878,11 @@
             WidgetWall.goInToThread = function (threadId) {
                 WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
-                    WidgetWall.checkFollowingStatus();
-                    if (threadId)
-                        Location.go('#/thread/' + threadId);
+                    if(user) {
+                        WidgetWall.checkFollowingStatus();
+                        if (threadId)
+                            Location.go('#/thread/' + threadId);
+                    }
                 });
             };
 

@@ -133,9 +133,16 @@
                         window.buildfire.publicData.search(
                             {
                                 pageSize, page, recordCount: true,
-                                filter: { '_buildfire.index.string1': wallId ? wallId : { "$eq": "" } }
+                                filter: {
+                                    '_buildfire.index.string1': wallId ? wallId : { "$eq": "" },
+                                    $or: [
+                                        { '$json.leftWall': { $exists: true, $eq: false } },
+                                        { '$json.leftWall': { $exists: false } }
+                                    ]
+                                },
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) return cb(err, null);
+                                console.log("AAAAAAAAAAAAA", data)
                                 data.result.map(item => allUsers.push(item.data));
                                 if (allUsers.length === data.totalRecord) {
                                     allUsers = allUsers.filter((item) => { return item.userId !== userId });
@@ -154,6 +161,7 @@
                     window.buildfire.publicData.search(query, 'subscribedUsersData', function (err, data) {
                         if (err) return callback(err);
                         else {
+                            console.log("AAAAAAAAA", data)
                             var allUsers = [];
                             if (data && data.length) {
                                 data.map(user => allUsers.push(user.data));
@@ -207,14 +215,20 @@
                 getThreadFollowingStatus: function (userId, threadId, wallId, instanceId, cb) {
                     window.buildfire.publicData.search(
                         {
+                            // filter: {
+                            //     $and: [
+                            //         { '_buildfire.index.text': userId + '-' + wallId },
+                            //         { '$json.leftWall': { $exists: true, $eq: false } }
+                            //     ]
+                            // },
                             filter: { '_buildfire.index.text': userId + '-' + wallId }
                         }, 'subscribedUsersData', function (error, result) {
                             if (error) return console.log(error)
                             if (result && result.length) {
                                 let data = result[0].data;
                                 let exists = data.posts.find(x => x === threadId);
-                                if (exists) cb(null, true);
-                                else cb(null, false);
+                                if (exists) cb(null, data);
+                                else cb(null, null);
                             }
                         });
                 }

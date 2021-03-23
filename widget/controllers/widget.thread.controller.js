@@ -124,11 +124,34 @@
                             Thread.showHidePrivateChat();
                             Thread.followLeaveGroupPermission();
                             SubscribedUsersData.getThreadFollowingStatus(userData._id, Thread.post.id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
+                                console.log("EEEEEEEE", status)
                                 if (status) {
+                                    if(!status.leftWall)
                                     Thread.followingStatus = true;
+                                    else
+                                    Thread.followingStatus = false;
+
+                                    console.log("AAAAAAAAAA")
+
                                 }
                                 else {
-                                    Thread.followUnfollow();
+                                    //Thread.followUnfollow();//getgroup
+                                    console.log("OVDE TREBA")
+                                    SubscribedUsersData.getGroupFollowingStatus(userData._id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
+                                        if (err) console.error('Error while getting initial group following status.', err);
+                                        console.log(status)
+                                        if(status.length) {
+                                            SubscribedUsersData.followThread({
+                                                userId: userData._id,
+                                                wallId: Thread.SocialItems.wid,
+                                                post: Thread.post.id
+                                            });
+                                            if(status[0].data && !status[0].data.leftWall) {
+                                                Thread.followingStatus = true;
+                                                $scope.$digest();
+                                            }
+                                        }
+                                    });
                                 }
                                 Thread.loaded = true;
                                 Thread.setupThreadImage();
@@ -268,7 +291,7 @@
             Thread.scheduleNotification = function (post, text) {
                 SubscribedUsersData.getGroupFollowingStatus(post.userId, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                     console.log("scheduleNotification", status, Thread.post)
-                    if (status.length) {
+                    if (status.length && status[0].data && !status[0].data.leftWall) {
                         let followsPost = status[0].data.posts.find(el => el === Thread.post.id);
                         if (followsPost) {
                             let options = {

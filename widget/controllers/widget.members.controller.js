@@ -63,7 +63,11 @@
 
                 Members.searchOptions.filter = {
                     '_buildfire.index.string1': Members.wallId ? Members.wallId : { "$eq": "" },
+                    $and: [
+                        { '$json.leftWall': { $exists: true } },
+                    ],
                     $or: [
+                        
                         { "$json.userDetails.displayName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.firstName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.lastName": { $regex: $scope.searchInput, $options: 'i' } },
@@ -71,7 +75,7 @@
                     ]
                 }
                 Members.searchOptions.page = 0;
-
+                console.log("SEARCH OPTIONS", Members.searchOptions)
                 Members.executeSearch(Members.searchOptions);
             };
 
