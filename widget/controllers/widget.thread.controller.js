@@ -453,7 +453,7 @@
             Thread.getPostContent = function (data) {
                 if (data && data.results && data.results.length > 0 && !data.cancelled) {
                     $scope.Thread.comment = data.results["0"].textValue;
-                    $scope.Thread.imageUrl = data.results["0"].images;
+                    $scope.Thread.images = data.results["0"].images;
 
                     var gif = getGifUrl(data.results["0"].gifs);
                     if (gif && $scope.Thread.images && $scope.Thread.images.push) {
@@ -486,7 +486,7 @@
                             if(data.cancelled) return console.error('User canceled.')
                             Thread.getPostContent(data);
                             if ((Thread.comment || ($scope.Thread.images && $scope.Thread.images.length > 0))) {
-                                Thread.addComment($scope.Thread.imageUrl);
+                                Thread.addComment($scope.Thread.images);
                             }
                         });
                     }
