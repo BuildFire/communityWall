@@ -85,7 +85,6 @@
             Thread.setAppTheme = function () {
                 buildfire.appearance.getAppTheme((err, obj) => {
                     let elements = document.getElementsByTagName('svg');
-                    console.log(document.getElementById('addBtn'))
                     document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
                     elements[3].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
                 });
@@ -109,7 +108,6 @@
             Thread.init = function () {
                 Thread.setAppTheme();
                 if ($routeParams.threadId) {
-                    console.log(Thread.SocialItems.items)
                     let post = Thread.SocialItems.items.find(el => el.id === $routeParams.threadId);
                     Thread.post = post || {};
                     $rootScope.showThread = false;
@@ -124,22 +122,15 @@
                             Thread.showHidePrivateChat();
                             Thread.followLeaveGroupPermission();
                             SubscribedUsersData.getThreadFollowingStatus(userData._id, Thread.post.id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
-                                console.log("EEEEEEEE", status)
                                 if (status) {
                                     if (!status.leftWall)
                                         Thread.followingStatus = true;
                                     else
                                         Thread.followingStatus = false;
-
-                                    console.log("AAAAAAAAAA")
-
                                 }
                                 else {
-                                    //Thread.followUnfollow();//getgroup
-                                    console.log("OVDE TREBA")
                                     SubscribedUsersData.getGroupFollowingStatus(userData._id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                                         if (err) console.error('Error while getting initial group following status.', err);
-                                        console.log(status)
                                         if (status.length) {
                                             SubscribedUsersData.followThread({
                                                 userId: userData._id,
@@ -295,7 +286,6 @@
              */
             Thread.scheduleNotification = function (post, text) {
                 SubscribedUsersData.getGroupFollowingStatus(post.userId, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
-                    console.log("scheduleNotification", status, Thread.post)
                     if (status.length && status[0].data && !status[0].data.leftWall) {
                         let followsPost = status[0].data.posts.find(el => el === Thread.post.id);
                         if (followsPost) {

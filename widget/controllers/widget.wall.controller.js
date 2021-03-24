@@ -140,20 +140,16 @@
                     if (err) console.log('error while getting initial group following status.', err);
                     else {
                         if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
-                            console.log("FOLLOW WALL", status);
                             buildfire.spinner.hide();
                             return WidgetWall.followWall();
                         } 
-                        console.log("nije subskrajbo")
                         if(status.length && !status[0].data.leftWall) {
                             buildfire.notifications.pushNotification.subscribe(
                                 { groupName: WidgetWall.SocialItems.wid === '' ? 
                                 WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                             }, () => { });
                             WidgetWall.groupFollowingStatus = true;
-                            console.log("IMA LEFT WALL FALSE")
                         } else WidgetWall.groupFollowingStatus = false;
-                        console.log(status)
                         WidgetWall.showHideCommentBox();
                         if (user) WidgetWall.statusCheck(status, user);
                         buildfire.spinner.hide();
@@ -166,7 +162,6 @@
                 SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, result) {
                     if (err) return console.error(err);
                     else {
-                        console.log("result", result)
                         WidgetWall.groupFollowingStatus = false;
                         buildfire.notifications.pushNotification.unsubscribe(
                             { groupName: WidgetWall.SocialItems.wid === '' ? 
@@ -200,7 +195,6 @@
                 SubscribedUsersData.save(params, function (err) {
                     if (err) console.log('Error while saving subscribed user data.');
                     else {
-                        console.log("SACUVAVA", params);
                         WidgetWall.groupFollowingStatus = true;
                         buildfire.notifications.pushNotification.subscribe(
                             { groupName: WidgetWall.SocialItems.wid === '' ? 
@@ -230,7 +224,6 @@
                                         WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                                     }, () => { });
                                     WidgetWall.groupFollowingStatus = true;
-                                    console.log("ZAPRATIO");
                                 }
                                 else if(status.length && !status[0].data.leftWall) 
                                     return WidgetWall.unfollowWall();
@@ -298,7 +291,6 @@
                 if (WidgetWall.allowPrivateChat) {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
-                        console.log(user);
                         buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
                             if (err) return console.error("Getting user profile failed.", err);
                             if(userId === WidgetWall.SocialItems.userDetails.userId) return;
@@ -337,7 +329,6 @@
                     WidgetWall.sanitizeWall(function (err, result) {
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
                             if (err) return console.log(err);
-                            console.log("USERS", users)
                             const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
                             const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
                             if (!users.length) {
@@ -428,7 +419,7 @@
                 WidgetWall.SocialItems.wid = WidgetWall.SocialItems.mainWallID;
                 WidgetWall.init();
             });
-            
+
             WidgetWall.openPrivateChat = function (userId, userName) {
                 let wid = null;
                 if (WidgetWall.SocialItems.userDetails.userId && WidgetWall.SocialItems.userDetails.userId != userId) {
@@ -438,7 +429,6 @@
                         wid = userId + WidgetWall.SocialItems.userDetails.userId;
                     }
                 }
-                console.log("WALL ID", wid);
                 SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.error('Error while getting initial group following status.', err);
                     if (!status.length) {
@@ -736,13 +726,10 @@
 
             WidgetWall.navigateTo = function () {
                 let privacy = util.getParameterByName("privacy") ? util.getParameterByName("privacy") : null;
-                console.log(privacy)
                 let query = 'wid=' + WidgetWall.SocialItems.wid;
                 if (privacy) query += '&privacy=' + privacy;
-                console.log("QUERY", query)
                 if (!WidgetWall.SocialItems.appSettings.actionItem.queryString)
                     WidgetWall.SocialItems.appSettings.actionItem.queryString = query;
-                console.log("ACTION ITEM", WidgetWall.SocialItems.appSettings.actionItem)
                 if (WidgetWall.SocialItems.appSettings.actionItem.type === 'navigation') {
                     Buildfire.navigation.navigateTo({
                         pluginId: WidgetWall.SocialItems.appSettings.actionItem.pluginId,
@@ -756,17 +743,13 @@
             }
 
             WidgetWall.showMembers = function () {
-                console.log("AAAAAAAAAAAAAAAA")
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
                     
                     if (userData) {
-                        console.log("ee", WidgetWall.SocialItems.wid)
                         if (WidgetWall.SocialItems.wid) {
-                            console.log("eee")
                             Location.go('#/members/' + WidgetWall.SocialItems.wid);
                         } else {
-                            console.log("eeee")
                             Location.go('#/members/home');
                         }
                     }
@@ -868,7 +851,6 @@
                         }
                         SocialDataStore.updatePost(post).then(() => {
                             SubscribedUsersData.getGroupFollowingStatus(post.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                                console.log(status)
                                 if (status.length &&
                                     status[0].data && !status[0].data.leftWall && !liked) WidgetWall.scheduleNotification(post, 'like');
                             });
@@ -892,7 +874,6 @@
                 
                 WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
-                    console.log(user, threadId)
                     if(user) {
                         WidgetWall.checkFollowingStatus();
                         if (threadId)

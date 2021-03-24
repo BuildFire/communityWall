@@ -58,7 +58,6 @@
             $scope.onSearchChange = function () {
                 let isEmptySearch = ($scope.searchInput.length === 0);
                 let minSearchLength = 1;
-                console.log("EMPTY", isEmptySearch)
                 if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
                 Members.searchOptions.filter = {
@@ -75,7 +74,6 @@
                     ]
                 }
                 Members.searchOptions.page = 0;
-                console.log("SEARCH OPTIONS", Members.searchOptions)
                 Members.executeSearch(Members.searchOptions);
             };
 
