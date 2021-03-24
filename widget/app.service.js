@@ -350,6 +350,9 @@
                 _this.isPrivateChat = false;
                 _this.forcedToLogin = false;
                 _this.languages = {};
+                _this.showMorePosts = false;
+                _this.pageSize = 5;
+                _this.page = 0;
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
@@ -402,7 +405,8 @@
                 });
             }
 
-            SocialItems.prototype.getPosts = function (pageSize, page, callback) {
+            SocialItems.prototype.getPosts = function (callback) {
+                let pageSize = _this.pageSize, page = _this.page;
                 let searchOptions = { pageSize, page, sort: { "id": -1 }, recordCount: true }
                 if (_this.wid === "")
                     searchOptions.filter = { '_buildfire.index.string1': { "$eq": "" } }
@@ -410,8 +414,14 @@
                     searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                     if (error) return console.log(error);
+
+                    console.log("DATA", data.totalRecord,data.result.length)
                     if (data && data.result.length) {
                         data.result.map(item => _this.items.push(item.data))
+                        if (data.totalRecord > _this.items.length) {
+                            _this.showMorePosts = true;
+                            _this.page++;
+                        } else _this.showMorePosts = false;
                         window.buildfire.messaging.sendMessageToControl({
                             name: 'SEND_POSTS_TO_CP',
                             posts: _this.items,
@@ -422,7 +432,9 @@
                         callback(null, data);
                     }
                     else {
+                        _this.showMorePosts = false;
                         $rootScope.$digest();
+                        callback(null, [])
                         //Checking if user comming from notification for thread comment.
                         startBackgroundService();
                         if (window.URLSearchParams && window.location.search) {
@@ -507,7 +519,11 @@
                 buildfire.getContext((error, context) => {
                     if (error) return console.error("Fetching app context failed.", err);
                     _this.context = context;
-                    _this.wid = Util.getParameterByName("wid") ? Util.getParameterByName("wid") : '';
+                    if(!_this.wid) {
+                        _this.wid = Util.getParameterByName("wid") ? Util.getParameterByName("wid") : '';
+                        _this.mainWallID = _this.wid;
+                    }
+                        
                     if (_this.wid.length === 48) {
                         _this.isPrivateChat = true;
                     }
@@ -526,7 +542,9 @@
 
             return {
                 getInstance: function () {
+                    console.log(instance)
                     if (!instance) instance = new SocialItems();
+                    
                     return instance;
                 }
             };

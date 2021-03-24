@@ -126,10 +126,10 @@
                             SubscribedUsersData.getThreadFollowingStatus(userData._id, Thread.post.id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                                 console.log("EEEEEEEE", status)
                                 if (status) {
-                                    if(!status.leftWall)
-                                    Thread.followingStatus = true;
+                                    if (!status.leftWall)
+                                        Thread.followingStatus = true;
                                     else
-                                    Thread.followingStatus = false;
+                                        Thread.followingStatus = false;
 
                                     console.log("AAAAAAAAAA")
 
@@ -140,13 +140,13 @@
                                     SubscribedUsersData.getGroupFollowingStatus(userData._id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                                         if (err) console.error('Error while getting initial group following status.', err);
                                         console.log(status)
-                                        if(status.length) {
+                                        if (status.length) {
                                             SubscribedUsersData.followThread({
                                                 userId: userData._id,
                                                 wallId: Thread.SocialItems.wid,
                                                 post: Thread.post.id
                                             });
-                                            if(status[0].data && !status[0].data.leftWall) {
+                                            if (status[0].data && !status[0].data.leftWall) {
                                                 Thread.followingStatus = true;
                                                 $scope.$digest();
                                             }
@@ -165,12 +165,17 @@
             Thread.init();
 
             Thread.navigateToPrivateChat = function (user) {
-                Buildfire.navigation.navigateTo({
-                    pluginId: Thread.SocialItems.context.pluginId,
-                    instanceId: Thread.SocialItems.context.instanceId,
-                    title: Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' | ' + user.name,
-                    queryString: 'wid=' + user.wid + '&targetUser=' + JSON.stringify({ userId: user.id, userName: user.name })
-                        + "&wTitle=" + encodeURIComponent(Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' | ' + user.name)
+                Thread.SocialItems.isPrivateChat = true;
+                Thread.SocialItems.items = [];
+                Thread.SocialItems.wid = user.wid;
+                Thread.SocialItems.pageSize = 5;
+                Thread.SocialItems.page = 0;
+
+                $rootScope.showThread = true;
+                $rootScope.$broadcast("loadPrivateChat");
+                buildfire.history.push(Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' | ' + Thread.SocialItems.getUserName(user.name), {
+                    isPrivateChat: true,
+                    showLabelInTitlebar: true
                 });
             }
 
@@ -213,7 +218,7 @@
                 if (Thread.allowPrivateChat) {
                     Thread.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
-                        if(userId === Thread.SocialItems.userDetails.userId) return;
+                        if (userId === Thread.SocialItems.userDetails.userId) return;
                         buildfire.auth.getUserProfile({ userId: userId }, function (err, otherUser) {
                             if (err) return console.error("Getting user profile failed.", err);
                             Thread.openPrivateChat(userId, Thread.SocialItems.getUserName(otherUser));
@@ -258,7 +263,7 @@
                         },
                             function (err) {
                                 console.log('Error in Error handler--------------------------', err);
-                        });
+                            });
                     }
                 });
             };
@@ -506,7 +511,7 @@
                             }
                         }, (err, data) => {
                             if (err) return console.error("Something went wrong.", err);
-                            if(data.cancelled) return console.error('User canceled.')
+                            if (data.cancelled) return console.error('User canceled.')
                             Thread.getPostContent(data);
                             if ((Thread.comment || ($scope.Thread.images && $scope.Thread.images.length > 0))) {
                                 Thread.addComment($scope.Thread.imageUrl);
@@ -593,7 +598,7 @@
                 console.log('----------- on Update Side Thread ----', response);
                 if (response.tag === "languages")
                     Thread.SocialItems.formatLanguages(response);
-                else if(response.tag === "Social") {
+                else if (response.tag === "Social") {
                     Thread.SocialItems.appSettings.allowSideThreadTags = response.data.appSettings.allowSideThreadTags;
                     Thread.SocialItems.appSettings.sideThreadUserTags = response.data.appSettings.sideThreadUserTags;
                     Thread.showHideCommentBox();

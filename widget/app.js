@@ -57,7 +57,16 @@
                 buildfire.history.get({
                     pluginBreadcrumbsOnly: true
                 }, function (err, result) {
+                    console.log("BACK BUTTON CLICK", result)
                     if(!result.length) return goBack();
+                    if(result[result.length-1].options.isPrivateChat) {
+                        console.log("PRIVATE CHAT BACK BUTTON")
+                        result.map(item => buildfire.history.pop());
+                        $rootScope.showThread = true;
+                        $location.path('/');
+                        $rootScope.$broadcast("navigatedBack");
+                        //location.reload();
+                    }
                     else {
                          if(result[0].label === 'thread' || result[0].label === 'members') {
                             $rootScope.showThread = true;
@@ -66,9 +75,7 @@
                             buildfire.history.pop();
                         } 
                     }
-
                 });
-
             }
         }])
         .directive('handlePhoneSubmit', function () {
