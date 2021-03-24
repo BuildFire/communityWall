@@ -251,8 +251,7 @@
                     options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
 
                 options.inAppMessage = options.text;
-                options.queryString = `wid=${WidgetWall.SocialItems.wid === '' ? 
-                WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid}`;
+                options.queryString = `wid=${WidgetWall.SocialItems.wid}`
 
                 if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
@@ -268,6 +267,8 @@
                         if (status.length &&
                             status[0].data && !status[0].data.leftWall) {
                             options.users.push(userToSend);
+                            options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' 
+                            + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
                                 if (err) return console.error('Error while setting PN schedule.', err);
                                 console.log("SENT NOTIFICATION", options);
@@ -383,6 +384,7 @@
                             index: { text: userId + '-' + wid, string1: wid }
                         }
                     };
+                    
                     userName = WidgetWall.SocialItems.getUserName(params.userDetails)
                     console.log("SACUVAVA KORISNIKA ZA PRIVATE", params)
                     SubscribedUsersData.save(params, function (err) {
@@ -400,7 +402,10 @@
                 WidgetWall.SocialItems.showMorePosts = false;
                 WidgetWall.SocialItems.pageSize = 5;
                 WidgetWall.SocialItems.page = 0;
-                buildfire.history.push(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(user.name), {
+                console.log(user)
+                console.log(WidgetWall.SocialItems.getUserName)
+                console.log(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name)
+                buildfire.history.push(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name, {
                     isPrivateChat: true,
                     showLabelInTitlebar: true
                 });
@@ -429,6 +434,7 @@
                         wid = userId + WidgetWall.SocialItems.userDetails.userId;
                     }
                 }
+                console.log(userName)
                 SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.error('Error while getting initial group following status.', err);
                     if (!status.length) {
@@ -659,7 +665,7 @@
                     return encodeURIComponent(match)
                 }) : '';
 
-                WidgetWall.onSendMessage({ _id: postData.userId }, postData.text, () =>
+                WidgetWall.onSendMessage({ _id: postData.userDetails.userId }, postData.text, () =>
                     SocialDataStore.createPost(postData).then((response) => {
                         WidgetWall.SocialItems.items.unshift(postData);
                         Buildfire.messaging.sendMessageToControl({
@@ -670,9 +676,9 @@
                         postData.id = response.data.id;
                         postData.uniqueLink = response.data.uniqueLink;
                         WidgetWall.scheduleNotification(postData, 'post');
-                        window.scrollTo(0, 0);
-                        $location.hash('top');
-                        $anchorScroll();
+                        // window.scrollTo(0, 0);
+                        // $location.hash('top');
+                        // $anchorScroll();
                     }, (err) => {
                         console.error("Something went wrong.", err)
                         WidgetWall.postText = '';

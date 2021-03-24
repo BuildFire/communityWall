@@ -164,7 +164,7 @@
 
                 $rootScope.showThread = true;
                 $rootScope.$broadcast("loadPrivateChat");
-                buildfire.history.push(Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' | ' + Thread.SocialItems.getUserName(user.name), {
+                buildfire.history.push(Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' | ' + user.name, {
                     isPrivateChat: true,
                     showLabelInTitlebar: true
                 });
