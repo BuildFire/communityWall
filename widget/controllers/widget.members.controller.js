@@ -29,12 +29,12 @@
 
                 Members.appSettings = Members.SocialItems.appSettings;
                 Members.languages = Members.SocialItems.languages.membersBlankState;
- 
+
                 if ($routeParams.wallId === "home") Members.wallId = "";
                 else Members.wallId = $routeParams.wallId;
                 Members.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
-                    if(user) {
+                    if (user) {
                         SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
                             if (err) return console.log(err);
                             Members.users = users;
@@ -58,12 +58,12 @@
             $scope.onSearchChange = function () {
                 let isEmptySearch = ($scope.searchInput.length === 0);
                 let minSearchLength = 1;
-                console.log("EMPTY",isEmptySearch)
                 if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
                 Members.searchOptions.filter = {
                     '_buildfire.index.string1': Members.wallId ? Members.wallId : { "$eq": "" },
                     $or: [
+
                         { "$json.userDetails.displayName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.firstName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.lastName": { $regex: $scope.searchInput, $options: 'i' } },
@@ -71,7 +71,6 @@
                     ]
                 }
                 Members.searchOptions.page = 0;
-
                 Members.executeSearch(Members.searchOptions);
             };
 
@@ -89,7 +88,7 @@
                     else {
                         Members.showMore = false;
                     }
-                    
+
                     Members.users = users.filter(el => el.userId !== Members.SocialItems.userDetails.userId);
                     Buildfire.spinner.hide();
                     $scope.$digest();
@@ -133,22 +132,26 @@
                 if (Members.appSettings && Members.appSettings.disablePrivateChat) return;
                 Members.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
-                    if(userData) {
+                    if (userData) {
                         let wid = null;
 
-                        if (Members.SocialItems.userDetails.userId && Members.SocialItems.userDetails.userId 
+                        if (Members.SocialItems.userDetails.userId && Members.SocialItems.userDetails.userId
                             != user.userId) {
                             if (Members.SocialItems.userDetails.userId > user.userId)
                                 wid = Members.SocialItems.userDetails.userId + user.userId;
                             else
                                 wid = user.userId + Members.SocialItems.userDetails.userId;
 
-                            Buildfire.history.push("Main Social Wall");
-                            Buildfire.navigation.navigateTo({
-                                pluginId: Members.SocialItems.context.pluginId,
-                                instanceId: Members.SocialItems.context.instanceId,
-                                title: Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + Members.SocialItems.getUserName(user.userDetails),
-                                queryString: 'wid=' + wid + "&wTitle=" + encodeURIComponent(Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + Members.SocialItems.getUserName(user.userDetails))
+                            Members.SocialItems.isPrivateChat = true;
+                            Members.SocialItems.items = [];
+                            Members.SocialItems.wid = wid;
+                            Members.SocialItems.pageSize = 5;
+                            Members.SocialItems.page = 0;
+                            $rootScope.showThread = true;
+                            $rootScope.$broadcast("loadPrivateChat");
+                            buildfire.history.push(Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + Members.SocialItems.getUserName(user.userDetails), {
+                                isPrivateChat: true,
+                                showLabelInTitlebar: true
                             });
                         }
                     }

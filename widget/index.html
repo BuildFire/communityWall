@@ -146,7 +146,7 @@
                                         class="post-text copy">
                                         <p class="cursor-pointer">
                                             <span
-                                                ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
+                                                ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : WidgetWall.goInToThread(post.id)"
                                                 ng-bind-html="(WidgetWall.decodeText(post.text) | limitTo : (post.limit || 150) :0) | newLine"></span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 class="ng-cloak">...</span>
@@ -186,7 +186,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="loadMorePosts" ng-show="WidgetWall.showMorePosts" ng-click="WidgetWall.loadMorePosts()">
+                                <div class="loadMorePosts" ng-show="WidgetWall.SocialItems.showMorePosts" ng-click="WidgetWall.loadMorePosts()">
                                     <button><a>Show More</a></button>
                                 </div>
                             </div>

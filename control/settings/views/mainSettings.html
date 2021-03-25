@@ -3,6 +3,13 @@
         <h2>Post Permission</h2>
         <div class="form-group">
             <div>
+                <input id="autoSub" type="checkbox" ng-model="data.allowAutoSubscribe" ng-change="save()" />
+                <label for="autoSub">Allow autosubscribe
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div>
                 <input id="mainWallTag" type="checkbox" ng-model="data.allowMainThreadTags" ng-change="save()" />
                 <label for="mainWallTag">Allow posts on main wall only by users with tags
                 </label>
@@ -12,6 +19,7 @@
         <div class="form-group">
             <tags-input ng-model="data.mainThreadUserTags" min-tags="{{data.allowMainThreadTags ? 1 : 0}}"
                 on-tag-added="save()" on-tag-removed="save()"></tags-input>
+            <div class="well">* You may have to reload the page if you have been applying these tags to yourself.</div>
         </div>
 
         <div class="form-group">
@@ -26,7 +34,9 @@
         <div class="form-group">
             <tags-input ng-model="data.sideThreadUserTags" min-tags="{{data.allowSideThreadTags ? 1 : 0}}"
                 on-tag-added="save()" on-tag-removed="save()"></tags-input>
+                <div class="well">* You may have to reload the page if you have been applying these tags to yourself.</div>
         </div>
+        
 
         <div class="form-group">
             <div>

@@ -41,3 +41,6 @@
     cursor: pointer;
   }
   
+.well {
+  padding: 0 10px !important;
+}
