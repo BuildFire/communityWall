@@ -34,7 +34,7 @@
                         _userTags = _userTagsObj[Object.keys(_userTagsObj)[0]];
                     }
 
-                    if (_userTags) {
+                    if (_userTags && !WidgetWall.SocialItems.userBanned) {
                         var _hasPermission = false;
                         for (var i = 0; i < WidgetWall.SocialItems.appSettings.mainThreadUserTags.length; i++) {
                             var _mainThreadTag = WidgetWall.SocialItems.appSettings.mainThreadUserTags[i].text;
@@ -46,11 +46,13 @@
                             }
                         }
                         WidgetWall.allowCreateThread = _hasPermission;
+                        if(WidgetWall.SocialItems.userBanned) WidgetWall.allowCreateThread = false;
                     } else {
                         WidgetWall.allowCreateThread = false;
                     }
                 } else {
-                    WidgetWall.allowCreateThread = true;
+                    if(WidgetWall.SocialItems.userBanned) WidgetWall.allowCreateThread = false;
+                    else WidgetWall.allowCreateThread = true;
                 }
             };
 
@@ -149,7 +151,13 @@
                                 WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                             }, () => { });
                             WidgetWall.groupFollowingStatus = true;
-                        } else WidgetWall.groupFollowingStatus = false;
+                        } else {
+                            if(status[0].data.banned) {
+                                console.log("AAAA BANOVAN")
+                                WidgetWall.SocialItems.userBanned = true;
+                            }
+                            WidgetWall.groupFollowingStatus = false;
+                        }
                         WidgetWall.showHideCommentBox();
                         if (user) WidgetWall.statusCheck(status, user);
                         buildfire.spinner.hide();
@@ -159,7 +167,7 @@
             }
 
             WidgetWall.unfollowWall = function () {
-                SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, result) {
+                SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, false, function (err, result) {
                     if (err) return console.error(err);
                     else {
                         WidgetWall.groupFollowingStatus = false;
@@ -779,30 +787,43 @@
                                 switch (data) {
 
                                     case MORE_MENU_POPUP.REPORT:
-
-                                        var reportPostPromise = SocialDataStore.reportPost(post.id);
-                                        reportPostPromise.then(function (response) {
-                                            for (var index in WidgetWall.SocialItems.items)
-                                                if (WidgetWall.SocialItems.items[index].id == post.id) {
-                                                    WidgetWall.SocialItems.items.splice(index, 1);
-                                                    break;
-                                                }
-                                            $modal
-                                                .open({
-                                                    templateUrl: 'templates/modals/report-generated-modal.html',
-                                                    controller: 'MoreOptionsModalPopupCtrl',
-                                                    controllerAs: 'MoreOptionsPopup',
-                                                    size: 'sm',
-                                                    resolve: {
-                                                        Info: function () {
-                                                            return post.id;
-                                                        }
-                                                    }
-                                                });
-
-                                        }, function () {
-
+                                        SocialDataStore.reportPost({
+                                            reportedAt: new Date(),
+                                            reporter: WidgetWall.SocialItems.userDetails.email,
+                                            reported: post.userDetails.email,
+                                            reportedUserID: post.userId,
+                                            text: post.text,
+                                            postId: post.id,
+                                            wid: WidgetWall.SocialItems.wid
                                         });
+                                        // var reportPostPromise = SocialDataStore.reportPost(post.id);
+                                        // reportPostPromise.then(function (response) {
+                                        //     SocialDataStore.reportPost({
+                                        //         postId: post.id,
+                                        //         wid: WidgetWall.SocialItems.wid
+                                        //     });
+
+                                        //     // for (var index in WidgetWall.SocialItems.items)
+                                        //     //     if (WidgetWall.SocialItems.items[index].id == post.id) {
+                                        //     //         WidgetWall.SocialItems.items.splice(index, 1);
+                                        //     //         break;
+                                        //     //     }
+                                        //     $modal
+                                        //         .open({
+                                        //             templateUrl: 'templates/modals/report-generated-modal.html',
+                                        //             controller: 'MoreOptionsModalPopupCtrl',
+                                        //             controllerAs: 'MoreOptionsPopup',
+                                        //             size: 'sm',
+                                        //             resolve: {
+                                        //                 Info: function () {
+                                        //                     return post.id;
+                                        //                 }
+                                        //             }
+                                        //         });
+
+                                        // }, function () {
+
+                                        // });
 
                                         break;
                                     case MORE_MENU_POPUP.BLOCK:
@@ -922,14 +943,14 @@
                                 $scope.$digest();
                             break;
                         case EVENTS.BAN_USER:
-                            WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
-                                return el.userId != event.id;
+                            console.log("EVENT", event)
+                            delete event.name;
+                            SubscribedUsersData.unfollowWall(event.reported, event.wid, true, function (err, result) {
+                                if (err) return console.error(err);
+                                else {
+                                console.log("banovo");
+                                }
                             });
-                            WidgetWall.SocialItems.items.map(item => {
-                                item.comments.filter(function (el) {
-                                    return el.userId != event.id;
-                                });
-                            })
                             Modals.close('User already banned');
                             if (!$scope.$$phase)
                                 $scope.$digest();
@@ -952,6 +973,11 @@
                                 });
                             }
                             break;
+                        case 'ASK_FOR_WALLID': 
+                        window.buildfire.messaging.sendMessageToControl({
+                            name: 'SEND_WALLID',
+                            wid: WidgetWall.SocialItems.wid,
+                        });
                         default:
                             break;
                     }

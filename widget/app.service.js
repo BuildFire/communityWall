@@ -76,6 +76,9 @@
         }])
         .factory("SubscribedUsersData", function () {
             return {
+                banUser: function(params, callback) {
+
+                },
                 save: function (params, callback) {
                     if (params.userDetails.userTags) {
                         delete params.userDetails.userTags
@@ -89,7 +92,7 @@
                     }
                     );
                 },
-                unfollowWall: function (userId, wallId, instanceId, callback) {
+                unfollowWall: function (userId, wallId, banUser, callback) {
                     window.buildfire.publicData.search(
                         { filter: { '_buildfire.index.text': userId + '-' + wallId } },
                         'subscribedUsersData', function (err, data) {
@@ -101,7 +104,11 @@
                                     let toSave = data[0].data;
                                     toSave.posts = allPosts;
                                     toSave.leftWall = true;
-                                    console.log("AAA", toSave, allPosts);
+                                    if(banUser) {
+                                        data[0].data.banned = true;
+                                        console.log("AAA", toSave, allPosts);
+                                    }
+                                    
                                     buildfire.publicData.save(toSave, 'subscribedUsersData', (err, result) => {
                                         callback(null, true);
                                     });
@@ -119,6 +126,10 @@
                                 });
                             } else {
                                 data[0].data.leftWall = true;
+                                if(banUser) {
+                                    data[0].data.banned = true;
+                                    console.log("AAA 2");
+                                }
                                 buildfire.publicData.update(data[0].id, data[0].data, 'subscribedUsersData', (err, result) => {
                                     callback(null, result);
                                 });
@@ -281,6 +292,25 @@
                     });
                     return deferred.promise;
                 },
+                reportPost: function (data) {
+                    buildfire.publicData.get('reports_' + data.wid, (err, result) => {
+                        console.log(err, result);
+                        if (!result.data.length)
+                            buildfire.publicData.save([{ ...data }], 'reports_' + data.wid, () => { });
+                        else {
+                            console.log(result);
+                            let alreadyReported = result.data.find(el =>
+                                el.reporter === data.reporter && el.postId === data.postId)
+                            if (!alreadyReported) {
+                                result.data.push(data);
+                                buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
+                                    console.log('saved', saved)
+                                });
+                            }
+                        }
+
+                    });
+                },
                 addComment: function (data) {
                     var deferred = $q.defer();
                     if (data.userDetails.userTags) {
@@ -306,14 +336,14 @@
                     });
                     return deferred.promise;
                 },
-                reportPost: function (postId) {
-                    var deferred = $q.defer();
-                    buildfire.publicData.delete(postId, 'posts', function (error, result) {
-                        if (error) return deferred.reject(error);
-                        if (result) return deferred.resolve(result);
-                    })
-                    return deferred.promise;
-                },
+                // reportPost: function (postId) {
+                //     var deferred = $q.defer();
+                //     buildfire.publicData.delete(postId, 'posts', function (error, result) {
+                //         if (error) return deferred.reject(error);
+                //         if (result) return deferred.resolve(result);
+                //     })
+                //     return deferred.promise;
+                // },
                 deletePost: function (postId) {
                     var deferred = $q.defer();
                     buildfire.publicData.delete(postId, 'posts', function (error, result) {
@@ -416,7 +446,7 @@
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                     if (error) return console.log(error);
 
-                    console.log("DATA", data.totalRecord,data.result.length)
+                    console.log("DATA", data.totalRecord, data.result.length)
                     if (data && data.result.length) {
                         data.result.map(item => _this.items.push(item.data))
                         if (data.totalRecord > _this.items.length) {
@@ -520,11 +550,11 @@
                 buildfire.getContext((error, context) => {
                     if (error) return console.error("Fetching app context failed.", err);
                     _this.context = context;
-                    if(!_this.wid) {
+                    if (!_this.wid) {
                         _this.wid = Util.getParameterByName("wid") ? Util.getParameterByName("wid") : '';
                         _this.mainWallID = _this.wid;
                     }
-                        
+
                     if (_this.wid.length === 48) {
                         _this.isPrivateChat = true;
                     }
@@ -545,7 +575,7 @@
                 getInstance: function () {
                     console.log(instance)
                     if (!instance) instance = new SocialItems();
-                    
+
                     return instance;
                 }
             };
