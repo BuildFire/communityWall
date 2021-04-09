@@ -238,7 +238,6 @@
                 if (viewComment && viewComment == 'viewComment' && thread.comments.length > 0)
                     thread.viewComments = thread.viewComments ? false : true;
 
-                console.log(thread.viewComment, "KOMENTARI")
                 if (thread.commentsCount > 0 && thread.commentsCount != initialCommentsLength) {
                     SocialDataStore.getCommentsOfAPost({
                         threadId: thread._id,

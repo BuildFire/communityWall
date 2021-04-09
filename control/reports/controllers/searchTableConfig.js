@@ -9,7 +9,7 @@ const searchTableConfig ={
 			header:"Time/Date"
 			,data:"${new Date(data.reportedAt).toLocaleDateString()}"
 			,type:"date"
-			,width:"100px"
+			,width:"120px"
 			,sortBy: 'data.reportedAt'
 		}
 		,{
@@ -29,9 +29,11 @@ const searchTableConfig ={
 		,{
 			header:"Reported post"
 			,data:"${data.text}"
+
 			,type:"string"
 			,width:"100px"
-			,sortBy: 'data.text'
+			,sortBy: 'data.text',
+			command: 'showText'
 		}
 	]
 

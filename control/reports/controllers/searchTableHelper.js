@@ -8,9 +8,10 @@ class SearchTableHelper {
 		this.tag = tag;
 		this.sort = {};
 		this.commands = {};
+		this.items = [];
 		this.init();
 	}
-
+	
 	init() {
 		this.table.innerHTML = "";
 		this.renderHeader();
@@ -29,27 +30,29 @@ class SearchTableHelper {
 			else classes = ["text-left"];
 			let th = this._create('th', this.thead, colConfig.header, classes);
 			if (colConfig.sortBy) {
-				const icon = this._create('span', th, "", ['icon', 'icon-chevron-down']);
+				const icon = colConfig.type === 'date' ?
+				 this._create('span', th, "", ['icon', 'icon-chevron-down'])
+				 : this._create('span', th, "", [])
 				const _t = this;
 				th.addEventListener('click', function () {
 					if (_t.sort[colConfig.sortBy] && _t.sort[colConfig.sortBy] > 0) {
 						_t.sort = { [colConfig.sortBy]: -1 };
+						_t.items.sort(function(a,b){
+							return new Date(a.reportedAt) - new Date(b.reportedAt);
+						});
 						icon.classList.remove('icon-chevron-up');
 						icon.classList.add('icon-chevron-down');
 					}
 					else {
-						//revert icon if previously sorted
-						for (let i = 0; i < _t.thead.children.length; i++) {
-							if (_t.thead.children[i].children[0]) {
-								_t.thead.children[i].children[0].classList.remove('icon-chevron-up');
-								_t.thead.children[i].children[0].classList.add('icon-chevron-down');
-							}
-						};
 						_t.sort = { [colConfig.sortBy]: 1 };
+						_t.items.sort(function(a,b){
+							return new Date(b.reportedAt) - new Date(a.reportedAt);
+						});
 						icon.classList.remove('icon-chevron-down');
 						icon.classList.add('icon-chevron-up');
 					}
-					_t._fetchPageOfData();
+					_t.tbody.innerHTML = '';
+					_t.items.map(r=> _t.renderRow({data:r}))
 				});
 			}
 			if (colConfig.width)
@@ -106,8 +109,11 @@ class SearchTableHelper {
 			this.tbody.innerHTML = '';
 			this.endReached = results.length < pageSize;
 			this.endReached = results[0] && results[0].data.length ? results.length < pageSize : true;
-			if (results[0] && results[0].data.length) 
+			if (results[0] && results[0].data.length)  {
+				this.items = results[0].data
 				results[0].data.forEach(r => this.renderRow({ data: r }))
+			}
+				
 			else this.tbody.innerHTML = 'No results.';
 			if (callback) callback();
 		});
@@ -136,7 +142,7 @@ class SearchTableHelper {
 			else classes = ["text-left"];
 			var td;
 			if (colConfig.type == "command") {
-				td = this._create('td', tr, '<button class="btn btn-link">' + colConfig.text + '</button>', ["editColumn"]);
+				td = this._create('td', tr, '<button class="btn btn-link">' + colConfig.data + '</button>', ["editColumn"]);
 				td.onclick = (event) => {
 					event.preventDefault();
 					this._onCommand(obj, tr, colConfig.command);
@@ -150,8 +156,20 @@ class SearchTableHelper {
 				} catch (error) {
 					console.log(error);
 				}
-				td = this._create('td', tr, output, classes);
+				if(colConfig.type === 'date') {
 
+					let d = new Date(obj.data.reportedAt)
+					var datestring = ("0"+(d.getMonth()+1)).slice(-2) + "/" + ("0" + d.getDate()).slice(-2) + "/" +
+    				d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+					output = datestring
+				}
+				td = this._create('td', tr, output, classes);
+				if(colConfig.command) {
+					td.onclick = (event) => {
+						event.preventDefault();
+						this._onCommand(obj, tr, colConfig.command);
+					};
+				}
 			}
 			if (colConfig.width)
 				td.style.width = colConfig.width;

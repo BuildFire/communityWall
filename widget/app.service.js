@@ -106,7 +106,6 @@
                                     toSave.leftWall = true;
                                     if(banUser) {
                                         data[0].data.banned = true;
-                                        console.log("AAA", toSave, allPosts);
                                     }
                                     
                                     buildfire.publicData.save(toSave, 'subscribedUsersData', (err, result) => {
@@ -114,9 +113,7 @@
                                     });
                                 }
                                 data.map(item => {
-                                    console.log(item.data.posts)
                                     allPosts = allPosts.concat(item.data.posts);
-                                    console.log(item)
                                     buildfire.publicData.delete(item.id, 'subscribedUsersData', function (err, status) {
                                         if (err) return console.error(err)
                                         count++;
@@ -128,7 +125,6 @@
                                 data[0].data.leftWall = true;
                                 if(banUser) {
                                     data[0].data.banned = true;
-                                    console.log("AAA 2");
                                 }
                                 buildfire.publicData.update(data[0].id, data[0].data, 'subscribedUsersData', (err, result) => {
                                     callback(null, result);
@@ -153,7 +149,6 @@
                                 },
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) return cb(err, null);
-                                console.log("AAAAAAAAAAAAA", data)
                                 data.result.map(item => allUsers.push(item.data));
                                 if (allUsers.length === data.totalRecord) {
                                     allUsers = allUsers.filter((item) => { return item.userId !== userId });
@@ -172,7 +167,6 @@
                     window.buildfire.publicData.search(query, 'subscribedUsersData', function (err, data) {
                         if (err) return callback(err);
                         else {
-                            console.log("AAAAAAAAA", data)
                             var allUsers = [];
                             if (data && data.length) {
                                 data.map(user => allUsers.push(user.data));
@@ -204,7 +198,6 @@
                                 let data = result[0].data;
                                 data.posts.push(params.post);
                                 buildfire.publicData.update(result[0].id, data, 'subscribedUsersData', (err, posts) => {
-                                    console.log(posts);
                                 });
                             }
                         })
@@ -219,7 +212,6 @@
                                 let data = result[0].data;
                                 data.posts = data.posts.filter(x => x !== params.post);
                                 buildfire.publicData.update(result[0].id, data, 'subscribedUsersData', (err, posts) => {
-                                    console.log(posts);
                                 });
                             }
                         });
@@ -436,7 +428,6 @@
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                     if (error) return console.log(error);
 
-                    console.log("DATA", data.totalRecord, data.result.length)
                     if (data && data.result.length) {
                         data.result.map(item => _this.items.push(item.data))
                         if (data.totalRecord > _this.items.length) {
@@ -532,7 +523,6 @@
                         strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
                     });
                 }
-                console.log(_this.languages);
                 $rootScope.$digest();
             }
 
@@ -563,7 +553,6 @@
 
             return {
                 getInstance: function () {
-                    console.log(instance)
                     if (!instance) instance = new SocialItems();
 
                     return instance;

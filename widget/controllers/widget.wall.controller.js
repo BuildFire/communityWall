@@ -18,10 +18,7 @@
             WidgetWall.appTheme = null;
 
             WidgetWall.loadedPlugin = false;
-
-
             WidgetWall.SocialItems = SocialItems.getInstance();
-
             $rootScope.showThread = true;
 
             WidgetWall.showHideCommentBox = function () {
@@ -160,7 +157,6 @@
                             WidgetWall.groupFollowingStatus = true;
                         } else {
                             if (status[0].data.banned) {
-                                console.log("AAAA BANOVAN")
                                 WidgetWall.SocialItems.userBanned = true;
                                 WidgetWall.allowFollowLeaveGroup = false;
                                 WidgetWall.allowCreateThread = false;
@@ -409,7 +405,6 @@
                     };
 
                     userName = WidgetWall.SocialItems.getUserName(params.userDetails)
-                    console.log("SACUVAVA KORISNIKA ZA PRIVATE", params)
                     SubscribedUsersData.save(params, function (err) {
                         if (err) console.log('Error while saving subscribed user data.');
                         if (userName)
@@ -425,9 +420,7 @@
                 WidgetWall.SocialItems.showMorePosts = false;
                 WidgetWall.SocialItems.pageSize = 5;
                 WidgetWall.SocialItems.page = 0;
-                console.log(user)
-                console.log(WidgetWall.SocialItems.getUserName)
-                console.log(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name)
+
                 buildfire.history.push(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name, {
                     isPrivateChat: true,
                     showLabelInTitlebar: true
@@ -457,7 +450,6 @@
                         wid = userId + WidgetWall.SocialItems.userDetails.userId;
                     }
                 }
-                console.log(userName)
                 SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.error('Error while getting initial group following status.', err);
                     if (!status.length) {
@@ -794,6 +786,7 @@
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (userData) {
+                        WidgetWall.checkFollowingStatus();
                         Modals.showMoreOptionsModal({
                             'postId': post.id,
                             'userId': post.userId,
@@ -801,6 +794,7 @@
                             'languages': WidgetWall.SocialItems.languages
                         })
                             .then(function (data) {
+                                if(WidgetWall.SocialItems.userBanned) return;
                                 switch (data) {
 
                                     case MORE_MENU_POPUP.REPORT:
@@ -844,6 +838,7 @@
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (userData) {
+                        if(WidgetWall.SocialItems.userBanned) return;
                         let liked = post.likes.find(element => element === WidgetWall.SocialItems.userDetails.userId);
                         let index = post.likes.indexOf(WidgetWall.SocialItems.userDetails.userId)
                         let postUpdate = WidgetWall.SocialItems.items.find(element => element.id === post.id)
@@ -892,7 +887,7 @@
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
                         WidgetWall.checkFollowingStatus();
-                        if (threadId)
+                        if (threadId && !WidgetWall.SocialItems.userBanned)
                             Location.go('#/thread/' + threadId);
                     }
                 });
@@ -936,12 +931,10 @@
                                 if (err) return console.error(err);
                                 else {
                                     WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
-                                        console.log(el.userId, event.reported)
                                         return el.userId !== event.reported;
                                     });
                                     WidgetWall.SocialItems.items.map(item => {
                                         item.comments.filter(function (el) {
-                                            console.log(el.userId, event.reported)
                                             return el.userId !== event.reported;
                                         });
                                     });
@@ -1009,7 +1002,6 @@
                             ]
                         }, page, pageSize, recordCount: true
                     }, 'posts', (err, posts) => {
-                        console.log(err, posts);
                         allPosts = allPosts.concat(posts.result);
                         if (posts.totalRecord > allPosts.length) {
                             page++;
@@ -1017,20 +1009,16 @@
                         } else {
                             allPosts.map(item => {
                                 var needsUpdate = false;
-                                console.log(item)
                                 if (item.data.userId === user._id) {
                                     item.data.userDetails = status[0].data.userDetails;
                                     needsUpdate = true;
                                 }
                                 item.data.comments.map(comment => {
-                                    console.log(comment)
                                     if (comment.userId === user._id) {
                                         comment.userDetails = status[0].data.userDetails;
                                         needsUpdate = true;
                                     }
-                                    console.log("KOMENTAR UPDEJT")
                                 });
-                                needsUpdate ? console.log("POSTS TO UPDATE", item) : null
                                 if (needsUpdate) {
                                     let postUpdate = WidgetWall.SocialItems.items.find(post => post.id === item.id);
                                     if (postUpdate) {
@@ -1075,7 +1063,6 @@
                             status[0].data.userDetails.email = user.email;
                             status[0].data.userDetails.imageUrl = user.imageUrl;
                             status[0].data.userDetails.lastUpdated = user.lastUpdated;
-                            console.log("USER TO UPDATE", status[0])
 
                             window.buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
                                 if (err) return console.error(err);
@@ -1083,10 +1070,7 @@
                             });
 
                         }
-
-                        console.log('ima updated')
                     }
-
                 }
             }
 
@@ -1100,9 +1084,7 @@
                         buildfire.history.get({
                             pluginBreadcrumbsOnly: true
                         }, function (err, result) {
-                            if(result[result.length-1].options.isPrivateChat) {
-                                console.log("PRIVATE CHAT LOG OUT")
-                                
+                            if(result[result.length-1].options.isPrivateChat) {                                
                                 result.map(item => buildfire.history.pop());
                                 WidgetWall.SocialItems.items = [];
                                 WidgetWall.SocialItems.isPrivateChat = false;
