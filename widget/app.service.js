@@ -294,17 +294,15 @@
                 },
                 reportPost: function (data) {
                     buildfire.publicData.get('reports_' + data.wid, (err, result) => {
-                        console.log(err, result);
                         if (!result.data.length)
                             buildfire.publicData.save([{ ...data }], 'reports_' + data.wid, () => { });
                         else {
-                            console.log(result);
                             let alreadyReported = result.data.find(el =>
                                 el.reporter === data.reporter && el.postId === data.postId)
                             if (!alreadyReported) {
                                 result.data.push(data);
                                 buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
-                                    console.log('saved', saved)
+                                    buildfire.messaging.sendMessageToControl({ 'name': "POST_REPORTED", wid: data.wid });
                                 });
                             }
                         }
@@ -336,14 +334,6 @@
                     });
                     return deferred.promise;
                 },
-                // reportPost: function (postId) {
-                //     var deferred = $q.defer();
-                //     buildfire.publicData.delete(postId, 'posts', function (error, result) {
-                //         if (error) return deferred.reject(error);
-                //         if (result) return deferred.resolve(result);
-                //     })
-                //     return deferred.promise;
-                // },
                 deletePost: function (postId) {
                     var deferred = $q.defer();
                     buildfire.publicData.delete(postId, 'posts', function (error, result) {

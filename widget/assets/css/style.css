@@ -479,13 +479,6 @@ button.btn--lg,
 /* Single Post*/
 
 .head .media-holder {
-    width: 32px;
-    height: 32px;
-    overflow: hidden;
-    border-radius: 100%;
-}
-
-.head .media-holder-member {
     width: 45px;
     height: 45px;
     overflow: hidden;

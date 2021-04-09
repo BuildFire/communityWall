@@ -16,7 +16,7 @@
 
             WidgetWall.threadTag = "thread";
             WidgetWall.appTheme = null;
-            
+
             WidgetWall.loadedPlugin = false;
 
 
@@ -46,12 +46,12 @@
                             }
                         }
                         WidgetWall.allowCreateThread = _hasPermission;
-                        if(WidgetWall.SocialItems.userBanned) WidgetWall.allowCreateThread = false;
+                        if (WidgetWall.SocialItems.userBanned) WidgetWall.allowCreateThread = false;
                     } else {
                         WidgetWall.allowCreateThread = false;
                     }
                 } else {
-                    if(WidgetWall.SocialItems.userBanned) WidgetWall.allowCreateThread = false;
+                    if (WidgetWall.SocialItems.userBanned) WidgetWall.allowCreateThread = false;
                     else WidgetWall.allowCreateThread = true;
                 }
             };
@@ -79,7 +79,7 @@
             }
 
             WidgetWall.setSettings = function (settings) {
-                WidgetWall.SocialItems.appSettings = settings.data && settings.data.appSettings? settings.data.appSettings : {};
+                WidgetWall.SocialItems.appSettings = settings.data && settings.data.appSettings ? settings.data.appSettings : {};
                 WidgetWall.showHidePrivateChat();
                 WidgetWall.followLeaveGroupPermission();
                 WidgetWall.showHideCommentBox();
@@ -103,7 +103,7 @@
                 }
                 WidgetWall.loadedPlugin = true;
                 $scope.$digest();
-                
+
             }
 
             WidgetWall.setAppTheme = function () {
@@ -124,6 +124,12 @@
             WidgetWall.getPosts = function () {
                 WidgetWall.SocialItems.getPosts(function (err, data) {
                     WidgetWall.showUserLikes();
+                    window.buildfire.messaging.sendMessageToControl({
+                        name: 'SEND_POSTS_TO_CP',
+                        posts: WidgetWall.SocialItems.items,
+                        pinnedPost: WidgetWall.pinnedPost,
+                        wid: WidgetWall.SocialItems.wid
+                    });
                 });
             }
 
@@ -144,17 +150,21 @@
                         if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
                             buildfire.spinner.hide();
                             return WidgetWall.followWall();
-                        } 
-                        if(status.length && !status[0].data.leftWall) {
+                        }
+                        if (status.length && !status[0].data.leftWall) {
                             buildfire.notifications.pushNotification.subscribe(
-                                { groupName: WidgetWall.SocialItems.wid === '' ? 
-                                WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                            }, () => { });
+                                {
+                                    groupName: WidgetWall.SocialItems.wid === '' ?
+                                        WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                                }, () => { });
                             WidgetWall.groupFollowingStatus = true;
                         } else {
-                            if(status[0].data.banned) {
+                            if (status[0].data.banned) {
                                 console.log("AAAA BANOVAN")
                                 WidgetWall.SocialItems.userBanned = true;
+                                WidgetWall.allowFollowLeaveGroup = false;
+                                WidgetWall.allowCreateThread = false;
+                                WidgetWall.SocialItems.appSettings.showMembers = false;
                             }
                             WidgetWall.groupFollowingStatus = false;
                         }
@@ -172,9 +182,10 @@
                     else {
                         WidgetWall.groupFollowingStatus = false;
                         buildfire.notifications.pushNotification.unsubscribe(
-                            { groupName: WidgetWall.SocialItems.wid === '' ? 
-                            WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                        }, () => { });
+                            {
+                                groupName: WidgetWall.SocialItems.wid === '' ?
+                                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                            }, () => { });
                         const options = { text: 'You have left this group' };
                         buildfire.components.toast.showToastMessage(options, () => { });
                         $scope.$digest();
@@ -205,9 +216,10 @@
                     else {
                         WidgetWall.groupFollowingStatus = true;
                         buildfire.notifications.pushNotification.subscribe(
-                            { groupName: WidgetWall.SocialItems.wid === '' ? 
-                            WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                        }, () => { });
+                            {
+                                groupName: WidgetWall.SocialItems.wid === '' ?
+                                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                            }, () => { });
                         $scope.$digest();
                         buildfire.spinner.hide();
                     }
@@ -219,28 +231,31 @@
                 else {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
-                        buildfire.spinner.show();
-                        SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                            if (err) console.log('error while getting initial group following status.', err);
-                            else {
-                                if (!status.length) return WidgetWall.followWall();
-                                else if(status.length && status[0].data.leftWall) {
-                                    status[0].data.leftWall = false;
-                                    buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
-                                    buildfire.notifications.pushNotification.subscribe(
-                                        { groupName: WidgetWall.SocialItems.wid === '' ? 
-                                        WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                                    }, () => { });
-                                    WidgetWall.groupFollowingStatus = true;
+                        if(user) {
+                            buildfire.spinner.show();
+                            SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                                if (err) console.log('error while getting initial group following status.', err);
+                                else {
+                                    if (!status.length) return WidgetWall.followWall();
+                                    else if (status.length && status[0].data.leftWall) {
+                                        status[0].data.leftWall = false;
+                                        buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
+                                        buildfire.notifications.pushNotification.subscribe(
+                                            {
+                                                groupName: WidgetWall.SocialItems.wid === '' ?
+                                                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                                            }, () => { });
+                                        WidgetWall.groupFollowingStatus = true;
+                                    }
+                                    else if (status.length && !status[0].data.leftWall)
+                                        return WidgetWall.unfollowWall();
+                                    WidgetWall.showHideCommentBox();
+                                    if (user) WidgetWall.statusCheck(status, user);
+                                    buildfire.spinner.hide();
+                                    $scope.$digest();
                                 }
-                                else if(status.length && !status[0].data.leftWall) 
-                                    return WidgetWall.unfollowWall();
-                                WidgetWall.showHideCommentBox();
-                                if (user) WidgetWall.statusCheck(status, user);
-                                buildfire.spinner.hide();
-                                $scope.$digest();
-                            }
-                        });
+                            });
+                        }
                     });
                 }
             }
@@ -264,19 +279,17 @@
                 if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
                 if (WidgetWall.SocialItems.isPrivateChat) {
-                    //console.assert()
                     const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
                     const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
                     let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId
                         ? user2Id : user1Id;
-                    //options.users.push(userToSend);
                     SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                         if (err) console.error('Error while getting initial group following status.', err);
                         if (status.length &&
                             status[0].data && !status[0].data.leftWall) {
                             options.users.push(userToSend);
-                            options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' 
-                            + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
+                            options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on '
+                                + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
                                 if (err) return console.error('Error while setting PN schedule.', err);
                                 console.log("SENT NOTIFICATION", options);
@@ -287,24 +300,26 @@
                     if (text === 'like') {
                         options.users.push(post.userId);
                     }
-                    else options.groupName = WidgetWall.SocialItems.wid === '' ? 
-                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid  
+                    else options.groupName = WidgetWall.SocialItems.wid === '' ?
+                        WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                     buildfire.notifications.pushNotification.schedule(options, function (err) {
                         if (err) return console.error('Error while setting PN schedule.', err);
                         console.log("SENT NOTIFICATION", options);
                     });
-                } 
+                }
             }
 
             WidgetWall.openChat = function (userId) {
                 if (WidgetWall.allowPrivateChat) {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
-                        buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
-                            if (err) return console.error("Getting user profile failed.", err);
-                            if(userId === WidgetWall.SocialItems.userDetails.userId) return;
-                            WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
-                        });
+                        if(user) {
+                            buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
+                                if (err) return console.error("Getting user profile failed.", err);
+                                if (userId === WidgetWall.SocialItems.userDetails.userId) return;
+                                WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
+                            });
+                        }
                     });
                 }
             };
@@ -392,7 +407,7 @@
                             index: { text: userId + '-' + wid, string1: wid }
                         }
                     };
-                    
+
                     userName = WidgetWall.SocialItems.getUserName(params.userDetails)
                     console.log("SACUVAVA KORISNIKA ZA PRIVATE", params)
                     SubscribedUsersData.save(params, function (err) {
@@ -420,11 +435,11 @@
                 WidgetWall.init();
             }
 
-            $rootScope.$on('loadPrivateChat', function(event, error) {
+            $rootScope.$on('loadPrivateChat', function (event, error) {
                 WidgetWall.init();
             });
 
-            $rootScope.$on('navigatedBack', function(event, error) {
+            $rootScope.$on('navigatedBack', function (event, error) {
                 WidgetWall.SocialItems.items = [];
                 WidgetWall.SocialItems.isPrivateChat = false;
                 WidgetWall.SocialItems.pageSize = 5;
@@ -655,10 +670,12 @@
             }
             WidgetWall.loadMorePosts = function () {
                 WidgetWall.SocialItems.getPosts(function (err, data) {
-                    // if (data.totalRecord > WidgetWall.SocialItems.items.length) {
-                    //     WidgetWall.SocialItems.showMorePosts = true;
-                    //     WidgetWall.SocialItems.page++;
-                    // } else WidgetWall.SocialItems.showMorePosts = false;
+                    window.buildfire.messaging.sendMessageToControl({
+                        name: 'SEND_POSTS_TO_CP',
+                        posts: WidgetWall.SocialItems.items,
+                        pinnedPost: WidgetWall.pinnedPost,
+                        wid: WidgetWall.SocialItems.wid
+                    });
                     $scope.$digest();
                 });
             }
@@ -729,7 +746,7 @@
                             }
                         }, (err, data) => {
                             if (err) return console.error("Something went wrong.", err);
-                            if(data.cancelled) return console.error('User canceled.')
+                            if (data.cancelled) return console.error('User canceled.')
                             WidgetWall.getPostContent(data);
                             if ((WidgetWall.postText || ($scope.WidgetWall.images && $scope.WidgetWall.images.length > 0))) {
                                 finalPostCreation($scope.WidgetWall.images);
@@ -760,7 +777,7 @@
             WidgetWall.showMembers = function () {
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
-                    
+
                     if (userData) {
                         if (WidgetWall.SocialItems.wid) {
                             Location.go('#/members/' + WidgetWall.SocialItems.wid);
@@ -769,7 +786,7 @@
                         }
                     }
                 });
-                
+
             }
 
             WidgetWall.showMoreOptions = function (post) {
@@ -796,35 +813,6 @@
                                             postId: post.id,
                                             wid: WidgetWall.SocialItems.wid
                                         });
-                                        // var reportPostPromise = SocialDataStore.reportPost(post.id);
-                                        // reportPostPromise.then(function (response) {
-                                        //     SocialDataStore.reportPost({
-                                        //         postId: post.id,
-                                        //         wid: WidgetWall.SocialItems.wid
-                                        //     });
-
-                                        //     // for (var index in WidgetWall.SocialItems.items)
-                                        //     //     if (WidgetWall.SocialItems.items[index].id == post.id) {
-                                        //     //         WidgetWall.SocialItems.items.splice(index, 1);
-                                        //     //         break;
-                                        //     //     }
-                                        //     $modal
-                                        //         .open({
-                                        //             templateUrl: 'templates/modals/report-generated-modal.html',
-                                        //             controller: 'MoreOptionsModalPopupCtrl',
-                                        //             controllerAs: 'MoreOptionsPopup',
-                                        //             size: 'sm',
-                                        //             resolve: {
-                                        //                 Info: function () {
-                                        //                     return post.id;
-                                        //                 }
-                                        //             }
-                                        //         });
-
-                                        // }, function () {
-
-                                        // });
-
                                         break;
                                     case MORE_MENU_POPUP.BLOCK:
 
@@ -899,10 +887,10 @@
             };
 
             WidgetWall.goInToThread = function (threadId) {
-                
+
                 WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
-                    if(user) {
+                    if (user) {
                         WidgetWall.checkFollowingStatus();
                         if (threadId)
                             Location.go('#/thread/' + threadId);
@@ -943,17 +931,25 @@
                                 $scope.$digest();
                             break;
                         case EVENTS.BAN_USER:
-                            console.log("EVENT", event)
                             delete event.name;
                             SubscribedUsersData.unfollowWall(event.reported, event.wid, true, function (err, result) {
                                 if (err) return console.error(err);
                                 else {
-                                console.log("banovo");
+                                    WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
+                                        console.log(el.userId, event.reported)
+                                        return el.userId !== event.reported;
+                                    });
+                                    WidgetWall.SocialItems.items.map(item => {
+                                        item.comments.filter(function (el) {
+                                            console.log(el.userId, event.reported)
+                                            return el.userId !== event.reported;
+                                        });
+                                    });
+                                    if (!$scope.$$phase)
+                                    $scope.$digest();
                                 }
                             });
-                            Modals.close('User already banned');
-                            if (!$scope.$$phase)
-                                $scope.$digest();
+
                             break;
                         case EVENTS.COMMENT_DELETED:
                             let post = WidgetWall.SocialItems.items.find(element => element.id === event.postId)
@@ -973,11 +969,11 @@
                                 });
                             }
                             break;
-                        case 'ASK_FOR_WALLID': 
-                        window.buildfire.messaging.sendMessageToControl({
-                            name: 'SEND_WALLID',
-                            wid: WidgetWall.SocialItems.wid,
-                        });
+                        case 'ASK_FOR_WALLID':
+                            window.buildfire.messaging.sendMessageToControl({
+                                name: 'SEND_WALLID',
+                                wid: WidgetWall.SocialItems.wid,
+                            });
                         default:
                             break;
                     }
@@ -997,7 +993,7 @@
                         }
                     }, 100);
                 }
-                else if (response.tag === "languages") 
+                else if (response.tag === "languages")
                     WidgetWall.SocialItems.formatLanguages(response);
                 $scope.$digest();
             });
@@ -1101,19 +1097,22 @@
                     var loggedUser = WidgetWall.SocialItems.userDetails.userId;
 
                     if (loggedUser !== user1Id && loggedUser !== user2Id) {
-                        WidgetWall.SocialItems.wid = null;
-                        WidgetWall.SocialItems.wid = null;
-                        WidgetWall.SocialItems.items = [];
-                        WidgetWall.SocialItems.isPrivateChat = false;
-                        var instanceId = buildfire.getContext().instanceId;
-                        buildfire.pluginInstance.get(instanceId, function (error, instances) {
-                            Buildfire.navigation.navigateTo({
-                                pluginId: WidgetWall.SocialItems.context.pluginId,
-                                instanceId: WidgetWall.SocialItems.context.instanceId,
-                                title: instances.title,
-                                queryString: null
-                            });
+                        buildfire.history.get({
+                            pluginBreadcrumbsOnly: true
+                        }, function (err, result) {
+                            if(result[result.length-1].options.isPrivateChat) {
+                                console.log("PRIVATE CHAT LOG OUT")
+                                
+                                result.map(item => buildfire.history.pop());
+                                WidgetWall.SocialItems.items = [];
+                                WidgetWall.SocialItems.isPrivateChat = false;
+                                WidgetWall.SocialItems.pageSize = 5;
+                                WidgetWall.SocialItems.page = 0;
+                                WidgetWall.SocialItems.wid = WidgetWall.SocialItems.mainWallID;
+                                WidgetWall.init();
+                            }
                         });
+
                     }
                 }
             }
@@ -1138,9 +1137,10 @@
                 WidgetWall.SocialItems.userDetails = {};
                 WidgetWall.groupFollowingStatus = false;
                 buildfire.notifications.pushNotification.unsubscribe(
-                    { groupName: WidgetWall.SocialItems.wid === '' ? 
-                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                }, () => { });
+                    {
+                        groupName: WidgetWall.SocialItems.wid === '' ?
+                            WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                    }, () => { });
                 WidgetWall.privateChatSecurity();
                 $scope.$digest();
             });

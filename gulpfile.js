@@ -25,6 +25,7 @@ const cssTasks = [
     { name: "controlContentCSS", src: "control/content/**/**/*.css", dest: "/control/content" },
     { name: "controlDesignCSS", src: "control/design/**/**/*.css", dest: "/control/design" },
     { name: "controlSettingsCSS", src: "control/settings/**/**/*.css", dest: "/control/settings" },
+    { name: "controlReportsCSS", src: "control/reports/**/**/*.css", dest: "/control/reports" },
 ];
 
 cssTasks.forEach(function (task) {
@@ -57,6 +58,7 @@ const jsTasks = [
     { name: "controlDesignJS", src: "control/design/**/**/*.js", dest: "/control/design" },
     { name: "controlSettingsJS", src: "control/settings/**/**/*.js", dest: "/control/settings"},
     { name: "controlLanguagesJS", src: "control/languages/**/**/*.js", dest: "/control/languages" },
+    { name: "controlReportsJS", src: "control/reports/**/**/*.js", dest: "/control/reports" },
 
 ];
 
@@ -144,8 +146,11 @@ gulp.task("images", function () {
   console.log(destinationFolder)
   return gulp.src(["widget/images/*"], { base: "." }).pipe(imagemin()).pipe(gulp.dest(destinationFolder));
 });
+gulp.task('fonts', function () {
+	return gulp.src('control/reports/styles/linearicons/fonts/**/*.{eot,svg,ttf,woff,woff2}').pipe(gulp.dest(destinationFolder + '/control/reports/fonts'));
+});
 
-var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS"];
+var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS", "fonts"];
 
 cssTasks.forEach(function (task) {
   buildTasksToRun.push(task.name);

@@ -194,15 +194,14 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                banUser: function (userId) {
+                banUser: function (userId, wallId) {
                     var deferred = $q.defer();
-                    let wid = Util.getParameterByName("wid");
-                    if (wid === null) wid = "";
+
                     let searchOptions = {
                         filter: {
                             $and: [
                                 { "$json.userId": userId },
-                                { '$json.wid': wid }
+                                { '$json.wid': wallId }
                             ]
                         }
                     }
@@ -211,7 +210,7 @@
                         filter: {
                             $and: [
                                 { "$json.comments.userId": userId },
-                                { '$json.wid': wid }
+                                { '$json.wid': wallId }
                             ]
                         }
                     }
