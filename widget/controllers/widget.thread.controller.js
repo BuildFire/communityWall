@@ -250,7 +250,18 @@
                             postId: Thread.post._id,
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
-                            console.log('Data in Successs------------------data');
+                            
+                            if(data === "Report Post") {
+                                SocialDataStore.reportPost({
+                                    reportedAt: new Date(),
+                                    reporter: Thread.SocialItems.userDetails.email,
+                                    reported: Thread.post.userDetails.email,
+                                    reportedUserID: Thread.post.userId,
+                                    text: Thread.post.text,
+                                    postId: Thread.post.id,
+                                    wid: Thread.SocialItems.wid
+                                });
+                            }
                         },
                             function (err) {
                                 console.log('Error in Error handler--------------------------', err);
@@ -578,6 +589,11 @@
                             if (Thread.modalPopupThreadId == event._id)
                                 Modals.close('Comment already deleted');
                             break;
+                            case "ASK_FOR_WALLID": 
+                            window.buildfire.messaging.sendMessageToControl({
+                                name: 'SEND_WALLID',
+                                wid: Thread.SocialItems.wid,
+                            });
                         default:
                             break;
                     }

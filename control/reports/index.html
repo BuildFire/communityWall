@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html ng-app="socialPluginSettings">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- build:bundleCSSFiles  -->
+    <link href="./styles/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/base.css">
+    <link rel="stylesheet" href="./styles/linearicons/cpIcons.css">
+    <!-- endbuild -->
+
+    <!-- JS -->
+    <script src="../../../../scripts/buildfire.js"></script>
+    <script src="../../../../scripts/angular/angular.min.js"></script>
+    <script src="../../../../scripts/angular/angular-route.min.js"></script>
+    <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
+    <!-- build:bundleSharedJSFiles  -->
+    <!-- <script src="../../widget/assets/js/shared/stringsConfig.js"></script>
+    <script src="../../widget/assets/js/shared/strings.js"></script> -->
+    <!-- endbuild -->
+
+    <!-- build:bundleJSFiles  -->
+    <script src="controllers/searchTableConfig.js"></script>
+    <script src="controllers/searchTableHelper.js"></script>
+    <script src="app.js"></script>
+    <script src="controllers/reports.js"></script>
+    <!-- endbuild -->
+        <style>
+            .subTitle{
+                margin-bottom: 25px;
+                font-style: italic;
+            }
+    
+            textarea:invalid,input:invalid{
+                background-color:lightpink;
+            }
+    
+            .hidden{
+                display: none;
+            }
+    
+            #deleteButton{
+                padding-right: 25px;
+                margin-top: 5px;
+            }
+            .nav-tabs {
+            border-bottom: 1px solid #ddd !important;
+            }
+            .nav-tabs.nav-justified {
+                width: 80%;
+                margin: 0 auto;
+            }
+
+            .nav-tabs>li>a {
+                border: 1px solid #dddddd !important;
+            }
+
+            li>a.active {
+                color: #09a3ee;
+                background-color: #fff;
+                cursor: default;
+                border-bottom: 1px solid #09a3ee;
+            }
+        </style>
+</head>
+<body class="scrollable">
+<div class="settings" ng-view></div>
+</body>
+
+</html>

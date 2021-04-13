@@ -18,6 +18,10 @@
     },
     "customTabs": [
       {
+        "title": "Reports",
+        "url": "reports/index.html"
+      },
+      {
         "title": "Languages",
         "url": "languages/index.html"
       }

@@ -18,15 +18,12 @@
             ContentHome.exportingThreads = false;
             ContentHome.util = Util;
             var counter = 0;
-            buildfire.messaging.sendMessageToWidget({
-                name: 'ASK_FOR_POSTS'
-            });
+            
             $scope.setupImageList = function (post) {
-                if (post.imageUrl) {
+                if (post.imageUrl && post.imageUrl.length) {
                     post.imageListId = "imageList_" + (counter++);
                     setTimeout(function () {
                         let imageList = document.getElementById(post.imageListId);
-                        imageList.images = post.imageUrl;
                         if (Array.isArray(post.imageUrl)) {
                             imageList.images = post.imageUrl;
                         } else {
@@ -71,7 +68,10 @@
                         } else {
 
                         }
-
+                        setTimeout(() => {
+                            if(!ContentHome.posts.length) 
+                                buildfire.messaging.sendMessageToWidget({ name: 'ASK_FOR_POSTS' });
+                        }, 500);
                     });
                 });
 
@@ -205,15 +205,13 @@
             // Method for banning a user by calling SocialDataStore banUser method
             ContentHome.banUser = function (userId, threadId) {
                 ContentHome.modalPopupThreadId = threadId;
-                let wid = Util.getParameterByName("wid");
                 console.log('inside ban user controller method>>>>>>>>>>');
                 Modals.banPopupModal().then(function (data) {
-                    console.log("MODAL DATA", data)
                     if (data == 'yes') {
                         // Called when getting success from SocialDataStore banUser method
                         var success = function (response) {
                             console.log('User successfully banned and response is :', response);
-                            Buildfire.messaging.sendMessageToWidget({ 'name': EVENTS.BAN_USER, 'id': userId });
+                            Buildfire.messaging.sendMessageToWidget({ 'name': EVENTS.BAN_USER, 'reported': userId, wid: ContentHome.posts[0].wallId });
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el.userId != userId;
                             });
@@ -240,7 +238,6 @@
                 if (viewComment && viewComment == 'viewComment' && thread.comments.length > 0)
                     thread.viewComments = thread.viewComments ? false : true;
 
-                console.log(thread.viewComment, "KOMENTARI")
                 if (thread.commentsCount > 0 && thread.commentsCount != initialCommentsLength) {
                     SocialDataStore.getCommentsOfAPost({
                         threadId: thread._id,

@@ -128,6 +128,55 @@
                 }
             });
 
+            Members.followPrivateWall = function (userId, wid, userName = null) {
+                buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
+                    if (err) console.log('Error while saving subscribed user data.');
+                    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (re.test(String(user.firstName).toLowerCase()))
+                        user.firstName = 'Someone';
+                    if (re.test(String(user.displayName).toLowerCase()))
+                        user.displayName = 'Someone';
+
+                    var params = {
+                        userId: userId,
+                        userDetails: {
+                            displayName: user.displayName,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl,
+                            email: user.email,
+                            lastUpdated: new Date().getTime(),
+                        },
+                        wallId: wid,
+                        posts: [],
+                        _buildfire: {
+                            index: { text: userId + '-' + wid, string1: wid }
+                        }
+                    };
+
+                    userName = Members.SocialItems.getUserName(params.userDetails)
+                    SubscribedUsersData.save(params, function (err) {
+                        if (err) console.log('Error while saving subscribed user data.');
+                        if (userName)
+                            Members.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                    });
+                })
+            }
+
+            Members.navigateToPrivateChat = function(user) {
+                Members.SocialItems.isPrivateChat = true;
+                Members.SocialItems.items = [];
+                Members.SocialItems.wid = user.wid;
+                Members.SocialItems.pageSize = 5;
+                Members.SocialItems.page = 0;
+                $rootScope.showThread = true;
+                $rootScope.$broadcast("loadPrivateChat");
+                buildfire.history.push(Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + Members.SocialItems.getUserName(user.name), {
+                    isPrivateChat: true,
+                    showLabelInTitlebar: true
+                });
+            }
+
             Members.openPrivateChat = function (user) {
                 if (Members.appSettings && Members.appSettings.disablePrivateChat) return;
                 Members.SocialItems.authenticateUser(null, (err, userData) => {
@@ -141,18 +190,20 @@
                                 wid = Members.SocialItems.userDetails.userId + user.userId;
                             else
                                 wid = user.userId + Members.SocialItems.userDetails.userId;
+                                console.log(wid)
 
-                            Members.SocialItems.isPrivateChat = true;
-                            Members.SocialItems.items = [];
-                            Members.SocialItems.wid = wid;
-                            Members.SocialItems.pageSize = 5;
-                            Members.SocialItems.page = 0;
-                            $rootScope.showThread = true;
-                            $rootScope.$broadcast("loadPrivateChat");
-                            buildfire.history.push(Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + Members.SocialItems.getUserName(user.userDetails), {
-                                isPrivateChat: true,
-                                showLabelInTitlebar: true
+                               let userName = Members.SocialItems.getUserName(user.userDetails)
+
+                            SubscribedUsersData.getGroupFollowingStatus(user.userId, wid, Members.SocialItems.context.instanceId, function (err, status) {
+                                if (err) console.error('Error while getting initial group following status.', err);
+                                console.log(user, status)
+                                if (!status.length) {
+                                    Members.followPrivateWall(user.userId, wid, userName);
+                                } else {
+                                    Members.navigateToPrivateChat({ id: user.userId, name: userName, wid: wid });
+                                }
                             });
+
                         }
                     }
                 });
