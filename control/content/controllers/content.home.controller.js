@@ -20,10 +20,11 @@
             var counter = 0;
             
             $scope.setupImageList = function (post) {
-                if (post.imageUrl && post.imageUrl.length) {
+                if (post.imageUrl) {
                     post.imageListId = "imageList_" + (counter++);
                     setTimeout(function () {
                         let imageList = document.getElementById(post.imageListId);
+                        imageList.images = post.imageUrl;
                         if (Array.isArray(post.imageUrl)) {
                             imageList.images = post.imageUrl;
                         } else {
