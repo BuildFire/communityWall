@@ -227,7 +227,7 @@
                 else {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
-                        if(user) {
+                        if (user) {
                             buildfire.spinner.show();
                             SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                                 if (err) console.log('error while getting initial group following status.', err);
@@ -309,7 +309,7 @@
                 if (WidgetWall.allowPrivateChat) {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
-                        if(user) {
+                        if (user) {
                             buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
                                 if (err) return console.error("Getting user profile failed.", err);
                                 if (userId === WidgetWall.SocialItems.userDetails.userId) return;
@@ -794,7 +794,7 @@
                             'languages': WidgetWall.SocialItems.languages
                         })
                             .then(function (data) {
-                                if(WidgetWall.SocialItems.userBanned) return;
+                                if (WidgetWall.SocialItems.userBanned) return;
                                 switch (data) {
 
                                     case MORE_MENU_POPUP.REPORT:
@@ -807,6 +807,9 @@
                                             postId: post.id,
                                             wid: WidgetWall.SocialItems.wid
                                         });
+                                        break;
+                                    case "delete":
+                                        WidgetWall.deletePost(post.id);
                                         break;
                                     case MORE_MENU_POPUP.BLOCK:
 
@@ -838,7 +841,7 @@
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (userData) {
-                        if(WidgetWall.SocialItems.userBanned) return;
+                        if (WidgetWall.SocialItems.userBanned) return;
                         let liked = post.likes.find(element => element === WidgetWall.SocialItems.userDetails.userId);
                         let index = post.likes.indexOf(WidgetWall.SocialItems.userDetails.userId)
                         let postUpdate = WidgetWall.SocialItems.items.find(element => element.id === post.id)
@@ -939,7 +942,7 @@
                                         });
                                     });
                                     if (!$scope.$$phase)
-                                    $scope.$digest();
+                                        $scope.$digest();
                                 }
                             });
 
@@ -1084,7 +1087,7 @@
                         buildfire.history.get({
                             pluginBreadcrumbsOnly: true
                         }, function (err, result) {
-                            if(result[result.length-1].options.isPrivateChat) {                                
+                            if (result[result.length - 1].options.isPrivateChat) {
                                 result.map(item => buildfire.history.pop());
                                 WidgetWall.SocialItems.items = [];
                                 WidgetWall.SocialItems.isPrivateChat = false;
