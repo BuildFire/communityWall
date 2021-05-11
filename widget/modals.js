@@ -83,12 +83,7 @@
             };
 
             $scope.deletePost=function(postId){
-                    var event={};
-                    event.name="POST_DELETED";
-                    event.id=postId;
-                    event.deleted = true;
-                    Buildfire.messaging.onReceivedMessage(event);
-                    $modalInstance.dismiss('no');
+                $modalInstance.close("delete");
             }
         }])
         .controller('MoreOptionsCommentModalPopupCtrl', ['$scope', '$modalInstance', 'Info','$rootScope','SocialDataStore','Buildfire', function ($scope, $modalInstance, Info,$rootScope,SocialDataStore,Buildfire) {
