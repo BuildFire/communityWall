@@ -262,6 +262,7 @@
                     text: '',
                     at: new Date(),
                     users: [],
+                    sendToSelf: false
                 };
 
                 if (text === 'post')
