@@ -305,6 +305,7 @@
                                 text: '',
                                 at: new Date(),
                                 users: [post.userId],
+                                sendToSelf: false
                             };
 
                             if (text === 'comment')
