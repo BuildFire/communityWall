@@ -421,6 +421,7 @@
                 WidgetWall.SocialItems.showMorePosts = false;
                 WidgetWall.SocialItems.pageSize = 5;
                 WidgetWall.SocialItems.page = 0;
+                WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name;
 
                 buildfire.history.push(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name, {
                     isPrivateChat: true,
@@ -439,6 +440,7 @@
                 WidgetWall.SocialItems.pageSize = 5;
                 WidgetWall.SocialItems.page = 0;
                 WidgetWall.SocialItems.wid = WidgetWall.SocialItems.mainWallID;
+                WidgetWall.SocialItems.pluginTitle = '';
                 WidgetWall.init();
             });
 
@@ -632,8 +634,8 @@
 
             WidgetWall.onSendMessage = function (user, message, callback) {
                 // GET wallId and wallTitle from query params in PSW2
-                const wallId = util.getParameterByName("wid");
-                const wallTitle = util.getParameterByName("wTitle");
+                const wallId = WidgetWall.SocialItems.wid;
+                const wallTitle = WidgetWall.SocialItems.pluginTitle;
 
                 WidgetWall.getThread(user, wallId, wallTitle, (err, thread) => {
                     if (err) return callback(err);

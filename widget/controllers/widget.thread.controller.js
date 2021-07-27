@@ -247,7 +247,9 @@
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
                         Modals.showMoreOptionsModal({
-                            postId: Thread.post._id,
+                            'postId': Thread.post.id,
+                            'userId': Thread.post.userId,
+                            'socialItemUserId': Thread.SocialItems.userDetails.userId,
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
                             

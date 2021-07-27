@@ -41,8 +41,7 @@
 }
 .social-item .head{
     background-color: rgba(150, 150, 150, .1);
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
+    padding: 8px 12px;
 }
 .social-comment .head{
     padding: 0 0 16px 0;
@@ -100,5 +99,25 @@
 .social-icon {
     color: rgba(150,150,150,.8) !important
 }
-
+.social-icon.comments{
+    color: #09A3EE !important;
+}
+.thread-comment{
+    position: relative;
+}
+.thread-comment::before{
+    display: block;
+    position: absolute;
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    left: -40px;
+    top: 8px;
+    background-color: #ddd;
+}
+.social-comment .plugin-banner:empty{
+    display: none;
+}
 /*#Animation*/
+
