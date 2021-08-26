@@ -282,8 +282,7 @@
                         ? user2Id : user1Id;
                     SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                         if (err) console.error('Error while getting initial group following status.', err);
-                        if (status.length &&
-                            status[0].data && !status[0].data.leftWall) {
+                        if (status.length && status[0].data && !status[0].data.leftWall) {
                             options.users.push(userToSend);
                             options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on '
                                 + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
@@ -291,6 +290,17 @@
                                 if (err) return console.error('Error while setting PN schedule.', err);
                                 console.log("SENT NOTIFICATION", options);
                             });
+                        } else if(!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
+                            buildfire.auth.getUserProfile({ userId: userToSend }, (err, user) => {
+                                if (err) return console.error(err);
+                                options.users.push(userToSend);
+                                options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on '
+                                    + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(user);
+                                buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                    if (err) return console.error('Error while setting PN schedule.', err);
+                                    console.log("SENT NOTIFICATION", options);
+                                });  
+                              });
                         }
                     });
                 } else {
