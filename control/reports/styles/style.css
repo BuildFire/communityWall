@@ -45,3 +45,16 @@ table tbody tr td {
 .input-group-btn > .btn:hover, .input-group-btn > .btn:focus, .input-group-btn > .btn:active {
     z-index: 1;
 }
+
+#searchResults > thead > th {
+    padding: .5rem !important;
+    font-weight: bold;
+}
+
+.table-striped > tbody > tr {
+    background-color: transparent !important;
+}
+
+.table-striped > tbody > tr > td button {
+    background-color: transparent;
+}

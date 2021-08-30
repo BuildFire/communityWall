@@ -26,6 +26,7 @@ const cssTasks = [
     { name: "controlDesignCSS", src: "control/design/**/**/*.css", dest: "/control/design" },
     { name: "controlSettingsCSS", src: "control/settings/**/**/*.css", dest: "/control/settings" },
     { name: "controlReportsCSS", src: "control/reports/**/**/*.css", dest: "/control/reports" },
+    { name: "controlLanguagesCSS", src: "control/languages/**/**/*.css", dest: "/control/languages" },
 ];
 
 cssTasks.forEach(function (task) {

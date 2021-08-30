@@ -18,17 +18,20 @@
             ContentHome.exportingThreads = false;
             ContentHome.util = Util;
             var counter = 0;
+            ContentHome.loading = true;
             
             $scope.setupImageList = function (post) {
                 if (post.imageUrl) {
                     post.imageListId = "imageList_" + (counter++);
                     setTimeout(function () {
                         let imageList = document.getElementById(post.imageListId);
-                        imageList.images = post.imageUrl;
-                        if (Array.isArray(post.imageUrl)) {
+                        if (imageList) {
                             imageList.images = post.imageUrl;
-                        } else {
-                            imageList.images = [post.imageUrl];
+                            if (Array.isArray(post.imageUrl)) {
+                                imageList.images = post.imageUrl;
+                            } else {
+                                imageList.images = [post.imageUrl];
+                            }
                         }
                     }, 0);
                 }
@@ -144,91 +147,148 @@
             // Method for deleting post using SocialDataStore deletePost method
             ContentHome.deletePost = function (postId) {
                 ContentHome.modalPopupThreadId = postId;
-                Modals.removePopupModal({ name: 'Post' }).then(function (data) {
-                    // Deleting post having id as postId
-                    SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
-                }, function (err) {
-                    console.log('Error is: ', err);
-                });
-                console.log('delete post method called', postId);
-                // Called when getting success from SocialDataStore.deletePost method
-                var success = function (response) {
-                    console.log('inside success of delete post', response);
-                    if (response) {
-                        Buildfire.messaging.sendMessageToWidget({ 'name': EVENTS.POST_DELETED, 'id': postId });
-                        console.log('post successfully deleted');
 
-                        ContentHome.posts = ContentHome.posts.filter(function (el) {
-                            return el.id != postId;
-                        });
-                        if (!$scope.$$phase)
-                            $scope.$digest();
+                buildfire.dialog.confirm(
+                    {
+                        title: "Delete Post",
+                        message: `Are you sure you want to delete this post?`,
+                        confirmButton: {
+                            text: "Delete",
+                            type: "danger",
+                        },
+                    },
+                    (err, isConfirmed) => {
+                        if (err) console.error(err);
+                        if (isConfirmed) {
+                            // Called when getting success from SocialDataStore.deletePost method
+                            var success = function (response) {
+                                console.log('inside success of delete post', response);
+                                if (response) {
+                                    Buildfire.messaging.sendMessageToWidget({ 'name': EVENTS.POST_DELETED, 'id': postId });
+                                    console.log('post successfully deleted');
+
+                                    ContentHome.posts = ContentHome.posts.filter(function (el) {
+                                        return el.id != postId;
+                                    });
+                                }
+                                ContentHome.loading = false;
+                                if (!$scope.$$phase)
+                                    $scope.$digest();
+                            };
+                            // Called when getting error from SocialDataStore.deletePost method
+                            var error = function (err) {
+                                console.log('Error while deleting post ', err);
+                                ContentHome.loading = false;
+                                if (!$scope.$$phase)
+                                    $scope.$digest();
+                            };
+
+                            // Deleting post having id as postId
+                            SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
+                        }
                     }
-                };
-                // Called when getting error from SocialDataStore.deletePost method
-                var error = function (err) {
-                    console.log('Error while deleting post ', err);
-                };
+                );
+
+                console.log('delete post method called', postId);
+                
             };
 
             // Method for deleting comments of a post
             ContentHome.deleteComment = function (post, commentId) {
                 ContentHome.modalPopupThreadId = commentId;
-                Modals.removePopupModal({ name: 'Comment' }).then(function (data) {
-                    // Deleting post having id as postId
-                    SocialDataStore.deleteComment(post.id, commentId).then(success, error);
-                }, function (err) {
-                    console.log('Error is: ', err);
-                });
-                console.log('delete comment method called');
-                // Called when getting success from SocialDataStore.deletePost method
-                var success = function (response) {
-                    console.log('inside success of delete comment', response);
-                    if (response) {
-                        Buildfire.messaging.sendMessageToWidget({
-                            'name': EVENTS.COMMENT_DELETED,
-                            'comment': commentId,
-                            'postId': post.id
-                        });
-                        console.log('comment successfully deleted');
-                        let index = post.comments.indexOf(commentId);
-                        post.comments.splice(index, 1);
-                        if (!$scope.$$phase)
-                            $scope.$digest();
+
+                buildfire.dialog.confirm(
+                    {
+                        title: "Delete Comment",
+                        message: `Are you sure you want to delete this comment?`,
+                        confirmButton: {
+                            text: "Delete",
+                            type: "danger",
+                        },
+                    },
+                    (err, isConfirmed) => {
+                        if (err) console.error(err);
+                        if (isConfirmed) {
+                            // Called when getting success from SocialDataStore.deletePost method
+                            var success = function (response) {
+                                console.log('inside success of delete comment', response);
+                                if (response) {
+                                    Buildfire.messaging.sendMessageToWidget({
+                                        'name': EVENTS.COMMENT_DELETED,
+                                        'comment': commentId,
+                                        'postId': post.id
+                                    });
+                                    console.log('comment successfully deleted');
+                                    let index = post.comments.indexOf(commentId);
+                                    post.comments.splice(index, 1);
+                                    if (!$scope.$$phase)
+                                        $scope.$digest();
+                                }
+                            };
+                            // Called when getting error from SocialDataStore.deletePost method
+                            var error = function (err) {
+                                console.log('Error while deleting post ', err);
+                                ContentHome.loading = false;
+                                if (!$scope.$$phase)
+                                    $scope.$digest();
+                            };
+
+                            // Deleting post having id as postId
+                            SocialDataStore.deleteComment(post.id, commentId).then(success, error);
+                        }
                     }
-                };
-                // Called when getting error from SocialDataStore.deletePost method
-                var error = function (err) {
-                    console.log('Error while deleting post ', err);
-                };
+                );
             };
 
             // Method for banning a user by calling SocialDataStore banUser method
-            ContentHome.banUser = function (userId, threadId) {
+            ContentHome.banUser = function (userId, threadId, username) {
                 ContentHome.modalPopupThreadId = threadId;
                 console.log('inside ban user controller method>>>>>>>>>>');
-                Modals.banPopupModal().then(function (data) {
-                    if (data == 'yes') {
-                        // Called when getting success from SocialDataStore banUser method
-                        var success = function (response) {
-                            console.log('User successfully banned and response is :', response);
-                            Buildfire.messaging.sendMessageToWidget({ 'name': EVENTS.BAN_USER, 'reported': userId, wid: ContentHome.posts[0].wallId });
-                            ContentHome.posts = ContentHome.posts.filter(function (el) {
-                                return el.userId != userId;
-                            });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
-                        };
-                        // Called when getting error from SocialDataStore banUser method
-                        var error = function (err) {
-                            console.log('Error while banning a user ', err);
-                        };
-                        // Calling SocialDataStore banUser method for banning a user
-                        SocialDataStore.banUser(userId).then(success, error);
+                
+                buildfire.dialog.confirm(
+                    {
+                        title: "Ban User",
+                        message: `Are you sure you want to ban ${username || 'this user'}?`,
+                        confirmButton: {
+                            text: "Ban User",
+                            type: "danger",
+                        },
+                    },
+                    (err, isConfirmed) => {
+                        if (err) console.error(err);
+
+                        if (isConfirmed) {
+                            // Called when getting success from SocialDataStore banUser method
+                            var success = function (response) {
+                                console.log(
+                                    "User successfully banned and response is :",
+                                    response
+                                );
+                                Buildfire.messaging.sendMessageToWidget({
+                                    name: EVENTS.BAN_USER,
+                                    reported: userId,
+                                    wid: ContentHome.posts[0].wallId,
+                                });
+                                ContentHome.posts = ContentHome.posts.filter(
+                                    function (el) {
+                                        return el.userId != userId;
+                                    }
+                                );
+                                ContentHome.loading = false;
+                                if (!$scope.$$phase) $scope.$digest();
+                            };
+                            // Called when getting error from SocialDataStore banUser method
+                            var error = function (err) {
+                                console.log("Error while banning a user ", err);
+                            };
+                            // Calling SocialDataStore banUser method for banning a user
+                            SocialDataStore.banUser(userId).then(
+                                success,
+                                error
+                            );
+                        }
                     }
-                }, function (err) {
-                    console.log('Error is: ', err);
-                });
+                );
             };
 
             // Method for loading comments
@@ -363,6 +423,33 @@
 
             }
 
+            $scope.initHesGallery = () => {
+                setTimeout(() => {
+                    HesGallery.init({
+                        // disable scrolling when the popup is activated
+                        disableScrolling: true,
+                        
+                        // self-hosted styles
+                        hostedStyles: true,
+                        
+                        // enable/disable animation
+                        animations: false,
+                        
+                        // enable/disable keyboard navigation
+                        keyboardControl: true,
+                        
+                        // disable the plugin when the screen size is smaller than this value
+                        minResolution: 0,
+                        
+                        // enable/disable infinite loop
+                        wrapAround: false,
+                        
+                        // show/hide image count
+                        showImageCount: true
+                    });
+                }, 0);
+            }
+
             $scope.getUserName = function(userDetails) {
                 let name = null;
                 if (userDetails.displayName !== 'Someone'
@@ -414,6 +501,7 @@
                             ContentHome.posts = ContentHome.posts.filter(function (el) {
                                 return el.id != event.id;
                             });
+                            ContentHome.loading = false;
                             if (ContentHome.modalPopupThreadId == event._id)
                                 Modals.close('Post already deleted');
                             break;
@@ -450,16 +538,53 @@
                             break;
                         case 'SEND_POSTS_TO_CP':
                             ContentHome.posts = event.posts;
+                            setTimeout(() => {
+                                $scope.initHesGallery();
+                            });
+                            ContentHome.loading = false;
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
                         default:
+                            ContentHome.loading = false;
+                            if (!$scope.$$phase)
+                                $scope.$digest();
                             break;
                     }
                     if (!$scope.$$phase)
                         $scope.$digest();
                 }
             };
+
+            // Init WYSIWYG
+            let appSettings = {};
+            let updateDelay;
+            tinymce.init({
+                selector: "textarea",
+                setup: (ed) => {
+                    ed.on('KeyUp', (e) => {
+                        clearTimeout(updateDelay);
+                        updateDelay = setTimeout(() => {
+                            appSettings.pinnedPost = ed.getContent();
+                            buildfire.datastore.save({ appSettings: appSettings }, "Social", console.log)
+                        }, 700);
+                    });
+                }
+            });
+
+            window.onload = function () {
+                buildfire.datastore.get("Social", function (err, result) {
+                    if (result.data.appSettings && result.data.appSettings.pinnedPost) {
+                        appSettings = result.data.appSettings;
+                        tinymce.activeEditor.setContent(result.data.appSettings.pinnedPost);
+                    }
+                });
+                setTimeout(() => {
+                    ContentHome.loading = false;
+                    if (!$scope.$$phase)
+                    $scope.$digest();
+                }, 1500)
+            }
 
             init();
         }]);

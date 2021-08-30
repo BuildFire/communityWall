@@ -8,7 +8,6 @@
     <!-- build:bundleCSSFiles  -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- endbuild -->
-    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <!-- JS -->
     <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
@@ -86,14 +85,12 @@
                         <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
                             class="post-section backgroundColorTheme">
                             <div class="post-infinite-scroll" id="top">
-                                <div class="social-item">
-                                    <div class="head"
-                                        ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
+                                <div>
+                                    <div class="head" ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
                                         id="pinnedPost" style="height: 100%;">
                                     </div>
                                 </div>
-                                <div ng-show="WidgetWall.SocialItems.items.length<=0 && WidgetWall.loadedPlugin">
-                                    <!-- <h5 class="text-center blankState">{{WidgetWall.languages.postsNoResults}}</h5> -->
+                                <div ng-show="WidgetWall.SocialItems.items.length<=0 && WidgetWall.loadedPlugin && !WidgetWall.loading">
                                     <div class="empty_state"></div>
                                 </div>
                                 <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items">
@@ -220,14 +217,8 @@
                                 </path>
                             </svg>
                         </button>
-
-
-
-
                     </div>
                 </div>
-
-
             </div>
         </div>
 

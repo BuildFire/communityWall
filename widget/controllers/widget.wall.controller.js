@@ -20,6 +20,7 @@
             WidgetWall.loadedPlugin = false;
             WidgetWall.SocialItems = SocialItems.getInstance();
             $rootScope.showThread = true;
+            WidgetWall.loading = true;
 
             WidgetWall.showHideCommentBox = function () {
                 if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
@@ -94,7 +95,7 @@
                     WidgetWall.SocialItems.appSettings.showMembers = true;
                 if (typeof (WidgetWall.SocialItems.appSettings.allowAutoSubscribe) == 'undefined')
                     WidgetWall.SocialItems.appSettings.allowAutoSubscribe = true;
-                if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.pinnedPost) {
+                if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined') {
                     WidgetWall.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
                     pinnedPost.innerHTML = WidgetWall.pinnedPost;
                 }
@@ -140,12 +141,14 @@
             }
 
             WidgetWall.checkFollowingStatus = function (user = null) {
+                WidgetWall.loading = true;
                 buildfire.spinner.show();
                 SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.log('error while getting initial group following status.', err);
                     else {
                         if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
                             buildfire.spinner.hide();
+                            WidgetWall.loading = false;
                             return WidgetWall.followWall();
                         }
                         if (status.length && !status[0].data.leftWall) {
@@ -167,6 +170,7 @@
                         WidgetWall.showHideCommentBox();
                         if (user) WidgetWall.statusCheck(status, user);
                         buildfire.spinner.hide();
+                        WidgetWall.loading = false;
                         $scope.$digest();
                     }
                 });
@@ -216,8 +220,9 @@
                                 groupName: WidgetWall.SocialItems.wid === '' ?
                                     WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                             }, () => { });
-                        $scope.$digest();
                         buildfire.spinner.hide();
+                        WidgetWall.loading = false;
+                        $scope.$digest();
                     }
                 });
             }
@@ -228,6 +233,7 @@
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
                         if (user) {
+                            WidgetWall.loading = true;
                             buildfire.spinner.show();
                             SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                                 if (err) console.log('error while getting initial group following status.', err);
@@ -248,6 +254,7 @@
                                     WidgetWall.showHideCommentBox();
                                     if (user) WidgetWall.statusCheck(status, user);
                                     buildfire.spinner.hide();
+                                    WidgetWall.loading = false;
                                     $scope.$digest();
                                 }
                             });
@@ -487,9 +494,7 @@
             $scope.openThread = function (event, post) {
                 if (event.target.nodeName != "BF-IMAGE-LIST")
                     window.location.href = " #/thread/" + post.id;
-
             };
-
             WidgetWall.Thread = class {
                 constructor(record = {}) {
                     if (!record.data) record.data = {};
@@ -754,6 +759,7 @@
             WidgetWall.navigateTo = function () {
                 let privacy = util.getParameterByName("privacy") ? util.getParameterByName("privacy") : null;
                 let query = 'wid=' + WidgetWall.SocialItems.wid;
+                debugger
                 if (privacy) query += '&privacy=' + privacy;
                 if (!WidgetWall.SocialItems.appSettings.actionItem.queryString)
                     WidgetWall.SocialItems.appSettings.actionItem.queryString = query;
@@ -988,7 +994,10 @@
                     WidgetWall.setSettings(response);
                     setTimeout(function () {
                         if (!response.data.appSettings.disableFollowLeaveGroup) {
-                            document.getElementById("WidgetWallSvg").style.setProperty("fill", WidgetWall.appTheme.icons, "important");
+                            let wallSVG = document.getElementById("WidgetWallSvg")
+                            if (wallSVG) {
+                                wallSVG.style.setProperty("fill", WidgetWall.appTheme.icons, "important");
+                            }
                         }
                     }, 100);
                 }

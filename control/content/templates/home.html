@@ -1,16 +1,20 @@
-<div class="padded-sm">
+<div class="padded">
     <div  class="item row">
         <div class="col-xs-4 text-right export-dropdown-group pull-right">
             <div class="btn-group margin-bottom-fifteen" dropdown>
                 <button ladda="ContentHome.exportingThreads" ng-click="ContentHome.exportMainWallPosts()" ng-disabled="ContentHome.exportingThreads"  data-style="zoom-in" id="export-button" type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle >
-                    Export Comments to CSV
+                    Export All Posts and Comments to CSV
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="empty-state" ng-if="!ContentHome.posts.length">
+    <div class="empty-state" ng-if="!ContentHome.posts.length && !ContentHome.loading">
         <h4 class="text-center" style="font-size:16px; line-height:22px;">Looks like you do not have any posts yet. To add one, you can do so through the emulator to your right.</h4>
+        <br>
+    </div>
+    <div class="empty-state" ng-if="ContentHome.loading">
+        <h4 class="text-center" style="font-size:16px; line-height:22px;">Loading...</h4>
         <br>
     </div>
     <!-- <div class="">
@@ -32,7 +36,7 @@
                     </div>
                     <div class="">
                         <p class="ellipsis margin-bottom-zero">
-                            {{getUserName(post.userDetails)}}
+                            {{getUserName(post.userDetails) || 'Unknown'}}
                         </p>
                         <p class="time-ago caption margin-bottom-zero">{{ContentHome.getDuration(post.createdOn) | convertTimeFormat}}</p>
                     </div>
@@ -54,27 +58,30 @@
                         <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a>
                     </p>
                 </div>
-                <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl" ng-init="setupImageList(post)">
-                    <bf-image-list ng-if="post.imageListId" id="{{post.imageListId}}" token="czi3m2qn"></bf-image-list>
+                <div class="plugin-banner clearfix margin-bottom-fifteen">
+                    <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}" ng-init="initHesGallery()">
+                        <img ng-repeat="image in post.images" src="https://czi3m2qn.cloudimg.io/v7/{{image}}" data-alt="Post image">
+                    </div>
                 </div>
+                <!-- <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl" ng-init="setupImageList(post)">
+                    <bf-image-list ng-if="post.imageListId" id="{{post.imageListId}}" token="czi3m2qn"></bf-image-list>
+                </div> -->
                 <div class="social-footer">
                     <div class="status flex">
-                        <a class="text-danger padded-sm caption" ng-click="ContentHome.banUser(post.userId, post.id)">Ban User</a>    
+                        <a class="text-danger padded-sm caption" ng-click="ContentHome.banUser(post.userId, post.id, getUserName(post.userDetails))">Ban User</a>    
                         <a class="text-danger padded-sm caption" ng-click="ContentHome.deletePost(post.id)">Delete Post</a>
-                        <a class="left-auto padded-sm caption" ng-show="post.viewComments && post.comments.length" ng-click="post.viewComments=post.viewComments==true?false:true">Hide Comments</a>
-                        <a class="left-auto padded-sm caption" ng-show="post.comments.length" ng-click="post.viewComments=post.viewComments==true?false:true">Show Comments</a>
+                        <a class="left-auto padded-sm caption" ng-show="post.comments.length" ng-click="post.viewComments = !post.viewComments">
+                            {{ post.viewComments ? 'Hide Comments' : 'Show Comments'}}
+                        </a>
                     </div>
                 </div>
                 <hr class="small margin-zero" ng-if="post.comments.length && post.viewComments">
-                <div ng-if="post.comments.length % 10 == 0 && post.viewComments && !post.moreComments" class="padding-top-ten head-btn text-center padding-bottom-ten">
-                    <a ng-click="ContentHome.loadMoreComments(post)">Show More Comments</a>
-                </div>
                 <div class="comments-list" ng-if="post.comments.length && post.viewComments">
                     <div class="social-comment padded" ng-repeat="comment in post.comments">
 
                         <div class="head clearfix margin-bottom-zero flex">
                             <div class="thread-comment">
-                                <p class="ellipsis margin-bottom-zero">{{comment.userDetails.displayName}}</p>
+                                <p class="ellipsis margin-bottom-zero">{{comment.userDetails.displayName || 'Unknown'}}</p>
                                 <p class="time-ago caption">{{ContentHome.getDuration(comment.createdOn) | convertTimeFormat}}</p>
                             </div>
                             <div class="icons left-auto">
@@ -88,13 +95,16 @@
                         <div class="copy margin-bottom-five">
                             <p class="margin-zero" ng-bind-html="(comment.comment) | newLine"></p>
                         </div>
-                        <div class="plugin-banner margin-bottom-fifteen">
-                            <div ng-repeat="imageUrl in comment.attachedImage" class="plugin-slide text-center">
+                        <!-- <div class="plugin-banner margin-bottom-fifteen" ng-if="comment.imageUrl.length > 0">
+                            <div ng-repeat="imageUrl in comment.imageUrl" class="plugin-slide text-center">
                                 <img  load-image="16x9" data-final-src="{{imageUrl | resizeImage : 555 : 337}}">
                             </div>
+                        </div> -->
+                        <div class="hes-gallery post-images" data-wrap="true" ng-show="comment.imageUrl.length" data-img-count="{{comment.imageUrl.length}}" ng-init="initHesGallery()">
+                            <img ng-repeat="imageUrl in comment.imageUrl" src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
                         </div>
                         <div class="social-footer flex">
-                            <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.banUser(post.userId, comment.id)">Ban User</a>
+                            <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.banUser(post.userId, comment.id, comment.userDetails.displayName)">Ban User</a>
                             <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.deleteComment(post, comment)">Delete Comment</a>
                         </div>
                     </div>
