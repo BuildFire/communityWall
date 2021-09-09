@@ -24,7 +24,7 @@ class SearchTableHelper {
 		this.config.columns.forEach(colConfig => {
 			let classes = [];
 			if (colConfig.type == "date")
-				classes = ["text-center"];
+				classes = ["text-left"];
 			else if (colConfig.type == "number")
 				classes = ["text-right"];
 			else classes = ["text-left"];
@@ -76,8 +76,13 @@ class SearchTableHelper {
 	}
 
 	search(filter) {
-		this.tbody.innerHTML = '';
-		this._create('tr', this.tbody, '<td colspan="99"> searching...</td>', ["loadingRow"]);
+		this.tbody.innerHTML = `<div class="padded">
+			<div class="empty-state">
+				<h4 class="text-center" style="font-size:16px; line-height:22px;">Loading...</h4>
+			</div>
+		</div>
+			`;
+		// this._create('tr', this.tbody, '<td colspan="99"> searching...</td>', ["loadingRow"]);
 		this.filter = filter;
 		this._fetchPageOfData(this.filter, 0);
 	}
@@ -110,11 +115,17 @@ class SearchTableHelper {
 			this.endReached = results.length < pageSize;
 			this.endReached = results[0] && results[0].data.length ? results.length < pageSize : true;
 			if (results[0] && results[0].data.length)  {
+				this.tbody.classList.remove('text-center', 'padded')
 				this.items = results[0].data
 				results[0].data.forEach(r => this.renderRow({ data: r }))
+			} else {
+				this.tbody.classList.add('text-center', 'padded')
+				// this.tbody.innerHTML = 'No results.';
+				this.tbody.innerHTML = `<div class="empty-state">
+				<h4 class="text-center" style="font-size:16px; line-height:22px;">No Results</h4>
+				<br>
+			</div>`;
 			}
-				
-			else this.tbody.innerHTML = 'No results.';
 			if (callback) callback();
 		});
 	}
@@ -136,7 +147,7 @@ class SearchTableHelper {
 		this.config.columns.forEach(colConfig => {
 			let classes = [];
 			if (colConfig.type == "date")
-				classes = ["text-center"];
+				classes = ["text-left"];
 			else if (colConfig.type == "number")
 				classes = ["text-right"];
 			else classes = ["text-left"];

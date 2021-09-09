@@ -1,4 +1,4 @@
-<div class="header clearfix border-bottom-grey">
+<div class="header flex">
     <h4 class="margin-zero">Reset Wall ?</h4>
     <span class="icon icon-cross2 close-modal" ng-click="cancel()"></span>
 </div>
@@ -7,11 +7,7 @@
         <p class="margin-zero">Are you sure you want to reset this wall? This is will remove all your existing posts.</p>
     </div>
 </div>
-<div class="bottom border-top-grey clearfix">
-    <div class="col-md-6 pull-left text-center">
-        <a class="text-primary default-background-hover transition-third" ng-click="cancel()">Cancel</a>
-    </div>
-    <div class="col-md-6 pull-right text-center border-left-grey">
-        <a class="text-danger default-background-hover transition-third" ng-click="ok()">Reset Wall</a>
-    </div>
+<div class="flex padded-sm">
+    <button class="btn btn-outlined btn-secondary flex-left-auto" ng-click="cancel()">Cancel</button>
+    <button class="text-danger default-background-hover transition-third" ng-click="ok()">Reset Wall</button>
 </div>
