@@ -141,7 +141,7 @@
                             {
                                 pageSize, page, recordCount: true,
                                 filter: {
-                                    '_buildfire.index.string1': wallId ? wallId : { "$eq": "" },
+                                    '_buildfire.index.string1': wallId ? wallId : "",
                                     $or: [
                                         { '$json.leftWall': { $exists: true, $eq: false } },
                                         { '$json.leftWall': { $exists: false } }
@@ -420,9 +420,9 @@
 
             SocialItems.prototype.getPosts = function (callback) {
                 let pageSize = _this.pageSize, page = _this.page;
-                let searchOptions = { pageSize, page, sort: { "id": -1 }, recordCount: true }
+                let searchOptions = { pageSize, page, sort: { "createdOn": -1 }, recordCount: true }
                 if (_this.wid === "")
-                    searchOptions.filter = { '_buildfire.index.string1': { "$eq": "" } }
+                    searchOptions.filter = { '_buildfire.index.string1': "" }
                 else
                     searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
@@ -461,9 +461,9 @@
             function startBackgroundService() {
                 if (!_this.newPostTimerChecker) {
                     _this.newPostTimerChecker = setInterval(function () {
-                        let searchOptions = { sort: { "id": -1 } }
+                        let searchOptions = { sort: { "createdOn": -1 } }
                         if (_this.wid === "")
-                            searchOptions.filter = { "_buildfire.index.string1": { "$eq": "" } }
+                            searchOptions.filter = { "_buildfire.index.string1": "" }
                         else
                             searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
 
