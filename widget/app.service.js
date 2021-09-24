@@ -539,10 +539,10 @@
                         let wallId = '';
                         if (lastInHistory && lastInHistory.options.pluginData 
                             && lastInHistory.options.pluginData.queryString) {
-                                wallId = lastInHistory.options.pluginData.queryString;
-                                wallId = wallId.split('=')[1] ? wallId.split('=')[1] : '';
+                                wallId = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('wid');
+                                wallId = wallId ? wallId : '';
                             }
-                            
+
                         if (!_this.wid) {
                             _this.wid = Util.getParameterByName("wid") ? 
                             Util.getParameterByName("wid") : wallId;
