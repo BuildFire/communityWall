@@ -76,7 +76,7 @@
         }])
         .factory("SubscribedUsersData", function () {
             return {
-                banUser: function(params, callback) {
+                banUser: function (params, callback) {
 
                 },
                 save: function (params, callback) {
@@ -104,10 +104,10 @@
                                     let toSave = data[0].data;
                                     toSave.posts = allPosts;
                                     toSave.leftWall = true;
-                                    if(banUser) {
+                                    if (banUser) {
                                         data[0].data.banned = true;
                                     }
-                                    
+
                                     buildfire.publicData.save(toSave, 'subscribedUsersData', (err, result) => {
                                         callback(null, true);
                                     });
@@ -123,7 +123,7 @@
                                 });
                             } else {
                                 data[0].data.leftWall = true;
-                                if(banUser) {
+                                if (banUser) {
                                     data[0].data.banned = true;
                                 }
                                 buildfire.publicData.update(data[0].id, data[0].data, 'subscribedUsersData', (err, result) => {
@@ -530,24 +530,39 @@
                 buildfire.getContext((error, context) => {
                     if (error) return console.error("Fetching app context failed.", err);
                     _this.context = context;
-                    if (!_this.wid) {
-                        _this.wid = Util.getParameterByName("wid") ? Util.getParameterByName("wid") : '';
-                        _this.mainWallID = _this.wid;
-                    }
 
-                    if (_this.wid.length === 48) {
-                        _this.isPrivateChat = true;
-                    }
+                    buildfire.history.get({
+                        pluginBreadcrumbsOnly: false
+                    }, (err, history) => {
+                        if(err) return console.error(err);
+                        let lastInHistory = history[history.length - 1];
+                        let wallId = '';
+                        if (lastInHistory && lastInHistory.options.pluginData 
+                            && lastInHistory.options.pluginData.queryString) {
+                                wallId = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('wid');
+                                wallId = wallId ? wallId : '';
+                            }
 
+                        if (!_this.wid) {
+                            _this.wid = Util.getParameterByName("wid") ? 
+                            Util.getParameterByName("wid") : wallId;
+                            _this.mainWallID = _this.wid;
+                        }
 
-                    buildfire.datastore.get("languages", (err, languages) => {
-                        if (err) return console.log(err)
-                        _this.formatLanguages(languages);
+                        if (_this.wid.length === 48) {
+                            _this.isPrivateChat = true;
+                        }
 
-                        buildfire.datastore.get("Social", (err, response) => {
-                            callback(err, response);
+                        buildfire.datastore.get("languages", (err, languages) => {
+                            if (err) return console.log(err)
+                            _this.formatLanguages(languages);
+
+                            buildfire.datastore.get("Social", (err, response) => {
+                                callback(err, response);
+                            });
                         });
                     });
+
                 });
             };
 
