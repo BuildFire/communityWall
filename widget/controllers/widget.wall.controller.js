@@ -180,6 +180,7 @@
                 SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, false, function (err, result) {
                     if (err) return console.error(err);
                     else {
+                        Follows.unfollowPlugin((err, r) => err ? console.log(err) : console.log(r));
                         WidgetWall.groupFollowingStatus = false;
                         buildfire.notifications.pushNotification.unsubscribe(
                             {
@@ -218,7 +219,7 @@
                         buildfire.notifications.pushNotification.subscribe(
                             {
                                 groupName: WidgetWall.SocialItems.wid === '' ?
-                                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                                WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                             }, () => { });
                         buildfire.spinner.hide();
                         WidgetWall.loading = false;
@@ -241,6 +242,8 @@
                                     if (!status.length) return WidgetWall.followWall();
                                     else if (status.length && status[0].data.leftWall) {
                                         status[0].data.leftWall = false;
+                                        Follows.followPlugin((e , u) => e ? console.log(e) : console.log(u));
+                                        
                                         buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
                                         buildfire.notifications.pushNotification.subscribe(
                                             {
@@ -321,6 +324,49 @@
                         console.log("SENT NOTIFICATION", options);
                     });
                 }
+            }
+
+
+            WidgetWall.openBottomDrawer = function(userId){
+                Follows.isFollowingUser(userId , (err , r) =>{
+                    if(r){
+                        buildfire.components.drawer.open(
+                            {
+                                enableFilter:false,
+                                listItems: [
+                                    {text:'See Profile'},
+                                    {text:'Send Direct Message'},
+                                    {text:'Unfollow'}                                        
+                            ]
+                            },(err, result) => {
+                                if (err) return console.error(err);
+                                else if(result.text == "See Profile") buildfire.auth.openProfile(userId);
+                                else if(result.text == "Send Direct Message") WidgetWall.openPrivateChat(userId);
+                                else if(result.text == "Unfollow") Follows.unfollowUser(userId,(err, r) => err ? console.log(err) : console.log(r));
+                                buildfire.components.drawer.closeDrawer();
+                            }
+                        );
+                    }
+                    else{
+                        buildfire.components.drawer.open(
+                            {
+                                enableFilter:false,
+                                listItems: [
+                                {text:'See Profile'},
+                                {text:'Send Direct Message'},
+                                {text:'Follow'},
+                                
+                            ]
+                            },(err, result) => {
+                                if (err) return console.error(err);
+                                else if(result.text == "See Profile") buildfire.auth.openProfile(userId);
+                                else if(result.text == "Send Direct Message") WidgetWall.openPrivateChat(userId);
+                                else if(result.text == "Follow") Follows.followUser(userId,(err, r) => err ? console.log(err) : console.log(r));
+                                buildfire.components.drawer.closeDrawer();
+                            }
+                        );
+                    }
+                });
             }
 
             WidgetWall.openChat = function (userId) {
@@ -760,6 +806,14 @@
                             WidgetWall.getPostContent(data);
                             if ((WidgetWall.postText || ($scope.WidgetWall.images && $scope.WidgetWall.images.length > 0))) {
                                 finalPostCreation($scope.WidgetWall.images);
+                                if(!WidgetWall.SocialItems.isPrivateChat){
+                                    buildfire.auth.getCurrentUser((err , currentUser) => {
+                                        if(err || !currentUser) return;
+                                        else{
+                                            Posts.addPost({postText:WidgetWall.postText || null, postImages:$scope.WidgetWall.images || []},(err, r) => err ? console.log(err) : console.log(r));
+                                        } 
+                                    })
+                                }
                             }
                         });
                     }
@@ -769,7 +823,6 @@
             WidgetWall.navigateTo = function () {
                 let privacy = util.getParameterByName("privacy") ? util.getParameterByName("privacy") : null;
                 let query = 'wid=' + WidgetWall.SocialItems.wid;
-                debugger
                 if (privacy) query += '&privacy=' + privacy;
                 if (!WidgetWall.SocialItems.appSettings.actionItem.queryString)
                     WidgetWall.SocialItems.appSettings.actionItem.queryString = query;

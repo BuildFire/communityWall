@@ -24,6 +24,10 @@
     <script src="app.service.js"></script>
     <script src="enums.js"></script>
     <script src="assets/js/filters.js"></script>
+    <script src="./js/shared/authManager.js"></script>
+    <script src="./js/shared/Follows.js"></script>
+    <script src="./js/shared/Posts.js"></script>
+    <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
     <script src="controllers/widget.wall.controller.js"></script>
     <script src="controllers/widget.thread.controller.js"></script>
     <script src="controllers/widget.members.controller.js"></script>
@@ -128,7 +132,7 @@
                                                 <div class="social-copy">
                                                     <p class="text-primary ellipsis">
                                                         <a class="ng-cloak"
-                                                            ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
+                                                            ng-click="WidgetWall.openBottomDrawer(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
                                                     </p>
                                                     <div ng-if="post.createdOn">
                                                         <p class="time-ago opacity-seventy ng-cloak">

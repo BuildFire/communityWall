@@ -163,6 +163,53 @@
                 })
             }
 
+            Members.openBottomDrawer = function(user){
+                console.log("BOTTOM DRAWER");
+                console.log(user);
+                Follows.isFollowingUser(user.userId , (err , r) =>{
+                        if(r){
+                            buildfire.components.drawer.open(
+                                {
+                                    enableFilter:false,
+                                    listItems: [
+                                        {text:'See Profile'},
+                                        {text:'Send Direct Message'},
+                                        {text:'Unfollow'}                                        
+                                ]
+                                },(err, result) => {
+                                    if (err) return console.error(err);
+                                    else if(result.text == "See Profile") buildfire.auth.openProfile(user.userId);
+                                    else if(result.text == "Send Direct Message") Members.openPrivateChat(user);
+                                    else if(result.text == "Unfollow") Follows.unfollowUser(user.userId,(err, r) => err ? console.log(err) : console.log(r));
+                                    buildfire.components.drawer.closeDrawer();
+                                }
+                            );
+                        }
+                        else{
+                            console.log(err);
+                            buildfire.components.drawer.open(
+                                {
+                                    enableFilter:false,
+                                    listItems: [
+                                    {text:'See Profile'},
+                                    {text:'Send Direct Message'},
+                                    {text:'Follow'},
+                                    
+                                ]
+                                },(err, result) => {
+                                    if (err) return console.error(err);
+                                    else if(result.text == "See Profile") buildfire.auth.openProfile(user.userId);
+                                    else if(result.text == "Send Direct Message") Members.openPrivateChat(user);
+                                    else if(result.text == "Follow") Follows.followUser(user.userId,(err, r) => err ? console.log(err) : console.log(r));
+                                    buildfire.components.drawer.closeDrawer();
+                                }
+                            );
+    
+                        }
+                });
+            }
+
+
             Members.navigateToPrivateChat = function(user) {
                 Members.SocialItems.isPrivateChat = true;
                 Members.SocialItems.items = [];
@@ -178,6 +225,9 @@
             }
 
             Members.openPrivateChat = function (user) {
+                console.log("openPrivateChat");
+                console.log(user);
+
                 if (Members.appSettings && Members.appSettings.disablePrivateChat) return;
                 Members.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
