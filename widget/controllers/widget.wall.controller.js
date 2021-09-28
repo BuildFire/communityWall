@@ -329,44 +329,24 @@
 
             WidgetWall.openBottomDrawer = function(userId){
                 Follows.isFollowingUser(userId , (err , r) =>{
-                    if(r){
                         buildfire.components.drawer.open(
                             {
                                 enableFilter:false,
                                 listItems: [
                                     {text:'See Profile'},
                                     {text:'Send Direct Message'},
-                                    {text:'Unfollow'}                                        
+                                    {text: r ? 'Unfollow' : 'Follow'}                                        
                             ]
                             },(err, result) => {
                                 if (err) return console.error(err);
                                 else if(result.text == "See Profile") buildfire.auth.openProfile(userId);
                                 else if(result.text == "Send Direct Message") WidgetWall.openPrivateChat(userId);
                                 else if(result.text == "Unfollow") Follows.unfollowUser(userId,(err, r) => err ? console.log(err) : console.log(r));
-                                buildfire.components.drawer.closeDrawer();
-                            }
-                        );
-                    }
-                    else{
-                        buildfire.components.drawer.open(
-                            {
-                                enableFilter:false,
-                                listItems: [
-                                {text:'See Profile'},
-                                {text:'Send Direct Message'},
-                                {text:'Follow'},
-                                
-                            ]
-                            },(err, result) => {
-                                if (err) return console.error(err);
-                                else if(result.text == "See Profile") buildfire.auth.openProfile(userId);
-                                else if(result.text == "Send Direct Message") WidgetWall.openPrivateChat(userId);
                                 else if(result.text == "Follow") Follows.followUser(userId,(err, r) => err ? console.log(err) : console.log(r));
                                 buildfire.components.drawer.closeDrawer();
                             }
                         );
-                    }
-                });
+                })
             }
 
             WidgetWall.openChat = function (userId) {
