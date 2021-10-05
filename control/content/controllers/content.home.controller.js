@@ -405,7 +405,7 @@
                         page, pageSize, sort: { "createdOn": -1 }, recordCount: true,
                     }
                     if (wid === null)
-                        searchOptions.filter = { "_buildfire.index.string1": {"$eq" : ""} }
+                        searchOptions.filter = { "_buildfire.index.string1": "" }
                     else
                         searchOptions.filter = { "_buildfire.index.string1": { "$regex": wid, "$options": "i" } }
                         buildfire.publicData.search(searchOptions, 'posts', function(err, data) {

@@ -61,7 +61,7 @@
                 if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
                 Members.searchOptions.filter = {
-                    '_buildfire.index.string1': Members.wallId ? Members.wallId : { "$eq": "" },
+                    '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
                     $or: [
 
                         { "$json.userDetails.displayName": { $regex: $scope.searchInput, $options: 'i' } },
