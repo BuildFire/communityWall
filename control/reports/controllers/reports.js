@@ -26,7 +26,7 @@ app.controller('ReportsCtrl', ['$scope', function ($scope) {
         searchTableHelper.onEditRow = (obj, tr) => {
             buildfire.dialog.confirm({
                 message: "Are you sure you want to ban this user? This action will erase all posts and comments made by this user.",
-                confirmButton: { text: "Yes", type: "danger" }
+                confirmButton: { text: "Ban", type: "danger" }
             }, (err, data) => {
                 if (err) console.error(err);
                 if (data)

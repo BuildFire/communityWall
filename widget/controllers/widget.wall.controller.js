@@ -815,8 +815,7 @@
                             .then(function (data) {
                                 if (WidgetWall.SocialItems.userBanned) return;
                                 switch (data) {
-
-                                    case MORE_MENU_POPUP.REPORT:
+                                    case WidgetWall.SocialItems.languages.reportPost:
                                         SocialDataStore.reportPost({
                                             reportedAt: new Date(),
                                             reporter: WidgetWall.SocialItems.userDetails.email,

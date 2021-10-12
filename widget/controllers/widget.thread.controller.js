@@ -252,8 +252,7 @@
                             'socialItemUserId': Thread.SocialItems.userDetails.userId,
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
-                            
-                            if(data === "Report Post") {
+                            if(data === Thread.SocialItems.languages.reportPost) {
                                 SocialDataStore.reportPost({
                                     reportedAt: new Date(),
                                     reporter: Thread.SocialItems.userDetails.email,
