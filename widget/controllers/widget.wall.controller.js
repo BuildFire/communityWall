@@ -953,6 +953,8 @@
                     if (response) {
                         Buildfire.messaging.sendMessageToControl({ 'name': EVENTS.POST_DELETED, 'id': postId });
                         let postToDelete = WidgetWall.SocialItems.items.find(element => element.id === postId)
+                        console.log(postToDelete);
+                        Posts.deletePost({userId:postToDelete.userId,postText:postToDelete.text,postImages: postToDelete.imageUrl || [],},(err, r) =>{return});
                         let index = WidgetWall.SocialItems.items.indexOf(postToDelete);
                         WidgetWall.SocialItems.items.splice(index, 1);
                         if (!$scope.$$phase)
