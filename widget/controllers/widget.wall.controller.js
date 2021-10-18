@@ -267,7 +267,6 @@
                 let options = {
                     title: 'Notification',
                     text: '',
-                    at: new Date(),
                     users: [],
                     sendToSelf: false
                 };

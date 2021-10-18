@@ -304,7 +304,6 @@
                             let options = {
                                 title: 'Notification',
                                 text: '',
-                                at: new Date(),
                                 users: [post.userId],
                                 sendToSelf: false
                             };
