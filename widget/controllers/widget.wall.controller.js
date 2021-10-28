@@ -790,7 +790,8 @@
                                     buildfire.auth.getCurrentUser((err , currentUser) => {
                                         if(err || !currentUser) return;
                                         else{
-                                            Posts.addPost({postText:WidgetWall.postText || null, postImages:$scope.WidgetWall.images || []},(err, r) => err ? console.log(err) : console.log(r));
+                                            console.log(WidgetWall.postText);
+                                            Posts.addPost({postText:WidgetWall.postText ? WidgetWall.postText : "", postImages:$scope.WidgetWall.images || []},(err, r) => err ? console.log(err) : console.log(r));
                                         } 
                                     })
                                 }

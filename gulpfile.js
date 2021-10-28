@@ -8,6 +8,7 @@ const uglifyes = require("uglify-es");
 const composer = require("gulp-uglify/composer");
 const uglify = composer(uglifyes, console);
 const imagemin = require("gulp-imagemin");
+const babel = require('gulp-babel');
 
 const destinationFolder = releaseFolder();
 
