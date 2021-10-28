@@ -212,6 +212,8 @@
                         index: { text: user.userId + '-' + WidgetWall.SocialItems.wid, string1: WidgetWall.SocialItems.wid }
                     }
                 };
+                Follows.followPlugin((e , u) => e ? console.log(e) : console.log(u));
+
                 SubscribedUsersData.save(params, function (err) {
                     if (err) console.log('Error while saving subscribed user data.');
                     else {
@@ -242,8 +244,7 @@
                                     if (!status.length) return WidgetWall.followWall();
                                     else if (status.length && status[0].data.leftWall) {
                                         status[0].data.leftWall = false;
-                                        Follows.followPlugin((e , u) => e ? console.log(e) : console.log(u));
-                                        
+                                        Follows.followPlugin((e , u) => e ? console.log(e) : console.log(u));                                        
                                         buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
                                         buildfire.notifications.pushNotification.subscribe(
                                             {
