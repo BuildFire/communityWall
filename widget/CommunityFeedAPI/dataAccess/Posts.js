@@ -88,11 +88,7 @@ class Posts{
     }
 
 
-<<<<<<< HEAD
-    static deletePost = (id, callback) =>{
-=======
     static deletePostById = (id, callback) =>{
->>>>>>> 505dd671a60fd3c49b39d4c477401a783d5666bc
         buildfire.auth.getCurrentUser((err, currentUser) =>{
             if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});
             buildfire.appData.getById(id, Posts.TAG, (err, r) =>{
@@ -105,8 +101,6 @@ class Posts{
             })
         })
     }
-<<<<<<< HEAD
-=======
     static deletePost = (filter, callback) =>{
         console.log(filter);
         buildfire.auth.getCurrentUser((err, currentUser) =>{
@@ -125,7 +119,6 @@ class Posts{
             })
         })
     }
->>>>>>> 505dd671a60fd3c49b39d4c477401a783d5666bc
 
     static getPosts = (options , callback) =>{
         let tempArray = [];
