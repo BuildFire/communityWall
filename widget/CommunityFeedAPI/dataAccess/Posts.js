@@ -5,10 +5,21 @@ class Posts{
     static lastPostTime = "";
     static skip = 0;
     static createPost = (post, user, isPublic = false) =>{
+        let displayName = "Someone";
+        if(isPublic){
+            displayName = post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId || "Someone";
+        }
+        else{
+            if(user.displayName) displayName = user.displayName;
+            else if(!user.displayName && user.firstName && user.lastName) displayName = user.firstName + " " + user.lastName;
+            else if(!user.displayName && !user.lastName && user.firstName) displayName = user.firstName;
+            else if(!user.displayName && !user.firstName) displayName = "Someone";
+            else displayName = "Someone";            
+        }
         return new Post({
             userId: !isPublic ? user._id : "publicPost",
             createdBy:!isPublic ? (user.displayName || user.email || "Someone") : "publicPost",
-            displayName: !isPublic ? ( user.displayName || "Someone") : (post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId),
+            displayName: displayName,
             postText: post.postText || "",
             postImages: post.postImages || [],
             isPublic,
