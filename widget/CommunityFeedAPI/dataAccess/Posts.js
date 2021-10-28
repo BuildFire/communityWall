@@ -5,6 +5,7 @@ class Posts{
     static lastPostTime = "";
     static skip = 0;
     static createPost = (post, user, isPublic = false) =>{
+<<<<<<< HEAD
         let displayName = "Someone";
         if(isPublic){
             displayName = post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId || "Someone";
@@ -20,6 +21,12 @@ class Posts{
             userId: !isPublic ? user._id : "publicPost",
             createdBy:!isPublic ? (user.displayName || user.email || "Someone") : "publicPost",
             displayName: displayName,
+=======
+        return new Post({
+            userId: !isPublic ? user._id : "publicPost",
+            createdBy:!isPublic ? (user.displayName || user.email || "Someone") : "publicPost",
+            displayName: !isPublic ? ( user.displayName || "Someone") : (post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId),
+>>>>>>> 505dd671a60fd3c49b39d4c477401a783d5666bc
             postText: post.postText || "",
             postImages: post.postImages || [],
             isPublic,
@@ -88,7 +95,11 @@ class Posts{
     }
 
 
+<<<<<<< HEAD
     static deletePost = (id, callback) =>{
+=======
+    static deletePostById = (id, callback) =>{
+>>>>>>> 505dd671a60fd3c49b39d4c477401a783d5666bc
         buildfire.auth.getCurrentUser((err, currentUser) =>{
             if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});
             buildfire.appData.getById(id, Posts.TAG, (err, r) =>{
@@ -101,6 +112,27 @@ class Posts{
             })
         })
     }
+<<<<<<< HEAD
+=======
+    static deletePost = (filter, callback) =>{
+        console.log(filter);
+        buildfire.auth.getCurrentUser((err, currentUser) =>{
+            if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});
+            buildfire.appData.search({filter:{$and:[{...filter}]},sort:{createdOn: -1} }, Posts.TAG, (err, r) =>{
+                if(err || !r || r.length == 0) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"});
+                r.forEach(p =>{
+                    if(!p) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"})
+                    if(p.data.userId != currentUser._id) return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
+                    buildfire.appData.delete(p.id, Posts.TAG, (err, r) =>{
+                        if(err) return console.error(err);
+                        callback(r);
+                    })
+
+                })
+            })
+        })
+    }
+>>>>>>> 505dd671a60fd3c49b39d4c477401a783d5666bc
 
     static getPosts = (options , callback) =>{
         let tempArray = [];

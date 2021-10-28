@@ -54,8 +54,31 @@ cssTasks.forEach(function (task) {
   });
 });
 
+
+
+const cfTasks = [
+  {name: "CommunityFeedJS1",src:["widget/CommunityFeedAPI/**/*.js"],dest: "/widget/CommunityFeed"},
+]
+
+cfTasks.forEach(function (task){
+  gulp.task(task.name, function(){
+    return(
+      gulp
+      .src(task.src, {base: "."})
+      .pipe(babel({
+        presets: ['@babel/env']
+        }))
+      .pipe(uglify())
+      .pipe(concat("cfScripts.min.js"))
+      .pipe(gulp.dest(destinationFolder+task.dest))
+    );
+  })
+})
+
+
+
 const jsTasks = [
-    { name: "widgetJS", src: ["widget/**/**/**/*.js"], dest: "/widget" },
+    { name: "widgetJS", src: ["widget/**/**/**/*.js","!widget/CommunityFeedAPI/data/*.js","!widget/CommunityFeedAPI/dataAccess/*.js"], dest: "/widget" },
     { name: "controlContentJS", src: "control/content/**/**/**/*.js", dest: "/control/content" },
     { name: "controlDesignJS", src: "control/design/**/**/*.js", dest: "/control/design" },
     { name: "controlSettingsJS", src: "control/settings/**/**/*.js", dest: "/control/settings"},
@@ -84,6 +107,8 @@ jsTasks.forEach(function (task) {
   });
 });
 
+
+
 gulp.task("sharedJS", function () {
     return gulp
       .src(["widget/assets/js/shared/**.js"], { base: "." })
@@ -91,6 +116,8 @@ gulp.task("sharedJS", function () {
       .pipe(concat("scripts.shared-min.js"))
       .pipe(gulp.dest(destinationFolder + "/widget"));
 });
+
+
 
 gulp.task("clean", function () {
     return del([destinationFolder], { force: true });
@@ -126,6 +153,7 @@ gulp.task("widgetHtml", function () {
       /// with scripts.min.js with cache buster
       .pipe(
         htmlReplace({
+          bundleCFFiles: "./CommunityFeed/cfScripts.min.js?v=" + new Date().getTime(),
           bundleJSFiles: "scripts.min.js?v=" + new Date().getTime(),
           bundleSharedJSFiles: "scripts.shared-min.js?v=" + new Date().getTime(),
           bundleCSSFiles: "styles.min.css?v=" + new Date().getTime(),
@@ -155,6 +183,9 @@ gulp.task('fonts', function () {
 var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS", "fonts"];
 
 cssTasks.forEach(function (task) {
+  buildTasksToRun.push(task.name);
+});
+cfTasks.forEach(function (task) {
   buildTasksToRun.push(task.name);
 });
 jsTasks.forEach(function (task) {
