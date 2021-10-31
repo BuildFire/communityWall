@@ -210,8 +210,8 @@
                 Follows.isFollowingUser(userId , (err , r) =>{
                     let listItems = [
                         {text:'See Profile'},
-                        {text: r ? 'Unfollow' : 'Follow'}
                     ];
+                    if(Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
                     if(Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
                     buildfire.components.drawer.open(
                         {
