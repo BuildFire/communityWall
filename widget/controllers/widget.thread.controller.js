@@ -212,7 +212,7 @@
                         {text:'See Profile'},
                     ];
                     if(Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
-                    if(Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
+                    if( (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
                     buildfire.components.drawer.open(
                         {
                             enableFilter:false,
