@@ -164,8 +164,6 @@
             }
 
             Members.openBottomDrawer = function(user){
-                console.log("here");
-                console.log(Members.appSettings);
                 Follows.isFollowingUser(user.userId  , (err , r) =>{
                     let listItems = [
                         {text:'See Profile'},
