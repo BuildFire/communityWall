@@ -89,6 +89,7 @@
                     elements[3].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
                 });
             }
+
             Thread.setupThreadImage = function () {
                 if (Thread.post.imageUrl) {
                     setTimeout(function () {
@@ -204,6 +205,30 @@
                     });
                 })
             }
+
+            Thread.openBottomDrawer = function(userId){
+                Follows.isFollowingUser(userId , (err , r) =>{
+                    let listItems = [
+                        {text:'See Profile'},
+                    ];
+                    if(Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
+                    if( (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
+                    buildfire.components.drawer.open(
+                        {
+                            enableFilter:false,
+                            listItems: listItems
+                        },(err, result) => {
+                            if (err) return console.error(err);
+                            else if(result.text == "See Profile") buildfire.auth.openProfile(userId);
+                            else if(result.text == "Send Direct Message") Thread.openChatOrProfile(userId);
+                            else if(result.text == "Unfollow") Follows.unfollowUser(userId,(err, r) => err ? console.log(err) : console.log(r));
+                            else if(result.text == "Follow") Follows.followUser(userId,(err, r) => err ? console.log(err) : console.log(r));
+                            buildfire.components.drawer.closeDrawer();
+                        }
+                    );
+                })
+            }
+
 
             Thread.openChatOrProfile = function (userId) {
                 if (Thread.allowPrivateChat) {

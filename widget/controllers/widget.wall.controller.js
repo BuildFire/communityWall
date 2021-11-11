@@ -180,6 +180,7 @@
                 SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, false, function (err, result) {
                     if (err) return console.error(err);
                     else {
+                        Follows.unfollowPlugin((err, r) => err ? console.log(err) : console.log(r));
                         WidgetWall.groupFollowingStatus = false;
                         buildfire.notifications.pushNotification.unsubscribe(
                             {
@@ -211,6 +212,8 @@
                         index: { text: user.userId + '-' + WidgetWall.SocialItems.wid, string1: WidgetWall.SocialItems.wid }
                     }
                 };
+                Follows.followPlugin((e , u) => e ? console.log(e) : console.log(u));
+
                 SubscribedUsersData.save(params, function (err) {
                     if (err) console.log('Error while saving subscribed user data.');
                     else {
@@ -218,7 +221,7 @@
                         buildfire.notifications.pushNotification.subscribe(
                             {
                                 groupName: WidgetWall.SocialItems.wid === '' ?
-                                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                                WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                             }, () => { });
                         buildfire.spinner.hide();
                         WidgetWall.loading = false;
@@ -241,6 +244,7 @@
                                     if (!status.length) return WidgetWall.followWall();
                                     else if (status.length && status[0].data.leftWall) {
                                         status[0].data.leftWall = false;
+                                        Follows.followPlugin((e , u) => e ? console.log(e) : console.log(u));                                        
                                         buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
                                         buildfire.notifications.pushNotification.subscribe(
                                             {
@@ -320,6 +324,30 @@
                         console.log("SENT NOTIFICATION", options);
                     });
                 }
+            }
+
+
+            WidgetWall.openBottomDrawer = function(userId){
+                Follows.isFollowingUser(userId , (err , r) =>{
+                        let listItems = [
+                            {text:'See Profile'},
+                        ];
+                        if(WidgetWall.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
+                        if( ( WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
+                        buildfire.components.drawer.open(
+                            {
+                                enableFilter:false,
+                                listItems: listItems
+                            },(err, result) => {
+                                if (err) return console.error(err);
+                                else if(result.text == "See Profile") buildfire.auth.openProfile(userId);
+                                else if(result.text == "Send Direct Message") WidgetWall.openPrivateChat(userId);
+                                else if(result.text == "Unfollow") Follows.unfollowUser(userId,(err, r) => err ? console.log(err) : console.log(r));
+                                else if(result.text == "Follow") Follows.followUser(userId,(err, r) => err ? console.log(err) : console.log(r));
+                                buildfire.components.drawer.closeDrawer();
+                            }
+                        );
+                })
             }
 
             WidgetWall.openChat = function (userId) {
@@ -759,6 +787,15 @@
                             WidgetWall.getPostContent(data);
                             if ((WidgetWall.postText || ($scope.WidgetWall.images && $scope.WidgetWall.images.length > 0))) {
                                 finalPostCreation($scope.WidgetWall.images);
+                                if(!WidgetWall.SocialItems.isPrivateChat){
+                                    buildfire.auth.getCurrentUser((err , currentUser) => {
+                                        if(err || !currentUser) return;
+                                        else{
+                                            console.log(WidgetWall.postText);
+                                            Posts.addPost({postText:WidgetWall.postText ? WidgetWall.postText : "", postImages:$scope.WidgetWall.images || []},(err, r) => err ? console.log(err) : console.log(r));
+                                        } 
+                                    })
+                                }
                             }
                         });
                     }
@@ -768,7 +805,6 @@
             WidgetWall.navigateTo = function () {
                 let privacy = util.getParameterByName("privacy") ? util.getParameterByName("privacy") : null;
                 let query = 'wid=' + WidgetWall.SocialItems.wid;
-                debugger
                 if (privacy) query += '&privacy=' + privacy;
                 if (!WidgetWall.SocialItems.appSettings.actionItem.queryString)
                     WidgetWall.SocialItems.appSettings.actionItem.queryString = query;
@@ -918,6 +954,8 @@
                     if (response) {
                         Buildfire.messaging.sendMessageToControl({ 'name': EVENTS.POST_DELETED, 'id': postId });
                         let postToDelete = WidgetWall.SocialItems.items.find(element => element.id === postId)
+                        console.log(postToDelete);
+                        Posts.deletePost({userId:postToDelete.userId,postText:postToDelete.text,postImages: postToDelete.imageUrl || [],},(err, r) =>{return});
                         let index = WidgetWall.SocialItems.items.indexOf(postToDelete);
                         WidgetWall.SocialItems.items.splice(index, 1);
                         if (!$scope.$$phase)

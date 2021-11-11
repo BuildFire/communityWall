@@ -12,11 +12,19 @@
     <!-- JS -->
     <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
     <script src="../../../scripts/buildfire.js"></script>
+    <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
     <script src="../../../scripts/angular/angular.min.js"></script>
     <script src="../../../scripts/angular/angular-route.min.js"></script>
     <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
-
+    <!-- build:bundleCFFiles  -->    
+    <script src="./CommunityFeedAPI/data/analyticKeys.js"></script>
+    <script src="./CommunityFeedAPI/data/Errors.js"></script>
+    <script src="./CommunityFeedAPI/data/Follow.js"></script>
+    <script src="./CommunityFeedAPI/data/Post.js"></script>
+    <script src="./CommunityFeedAPI/dataAccess/Follows.js"></script>
+    <script src="./CommunityFeedAPI/dataAccess/Posts.js"></script>    
+    <!-- endbuild -->
     <!-- build:bundleJSFiles  -->
     <script src="assets/js/moment.js"></script>
     <script src="modals.js"></script>
@@ -24,6 +32,15 @@
     <script src="app.service.js"></script>
     <script src="enums.js"></script>
     <script src="assets/js/filters.js"></script>
+<<<<<<< HEAD
+    <script src="./CommunityFeedAPI/data/Errors.js"></script>
+    <script src="./CommunityFeedAPI/data/Follow.js"></script>
+    <script src="./CommunityFeedAPI/data/Post.js"></script>
+    <script src="./CommunityFeedAPI/dataAccess/Follows.js"></script>
+    <script src="./CommunityFeedAPI/dataAccess/Posts.js"></script>
+    <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
+=======
+>>>>>>> 505dd671a60fd3c49b39d4c477401a783d5666bc
     <script src="controllers/widget.wall.controller.js"></script>
     <script src="controllers/widget.thread.controller.js"></script>
     <script src="controllers/widget.members.controller.js"></script>
@@ -128,7 +145,7 @@
                                                 <div class="social-copy">
                                                     <p class="text-primary ellipsis">
                                                         <a class="ng-cloak"
-                                                            ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
+                                                            ng-click="WidgetWall.openBottomDrawer(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
                                                     </p>
                                                     <div ng-if="post.createdOn">
                                                         <p class="time-ago opacity-seventy ng-cloak">
