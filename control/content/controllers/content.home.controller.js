@@ -459,6 +459,11 @@
                 else if (userDetails.firstName !== 'Someone' &&
                     userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
+                else if(userDetails.firstName !== 'Someone' &&
+                userDetails.firstName)
+                    name = userDetails.firstName;
+                else if(userDetails.lastName)
+                    name = userDetails.lastName;
                 else name = 'Someone';
                 return name;
             }
