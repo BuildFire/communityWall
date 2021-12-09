@@ -378,6 +378,13 @@
                 else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase())
                     && userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
+                
+                else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase())
+                    && userDetails.firstName)
+                    name = userDetails.firstName;
+                else if (userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase())
+                    && userDetails.lastName)
+                    name = userDetails.lastName;    
                 else name = 'Someone';
                 if (name.length > 25)
                     name = name.substring(0, 25) + '...';

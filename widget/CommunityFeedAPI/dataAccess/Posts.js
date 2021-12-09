@@ -13,6 +13,7 @@ class Posts{
             if(user.displayName) displayName = user.displayName;
             else if(!user.displayName && user.firstName && user.lastName) displayName = user.firstName + " " + user.lastName;
             else if(!user.displayName && !user.lastName && user.firstName) displayName = user.firstName;
+            else if(!user.displayName && user.lastName && !user.firstName) displayName = user.lastName;
             else if(!user.displayName && !user.firstName) displayName = "Someone";
             else displayName = "Someone";            
         }
