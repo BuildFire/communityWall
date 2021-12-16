@@ -276,9 +276,9 @@
                 };
 
                 if (text === 'post')
-                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + WidgetWall.SocialItems.context.title;
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + decodeURI(WidgetWall.SocialItems.context.title);
                 else if (text === 'like')
-                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + decodeURI(WidgetWall.SocialItems.context.title);
 
                 options.inAppMessage = options.text;
                 options.queryString = `wid=${WidgetWall.SocialItems.wid}`
