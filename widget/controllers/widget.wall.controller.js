@@ -379,6 +379,7 @@
                             if (err) return console.error("Getting user failed.", err);
                             if (user) {
                                 WidgetWall.checkFollowingStatus(user);
+                                WidgetWall.checkForPrivateChat();
                             } else {
                                 WidgetWall.groupFollowingStatus = false;
                             }
@@ -390,8 +391,7 @@
             WidgetWall.init();
 
             WidgetWall.checkForPrivateChat = function () {
-                if (WidgetWall.SocialItems.isPrivateChat) {
-                    WidgetWall.sanitizeWall(function (err, result) {
+                if (WidgetWall.SocialItems.isPrivateChat) {  
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
                             if (err) return console.log(err);
                             const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
@@ -402,7 +402,6 @@
                                 WidgetWall.followPrivateWall(otherUser, WidgetWall.SocialItems.wid);
                             }
                         });
-                    });
                 }
             }
 
