@@ -1031,7 +1031,7 @@
             };
 
             WidgetWall.decodeText = function (text) {
-                return decodeURIComponentComponent(text);
+                return decodeURIComponent(text);
             };
 
             Buildfire.datastore.onUpdate(function (response) {
