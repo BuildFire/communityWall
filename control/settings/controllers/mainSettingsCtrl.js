@@ -96,6 +96,10 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
             buildfire.dialog.confirm(
                 {
                     message: "Are you sure you want to enable this option?",
+                    confirmButton:{
+                        text: "Confirm",
+                        type: "success"
+                    }
                 },
                 (err, isConfirmed) => {
                     if (err) el.checked = false;
