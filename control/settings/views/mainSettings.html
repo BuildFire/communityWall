@@ -95,13 +95,25 @@
                 <p style="opacity: 0.7;font-size: .75rem;">
                     (Requires Community Feed)               
                 </p></label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
-                    <input id="allowCommunityFeedFollow" type="checkbox" ng-model="data.allowCommunityFeedFollow" ng-change="save()" >
-                    <label for="allowCommunityFeedFollow"></label>
+                <div>
+                    <div class="checkbox checkbox-primary no-label">
+                        <input id="allowCommunityFeedFollow" type="checkbox" ng-model="data.allowCommunityFeedFollow" ng-change="save()" >
+                        <label for="allowCommunityFeedFollow"></label>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="input-control side-label">
+                <label for="seeProfile">Enable See Profile Option<br>
+                    <p style="opacity: 0.7;font-size: .75rem;">
+                        (This will expose user emails)             
+                    </p></label>
+                <div>
+                    <div class="checkbox checkbox-primary no-label">
+                        <input id="seeProfile" type="checkbox" ng-model="data.seeProfile" ng-click="warn()" >
+                        <label for="seeProfile"></label>
+                    </div>
+                </div>
+            </div>
 
     </form>
     <div class="padded-sm" id="actions"></div>

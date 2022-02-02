@@ -39,6 +39,9 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                         if(typeof (result.data.appSettings.allowCommunityFeedFollow) == 'undefined'){
                             result.data.appSettings.allowCommunityFeedFollow = false;
                         }
+                        if(typeof (result.data.appSettings.seeProfile) == 'undefined'){
+                            result.data.appSettings.seeProfile = false;
+                        }
                         if(typeof (result.data.appSettings.allowAutoSubscribe) == 'undefined') {
                             result.data.appSettings.allowAutoSubscribe = true;
                         }
@@ -84,6 +87,36 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
             }
 
         }
+    }
+    
+
+    $scope.warn = function(){
+        let el = document.getElementById("seeProfile");
+        if(el.checked) {
+            buildfire.dialog.confirm(
+                {
+                    message: "Are you sure you want to enable this option?",
+                    confirmButton:{
+                        text: "Confirm",
+                        type: "success"
+                    }
+                },
+                (err, isConfirmed) => {
+                    if (err) el.checked = false;
+                    
+                    if (isConfirmed) {
+                        el.checked = true;
+                        $scope.save()
+                    } else {
+                        el.checked = false;
+                    }
+                }
+                );
+            }
+            else{
+            el.checked = false;
+            $scope.save();
+            }
     }
 
     $scope.save = function () {
