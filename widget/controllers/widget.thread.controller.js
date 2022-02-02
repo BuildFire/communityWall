@@ -207,22 +207,22 @@
             }
 
             Thread.openBottomDrawer = function(userId){
-                Follows.isFollowingUser(userId , (err , r) =>{
-                    let listItems = [
-                        {text:'See Profile'},
-                    ];
+                Follows.isFollowingUser(userId  , (err , r) =>{
+                    let listItems = [];
+                    if(Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true) listItems.push({text:'See Profile'});
+                    if((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
                     if(Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
-                    if( (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
-                    buildfire.components.drawer.open(
+                    if(listItems.length == 0) return;
+                    Buildfire.components.drawer.open(
                         {
                             enableFilter:false,
                             listItems: listItems
                         },(err, result) => {
                             if (err) return console.error(err);
-                            else if(result.text == "See Profile") buildfire.auth.openProfile(userId);
-                            else if(result.text == "Send Direct Message") Thread.openChatOrProfile(userId);
-                            else if(result.text == "Unfollow") Follows.unfollowUser(userId,(err, r) => err ? console.log(err) : console.log(r));
-                            else if(result.text == "Follow") Follows.followUser(userId,(err, r) => err ? console.log(err) : console.log(r));
+                            else if(result.text == "See Profile") buildfire.auth.openProfile(user.userId );
+                            else if(result.text == "Send Direct Message") Members.openPrivateChat(user );
+                            else if(result.text == "Unfollow") Follows.unfollowUser(user.userId ,(err, r) => err ? console.log(err) : console.log(r));
+                            else if(result.text == "Follow") Follows.followUser(user.userId ,(err, r) => err ? console.log(err) : console.log(r));
                             buildfire.components.drawer.closeDrawer();
                         }
                     );

@@ -165,12 +165,12 @@
 
             Members.openBottomDrawer = function(user){
                 Follows.isFollowingUser(user.userId  , (err , r) =>{
-                    let listItems = [
-                        {text:'See Profile'},
-                    ];
+                    let listItems = [];
+                    if(Members.appSettings && Members.appSettings.seeProfile == true) listItems.push({text:'See Profile'});
                     if((Members.appSettings && !Members.appSettings.disablePrivateChat) || Members.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
                     if(Members.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
-                    buildfire.components.drawer.open(
+                    if(listItems.length == 0) return;
+                    Buildfire.components.drawer.open(
                         {
                             enableFilter:false,
                             listItems: listItems
