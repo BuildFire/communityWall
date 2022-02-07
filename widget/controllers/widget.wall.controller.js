@@ -276,11 +276,11 @@
                 };
 
                 if (text === 'post')
-                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + decodeURI(WidgetWall.SocialItems.context.title);
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + decodeURIComponent(WidgetWall.SocialItems.context.title);
                 else if (text === 'like')
-                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + decodeURI(WidgetWall.SocialItems.context.title);
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + decodeURIComponent(WidgetWall.SocialItems.context.title);
 
-                options.inAppMessage = options.text;
+                options.inAppMessage = decodeURIComponent(options.text);
                 options.queryString = `wid=${WidgetWall.SocialItems.wid}`
 
                 if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
@@ -296,9 +296,12 @@
                             options.users.push(userToSend);
                             options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on '
                                 + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
-                            buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                
+                            buildfire.notifications.pushNotification.schedule(options, function 
+                                (err) {
+                                
                                 if (err) return console.error('Error while setting PN schedule.', err);
-                                console.log("SENT NOTIFICATION", options);
+                             
                             });
                         } else if(!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
                             buildfire.auth.getUserProfile({ userId: userToSend }, (err, user) => {
