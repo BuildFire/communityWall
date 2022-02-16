@@ -422,6 +422,10 @@
                 loadPage();
 
             }
+            
+            ContentHome.decodeText = function (text) {
+                return decodeURIComponent(text);
+            };
 
             $scope.initHesGallery = () => {
                 setTimeout(() => {

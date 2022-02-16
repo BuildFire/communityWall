@@ -549,6 +549,10 @@
 
             }
 
+            Thread.decodeText = function (text) {
+                return decodeURIComponent(text);
+            };
+
             Buildfire.history.onPop(function (breadcrumb) {
                 Thread.goFullScreen = false;
                 if (!$scope.$$phase) $scope.$digest();
