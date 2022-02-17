@@ -36,7 +36,7 @@
 
                 </div>
                 <div class="post-text copy" style="word-wrap: break-word">
-                    <p class="margin-zero" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p>
+                    <p class="margin-zero" ng-bind-html="Thread.decodeText(Thread.post.text) | newLine"></p>
                 </div>
                 <div class="plugin-banner clearfix" ng-if="Thread.post.imageUrl">
                     <div class="plugin-slide text-center" style="max-height: none !important;">
@@ -75,7 +75,7 @@
                             </div>
                             <div class="post-text copy">
                                 <p class="margin-zero"
-                                    ng-bind-html="Thread.util.injectAnchors(comment.comment)|newLine"></p>
+                                    ng-bind-html="Thread.decodeText(comment.comment)|newLine"></p>
                             </div>
                             <div class="plugin-banner ellipsis" ng-init="setupImageList(comment)">
                                 <div class="plugin-slide text-center" style="max-height: none !important;">

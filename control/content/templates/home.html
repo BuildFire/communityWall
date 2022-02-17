@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="copy padded">
-                    <p class="margin-zero" ng-bind-html="ContentHome.util.injectAnchors(post.text)|newLine"></a>
+                    <p class="margin-zero" ng-bind-html="ContentHome.decodeText(post.text)|newLine"></a>
                         <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
                         <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a>
                     </p>
