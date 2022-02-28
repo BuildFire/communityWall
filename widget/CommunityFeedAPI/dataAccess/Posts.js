@@ -19,7 +19,7 @@ class Posts{
         }
         return new Post({
             userId: !isPublic ? user._id : "publicPost",
-            createdBy:!isPublic ? (user.displayName || user.email || "Someone") : "publicPost",
+            createdBy:!isPublic ? (user.displayName || "Someone") : "publicPost",
             displayName: displayName,
             postText: post.postText || "",
             postImages: post.postImages || [],
@@ -29,14 +29,14 @@ class Posts{
                 pluginInstanceTitle : post?.pluginInstance?.pluginInstanceTitle ||  buildfire.getContext().title || buildfire.getContext().pluginId
             },
             _buildfire:{index : Posts.buildIndex({
-                displayName : !isPublic ? (user.displayName || user.username || user.email) : (post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId) , 
+                displayName : !isPublic ? (user.displayName || user.username) : (post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId) , 
                 userId : !isPublic ? user?._id : "publicPost", 
                 pluginTitle : buildfire.getContext().title || buildfire.getContext().pluginId,
                 isPublic : isPublic ? 1 : 0,
                 pluginInstanceId: buildfire.getContext().instanceId
             })}
         })
-    }
+    } 
 
 
     static searchPosts = (options,callback) =>{
