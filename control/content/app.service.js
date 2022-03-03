@@ -42,35 +42,23 @@
                 injectAnchors: function (text, options) {
                     text = decodeURIComponent(text);
                     var URL_CLASS = "reffix-url";
-                    var URLREGEX = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
+                    var URLREGEX = new RegExp(/^(?!.*iframe).*(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/);
                     var EMAILREGEX = /([\w\.]+)@([\w\.]+)\.(\w+)/g;
-
-                    if (!options) options = { injectURLAnchors: true, injectEmailAnchors: true };
                     var lookup = [];
-                    if (!options.urlAnchorGen)
-                        options.urlAnchorGen = function (url) {
-                            return { url: url, target: '_system' }
-                        };
-                    if (options.injectURLAnchors)
-                        text = text.replace(URLREGEX, function (url) {
-                            var obj = options.urlAnchorGen(url);
-                            if (obj.url && obj.url.indexOf('http') !== 0 && obj.url.indexOf('https') !== 0) {
-                                obj.url = 'http://' + obj.url;
-                            }
-                            lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' >" + url + "</a>");
-                            return "_RF" + (lookup.length - 1) + "_";
-                        });
-                    if (!options.emailAnchorGen)
-                        options.emailAnchorGen = function (email) {
-                            return { url: "mailto:" + email, target: '_system' }
-                        };
-                    if (options.injectEmailAnchors)
-                        text = text.replace(EMAILREGEX, function (url) {
-                            var obj = options.emailAnchorGen(url);
-                            lookup.push("<a href='" + obj.url + "' target='" + obj.target + "'>" + url + "</a>");
-                            return "_RF" + (lookup.length - 1) + "_";
-                        });
-                    /// this is done so you dont swap what was injected
+
+                    text = text.replace(URLREGEX, function (url) {
+                        var obj = { url: url, target: '_system' }
+                        if (obj.url && obj.url.indexOf('http') !== 0 && obj.url.indexOf('https') !== 0) {
+                            obj.url = 'http://' + obj.url;
+                        }
+                        lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' >" + url + "</a>");
+                        return "_RF" + (lookup.length - 1) + "_";
+                    });
+                    text = text.replace(EMAILREGEX, function (url) {
+                        var obj = { url: "mailto:" + url, target: '_system' };
+                        lookup.push("<a href='" + obj.url + "' target='" + obj.target + "'>" + url + "</a>");
+                        return "_RF" + (lookup.length - 1) + "_";
+                    });
                     lookup.forEach(function (e, i) {
                         text = text.replace("_RF" + i + "_", e);
                     });
