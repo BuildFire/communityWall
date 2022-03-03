@@ -334,11 +334,11 @@
                             };
 
                             if (text === 'comment')
-                                options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' commented on post: ' + decodeURI(Thread.SocialItems.context.title);
+                                options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' commented on post: ' + decodeURIComponent(Thread.SocialItems.context.title);
                             else if (text === 'likedComment')
-                                options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a comment on ' + decodeURI(Thread.SocialItems.context.title);
+                                options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a comment on ' + decodeURIComponent(Thread.SocialItems.context.title);
                             else if (text === 'likedPost')
-                                options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + decodeURI(Thread.SocialItems.context.title);
+                                options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + decodeURIComponent(Thread.SocialItems.context.title);
                             options.inAppMessage = options.text;
                             options.queryString = `wid=${Thread.SocialItems.wid}`;
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
