@@ -19,6 +19,7 @@
 
             WidgetWall.loadedPlugin = false;
             WidgetWall.SocialItems = SocialItems.getInstance();
+            WidgetWall.util = util;
             $rootScope.showThread = true;
             WidgetWall.loading = true;
 
