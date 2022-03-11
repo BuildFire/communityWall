@@ -26,15 +26,30 @@
             t.strings = t.SocialItems.socialLanguages;
             t.currentPage = 'posts';
             t.isLoading = true;
-
+            
             t.setInitialState = (callback) =>{
+                t.isLoading = true;
                 t.user = {
                     userId: $routeParams.userId,
+                    isCurrentUser:$routeParams.userId == t.SocialItems.userDetails.userId ? true : false
                 }
                 t.SocialItems = SocialItems.getInstance();
                 t.strings = t.SocialItems.socialLanguages;
                 t.currentPage = 'posts';
-                t.isLoading = true;
+                t.posts = {
+                    ownPosts:{
+                        shouldFetchMore: true,
+                        items: [],
+                        container: document.getElementById("profile-posts-container")
+                    },
+                    taggedPosts:{
+                        shouldFetchMore: true,
+                        items: [],
+                        container: document.getElementById("profile-tagged-posts-container")
+                    }
+                }
+                // t.posts.ownPosts.container.innerHTML = "";
+                // t.posts.taggedPosts.container.innerHTML = "";
                 return callback(true);
             }
 
@@ -98,35 +113,36 @@
                 else return true;
             }
 
-            t.shouldShowPosts = (callback) =>{
+            t.shouldShowPosts = () =>{
                 if(t.user.isCurrentUser) return true;
+                else if(t.user.isPublicProfile) return true;
+                else if(t.user.amIFollowing) return true;
+                else return false;
             }
 
             t.init = () =>{
-                $rootScope.showThread = false;
-                t.initProfile(finished =>{
+                t.setInitialState(finished =>{
                     if(finished){
-                        $timeout(function(){
-                            console.log(t.user);
-                            console.log(t.SocialItems);
-                            t.isLoading = false;
-                            $scope.$digest();
-                        })
-
-                        // t.initPosts(finished =>{
-                        //     if(finished){
-                        //         t.initTaggedPosts(finished =>{
-                        //             $timeout(function(){
-                        //                 t.isLoading = false;
-                        //                 $scope.$digest();
-                        //             })
-                        //         })
-                        //     }
-                        // })
-
-                        
+                        $rootScope.showThread = false;
+                        t.initProfile(finished =>{
+                            if(finished){
+                                t.initPosts(finished =>{
+                                    if(finished){
+                                        t.initTaggedPosts(finished =>{
+                                            if(finished){
+                                                
+                                                $timeout(function(){
+                                                    t.isLoading = false;
+                                                    $scope.$digest();
+                                                })
+                                            }
+                                        })
+                                    }
+                                })                        
+                            }
+                        });
                     }
-                });
+                })
             }
 
 
@@ -238,7 +254,9 @@
 
 
             t.injectElements = function(posts, container, callback){
-
+                console.log("injecting");
+                console.log(posts);
+                console.log(container);
                 if(!container) return;
                 let lastParent;
                 let lastElement;
@@ -263,6 +281,9 @@
                     
                     lastParent.appendChild(lastElement);
                 }
+                $timeout(function(){
+                    $scope.$digest();
+                })
                 return callback(true);
             }
 

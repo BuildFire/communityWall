@@ -66,11 +66,11 @@ ng-show="!Profile.isLoading">
     </div>
 
     <div ng-show="Profile.shouldShowPosts()">
-        <div id="profile-posts-container"  style="height: 54vh;overflow: auto;" ng-show="Profile.currentPage === 'posts'">
-
+        <div id="profile-posts-container" ng-bind-html="postsList"  style="height: 54vh;overflow: auto;" ng-show="Profile.currentPage === 'posts'">
+            
         </div>
         <div id="profile-tagged-posts-container"  style="height: 54vh;overflow: auto;" ng-show="Profile.currentPage === 'tagged'">
-
+            
         </div>
     </div>
 </div>

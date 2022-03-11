@@ -7,7 +7,7 @@
             t.SocialItems = SocialItems.getInstance();
             t.isLoggedIn = t.SocialItems.userDetails.userId ? true : false;
             t.navigateToProfile = function(userId){
-                let shouldNavigate = $location.absUrl().split('#')[1].includes('profile') ? false : true;  
+                let shouldNavigate = $location.absUrl().split('#')[1].includes('profile/'+userId) ? false : true;  
                 if(shouldNavigate) Location.go("#/profile/"+userId);
             }
             t.showMainWall = function(){
@@ -17,7 +17,7 @@
             t.goToMyProfile = function(){
                 var userId = t.SocialItems.userDetails.userId;
                 if(!userId) return;
-                let shouldNavigate = $location.absUrl().split('#')[1].includes('profile') ? false : true;  
+                let shouldNavigate = $location.absUrl().split('#')[1].includes('profile/'+userId) ? false : true;  
                 if(shouldNavigate) Location.go("#/profile/"+userId);
             }
             t.goToDiscover = function(){
