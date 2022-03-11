@@ -1,4 +1,7 @@
  /* fallback */
+ :root{
+    --reaction-fill-color: red;
+ }
  @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -165,15 +168,37 @@ html{
     font-size: 16px !important;
 }
 /* Fixed Bottom */
-.main_view,.main-thread-section{height: 100%; overflow: hidden !important;}
+.main_view,.main-thread-section{height: 90vh; overflow: hidden !important;}
 .holder.has-bottom {
     padding-bottom: 38px !important;
+}
+.bottomNavBar{
+    position: absolute;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    height: 10vh;
+    border-top: 1px solid #e3e3e3;
+    bottom: 0px;
+    left: 0px;
+}
+.bottomNavBar > *{
+    flex:1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .holder.has-bottom.has-bottom-viewing {
     padding-bottom: 65px !important;
 }
-
+.fa-gradient {
+	background: linear-gradient(to top, var(--reaction-fill-color) 0%, var(--reaction-fill-color) 50%,black 51%,black 100%);
+    background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
 
 
 button,
@@ -657,7 +682,7 @@ button.btn--lg,
     align-items: center;
     justify-content: space-between;
     padding-top: .5rem;
-    margin-left: 52px;
+    margin-left: 14px;
 }
 .status-footer .social-icon,
 .footer .social-icon {
@@ -681,7 +706,7 @@ button.btn--lg,
 
 .social-item {
     background-color: rgba(255, 255, 255, .1);
-    box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.2);
+    box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.2) !important;
     margin-bottom: .5rem;
  }
  .side-thread-section .social-item{
@@ -749,6 +774,20 @@ button.btn--lg,
     border-radius: .5rem;
     overflow: hidden;
  }
+ .post-image-container{
+     margin-left: 10px;
+     width: calc(100% - 20px);
+     border-radius: 15px;
+     max-height: none !important;
+     height: 68vh !important;
+ }
+ .post-image-container>img{
+     width: 100% !important;
+     height: 100% !important;
+     border-radius: 15px;
+     max-height: none !important;
+ }
+
  .status-footer .likes,
  .status-footer .comments{
      margin-left: auto;
@@ -1181,10 +1220,6 @@ textarea {
 }
 .side-thread-section .post-section{
     padding: 0;
-}
-.has-group-header.post-section .post-infinite-scroll,
-.side-thread-section .has-group-header.post-section{
-    padding-top: 3.75rem;
 }
 .has-comment-box .post-infinite-scroll,
 .side-thread-section .has-comment-box.post-section{

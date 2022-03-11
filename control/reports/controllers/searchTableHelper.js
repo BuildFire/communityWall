@@ -109,7 +109,7 @@ class SearchTableHelper {
 		};
 
 		this.searchOptions = options;
-		buildfire.publicData.search(options, this.tag, (e, results) => {
+		buildfire.appData.search(options, this.tag, (e, results) => {
 			if (e && callback) return callback(e);
 			this.tbody.innerHTML = '';
 			this.endReached = results.length < pageSize;
@@ -208,7 +208,7 @@ class SearchTableHelper {
 
 					if (data.selectedButton.key == "yes") {
 						tr.classList.add("hidden");
-						buildfire.publicData.update(obj.id, { $set: { deletedOn: new Date() } }, this.tag, e => {
+						buildfire.appData.update(obj.id, { $set: { deletedOn: new Date() } }, this.tag, e => {
 							if (e)
 								tr.classList.remove("hidden");
 							else

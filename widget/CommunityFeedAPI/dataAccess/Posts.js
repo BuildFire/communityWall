@@ -55,7 +55,6 @@ class Posts{
         });
     }
     static addPost = (post , callback) =>{
-        console.log(post);
         if((!post.postText && !post.postImages) ||  post?.postImages && !Array.isArray(post.postImages) || (post?.postImages && Array.isArray(post.postImages) && post.postImages.length == 0 && !post?.postText)) return callback({code:errorsList.ERROR_400,message:"Must have atleast post text or post images, post images must be an array of atleast one image url"});
         buildfire.auth.getCurrentUser((err, currentUser) =>{
             if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});

@@ -1,0 +1,43 @@
+<div ng-style='{display: finishRender ? block : none}' id="discover-container">
+    <div class="header">
+        <div class="searchContainer" ng-click="navigateToSearch()">
+            <span class="material-icons">
+                search
+            </span>
+            <input type="text" placeholder="Search" id="searchInput" autocomplete="off">
+            
+        </div>
+    </div>
+    <div class="results" id="results" ng-if="!isBusy && results.length > 0">
+        <div ng-repeat="item in results">
+            <div class="search-item" ng-if="item.type === 'user'" ng-click="navigateToUserProfile(item.data.data.userId)">
+                <div class="result-imageContainer">
+                    <img style="width: 45px;height: 45px;border-radius: 45px;" src="{{cropImage(item.data.data.userDetails.imageUrl)}}" ng-if="item.data.data.userDetails.imageUrl"/>
+                    <img style="width: 45px;height: 45px;border-radius: 45px;" src="../../../../styles/media/avatar-placeholder.png" ng-if="!item.data.data.userDetails.imageUrl"/>
+
+                </div>
+                <div class="result-content">
+                    {{Search.SocialItems.getUserName(item.data.data.userDetails)}}
+                </div>
+            </div>
+            <div class="search-item"  ng-if="item.type === 'hashtag'" ng-click="navigateToFilteredResults('hashtag',item.data.data.name)">
+                <div class="result-imageContainer">
+                    <p>#</p>
+                </div>
+                <div class="result-content">
+                    {{item.data.data.name}}
+                </div>
+            </div>
+            <div class="search-item"  ng-if="item.type === 'location'" ng-click="navigateToFilteredResults('location',item.data.description)">
+                <div class="result-imageContainer">
+                    <span class="material-icons-outlined">
+                        place
+                    </span>                        
+                </div>
+                <div class="result-content">
+                    {{item.data.description.substring(0,25)}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

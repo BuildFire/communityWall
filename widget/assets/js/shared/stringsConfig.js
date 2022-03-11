@@ -1,111 +1,303 @@
 const stringsConfig = {
-	mainWall: {
-		title: "Main Wall labels",
-		subtitle: "Change values to update main wall labels and messages",
+	userProfile: {
+		title: "User Profile",
+		subtitle: "",
 		labels: {
-			leaveGroup: {
-				title: "Leave Group"
-				, placeholder: "Leave Group"
+			follow: {
+				title: "Follow"
+				, placeholder: "Follow"
 				, maxLength: 30
-				, defaultValue: "Leave Group"
+				, defaultValue: "Follow"
 			},
-			joinGroup: {
-				title: "Join Group"
-				, placeholder: "Join Group"
+			unfollow: {
+				title: "Unfollow"
+				, placeholder: "Unfollow"
 				, maxLength: 30
-				, defaultValue: "Join Group"
+				, defaultValue: "Unfollow"
 			},
+			editProfile: {
+				title: "Edit Profile"
+				, placeholder: "Edit Profile"
+				, maxLength: 30
+				, defaultValue: "Edit Profile"
+			},
+			inbox: {
+				title: "Inbox"
+				, placeholder: "Inbox"
+				, maxLength: 30
+				, defaultValue: "Inbox"
+			},
+			posts: {
+				title: "Posts"
+				, placeholder: "Posts"
+				, maxLength: 30
+				, defaultValue: "Posts"
+			},
+			tagged: {
+				title: "Tagged"
+				, placeholder: "Tagged"
+				, maxLength: 30
+				, defaultValue: "Tagged"
+			},
+			privateAccountTitle: {
+				title: "Private Account Title"
+				, placeholder: "Private Account Title"
+				, maxLength: 30
+				, defaultValue: "Private Account Title"
+			},
+			privateAccountBody: {
+				title: "Private Account Body"
+				, placeholder: "Private Account Body"
+				, maxLength: 30
+				, defaultValue: "Private Account Body"
+			},
+			blocked: {
+				title: "Blocked"
+				, placeholder: "Blocked"
+				, maxLength: 30
+				, defaultValue: "Blocked"
+			},
+			
 		}
 	},
-	sideThread: {
-		title: "Side Wall labels",
-		subtitle: "Change values to update side wall labels and messages",
+	activity: {
+		title: "Activity",
+		subtitle: "",
 		labels: {
-			followPost: {
-				title: "Follow Post"
-				, placeholder: "Follow Post"
+			followRequest: {
+				title: "Follow Request"
+				, placeholder: "Follow Request"
 				, maxLength: 30
-				, defaultValue: "Follow Post"
+				, defaultValue: "Follow Request"
 			},
-			unfollowPost: {
-				title: "Unfollow Post"
-				, placeholder: "Unfollow Post"
+			followRequestAcceptButton: {
+				title: "Follow Request Accept Button"
+				, placeholder: "Yes"
 				, maxLength: 30
-				, defaultValue: "Unfollow Post"
+				, defaultValue: "Yes"
 			},
-			deleteComment: {
-				title: "Delete Comment"
-				, placeholder: "Delete Comment"
+			followRequestRejectButton: {
+				title: "Follow Request Reject Button"
+				, placeholder: "No"
 				, maxLength: 30
-				, defaultValue: "Delete Comment"
-			}
+				, defaultValue: "No"
+			},
+			startedFollowingYou: {
+				title: "Started Following you"
+				, placeholder: "Started Following you"
+				, maxLength: 30
+				, defaultValue: "Started Following you"
+			},
+			followBackButton: {
+				title: "Follow Back Button"
+				, placeholder: "Follow Back"
+				, maxLength: 30
+				, defaultValue: "Follow Back"
+			},
+			reactedToYourPost: {
+				title: "Reacted To Your Post"
+				, placeholder: "Reacted To Your Post"
+				, maxLength: 30
+				, defaultValue: "Reacted To Your Post"
+			},
+			taggedYouInAPost: {
+				title: "Tagged You in a Post"
+				, placeholder: "Tagged You in a Post"
+				, maxLength: 30
+				, defaultValue: "Tagged You in a Post"
+			},
+			acceptedYourFollowRequest: {
+				title: "Accepted Your Follow Request"
+				, placeholder: "Accepted Your Follow Request"
+				, maxLength: 30
+				, defaultValue: "Accepted Your Follow Request"
+			},
+
 		}
 	},
-	members: {
-		title: "Members labels",
-		subtitle: "Change values to update members labels and messages",
+	logInBanner: {
+		title: "Log In Banner",
+		subtitle: "",
 		labels: {
-			membersBlankState: {
-				title: "Members Blank State Message"
-				, placeholder: "There are no other members except you."
-				, maxLength: 60
-				, defaultValue: "There are no other members except you."
+			bannerText: {
+				title: "Banner Text"
+				, placeholder: "Add score"
+				, maxLength: 30
+				, defaultValue: "Add score"
 			},
-			membersNoResults: {
-				title: "Members No Results Found"
-				, placeholder: "No results found."
-				, maxLength: 60
-				, defaultValue: "No results found."
-			}
-		}
+			
+			dismiss: {
+				title: "Dismiss"
+				, placeholder: "Dismiss"
+				, maxLength: 30
+				, defaultValue: "Dismiss"
+			},
+			loginRegister: {
+				title: "Log In/Register"
+				, placeholder: "Log In/Register"
+				, maxLength: 30
+				, defaultValue: "Log In/Register"
+			},
+			
+		},
 	},
-	input: {
-		title: "Input Dialog labels",
-		subtitle: "Change values to update input dialog labels and messages",
+	unfollowModal: {
+		title: "Unfollow Modal",
+		subtitle: "",
 		labels: {
-			cancelPost: {
-				title: "Cancel Post"
+			title: {
+				title: "Title"
+				, placeholder: "Unfollow user"
+				, maxLength: 30
+				, defaultValue: "Unfollow user"
+			},
+			
+			body: {
+				title: "Body"
+				, placeholder: "Are you sure you want to unfollow this user?"
+				, maxLength: 30
+				, defaultValue: "Are you sure you want to unfollow this user?"
+			},
+			cancel: {
+				title: "Cancel Button"
 				, placeholder: "Cancel"
-				, maxLength: 9
+				, maxLength: 30
 				, defaultValue: "Cancel"
 			},
-			confirmPost: {
-				title: "Confirm Post"
-				, placeholder: "Post"
-				, maxLength: 9
-				, defaultValue: "Post"
+			confirm: {
+				title: "Confirm Button"
+				, placeholder: "Unfollow"
+				, maxLength: 30
+				, defaultValue: "Unfollow"
 			},
-			writePost: {
-				title: "Input Placeholder"
-				, placeholder: "Write a post"
-				, maxLength: 30
-				, defaultValue: "Write a post"
-			}
-		}
-	},
-	modal: {
-		title: "Modal labels",
-		subtitle: "Change values to update modal labels and messages",
-		labels: {
-			moreOptions: {
-				title: "More Options"
-				, placeholder: "More Options"
-				, maxLength: 30
-				, defaultValue: "More Options"
-			},
-			reportPost: {
-				title: "Report Post"
-				, placeholder: "Report Post"
-				, maxLength: 30
-				, defaultValue: "Report Post"
-			},
-			deletePost: {
-				title: "Delete Post"
-				, placeholder: "Delete Post"
-				, maxLength: 30
-				, defaultValue: "Delete Post"
-			}
-		}
-	},
+			
 
+			
+			
+		},
+	},
+	reportPostModal: {
+		title: "Report Post Modal",
+		subtitle: "",
+		labels: {
+			title: {
+				title: "Title"
+				, placeholder: "Report inappropriate post"
+				, maxLength: 30
+				, defaultValue: "Report inappropriate post"
+			},
+			
+			body: {
+				title: "Body"
+				, placeholder: "is this post inappropriate? We will review this report within 24 hrs and if deemed inappropriate the post will be removed"
+				, maxLength: 30
+				, defaultValue: "is this post inappropriate? We will review this report within 24 hrs and if deemed inappropriate the post will be removed"
+			},
+			cancel: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 30
+				, defaultValue: "Cancel"
+			},
+			confirm: {
+				title: "Confirm Button"
+				, placeholder: "Report"
+				, maxLength: 30
+				, defaultValue: "Report"
+			},
+			
+
+			
+			
+		},
+	},
+	blockUserModal: {
+		title: "Block User Modal",
+		subtitle: "",
+		labels: {
+			title: {
+				title: "Title"
+				, placeholder: "Block user"
+				, maxLength: 30
+				, defaultValue: "Block user"
+			},
+			
+			body: {
+				title: "Body"
+				, placeholder: "Both of you won't be able to see each other's posts and comments. The user won't be notified that you blocked them."
+				, maxLength: 30
+				, defaultValue: "Both of you won't be able to see each other's posts and comments. The user won't be notified that you blocked them."
+			},
+			cancel: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 30
+				, defaultValue: "Cancel"
+			},
+			confirm: {
+				title: "Confirm Button"
+				, placeholder: "Block"
+				, maxLength: 30
+				, defaultValue: "Block"
+			},
+		},
+	},
+	unblockUserModal: {
+		title: "Unblock User Modal",
+		subtitle: "",
+		labels: {
+			title: {
+				title: "Title"
+				, placeholder: "Unblock user"
+				, maxLength: 30
+				, defaultValue: "Unblock user"
+			},
+			
+			body: {
+				title: "Body"
+				, placeholder: "Both of you will now be able to see each other's posts and comments. The user won't be notified that you blocked them."
+				, maxLength: 30
+				, defaultValue: "Both of you will now be able to see each other's posts and comments. The user won't be notified that you blocked them."
+			},
+			cancel: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 30
+				, defaultValue: "Cancel"
+			},
+			confirm: {
+				title: "Confirm Button"
+				, placeholder: "Unblock"
+				, maxLength: 30
+				, defaultValue: "Unblock"
+			},
+		},
+	},
+	accountBannedModal: {
+		title: "Account Banned Modal",
+		subtitle: "",
+		labels: {
+			title: {
+				title: "Title"
+				, placeholder: "Account Banned"
+				, maxLength: 30
+				, defaultValue: "Account Banned"
+			},
+			
+			body: {
+				title: "Body"
+				, placeholder: "Your account was permanently banned due to violations of our Community Guidelines"
+				, maxLength: 30
+				, defaultValue: "Your account was permanently banned due to violations of our Community Guidelines"
+			},
+			close: {
+				title: "Close Button"
+				, placeholder: "Close"
+				, maxLength: 30
+				, defaultValue: "Close"
+			},
+			
+		},
+	},
+	
 };

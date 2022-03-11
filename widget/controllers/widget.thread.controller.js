@@ -193,8 +193,12 @@
                         wallId: wid,
                         posts: [],
                         _buildfire: {
-                            index: { text: userId + '-' + wid, string1: wid }
+                            index: { text: userId + '-' + wid, string1: wid,
+                            array1:[
+                                {string1: "userId_"+userId}
+                            ]}
                         }
+
                     };
                     userName = Thread.SocialItems.getUserName(params.userDetails)
                     console.log("SACUVAVA KORISNIKA ZA PRIVATE", params)

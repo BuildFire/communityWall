@@ -1,0 +1,77 @@
+<div ng-style='{display: finishRender ? block : none}' style="height: 100%;" id="discover-container" >
+    <div class="header" style="height: 6%;">
+        <div class="searchContainer" ng-click="navigateToSearch()">
+            <span class="material-icons">
+                search
+            </span>
+            <p>Search</p>
+                
+        </div>
+    </div>
+    <div id="navBar" style="height: 7%" class="navBar">
+        <div ng-click="setActivePage(0)">
+            Hashtags
+        </div>
+        <div ng-click="setActivePage(1)">
+            Posts
+        </div>
+        <div ng-click="setActivePage(2)">
+            People
+        </div>
+    </div>
+    <div style="height: 73vh;padding-bottom: 1vh;overflow-y: auto;">
+        <div id="discover-posts-container" style="height: 100%;overflow-y: auto;" ng-style="{'display':activePageIndex == 1 ? 'block' : 'none'}" >
+    
+        </div>
+        <div id="discover-people-container" style="height: 100%;overflow-y: auto;" ng-style="{'display':activePageIndex == 2 ? 'block' : 'none'}">
+            <div ng-if="users && users.length > 0" ng-repeat="user in users">
+                <div>
+                    <div class="discover-people-profile-picture" ng-click="navigateToProfile(user.data.userId)">
+                        <img ng-src="{{crop(user.data.userDetails.imageUrl, {width: 50,height: 50})}}" ng-if="user.data.userDetails.imageUrl" />
+                        <img src="../../../../styles/media/avatar-placeholder.png" ng-if="!user.data.userDetails.imageUrl" />
+                    </div>
+                    <div class="profileName">
+                    <div class="profileUsername" ng-click="navigateToProfile(user.data.userId)">
+                        <p>
+                            {{Discover.SocialItems.getUserName(user.data.userDetails)}}
+                        </p>    
+                        <p >
+                            San Diego, CA
+                        </p>
+                    </div>
+                
+                    </div>
+                    <div class="profileButton" >
+                        <button class="btn btn-success">
+                            Follow
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="!users || (users && users.length == 0)">
+                <div class="empty_state"></div>
+            </div>
+        </div>
+        <div id="discover-hashtags-container" style="height: 100%;overflow-y: auto;" ng-if="!isBusy" ng-style="{'display':activePageIndex == 0 ? 'block' : 'none'}">
+            <div class="discover-h-repeated" style="height: 100%;overflow-y: auto;" ng-if="!isObjectEmpty(trendingHashtags)" ng-repeat="(key, props) in trendingHashtags">
+                <div ng-if="props.length > 0">
+                    <div class="discover-h-title" ng-click="Discover.goToFilteredPosts('hashtag',key)">
+                        {{key}}
+                    </div>
+                    <div class="discover-h-images-container">
+                        <div ng-repeat="post in props" class="discover-h-item-div">
+                            <img ng-if="post.data.images.length > 0" ng-src="{{crop(post.data.images[0], {width: 100, height: 100})}}" alt="" class="discover-h-single-image">
+                        </div>
+    
+                    </div>
+
+                </div>
+                <div ng-if="props.length == 0">
+                    <div class="empty_state"></div>
+                </div>
+            </div>
+            <div class="empty_state" ng-if="isObjectEmpty(trendingHashtags)"></div>
+        </div>
+    </div>
+
+</div>

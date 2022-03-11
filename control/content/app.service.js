@@ -127,14 +127,46 @@
                 }
             }
         }])
+        .factory('SocialBadges', ['Buildfire', function () {
+            return{
+                insert: function(badge, callback){
+                    badge._buildfire = {
+                        index:{
+                            string1: badge.title.toLowerCase()
+                        }
+                    }
+                    let filter = {
+                        "_buildfire.index.string1": badge.title.toLowerCase()
+                    };
+                    buildfire.appData.search({filter:filter}, "SocialBadges", (err, res) =>{
+                        if(err) return callback(err);
+                        else if(res && res.length > 0){
+                            return callback("Badge with same name already exists")
+                        }
+                        else{
+                            buildfire.appData.insert(badge,"SocialBadges",(err, res) =>{
+                                if(err) return callback(err, null)
+                                else return callback(null, res)
+                            })
+                        }
+                    })
+                },
+                search: function(params, callback){
+                    buildfire.appData.search(params, "SocialBadges", (err, res) =>{
+                        if(err) return callback(err, null);
+                        else return callback(null, res);
+                    })
+                }
+            }
+        }])
         .factory("SocialDataStore", ['Buildfire', '$q', 'SERVER_URL', 'Util', '$http', function (Buildfire, $q, SERVER_URL, Util, $http) {
             return {
                 getPosts: function (data) {
                     var deferred = $q.defer();
-                    buildfire.publicData.search({
+                    buildfire.appData.search({
                         "$json.parentThreadId": data.parentThreadId,
                         "sort": { "createdOn": -1 }
-                    }, 'posts', (error, data) => {
+                    }, 'wall_posts', (error, data) => {
                         if (error) return deferred.reject(error)
                         else return deferred.resolve(data);
                     });
@@ -164,7 +196,7 @@
                 },
                 deletePost: function (postId, socialAppId, secureToken) {
                     var deferred = $q.defer();
-                    buildfire.publicData.delete(postId, 'posts', function (err, status) {
+                    buildfire.appData.delete(postId, 'wall_posts', function (err, status) {
                         if (err) return deferred.reject(err);
                         else return deferred.resolve(status);
                     })
@@ -215,7 +247,7 @@
                         }
                     }
 
-                    buildfire.publicData.search(searchOptions2, 'posts', (error, data) => {
+                    buildfire.appData.search(searchOptions2, 'wall_posts', (error, data) => {
                         if (error) return deferred.reject(error);
                         let count = 0;
                         if (data && data.length) {
@@ -225,16 +257,16 @@
                                         post.data.comments.splice(index, 1)
                                     }
                                 })
-                                buildfire.publicData.update(post.id, post.data, 'posts', (error, data) => {
+                                buildfire.appData.update(post.id, post.data, 'wall_posts', (error, data) => {
                                     if (error) return deferred.reject(error);
                                 })
                             })
                         }
-                        buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
+                        buildfire.appData.search(searchOptions, 'wall_posts', (error, data) => {
                             if (error) return deferred.reject(error);
                             if (data && data.length) {
                                 data.map(post => {
-                                    buildfire.publicData.delete(post.id, 'posts', function (err, status) {
+                                    buildfire.appData.delete(post.id, 'wall_posts', function (err, status) {
                                         if (error) return deferred.reject(error);
                                         return deferred.resolve(status);
                                     })
@@ -246,13 +278,13 @@
                 },
                 deleteComment: function (threadId, comment) {
                     var deferred = $q.defer();
-                    buildfire.publicData.getById(threadId, 'posts', function (error, result) {
+                    buildfire.appData.getById(threadId, 'wall_posts', function (error, result) {
                         if (error) return deferred.reject(error);
                         if (result) {
                             let commentToDelete = result.data.comments.find(element => element.comment === comment.comment)
                             let index = result.data.comments.indexOf(commentToDelete);
                             result.data.comments.splice(index, 1);
-                            buildfire.publicData.update(result.id, result.data, 'posts', function (error, result) {
+                            buildfire.appData.update(result.id, result.data, 'wall_posts', function (error, result) {
                                 return deferred.resolve(result.data.comments);
                             })
                         }

@@ -10,6 +10,11 @@
                     controllerAs: 'ContentHome',
                     controller: 'ContentHomeCtrl'
                 })
+                .when('/addBadge', {
+                    templateUrl: 'templates/addBadge.html',
+                    controllerAs: 'addBadge',
+                    controller: 'addBadgeCtrl'
+                })
                 .otherwise('/');
 
             var interceptor = ['$q', function ($q) {

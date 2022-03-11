@@ -1,0 +1,133 @@
+.profile-header{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 120px;
+    margin-left: 5%;
+    width: 90%;
+    align-content: center;
+}
+.profile-picture-container > img{
+    height: 50%;
+    width: 90%;
+    border-radius: 100%;
+
+}
+
+.profile-info-container > *{
+    margin: 0px !important;
+}
+.profile-info-container > h5{
+    color: black !important;
+    font-weight: 500 !important;
+}
+.profile-info-container{
+    flex: 5;
+    margin-top: 7%;
+    margin-left: 5%;
+}
+.options{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 6.5%;
+}
+.profile-picture-container{
+    flex: 2;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    margin-top: 0%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.streakText{
+    margin-top: 6% !important;
+    font-size: 13px !important;
+}
+.longestStreakText{
+    font-size: 13px !important;
+}
+.profile-bio > *{
+    color: black;
+    font-size: 12.5px !important;
+    font-weight: 500;
+    line-height: 15px;
+}
+.profile-bio{
+    width: 90%;
+    margin-left: 5%;
+    word-break: break-word;
+}
+.button-container{
+    width: 90%;
+    margin-left: 5%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    height: 5.5%;
+    border-radius: 5px;  
+}
+.button-container > button{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(96 184 71);
+    border-radius: 5px !important;
+    color: white;
+}
+.side-by-side{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.switch{
+    margin-top: 10%;
+    width: 100%;
+    height: 3%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 7%;
+}
+.has-bottom-border{
+    border-bottom: 3px solid rgb(96 184 71);
+}
+.no-bottom-border{
+    border-bottom: 0px;
+}
+.switch > *{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: 2s;
+}
+.private-posts-container > h5{
+
+    margin-bottom: 0px !important;
+
+}
+
+.private-posts-container > h6{
+    text-align: center;
+    width: 50%;
+}
+.private-posts-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+
+.half-width-btn{
+    width: 48% !important;
+    background-color: transparent !important;
+    border: 1px solid rgb(96 184 71) !important;
+    border-radius: 3px !important;
+    color: black !important;
+}

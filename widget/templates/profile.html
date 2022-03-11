@@ -1,0 +1,76 @@
+
+<div 
+style="width: 100%;height: 100%;overflow-y: auto;overflow-x: hidden;"  
+ng-show="!Profile.isLoading">
+    <div class="profile-header">
+        <div class="profile-picture-container">
+            <img ng-show="Profile.user.userDetails.imageUrl" src="{{Profile.user.userDetails.imageUrl}}" alt="User Profile Picture">
+            <img ng-show="!Profile.user.userDetails.imageUrl" load-image="1x1"
+                  data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
+                  crop-height="40" crop-type="default">
+        </div>
+        <div class="profile-info-container">
+            <h5>{{Profile.SocialItems.getUserName(Profile.user.userDetails)}}</h5>
+            <h6>San Diego, CA</h6>
+            <h5 class="streakText" ng-show="Profile.SocialItems.appSettings.showStreak">2 Streak</h5>
+            <p class="longestStreakText" ng-show="Profile.SocialItems.appSettings.showLongestStreak">22</p>
+        </div>
+        <div class="options">
+            <span class="material-icons" ng-click="Profile.openDrawer()">
+                more_vert
+            </span>
+        </div>
+    </div>
+    <div class="profile-bio" ng-show="Profile.user.userDetails && Profile.user.userDetails.bio">
+        <p>
+            {{Profile.user.userDetails.bio}}
+        </p>
+    </div>
+    <div ng-show="Profile.user.isCurrentUser" class="button-container side-by-side">
+            <button class="half-width-btn">
+                {{Profile.strings.userProfile.editProfile.value || Profile.strings.userProfile.editProfile.defaultValue}}
+            </button>
+            <button class="half-width-btn">
+                {{Profile.strings.userProfile.inbox.value || Profile.strings.userProfile.inbox.defaultValue}}
+            </button>
+
+    </div>
+    <!-- ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
+    <div ng-show="!Profile.user.isCurrentUser" class="button-container">        
+        <button ng-if="!Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
+            <span ng-show="!Profile.user.amIFollowing && !Profile.user.amIPending ">
+                {{Profile.strings.userProfile.follow.value || Profile.strings.userProfile.follow.defaultValue}}
+            </span> 
+            <span ng-show="Profile.user.amIPending && !Profile.user.isPublicProfile">
+                Requested
+            </span>
+            <span ng-show="Profile.user.amIFollowing">
+                {{Profile.strings.userProfile.unfollow.value || Profile.strings.userProfile.unfollow.defaultValue}}
+            </span>
+            
+        </button>
+    
+        <button ng-if="Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.unblockUser()">
+            <span ng-show="Profile.user.didIBlock">
+                {{Profile.strings.userProfile.blocked.value || Profile.strings.userProfile.blocked.defaultValue}}
+            </span>
+        </button>
+    </div>
+
+    
+    
+    <!--  ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
+    <div ng-show="Profile.shouldShowSwitch()" class="switch">
+        <div id="profile-posts" class="has-bottom-border" ng-click="Profile.loadPage('posts')"> {{Profile.strings.userProfile.posts.value || Profile.strings.userProfile.posts.defaultValue}}</div>
+        <div id="profile-tagged" ng-click="Profile.loadPage('tagged')"> {{Profile.strings.userProfile.tagged.value || Profile.strings.userProfile.tagged.defaultValue}}</div>
+    </div>
+
+    <div ng-show="Profile.shouldShowPosts()">
+        <div id="profile-posts-container"  style="height: 54vh;overflow: auto;" ng-show="Profile.currentPage === 'posts'">
+
+        </div>
+        <div id="profile-tagged-posts-container"  style="height: 54vh;overflow: auto;" ng-show="Profile.currentPage === 'tagged'">
+
+        </div>
+    </div>
+</div>

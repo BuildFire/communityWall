@@ -55,17 +55,17 @@ app.controller('ReportsCtrl', ['$scope', function ($scope) {
             recordCount: true
         }
 
-        buildfire.publicData.get('reports_' + data.wid, (error, result) => {
+        buildfire.appData.get('reports_' + data.wid, (error, result) => {
             if (error) return console.log(error);
             result.data = result.data.filter(el => el.reportedUserID !== data.reportedUserID);
-            buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, () => {});
+            buildfire.appData.update(result.id, result.data, 'reports_' + data.wid, () => {});
         });
 
         let allPosts = [], allComments = [];
         buildfire.spinner.show();
         let getComments = function () {
             function fetchComments() {
-                buildfire.publicData.search(searchOptions2, 'posts', (error, postComments) => {
+                buildfire.appData.search(searchOptions2, 'wall_posts', (error, postComments) => {
                     if (error) return console.log(error);
                     allComments = allComments.concat(postComments.result)
                     if (postComments.totalRecord > allComments.length) {
@@ -75,7 +75,7 @@ app.controller('ReportsCtrl', ['$scope', function ($scope) {
                         let count = 0;
                         allComments.map(comment => {
                             count++;
-                            buildfire.publicData.delete(post.id, 'posts', function (error, status) {
+                            buildfire.appData.delete(post.id, 'wall_posts', function (error, status) {
                                 if (error) return console.log(error);
                                 if (count === allComments.length)
                                     buildfire.spinner.hide();
@@ -95,7 +95,7 @@ app.controller('ReportsCtrl', ['$scope', function ($scope) {
                 loadTable({ wid: data.wid })
             }
             function fetchPosts() {
-                buildfire.publicData.search(searchOptions, 'posts', (error, posts) => {
+                buildfire.appData.search(searchOptions, 'wall_posts', (error, posts) => {
                     if (error) return console.log(error);
                     allPosts = allPosts.concat(posts.result)
                     if (posts.totalRecord > allPosts.length) {
@@ -104,7 +104,7 @@ app.controller('ReportsCtrl', ['$scope', function ($scope) {
                     } else {
                         let count = 0;
                         allPosts.map(post => {
-                            buildfire.publicData.delete(post.id, 'posts', function (error, status) {
+                            buildfire.appData.delete(post.id, 'wall_posts', function (error, status) {
                                 if (error) return console.log(error);
                                 count++;
                                 if (count === allPosts.length) {

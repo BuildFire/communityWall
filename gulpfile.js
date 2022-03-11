@@ -57,7 +57,7 @@ cssTasks.forEach(function (task) {
 
 
 const cfTasks = [
-  {name: "CommunityFeedJS1",src:["widget/CommunityFeedAPI/**/*.js"],dest: "/widget/CommunityFeed"},
+  {name: "CommunityFeedJS1",src:["widget/CommunityFeedAPI/**/*.js","widget/assets/js/shared/autoComplete/*.js","widget/assets/js/shared/hashtags/*.js"],dest: "/widget/CommunityFeed"},
 ]
 
 cfTasks.forEach(function (task){
@@ -78,7 +78,7 @@ cfTasks.forEach(function (task){
 
 
 const jsTasks = [
-    { name: "widgetJS", src: ["widget/**/**/**/*.js","!widget/CommunityFeedAPI/data/*.js","!widget/CommunityFeedAPI/dataAccess/*.js"], dest: "/widget" },
+    { name: "widgetJS", src: ["widget/**/**/**/*.js","!widget/CommunityFeedAPI/**/*.js","!widget/assets/js/shared/autoComplete/*.js","!widget/assets/js/shared/hashtags/*.js"], dest: "/widget" },
     { name: "controlContentJS", src: "control/content/**/**/**/*.js", dest: "/control/content" },
     { name: "controlDesignJS", src: "control/design/**/**/*.js", dest: "/control/design" },
     { name: "controlSettingsJS", src: "control/settings/**/**/*.js", dest: "/control/settings"},
