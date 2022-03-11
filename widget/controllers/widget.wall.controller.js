@@ -331,12 +331,12 @@
 
             WidgetWall.openBottomDrawer = function(userId){
                 Follows.isFollowingUser(userId , (err , r) =>{
-                        let listItems = [
-                            {text:'See Profile'},
-                        ];
+                        let listItems = [];
+                        if(WidgetWall.SocialItems.appSettings.seeProfile) listItems.push({text: "See Profile"})
                         if(WidgetWall.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
                         if( ( WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
-                        buildfire.components.drawer.open(
+                        if(listItems.length == 0) return;
+                        Buildfire.components.drawer.open(
                             {
                                 enableFilter:false,
                                 listItems: listItems
