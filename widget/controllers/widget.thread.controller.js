@@ -173,7 +173,7 @@
 
             Thread.followPrivateWall = function (userId, wid, userName = null) {
                 buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
-                    if (err) console.log('Error while saving subscribed user data.');
+                    if (err || !user) return console.log('Error while saving subscribed user data.');
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (re.test(String(user.firstName).toLowerCase()))
                         user.firstName = 'Someone';
@@ -236,7 +236,7 @@
                         if (err) return console.error("Getting user failed.", err);
                         if (userId === Thread.SocialItems.userDetails.userId) return;
                         buildfire.auth.getUserProfile({ userId: userId }, function (err, otherUser) {
-                            if (err) return console.error("Getting user profile failed.", err);
+                            if (err || !otherUser) return console.error("Getting user profile failed.", err);
                             Thread.openPrivateChat(userId, Thread.SocialItems.getUserName(otherUser));
                         });
                     });
