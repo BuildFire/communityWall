@@ -53,6 +53,10 @@
                     if (WidgetWall.SocialItems.userBanned) WidgetWall.allowCreateThread = false;
                     else WidgetWall.allowCreateThread = true;
                 }
+                
+                if(!WidgetWall.allowCreateThread && WidgetWall.SocialItems.isPrivateChat) {
+                    WidgetWall.allowCreateThread = true;
+                }
             };
 
             WidgetWall.showHidePrivateChat = function () {
