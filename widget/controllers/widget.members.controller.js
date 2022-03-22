@@ -130,7 +130,7 @@
 
             Members.followPrivateWall = function (userId, wid, userName = null) {
                 buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
-                    if (err) console.log('Error while saving subscribed user data.');
+                    if (err || !user) return console.log('Error while saving subscribed user data.');
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (re.test(String(user.firstName).toLowerCase()))
                         user.firstName = 'Someone';
