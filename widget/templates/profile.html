@@ -1,11 +1,13 @@
 
 <div 
-style="width: 100%;height: 100%;overflow-y: auto;overflow-x: hidden;"  
+style="width: 100%;height: 100%;padding-top:10px;overflow-y: auto;overflow-x: hidden;"  
 ng-show="!Profile.isLoading">
     <div class="profile-header">
-        <div class="profile-picture-container">
-            <img ng-show="Profile.user.userDetails.imageUrl" src="{{Profile.user.userDetails.imageUrl}}" alt="User Profile Picture">
-            <img ng-show="!Profile.user.userDetails.imageUrl" load-image="1x1"
+        <div class="profile-picture-container" ng-click="Profile.GoToBadgeView()" ng-if="Profile.user.socialProfile.data">
+            <img ng-style="{'border':'1px solid ' + Profile.borderColor }"  ng-show="Profile.user.userDetails.imageUrl" load-image="1x1"
+            data-final-src="{{Profile.user.userDetails.imageUrl}}" crop-width="40"
+            crop-height="40" crop-type="crop">
+            <img ng-style="{'border':'1px solid ' + Profile.borderColor }" ng-show="!Profile.user.userDetails.imageUrl" load-image="1x1"
                   data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
                   crop-height="40" crop-type="default">
         </div>
@@ -21,17 +23,34 @@ ng-show="!Profile.isLoading">
             </span>
         </div>
     </div>
+    <div ng-if="Profile.user.buddies && Profile.user.buddies.length > 0 && Profile.user.isCurrentUser" class="profile-buddies">
+        <div ng-repeat="user in Profile.user.buddies" >
+            <img ng-if="user.pic" load-image="1x1"
+              data-final-src="{{user.pic}}" 
+              crop-width="40" 
+              style="border-radius: 100%;"
+              crop-height="40" 
+              crop-type="crop"
+            />
+            <img ng-if="!user.pic"
+              load-image="1x1"
+              data-final-src="../../../styles/media/avatar-placeholder.png"
+              data-img-type="local" crop-width="40" crop-height="40"
+              crop-type="default"
+            />
+        </div>
+    </div>
     <div class="profile-bio" ng-show="Profile.user.userDetails && Profile.user.userDetails.bio">
         <p>
             {{Profile.user.userDetails.bio}}
         </p>
     </div>
-    <div ng-show="Profile.user.isCurrentUser" class="button-container side-by-side">
+    <div style="height:3vh" ng-show="Profile.user.isCurrentUser" ng-click="Profile.openBFProfile()" class="button-container side-by-side">
             <button class="half-width-btn">
-                {{Profile.strings.userProfile.editProfile.value || Profile.strings.userProfile.editProfile.defaultValue}}
+                {{Profile.strings.usereditProfile}}
             </button>
-            <button class="half-width-btn">
-                {{Profile.strings.userProfile.inbox.value || Profile.strings.userProfile.inbox.defaultValue}}
+            <button class="half-width-btn" >
+                {{Profile.strings.userinbox}}
             </button>
 
     </div>
@@ -39,20 +58,20 @@ ng-show="!Profile.isLoading">
     <div ng-show="!Profile.user.isCurrentUser" class="button-container">        
         <button ng-if="!Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
             <span ng-show="!Profile.user.amIFollowing && !Profile.user.amIPending ">
-                {{Profile.strings.userProfile.follow.value || Profile.strings.userProfile.follow.defaultValue}}
+                {{Profile.strings.userfollow}}
             </span> 
             <span ng-show="Profile.user.amIPending && !Profile.user.isPublicProfile">
                 Requested
             </span>
             <span ng-show="Profile.user.amIFollowing">
-                {{Profile.strings.userProfile.unfollow.value || Profile.strings.userProfile.unfollow.defaultValue}}
+                {{Profile.strings.userunfollow}}
             </span>
             
         </button>
     
         <button ng-if="Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.unblockUser()">
             <span ng-show="Profile.user.didIBlock">
-                {{Profile.strings.userProfile.blocked.value || Profile.strings.userProfile.blocked.defaultValue}}
+                {{Profile.strings.userblocked}}
             </span>
         </button>
     </div>
@@ -61,16 +80,26 @@ ng-show="!Profile.isLoading">
     
     <!--  ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
     <div ng-show="Profile.shouldShowSwitch()" class="switch">
-        <div id="profile-posts" class="has-bottom-border" ng-click="Profile.loadPage('posts')"> {{Profile.strings.userProfile.posts.value || Profile.strings.userProfile.posts.defaultValue}}</div>
-        <div id="profile-tagged" ng-click="Profile.loadPage('tagged')"> {{Profile.strings.userProfile.tagged.value || Profile.strings.userProfile.tagged.defaultValue}}</div>
+        <div id="profile-posts" class="has-bottom-border" ng-click="Profile.loadPage('posts')"> {{Profile.strings.userposts}}</div>
+        <div id="profile-tagged" ng-click="Profile.loadPage('tagged')"> {{Profile.strings.usertagged}}</div>
     </div>
 
     <div ng-show="Profile.shouldShowPosts()">
-        <div id="profile-posts-container" ng-bind-html="postsList"  style="height: 54vh;overflow: auto;" ng-show="Profile.currentPage === 'posts'">
+        <div ng-if="(Profile.posts.ownPosts.items.length == 0 && Profile.currentPage === 'posts') || (Profile.posts.taggedPosts.items.length == 0 && Profile.currentPage === 'tagged')">
+            <div class="empty_state"></div>
+        </div>
+        <div ng-cloak id="profile-posts-container" ng-style="{height: Profile.user.buddies && Profile.user.buddies.length > 0 ? 50 + 'vh' : 59 + 'vh'}" ng-bind-html="postsList"  style="overflow: auto;" ng-show="Profile.currentPage === 'posts'">
             
         </div>
-        <div id="profile-tagged-posts-container"  style="height: 54vh;overflow: auto;" ng-show="Profile.currentPage === 'tagged'">
+        
+        <div ng-cloak id="profile-tagged-posts-container" ng-style="{height: Profile.user.buddies && Profile.user.buddies.length > 0 ? 50 +'vh' : 59 + 'vh'}"  style="overflow: auto;" ng-show="Profile.currentPage === 'tagged'">
             
+        </div>
+    </div>
+    <div ng-show="!Profile.shouldShowPosts()">
+        <div ng-show="!Profile.user.isPublicProfile && !Profile.user.didIBlock" class="private-posts-container">
+            <h5> {{Profile.strings.userprivateAccountTitle}}</h5>
+            <h6> {{Profile.strings.userprivateAccountBody}}</h6>
         </div>
     </div>
 </div>

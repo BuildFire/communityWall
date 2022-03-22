@@ -21,8 +21,53 @@
     margin: 5px;
 }
 
+.gridSkeleton{
+    width: 90%;
+    min-height: 70vh;
+    display: grid;
+    margin-left: 5%;
+    margin-bottom: 11px;
+    grid-template-areas:
+    "item1 item1 item1 item1 item2 item2 item2 item2 item2 item2"
+    "item1 item1 item1 item1 item2 item2 item2 item2 item2 item2"
+    "item1 item1 item1 item1 item2 item2 item2 item2 item2 item2"
+    "item5 item5 item5 item5 item2 item2 item2 item2 item2 item2"
+    "item5 item5 item5 item5 item3 item3 item3 item4 item4 item4"
+    "item5 item5 item5 item5 item3 item3 item3 item4 item4 item4"
+    ;
+    grid-gap: 11px;
+}
+.gridSkeleton > *:nth-child(1){
+    grid-area: item1;    
+}
+.gridSkeleton > *:nth-child(2){
+    grid-area: item2;    
+}
+.gridSkeleton > *:nth-child(3){
+    grid-area: item3;    
+}
+.gridSkeleton > *:nth-child(4){
+    grid-area: item4;    
+}
+.gridSkeleton > *:nth-child(5){
+    grid-area: item5;    
+}
+.gridSkeleton > *:nth-child(6){
+    grid-area: item6;    
+}
 
-
+.gridSkeletonItem{
+    background-color: #E5E5E5;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+@keyframes skeletonLoading{
+    0%{
+        background-color: hsl(200, 20%, 70%);
+    }
+    100%{
+        background-color: hsl(200, 20%, 95%);
+    }
+}
 
 .grid > *:nth-child(1){
     grid-area: image1;    

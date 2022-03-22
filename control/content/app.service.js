@@ -156,6 +156,19 @@
                         if(err) return callback(err, null);
                         else return callback(null, res);
                     })
+                },
+                update: function(id, badge, callback){
+                    delete badge._buildfire;
+                    badge._buildfire = {
+                        index:{
+                            string1: badge.title.toLowerCase()
+                        }
+                    }
+                    buildfire.appData.update(id, badge, "SocialBadges",(err, res) =>{
+                        if(err) return callback(err, null)
+                        else return callback(null, res)
+                    })
+
                 }
             }
         }])

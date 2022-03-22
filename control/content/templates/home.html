@@ -128,14 +128,23 @@
                         <p class="time-ago caption margin-bottom-zero">{{ContentHome.getDuration(post.createdOn) | convertTimeFormat}}</p>
                     </div>
                     <div class="icons left-auto">
-                        <a class="social-icon"
-                        ng-click="ContentHome.loadMoreComments(post,'viewComment')">
-                        <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
-                            <span class="number">{{post.comments.length}}</span>
-                        </a>
                         <span class="social-icon margin-left-twenty">
                             <i class="material-icons-outlined likes-count" aria-hidden="true">thumb_up_off_alt</i>
-                            <span class="number">{{post.likes.length}}</span>
+                            <span class="number">{{post.likesCount}}</span>
+                        </span>
+
+                        <span class="social-icon margin-left-twenty">
+                            <i class="material-icons-outlined likes-count" aria-hidden="true">repeat</i>
+                            <span class="number">{{post.repostsCount}}</span>
+                        </span>
+
+                        <span class="social-icon margin-left-twenty">
+                            <i class="material-icons-outlined likes-count" aria-hidden="true">chat_bubble_outline</i>
+                            <span class="number">{{post.repliesCount}}</span>
+                        </span>
+                        <span class="social-icon margin-left-twenty">
+                            <i class="material-icons-outlined likes-count" aria-hidden="true">share</i>
+                            <span class="number">{{post.sharesCount}}</span>
                         </span>
                     </div>
                 </div>

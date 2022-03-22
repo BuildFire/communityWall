@@ -12,28 +12,32 @@
                 <div class="act-middle-section" ng-click="navigateToProfile(activity.fromUser.userId)">
                     <h5 ng-if="activity.fromUser.displayName.length > 15">{{activity.fromUser.displayName.substring(0,15)}}...</h5>
                     <h5 ng-if="activity.fromUser.displayName.length <= 15">{{activity.fromUser.displayName}}</h5>
-
-                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activity.startedFollowingYou.value || Activity.strings.activity.startedFollowingYou.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'taggedYouInAPost'">{{Activity.strings.activitytaggedYouInAPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'reactedToYourpost'">{{Activity.strings.activityreactedToYourPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activitystartedFollowingYou}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activityacceptedYourFollowRequest}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activityfollowRequest}}</p>
 
                     
                 </div>
                 <div class="act-right-section">
                     <div ng-if="activity.type === 'pendingFollow'" >
                         <button class="act-confirm" ng-click="Activity.respondToFollowRequest('accept',activity, $event)">
-                            Yes
+                            {{Activity.strings.activityfollowRequestAcceptButton}}
                         </button>
                         <button class="act-decline" ng-click="Activity.respondToFollowRequest('decline',activity, $event)">
-                            No
+                            {{Activity.strings.activityfollowRequestRejectButton}}
                         </button>
+                    </div>
+                    <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image" ng-click="Activity.goToPost(activity.post.id)">
+                        <img style="border-radius: 15px;height: 55px;" ng-src="{{activity.post.image}}" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div ng-if="Activity.yesterdayActivity.length > 0">
-        <h5>Yesterday</h5>
+        <h5 class="act-header">Yesterday</h5>
         <div ng-repeat="activity in Activity.yesterdayActivity">
             <div class="act-block">
                 <div class="act-left-section" ng-click="navigateToProfile(activity.fromUser.userId)">
@@ -45,29 +49,33 @@
                 <div class="act-middle-section" ng-click="navigateToProfile(activity.fromUser.userId)">
                     <h5 ng-if="activity.fromUser.displayName.length > 15">{{activity.fromUser.displayName.substring(0,15)}}...</h5>
                     <h5 ng-if="activity.fromUser.displayName.length <= 15">{{activity.fromUser.displayName}}</h5>
-
-                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activity.startedFollowingYou.value || Activity.strings.activity.startedFollowingYou.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'taggedYouInAPost'">{{Activity.strings.activitytaggedYouInAPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'reactedToYourpost'">{{Activity.strings.activityreactedToYourPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activitystartedFollowingYou}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activityacceptedYourFollowRequest}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activityfollowRequest}}</p>
 
                     
                 </div>
                 <div class="act-right-section">
                     <div ng-if="activity.type === 'pendingFollow'" >
                         <button class="act-confirm" ng-click="Activity.respondToFollowRequest('accept',activity, $event)">
-                            Yes
+                            {{Activity.strings.activityfollowRequestAcceptButton}}
                         </button>
                         <button class="act-decline" ng-click="Activity.respondToFollowRequest('decline',activity, $event)">
-                            No
+                            {{Activity.strings.activityfollowRequestRejectButton}}
                         </button>
                     </div>
+                    <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image" ng-click="Activity.goToPost(activity.post.id)">
+                        <img style="border-radius: 15px;height: 55px;" ng-src="{{activity.post.image}}" />
+                    </div>                    </div>
                 </div>
             </div>
         </div>
 
     </div>
     <div ng-if="Activity.lastMonthActivity.length > 0">
-        <h5>Last Month</h5>
+        <h5 class="act-header">Last Month</h5>
         <div ng-repeat="activity in Activity.lastMonthActivity">
             <div class="act-block">
                 <div class="act-left-section" ng-click="navigateToProfile(activity.fromUser.userId)">
@@ -79,28 +87,32 @@
                 <div class="act-middle-section" ng-click="navigateToProfile(activity.fromUser.userId)">
                     <h5 ng-if="activity.fromUser.displayName.length > 15">{{activity.fromUser.displayName.substring(0,15)}}...</h5>
                     <h5 ng-if="activity.fromUser.displayName.length <= 15">{{activity.fromUser.displayName}}</h5>
-
-                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activity.startedFollowingYou.value || Activity.strings.activity.startedFollowingYou.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'taggedYouInAPost'">{{Activity.strings.activitytaggedYouInAPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'reactedToYourpost'">{{Activity.strings.activityreactedToYourPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activitystartedFollowingYou}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activityacceptedYourFollowRequest}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activityfollowRequest}}</p>
 
                 </div>
                 <div class="act-right-section">
                     <div ng-if="activity.type === 'pendingFollow'" >
                         <button class="act-confirm" ng-click="Activity.respondToFollowRequest('accept',activity, $event)">
-                            Yes
+                            {{Activity.strings.activityfollowRequestAcceptButton}}
                         </button>
                         <button class="act-decline" ng-click="Activity.respondToFollowRequest('decline',activity, $event)">
-                            No
+                            {{Activity.strings.activityfollowRequestRejectButton}}
                         </button>
                     </div>
+                    <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image" ng-click="Activity.goToPost(activity.post.id)">
+                        <img style="border-radius: 15px;height: 55px;" ng-src="{{activity.post.image}}" />
+                    </div>                    </div>
                 </div>
             </div>
         </div>
 
     </div>
     <div ng-if="Activity.olderActivity.length > 0">
-        <h5>Older</h5>
+        <h5 class="act-header">Older</h5>
         <div ng-repeat="activity in Activity.olderActivity">
             <div class="act-block">
                 <div class="act-left-section" ng-click="navigateToProfile(activity.fromUser.userId)">
@@ -112,22 +124,26 @@
                 <div class="act-middle-section" ng-click="navigateToProfile(activity.fromUser.userId)">
                     <h5 ng-if="activity.fromUser.displayName.length > 15">{{activity.fromUser.displayName.substring(0,15)}}...</h5>
                     <h5 ng-if="activity.fromUser.displayName.length <= 15">{{activity.fromUser.displayName}}</h5>
-
-                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activity.startedFollowingYou.value || Activity.strings.activity.startedFollowingYou.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
-                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activity.acceptedYourFollowRequest.value || Activity.strings.activity.acceptedYourFollowRequest.defaultValue}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'taggedYouInAPost'">{{Activity.strings.activitytaggedYouInAPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'reactedToYourpost'">{{Activity.strings.activityreactedToYourPost}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'follow'">{{Activity.strings.activitystartedFollowingYou}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'acceptedFollowRequest'">{{Activity.strings.activityacceptedYourFollowRequest}}</p>
+                    <p style="font-size:12px"ng-if="activity.type === 'pendingFollow'">{{Activity.strings.activityfollowRequest}}</p>
 
                     
                 </div>
                 <div class="act-right-section">
                     <div ng-if="activity.type === 'pendingFollow'" >
                         <button class="act-confirm" ng-click="Activity.respondToFollowRequest('accept',activity, $event)">
-                            Yes
+                            {{Activity.strings.activityfollowRequestAcceptButton}}
                         </button>
                         <button class="act-decline" ng-click="Activity.respondToFollowRequest('decline',activity, $event)">
-                            No
+                            {{Activity.strings.activityfollowRequestRejectButton}}
                         </button>
                     </div>
+                    <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image" ng-click="Activity.goToPost(activity.post.id)">
+                        <img style="border-radius: 15px;height: 55px;" ng-src="{{activity.post.image}}" />
+                    </div>                    </div>
                 </div>
             </div>
         </div>

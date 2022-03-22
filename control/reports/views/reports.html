@@ -1,4 +1,44 @@
-<div >
-    <table id="searchResults" class="table table-striped">
-    </table>
+<div class="social-item" style="margin-bottom: 15px;" ng-repeat="report in reports track by $index">
+    <div class="head flex align-items-center">
+        <div class="media-holder margin-right-ten">
+            <img ng-if="report.post.userDetails.imageUrl" style="    width: 50px;height: 50px;border-radius: 50px;margin-right: 15px;" load-image="1x1" ng-src="{{report.post.userDetails.imageUrl}}">
+            <img ng-if="!report.post.userDetails.imageUrl" style="    width: 50px;height: 50px;border-radius: 50px;margin-right: 15px;" load-image="1x1" ng-src="../../../../styles/media/avatar-placeholder.png">
+        </div>
+        <div class="">
+            <p class="ellipsis margin-bottom-zero">
+                {{getUserName(report.post.userDetails) || 'Unknown'}}
+            </p>
+            <p class="time-ago caption margin-bottom-zero">{{getDuration(report.post.createdOn)}}</p>
+        </div>
+
+    </div>
+    <div class="copy padded">
+        <p>{{report.post.text}}</p>
+    </div>
+    <div class="plugin-banner clearfix margin-bottom-fifteen">
+        <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}">
+            <img ng-repeat="image in report.post.images" src="{{image}}" data-alt="Post image">
+        </div>
+    </div>
+    <div class="social-footer flex">
+        <a class="text-danger padded-sm caption padding-left-zero" ng-click="banUser(post.userId, comment.id, comment.userDetails.displayName)">Ban User</a>
+        <a class="text-danger padded-sm caption padding-left-zero" ng-click="deletePost(report.post.id)">Delete Post</a>
+        <a class="text-success padded-sm caption padding-left-zero" ng-click="deleteReport($index)">Mark as safe</a>
+    </div>
+    <div style="border-top: 1px solid #d5d5d5;    padding-left: 15px;
+    padding-bottom: 15px;">
+        <div>
+            <h5 style="    font-weight: bold;">
+                Reporter: {{report.reporter}}
+            </h5>
+            <p>Reported At: {{getDuration(report.reportedAt)}}</p>
+        </div>
+        <div>
+            {{report.reason}}
+        </div>
+    </div>
+    <!-- <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl" ng-init="setupImageList(post)">
+        <bf-image-list ng-if="post.imageListId" id="{{post.imageListId}}" token="czi3m2qn"></bf-image-list>
+    </div> -->
+
 </div>

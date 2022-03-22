@@ -13,7 +13,6 @@
             var _location = location;
             return {
                 go: function (path) {
-                    console.log(path);
                     _location.href = path;
                     let label;
                     if(path.includes('thread')) label.push('thread');
@@ -24,6 +23,11 @@
                     buildfire.history.push(label, {});
                 },
                 goToHome: function () {
+                    buildfire.history.get({
+                        pluginBreadcrumbsOnly: true
+                    }, function (err, result) {
+                        result.forEach(buildfire.history.pop());
+                    });
                     _location.href = _location.href.substr(0, _location.href.indexOf('#'));
                 }
             };
@@ -125,12 +129,9 @@
                         "_buildfire.index.string1" : params.userId,
                     }}, "SocialUserProfile", function(err, data){
                         if(err || data.length == 0){
-                            console.log("didnt find data");
                             window.buildfire.appData.insert(params, "SocialUserProfile", console.log);
                         }
                         else{
-                            console.log("found data !");
-                            console.log(data);
                         }
                     })
                 },
@@ -141,7 +142,6 @@
                     })
                 },
                 search: function(options, callback){
-                    console.log(options);
                     window.buildfire.appData.search(options, "SocialUserProfile", function(err, data){
                         if(err || data.length == 0){
                             return callback(err, null)
@@ -151,7 +151,7 @@
                         }
                     })
                 },
-                get: function(userId, callback){
+                get: function(userId, callback){                    
                     let options = {
                         filter:{
                             "_buildfire.index.string1":userId
@@ -162,11 +162,30 @@
                             return callback(err, null)
                         }
                         else{
-                            return callback(null, data[0]);
+                            if(data[0].data.badges.length > 0){
+                                let sp = data[0].data.badges;
+                                sp.forEach((badge,index) =>{
+                                    buildfire.appData.getById(badge.badgeData, "SocialBadges", (err, res) =>{
+                                        if(res){
+                                            sp[index].badgeData = {id: sp[index].badgeData, ...res.data};
+                                        }
+                                        if(index === sp.length - 1){
+                                            return callback(null, data[0]); 
+                                        }
+                                    })
+                                    
+                                })
+
+                            }
+                            else{
+                                return callback(null, data[0]);                                
+                            }
                         }
                     })
                 },
-                blockUser: function(userId, callback){
+
+                blockUser: function(userId, callback, callbackaboutotherUser){
+                
                     window.buildfire.auth.getCurrentUser((err, currentUser) =>{
                         if(err || !currentUser) return callback("Must be logged in");
                         else {
@@ -175,9 +194,50 @@
                                 else{
                                     let social = socialProfile[0];
                                     social.data.blockedUsers.push(userId);
+                                        buildfire.appData.search({filter:{
+                                            $and:[
+                                                {"_buildfire.index.string1":""},
+                                                {"_buildfire.index.array1.string1":`userId_${currentUser._id}`}
+                                                ]
+                                            }},    "subscribedUsersData", (err, res) =>{
+                                                res[0].data._buildfire.index.array1.push({string1:`blocked_${userId}`});
+                                                buildfire.appData.update(res[0].id, res[0].data, "subscribedUsersData", console.log)
+                                            });
+                                                                 
+                                    let index = social.data.following.findIndex(e => e === userId);
+                                    if(index >= 0){
+                                        social.data.following.splice(index, 1);
+                                    }
+                                    index = social.data.followers.findIndex(e => e === userId);
+                                    if(index >= 0){
+                                        social.data.followers.splice(index, 1);
+                                    }
+                                    index = social.data.pendingFollowers.findIndex(e => e === userId);
+                                    if(index >= 0){
+                                        social.data.pendingFollowers.splice(index, 1);
+                                    }
+                                    
                                     window.buildfire.appData.update(social.id, social.data, "SocialUserProfile", (err, succ) =>{
-                                        if(err) return callback(err);
-                                        else return callback(null, succ);
+                                        if(err)  callback(err);
+                                        else  callback(null, succ);
+                                        window.buildfire.appData.search({filter:{"_buildfire.index.string1":userId}}, "SocialUserProfile", function(err, socialProfile){
+                                            let social = socialProfile[0];
+                                            let index = social.data.following.findIndex(e => e === currentUser._id);
+                                            if(index >= 0){
+                                                social.data.following.splice(index, 1);
+                                            }
+                                            index = social.data.followers.findIndex(e => e === currentUser._id);
+                                            if(index >= 0){
+                                                social.data.followers.splice(index, 1);
+                                            }
+                                            index = social.data.pendingFollowers.findIndex(e => e === currentUser._id);
+                                            if(index >= 0){
+                                                social.data.pendingFollowers.splice(index, 1);
+                                            }
+                                            window.buildfire.appData.update(social.id, social.data, "SocialUserProfile", (err, data) =>{
+                                                if(callbackaboutotherUser) callbackaboutotherUser(err, data);
+                                            });
+                                        });
                                     })
                                 }
                             });
@@ -194,6 +254,16 @@
                                     let social = socialProfile[0];
                                     let index = social.data.blockedUsers.findIndex(e => e === userId);
                                     if(index >= 0){
+                                        buildfire.appData.search({filter:{
+                                            $and:[
+                                                {"_buildfire.index.string1":""},
+                                                {"_buildfire.index.array1.string1":`userId_${currentUser._id}`}
+                                                ]
+                                            }},    "subscribedUsersData", (err, res) =>{
+                                                let index = res[0].data._buildfire.index.array1.findIndex(e => e.string1 === `blocked_${userId}`);
+                                                if(index >=0) res[0].data._buildfire.index.array1.splice(index, 1);
+                                                buildfire.appData.update(res[0].id, res[0].data, "subscribedUsersData", console.log)
+                                            });
                                         social.data.blockedUsers.splice(index, 1);
                                         window.buildfire.appData.update(social.id, social.data, "SocialUserProfile", (err, succ) =>{
                                             if(err) return callback(err);
@@ -250,7 +320,7 @@
                         }
                     });
                 },
-                followUnfollowUser: function(params, callback){
+                followUnfollowUser: function(params, callback, callbackForCurrentUser = null){
                     window.buildfire.appData.search({filter:{"_buildfire.index.string1":params.userId}}, "SocialUserProfile", function(err, socialProfile){
                         socialProfile = socialProfile[0];
                         if(socialProfile.data){
@@ -259,9 +329,7 @@
                             if(socialProfile.data.isPublicProfile){
                                 followers = socialProfile.data.followers;
                                 let index = followers.findIndex(e => e === params.currentUser);
-                                console.log("is pushing?");
                                 if(index == -1){
-                                    console.log("pushed user to followers");
                                     updatedObj.followers.push(params.currentUser);
                                 }
                                 else{
@@ -273,7 +341,9 @@
                                         let p = results[0];
                                         if(index == -1) p.data.following.push(params.userId);
                                         else p.data.following.splice(index,1);
-                                        window.buildfire.appData.update(p.id, p.data, "SocialUserProfile", console.log);
+                                        window.buildfire.appData.update(p.id, p.data, "SocialUserProfile", (err, results) =>{
+                                            if(callbackForCurrentUser) callbackForCurrentUser(err, results);
+                                        })
                                     })
                                 })
                             }
@@ -300,15 +370,14 @@
                                 }
 
                                 window.buildfire.appData.update(socialProfile.id, updatedObj, "SocialUserProfile", (err, data) =>{
-                                    console.log("after unfollow update for followed user");
-                                    console.log(data);
                                     err ? callback(err) : callback(null, data);
                                     window.buildfire.appData.search({filter:{"$json.userId":params.currentUser}} , "SocialUserProfile", (err, results) =>{
                                         let p = results[0];
                                         if(index == -1 && index2 >= 0) p.data.following.splice(index2, 1);
-                                        console.log("for user who followed");
-                                        console.log(p);
-                                        window.buildfire.appData.update(p.id, p.data, "SocialUserProfile", console.log);
+
+                                        window.buildfire.appData.update(p.id, p.data, "SocialUserProfile", (err, results) =>{
+                                            if(callbackForCurrentUser) callbackForCurrentUser(err, results)
+                                        });
                                     })
                                 })
                             }
@@ -328,8 +397,6 @@
                             let socialProfile = results[0].data;
                             let index = socialProfile.pendingFollowers.findIndex(e => e === userId);
                             socialProfile.pendingFollowers.splice(index);
-                            console.log('social profile pending followers splice');
-                            console.log(socialProfile.pendingFollowers);
                             socialProfile.followers.push(userId)
                             window.buildfire.appData.update(results[0].id, socialProfile, "SocialUserProfile", (err, res) =>{
                                 callback(err ? err : null, res);
@@ -362,8 +429,6 @@
                                 let profile = results[0].data;
                                 profile.following.push(params.currentUser.userId);
                                 window.buildfire.appData.update(results[0].id, profile, "SocialUserProfile", (err, data) =>{
-                                    console.log("user who requests follow profile");
-                                    console.log(data);
     
                                 });
                             })
@@ -403,22 +468,17 @@
                         }
                     })
                 },
-                checkForBadges: function(callback){
-                    
-                }
+
             }
         }])
 
         .factory("SubscribedUsersData", function () {
             return {
                 get: function(userId, callback){
-                    console.log("from get");
-                    console.log(userId);
-                    window.buildfire.appData.search({filter:{"_buildfire.index.array1.string1":`userId_${userId}`}}, 'subscribedUsersData', function (err, data) {
+
+                    window.buildfire.appData.search({filter:{$and:[{"_buildfire.index.array1.string1":`userId_${userId}`}, {"_buildfire.index.string1":""}]}}, 'subscribedUsersData', function (err, data) {
                         if(err) callback ? callback(err) : console.error(err);
                         else if(data && data.length > 0){
-                            console.log("from get");
-                            console.log(data);
                             callback && callback(null, data[0]) ;
                         }
                         else{
@@ -513,7 +573,7 @@
                     getUsers();
                 },
                 getUsersByIds: function(array, cb){
-                    window.buildfire.appData.search({filter:{"$json.userId":{$in:array}}}, "subscribedUsersData", function(err, data){
+                    window.buildfire.appData.search({filter:{$and:[{"_buildfire.index.string1":""},{"$json.userId":{$in:array}}]}}, "subscribedUsersData", function(err, data){
                         if(err) return cb(err);
                         else if(data && data.length){
                             return cb(null, data)
@@ -523,10 +583,34 @@
                         }
                     })
                 },
-                getUsers: function(options, cb){
+                getUsers: function(options, cb, userId = null){
+                    console.log(options);
                     window.buildfire.appData.search(options, "subscribedUsersData", function (err, users){
                         if(err) return cb(err);
-                        else return cb(null, users)
+                        else{
+                            if(userId){
+                                console.log("inital users");
+                                console.log(users);
+                                let results = [];
+                                users.map(e => {
+                                    if(userId){
+                                        if(e.data._buildfire.index.array1.findIndex(e=> e.string1 === `blocked_${userId}`) < 0){
+                                            results.push(e);
+                                        }
+                                    }
+                                    else{
+                                        results.push(e)
+                                    }
+                                })
+                                console.log("results");
+                                console.log(results);
+                                return cb(null, results)
+
+                            }
+                            else{
+                                return cb(null, users)
+                            }
+                        } 
                     })
                 },
                 searchForUsers: function (query, callback) {
@@ -604,9 +688,35 @@
                 }
             }
         })
-        .factory("SocialDataStore", ['$q', function ($q) {
+        .factory("SocialDataStore", ['$rootScope','$q', function ($rootScope, $q) {
             return {
                 updatePost: function (postData) {
+                    delete postData._buildfire;
+                    let composeIndex = function(postData){
+                        let array = [];
+                        array.push({string1: `userId_${postData.userId || ""}`});
+                        if(postData.hashtags && postData.hashtags.length > 0){
+                            for(let i = 0 ; i < postData.hashtags.length; i++){
+                                array.push({string1: `hashtag_${postData.hashtags[i]}`});
+                            }
+                        }
+                        if(postData.taggedPeople && postData.taggedPeople.length > 0 ){
+                            for(let i = 0 ; i < postData.taggedPeople.length; i++){
+                                array.push({string1: `tagged_${postData.taggedPeople[i]}`});
+                            }
+                        }
+                        if(postData.location){
+                            array.push({string1: `location_${postData.location.address}`});
+                        }
+                        let index = {
+                            string1: postData.wid,
+                            array1:array
+                        }
+                        return index;
+                    }
+                    postData._buildfire = {
+                        index: composeIndex(postData)
+                    }
                     var deferred = $q.defer();
                     buildfire.appData.update(postData.id, postData, 'wall_posts', (error, updatedPost) => {
                         if (error) return deferred.reject(error);
@@ -614,18 +724,128 @@
                     });
                     return deferred.promise;
                 },
+                createPrivatePost: function(postData){
+                    var deferred = $q.defer();
+                    postData.userToken = postData.userDetails.userToken;
+                    postData.userId = postData.userDetails.userId;
+                    postData.createdOn = new Date();
+                    postData.createdBy = postData.userDetails.userId;
+                    postData._buildfire = {
+                        index: {
+                            string1: postData.wid,
+                        }
+                    }
+                    buildfire.appData.insert(postData, 'wall_posts', (error, result) => {
+                        if (error) return deferred.reject(error);
+                        if (result && result.id && result.data) {
+                            result.data.id = result.id;
+                            result.data.uniqueLink = result.id + "-" + result.data.wid;
+                            buildfire.appData.update(result.id, result.data, 'wall_posts', (err, posts) => {
+                                if (error) return deferred.reject(error);
+                                return deferred.resolve(posts);
+                            });
+                        }else{
+                            deferred.reject("");
+                        }
+                    });
+                    return deferred.promise;
+
+                },
+                checkForBadges : function(userId, callback){
+                    console.log(userId);
+                    let filter = {
+                        $and:[
+                            {"_buildfire.index.array1.string1": `userId_${userId}`},
+                            {"$json.createdOn":{$gt:new Date(Date.now() - 24*60*60 * 1000)}},
+                            {"_buildfire.index.string1":""}
+                        ]
+                    }
+                    console.log(filter);
+                    buildfire.appData.search({filter:filter},"wall_posts",(err, posts) =>{
+                            console.log(posts);
+                            if(err || (posts && posts.length == 0)){
+                                callback(true)
+                            }
+                            else{
+                                let postsArray = [];
+                                let repostsArray = [];
+                                for (let i = 0; i < posts.length; i++) {
+                                    if(posts[i].data.originalPost && Object.keys(posts[i].data.originalPost).length){
+                                        repostsArray.push(posts[i]);
+                                    }
+                                    else{
+                                        postsArray.push(posts[i]);
+                                    }
+                                }
+
+                                buildfire.appData.search({},"SocialBadges",(err, badges) =>{
+                                    if(badges && badges.length > 0){
+                                        let options = {
+                                            filter:{
+                                                "_buildfire.index.string1":userId,
+                                            }
+                                        }
+                                        window.buildfire.appData.search(options, "SocialUserProfile", function(err, socialProfile){
+                                            if(!err && socialProfile && socialProfile.length > 0){
+                                                if(err || !badges || (badges && badges.length == 0)) callback(true)
+                                                else{
+                                                    let mySocialProfile = socialProfile[0];
+                                                    let myBadges = mySocialProfile.data.badges;
+                                                    badges.forEach(badge =>{
+                                                        let wonBadge = true;
+                                                        let index = myBadges.findIndex(e => e === badge.id);
+                                                        if(index < 0){
+                                                            if(badge.data.conditions.posts.isTurnedOn){
+                                                                if(postsArray.length > badge.data.conditions.posts.value){
+                                                                    wonBadge = true
+                                                                }
+                                                                else{
+                                                                    wonBadge = false;
+                                                                }
+                                                            }
+                                                            if(badge.data.conditions.reposts.isTurnedOn){
+                                                                if(repostsArray.length > badge.data.conditions.reposts.value){
+                                                                    wonBadge = true;
+                                                                }
+                                                                else {
+                                                                    wonBadge = false
+                                                                }
+                                                            }
+                                                            if(badge.data.conditions.reactions.isTurnedOn){
+                                                                ReactionsUI.getUserReactionsCount(mySocialProfile.data.userId, (count) =>{
+                                                                    if(count > badge.data.conditions.reactions.value){
+                                                                        $rootScope.wonBadge =  badge;
+                                                                        $rootScope.$digest();
+                                                                    }
+                                                                })
+                                                            }
+                                                            else{
+                                                                if(wonBadge){
+                                                                    $rootScope.wonBadge =  badge;
+                                                                }
+                                                                $rootScope.$digest();
+                                                            }
+                                                        }
+                                                    })
+                                                    callback(true)
+                                                }
+                                            }
+                                            else{
+                                                callback(true)
+                                            }
+                                        })
+                                    }
+                                    else{
+                                        callback(true)
+                                    }
+                                })
+                            }
+                        })
+                },
                 createPost: function (postData, callback) {
                     var deferred = $q.defer();
                     let composeIndex = function(postData){
                         let array = [];
-                        const checkForBadges = (posts) =>{
-                            let postsArray = [];
-                            let repostsArray = [];
-                            posts.forEach(post =>{
-                                // if(post.)
-                            })
-                            buildfire.appData.search({})
-                        }
                         array.push({string1: `userId_${postData.userId || ""}`});
                         if(postData.hashtags && postData.hashtags.length > 0){
                             for(let i = 0 ; i < postData.hashtags.length; i++){
@@ -650,54 +870,60 @@
                     postData.userId = postData.userDetails.userId;                    
                     postData.createdOn = new Date();
                     postData.createdBy = postData.userDetails.userId;
+                    postData.repostsCount = 0;
+                    postData.sharesCount = 0;
+                    postData.repliesCount = 0;
                     postData._buildfire = {
                         index: composeIndex(postData)
                     }
                     buildfire.appData.insert(postData, 'wall_posts', (error, result) => {
-                        if (error) return deferred.reject(error);
-                        if (result && result.id && result.data) {
-                            result.data.id = result.id;
-                            result.data.uniqueLink = result.id + "-" + result.data.wid;
-
-                            buildfire.appData.update(result.id, result.data, 'wall_posts', (err, posts) => {
+                        this.checkForBadges(postData.userId, (isFinished) =>{
+                            if(isFinished){
                                 if (error) return deferred.reject(error);
-                                if(postData.hashtags){
-                                    console.log("here");
-                                    let newDate = new Date();
-                                    let tag = "$$$hashtags_count$$$_"+newDate.getDay() + "$" + newDate.getMonth() + "$" + newDate.getYear();
-                                    buildfire.appData.search({},tag, (err, results) =>{
-                                        if(results && results.length > 0){
-                                            let clone = {...results[0].data};
-                                            for(let i = 0 ; i < postData.hashtags.length; i++){
-                                                if(clone[postData.hashtags[i]]){
-                                                    clone[postData.hashtags[i]]+= 1;
+                                if (result && result.id && result.data) {
+                                    result.data.id = result.id;
+                                    result.data.uniqueLink = result.id + "-" + result.data.wid;
+        
+                                    buildfire.appData.update(result.id, result.data, 'wall_posts', (err, posts) => {
+                                        if (error) return deferred.reject(error);
+                                        if(postData.hashtags && postData.hashtags.length > 0){
+                                            let newDate = new Date();
+                                            let tag = "$$$hashtags_count$$$_"+newDate.getDay() + "$" + newDate.getMonth() + "$" + newDate.getYear();
+                                            buildfire.appData.search({},tag, (err, results) =>{
+                                                if(results && results.length > 0){
+                                                    let clone = {...results[0].data};
+                                                    for(let i = 0 ; i < postData.hashtags.length; i++){
+                                                        if(clone[postData.hashtags[i]]){
+                                                            clone[postData.hashtags[i]]+= 1;
+                                                        }
+                                                        else{
+                                                            clone[postData.hashtags[i]] = 1;
+                                                        }
+                                                        if(i === postData.hashtags.length - 1) buildfire.appData.update(results[0].id, clone, tag, (err, res) => deferred.resolve(posts));
+                                                    }
                                                 }
                                                 else{
-                                                    clone[postData.hashtags[i]] = 1;
+                                                    let hashtagsCountObj = {};
+                                                    for (let i = 0; i < postData.hashtags.length; i++) {
+                                                        hashtagsCountObj[postData.hashtags[i]] = 1;
+                                                    }
+                                                    buildfire.appData.insert(hashtagsCountObj, tag, (err, res) => deferred.resolve(posts))
                                                 }
-                                                if(i === postData.hashtags.length - 1) buildfire.appData.update(results[0].id, clone, tag, (err, res) => deferred.resolve(posts));
-                                            }
+                                                
+                                            })
+                                        }else{
+                                            return deferred.resolve(posts);
                                         }
-                                        else{
-                                            let hashtagsCountObj = {};
-                                            for (let i = 0; i < postData.hashtags.length; i++) {
-                                                hashtagsCountObj[postData.hashtags[i]] = 1;
-                                            }
-                                            buildfire.appData.insert(hashtagsCountObj, tag, (err, res) => deferred.resolve(posts))
-                                        }
-                                    })
-                                }
-                                else{
-                                    console.log("here 2");
-                                    deferred.resolve(posts);
-                                }
-                            });
-                        } 
+                                    });
+                                } 
+                            }
+                        });
                     });
                     return deferred.promise;
                 },
                 reportPost: function (data) {
                     buildfire.appData.get('reports_' + data.wid, (err, result) => {
+                        console.log(result);
                         if (!result.data.length)
                             buildfire.appData.save([{ ...data }], 'reports_' + data.wid, () => { });
                         else {
@@ -706,6 +932,7 @@
                             if (!alreadyReported) {
                                 result.data.push(data);
                                 buildfire.appData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
+                                    console.log(saved);
                                     buildfire.messaging.sendMessageToControl({ 'name': "POST_REPORTED", wid: data.wid });
                                 });
                             }
@@ -763,7 +990,65 @@
                 }
             }
         }])
-        .factory('SocialItems', ['Util', '$rootScope', function (Util, $rootScope) {
+        .factory('SocialBuddies',['$rootScope','$timeout','SocialItems', function($rootScope, $timeout, SocialItems){
+            return{
+                init: function(userId, callback){
+                    let obj = {
+                        createdOn: new Date(),
+                        createdBy: userId,
+                        userId: userId,
+                        _buildfire:{
+                            index:{
+                                string1: userId,
+                            }
+                        }
+                    }
+                    buildfire.publicData.insert(obj, 'SocialBuddies', (err, res) =>{
+                        return callback(err, res);
+                    })
+                },
+                search: function(userId, callback){
+                    buildfire.publicData.search({filter:{"_buildfire.index.string1":userId}}, "SocialBuddies",(err, data) =>{
+                        return callback(err, data);
+                    })
+                },
+                withUser: function(currentUser, targetUser, callback){
+                    buildfire.publicData.search({filter:{"_buildfire.index.string1":currentUser}}, "SocialBuddies",(err, data) =>{
+                        if(err) return callback(err);
+                        else if(data && data.length > 0){
+                            var curr = data[0].data;
+                            if(curr[targetUser]){
+                                curr[targetUser] += 1;
+                            }
+                            else{
+                                curr[targetUser] = 1;
+                            }
+                            buildfire.publicData.update(data[0].id, curr, "SocialBuddies", (err, data) =>{
+                                return callback(err, data);
+                            })
+                        }
+                    })
+                },
+                interact: function(currentUser, targetUser, callback){
+                    this.search(currentUser, (err, data) =>{
+                        if(err || !data || (data && data.length == 0)){
+                            this.init(currentUser, (err, data) =>{
+                                this.withUser(currentUser, targetUser, (err, data) =>{
+                                    return callback(err,data);
+                                })
+                            })
+                        } 
+                        else{
+                            this.withUser(currentUser, targetUser, (err, data) =>{
+                                return callback(err,data);
+                            })
+                        }
+                    })
+
+                }
+            }
+        }])
+        .factory('SocialItems', ['Util', '$rootScope','$timeout', function (Util, $rootScope, $timeout) {
             var _this;
             var SocialItems = function () {
                 _this = this;
@@ -775,6 +1060,7 @@
                 _this.socialLanguages = {};
                 _this.isPrivateChat = false;
                 _this.forcedToLogin = false;
+                _this.SocialIcons = {};
                 _this.languages = {};
                 _this.showMorePosts = false;
                 _this.pageSize = 5;
@@ -806,6 +1092,11 @@
             }
             SocialItems.prototype.authenticateUser = function (loggedUser, callback) {
                 function prepareData(user) {
+                    let location = {
+                        address: user.userProfile.address && user.userProfile.address.fullAddress ?  user.userProfile.address.fullAddress :  null,
+                        lat: user.userProfile.address && user.userProfile.address.geoLocation.lat ?  user.userProfile.address.geoLocation.lat :  null,
+                        lng: user.userProfile.address && user.userProfile.address.geoLocation.lng ?  user.userProfile.address.geoLocation.lng :  null,
+                    }
                     _this.userDetails = {
                         userToken: user.userToken,
                         userId: user._id,
@@ -813,6 +1104,7 @@
                         firstName: user.firstName ? user.firstName : "",
                         lastName: user.lastName ? user.lastName : "",
                         displayName: user.displayName ? user.displayName : "",
+                        location:  location,
                         imageUrl: user.imageUrl,
                         userTags: user.tags ? user.tags : {}
                     }
@@ -829,25 +1121,38 @@
                         prepareData(user);
                         return callback(null, user);
                     } else {
-                        _this.forcedToLogin = true;
-                        buildfire.auth.login(null, (err, user) => {
-                            if (err) return callback(err, null);
-                            if (user) { prepareData(user); callback(null, user); }
-                            else if (!user) callback(null, null);
-                        });
+                        _this.forcedToLogin = false;
+                        callback(null, null);
                     }
                 });
             }
             SocialItems.prototype.getPosts = function (callback) {
+                const getPostLikes = (id, callback) =>{
+                    buildfire.appData.aggregate(
+                        {
+                          pipelineStages: [
+                            { $match: { 
+                              "_buildfire.index.string1":id,
+                            }},
+                            { $group: { _id: null, totalCount: { $sum: 1 } } }
+                          ],
+                        },
+                        "$$reactions$$",
+                        (err, result) => {
+                            if(result && result.length > 0 && result[0].totalCount) return callback(result[0].totalCount);
+                            else return callback(0);
+                          }
+                      );
+                }
                 let pageSize = _this.pageSize, page = _this.page;
                 let searchOptions = { pageSize, page, sort: { "createdOn": -1 }, recordCount: true }
                 window.buildfire.auth.getCurrentUser((err, currentUser) =>{
                     if(currentUser){
-
                             window.buildfire.appData.search({filter:{"_buildfire.index.string1":currentUser._id}},"SocialUserProfile",(err, results) =>{
-                                let and = [{"_buildfire.index.string1":_this.wid === '' ? "" :  { "$regex": _this.wid, "$options": "i" }},{"_buildfire.index.array1.string1":{$ne:`userId_${currentUser._id}`}}];
+                                let and = [{"_buildfire.index.string1":""}];
                                 if(results && results.length){
                                     let sp = results[0].data;
+  
                                     let orArray = [];
                                     orArray.push({"_buildfire.index.array1.string1":`tagged_${currentUser._id}`})
                                     sp.following.forEach(x =>{
@@ -856,35 +1161,64 @@
                                     sp.interests.forEach(x =>{
                                         orArray.push({"_buildfire.index.array1.string1":`hashtag_${x}`});
                                     })
-                                    if(orArray.length > 0) and.push({$or:orArray});
-
+                                    orArray.push({"_buildfire.index.array1.string1":`userId_${currentUser._id}`});
+                                    and.push({$or:orArray});
                                 }
                                 searchOptions.filter = {$and:and};
-
                                 window.buildfire.appData.search(searchOptions, 'wall_posts', (error, data) => {
                                     if (data && data.result.length) {
-                                        console.log("data from get posts");
-                                        console.log(data);
-                                        data.result.map(item => _this.items.push(item.data))
-                                        if (data.totalRecord > _this.items.length) {
-                                            _this.showMorePosts = true;
-                                            _this.page++;
-                                        } else _this.showMorePosts = false;
-                                        window.buildfire.messaging.sendMessageToControl({
-                                            name: 'SEND_POSTS_TO_CP',
-                                            posts: _this.items,
+                                        ReactionsUI.getReactions(currentUser._id,data.result, (err, reactions) =>{
+                                            for (let i = 0; i < data.result.length; i++) {
+                                                let item = data.result[i];                                                
+                                                if(reactions){
+                                                    let index = reactions.findIndex(e => e.data.id === item.data.id); 
+                                                    if(index >= 0){
+                                                        item.data.liked = true;
+                                                        item.data.DBReactionId = reactions[index].id;
+                                                    }
+                                                    else{
+                                                        item.data.liked = false;
+                                                        item.data.DBReactionId = "";
+                                                    }
+                                                }
+                                                else{                                                    
+                                                    item.data.liked = false;
+                                                    item.data.DBReactionId = "";
+                                                }
+                                                _this.items.push(item.data);                                                
+                                            }
+                                            for(let i = 0 ; i < _this.items.length ; i++){
+                                                let item = _this.items[i];
+                                                getPostLikes(item.id, (count) =>{
+                                                    item.likesCount = count;
+                                                    if(i === _this.items.length - 1){
+                                                        $timeout(function(){
+                                                            $rootScope.$digest();
+                                                            callback(null, data);
+                                                        })
+    
+                                                    }
+                                                });
+                                            }
+                                                
+                                           
+                                            
+                                            if (data.totalRecord > _this.items.length) {
+                                                _this.showMorePosts = true;
+                                                _this.page++;
+                                            } else _this.showMorePosts = false;
+                                            window.buildfire.messaging.sendMessageToControl({
+                                                name: 'SEND_POSTS_TO_CP',
+                                                posts: _this.items,
+                                            });
+                                            if (page === 0) startBackgroundService(searchOptions);
+                                            else clearInterval(_this.newPostTimerChecker);
                                         });
-                                        if (page === 0) startBackgroundService(searchOptions);
-                                        else clearInterval(_this.newPostTimerChecker);
-                                        $rootScope.$digest();
-                                        callback(null, data);
                                     }
                                     else {
-                                        console.log("no posts found");
                                         _this.showMorePosts = false;
                                         $rootScope.$digest();
                                         callback(null, [])
-                                        //Checking if user comming from notification for thread comment.
                                         startBackgroundService(searchOptions);
                                         if (window.URLSearchParams && window.location.search) {
                                             var queryParamsInstance = new URLSearchParams(window.location.search);
@@ -897,19 +1231,38 @@
         
        
                     }
-                    else{
-                        
-                        if (_this.wid === "")
-                            searchOptions.filter = { '_buildfire.index.string1': "" }
-                        else
-                            searchOptions.filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
+                    else{                        
+                        searchOptions.filter = { '_buildfire.index.string1': "" }
                         buildfire.appData.search(searchOptions, 'wall_posts', (error, data) => {
                             if (error) return console.log(error);
-                            console.log("from background service");
-                            console.log("data");
-                            console.log(data);
+   
                             if (data && data.result.length) {
-                                data.result.map(item => _this.items.push(item.data))
+                                for (let i = 0; i < data.result.length; i++) {
+                                    let item = data.result[i];                                                
+                                    item.data.liked = false;
+                                    item.data.DBReactionId = "";                                
+                                    _this.items.push(item.data);                                                
+                                }
+                                for(let i = 0 ; i < _this.items.length ; i++){
+                                    let item = _this.items[i];
+                                    getPostLikes(item.id, (count) =>{
+                                        item.likesCount = count;
+                                        if(i === _this.items.length - 1){
+                                            $timeout(function(){
+                                                $rootScope.$digest();
+                                                callback(null, data);
+                                            })
+
+                                        }
+                                    });
+                                }
+                                data.result.map(item =>{
+                                    getPostLikes(item.data.id, (count) =>{
+                                        item.data.likesCount = count;
+                                        _this.items.push(item.data);
+                                    });  
+                                    callback(null, data);
+                                })
                                 if (data.totalRecord > _this.items.length) {
                                     _this.showMorePosts = true;
                                     _this.page++;
@@ -921,7 +1274,6 @@
                                 if (page === 0) startBackgroundService(searchOptions);
                                 else clearInterval(_this.newPostTimerChecker);
                                 $rootScope.$digest();
-                                callback(null, data);
                             }
                             else {
                                 _this.showMorePosts = false;
@@ -940,6 +1292,138 @@
 
                 })
             }
+            SocialItems.prototype.getPost = function (postId, callback) {
+                const getPostLikes = (id, callback) =>{
+                    buildfire.appData.aggregate(
+                        {
+                          pipelineStages: [
+                            { $match: { 
+                              "_buildfire.index.string1":postId,
+                            }},
+                            { $group: { _id: null, totalCount: { $sum: 1 } } }
+                          ],
+                        },
+                        "$$reactions$$",
+                        (err, result) => {
+                            if(result && result.length > 0 && result[0].totalCount) return callback(result[0].totalCount);
+                            else return callback(0);
+                          }
+                      );
+                }
+                buildfire.auth.getCurrentUser((err, currentUser) =>{
+                    window.buildfire.appData.getById(postId, "wall_posts",(err, results) =>{
+                        let item = results.data;
+                        if(currentUser){
+                            ReactionsUI.getReactions(currentUser._id, [item], (err, reactions) =>{
+                                if(reactions && reactions.length > 0){
+                                    item.liked = true;
+                                }
+                                else{
+                                    item.liked = false
+                                }
+                                getPostLikes(item.id, (count) =>{
+                                    item.likesCount = count;
+                                    console.log(item);
+                                    $timeout(function(){
+                                        $rootScope.$digest();
+                                        callback(null, item);
+                                    })
+                                });
+
+                            });
+                        }
+                            
+                    });
+                })
+            }
+
+
+            SocialItems.prototype.getMorePrivatePosts = function(wid, callback){
+                let options = {
+                    filter:{"_buildfire.index.string1":wid},
+                    sort:{"createdOn": -1},
+                    page: _this.page,
+                    pageSize: _this.pageSize,
+                }
+                buildfire.appData.search(options, "wall_posts",(err, posts) =>{
+                    if(posts && posts.length > 0){  
+                        posts.map(e => _this.items.push(e.data));
+                        if(posts.length == _this.pageSize){
+                            _this.page++;
+                        }
+                        else{
+                            _this.showMorePosts = false;
+                        }
+                        $timeout(function(){
+                            $rootScope.$digest();
+                            callback(null, posts)
+                        })
+                        privatePostsBackgroundService(options)
+                    }
+                    else{
+                        callback(null, []);
+                        privatePostsBackgroundService(options)
+                    }
+                })
+            }
+
+            SocialItems.prototype.getPrivatePosts = function(wid, callback){
+                clearInterval(_this.newPostTimerChecker);
+                _this.items = [];
+                $timeout(function(){
+                    $rootScope.$digest();
+                })
+                let options = {
+                    filter:{"_buildfire.index.string1":wid},
+                    sort:{"createdOn": -1},
+                    page:_this.page,
+                    pageSize:_this.pageSize,
+                }
+                buildfire.appData.search(options, "wall_posts",(err, posts) =>{
+                    if(posts && posts.length > 0){  
+                        posts.map(e => _this.items.push(e.data));
+                        if(posts.length == _this.pageSize){
+                            _this.page++;
+                        }
+                        else{
+                            _this.showMorePosts = false;
+                        }
+                        $timeout(function(){
+                            $rootScope.$digest();
+                            callback(null, posts)
+                        })
+                        privatePostsBackgroundService(options)
+                    }
+                    else{
+                        callback(null, []);
+                        privatePostsBackgroundService(options)
+                    }
+                })
+            }
+
+            function privatePostsBackgroundService(options){
+                if(!_this.newPrivatePostTimerChecker){
+                    _this.newPrivatePostTimerChecker = setInterval(() => {
+                        buildfire.appData.search(options, 'wall_posts', (error, data) => {
+                            if (error) return console.log(error);
+                            if (data && data.length) {
+                                if (data[0].data.id === (_this.items.length && _this.items[0].id)){
+                                    return;
+                                }
+                                else{
+                                    let items = [];
+                                    data.map(item => items.push(item.data));
+                                    _this.items = items;
+                                }
+                            }
+                            
+                            $rootScope.$digest();
+                        });
+                    }, 10000);
+
+                }
+            }
+
 
             function startBackgroundService(searchOptions) {
                 if (!_this.newPostTimerChecker) {
@@ -948,7 +1432,6 @@
                         buildfire.appData.search(searchOptions, 'wall_posts', (error, data) => {
                             if (error) return console.log(error);
                             if (data && data.length) {
-                                console.log("got data from background service !");
                                 if (data[0].data.id === (_this.items.length && _this.items[0].id)) return;
                                 let items = [];
                                 data.map(item => items.push(item.data));
@@ -968,6 +1451,7 @@
             SocialItems.prototype.formatLanguages = function (response) {
                 const stringsCopy = JSON.parse(JSON.stringify(stringsConfig));
                 _this.languages = {};
+                console.log(response);
                 if (response.data && response.data.screenOne) {
                     Object.keys(response.data.screenOne).forEach((oldKey) => {
                         Object.keys(stringsConfig).forEach((defaultKey) => {
@@ -989,17 +1473,18 @@
                         delete stringsCopy[defaultKey].labels;
                     });
                     let strings = {}
-                    strings = Object.assign({}, stringsCopy.userProfile, stringsCopy.activity, stringsCopy.logInBanner, stringsCopy.unfollowModal, stringsCopy.reportPostModal, stringsCopy.blockUserModal, stringsCopy.unblockUserModal, stringsCopy.accountBannedModal);
+                    strings = Object.assign({}, stringsCopy.accountBannedModal, stringsCopy.activity, stringsCopy.blockUserModal, stringsCopy.logInBanner, stringsCopy.reportPostModal, stringsCopy.unblockUserModal, stringsCopy.unfollowModal, stringsCopy.userProfile);
                     Object.keys(strings).forEach(e => {
                         strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
                     });
                 } else {
                     let strings = {};
-                    if (response.data && response.data.mainWall && response.data.sideThread && response.data.members && response.data.input && response.data.modal)
-                        Object.assign({},  response.data.userProfile,  response.data.activity,  response.data.logInBanner,  response.data.unfollowModal,  response.data.reportPostModal,  response.data.blockUserModal,  response.data.unblockUserModal,  response.data.accountBannedModal);
+                    console.log(response.data);
+                    console.log(response.data && response.data.blockUserModal && response.data.activity && response.data.blockUserModal && response.data.logInBanner && response.data.reportPostModal && response.data.unblockUserModal && response.data.unfollowModal && response.data.userProfile);
+                    if (response.data && response.data.blockUserModal && response.data.activity && response.data.blockUserModal && response.data.logInBanner && response.data.reportPostModal && response.data.unblockUserModal && response.data.unfollowModal && response.data.userProfile)
+                        strings = Object.assign({}, response.data.accountBannedModal, response.data.activity, response.data.blockUserModal, response.data.logInBanner, response.data.reportPostModal, response.data.unblockUserModal, response.data.unfollowModal, response.data.userProfile);
                     else
-                        strings = Object.assign({},  stringsConfig.userProfile,  stringsConfig.activity,  stringsConfig.logInBanner,  stringsConfig.unfollowModal,  stringsConfig.reportPostModal,  stringsConfig.blockUserModal,  stringsConfig.unblockUserModal,  response.data.accountBannedModal);
-
+                        strings = Object.assign({}, stringsConfig.accountBannedModal.labels, stringsConfig.activity.labels, stringsConfig.blockUserModal.labels, stringsConfig.logInBanner.labels, stringsConfig.reportPostModal.labels, stringsConfig.unblockUserModal.labels, stringsConfig.unfollowModal.labels, stringsConfig.userProfile.labels);
                     Object.keys(strings).forEach(e => {
                         strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
                     });
@@ -1032,16 +1517,18 @@
 
                         if (_this.wid.length === 48) {
                             _this.isPrivateChat = true;
+                            // i should navigate
                         }
 
                         buildfire.datastore.get("languages", (err, languages) => {
-                            if (err) return console.log(err)
-                            console.log("languages from app services");
-                            _this.socialLanguages = languages.data;
+                            if (err) return console.log(err);
                             _this.formatLanguages(languages);
-
-                            buildfire.datastore.get("Social", (err, response) => {
-                                callback(err, response);
+                            console.log(_this.languages);
+                            buildfire.datastore.get("SocialIcons", (err, SocialIcons) =>{
+                                _this.SocialIcons = SocialIcons.data;
+                                buildfire.datastore.get("Social", (err, response) => {
+                                    callback(err, response);
+                                });
                             });
                         });
                     });

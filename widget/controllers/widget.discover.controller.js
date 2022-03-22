@@ -2,13 +2,14 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('DiscoverCtrl', ['$scope', '$rootScope', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', function ($scope, $rootScope, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout) {
+        .controller('DiscoverCtrl', ['$scope', '$rootScope','SocialUserProfile', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', function ($scope, $rootScope, SocialUserProfile, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout) {
             var Discover = this;
             Discover.SocialItems = SocialItems.getInstance();
             $scope.finishRender = false;
             $scope.activePageIndex = 1;
             $scope.users = [];
             $scope.shouldFetchMorePosts = true;
+            Discover.isLoading = true;
             $scope.setActivePage = function(pageIndex){
                 let pages = document.getElementById("navBar").children;
                 let page = pages.item(pageIndex);
@@ -69,14 +70,17 @@
                     $scope.setActivePage($scope.activePageIndex);
                     $scope.posts = result;
                     $scope.injectElements(result);
-                    $scope.getUsersWhoIdontFollow();
+                    Discover.getUsersWhoIDontFollow();
                     Discover.getTrendingHashtags((err, trendingHashtagsPosts) =>{
                         $scope.trendingHashtags = trendingHashtagsPosts;
+                        console.log($scope.trendingHashtags);
                         $scope.isBusy = false;
                         Buildfire.spinner.hide();
+                        console.log(Discover.isLoading);
                         $scope.$digest();
                     })
                     
+                    Discover.isLoading = false;
                     let container = document.getElementById("discover-posts-container");
                     container.addEventListener('scroll',() =>{
                         if( $scope.shouldFetchMorePosts && ( container.scrollTop - (container.scrollHeight - container.offsetHeight) > - 30) && !$scope.isBusy ){
@@ -123,6 +127,28 @@
             $scope.navigateToProfile = function(userId){
                 Location.go("#/profile/"+userId);
             }
+
+            $scope.createVideo = (src, postId, parent) =>{
+                parent.style.position = "relative";
+                parent.style.backgroundColor = "#E5E5E5"
+                let span = document.createElement("span");
+                span.classList.add("material-icons");
+                span.innerHTML = "play_arrow";
+                span.style.fontSize = "70px";
+                span.style.position = "absolute"
+                let e = document.createElement('video');
+                e.style.width = "100%";
+                e.style.height = "100%";
+                e.style.objectFit = "cover"
+                e.style.borderRadius = "15px";
+                let vidSrc = document.createElement("source");
+                vidSrc.src = src+"#t=0.1";
+                vidSrc.type = "video/mp4";
+                e.appendChild(vidSrc)
+                parent.appendChild(span);
+                parent.appendChild(e);
+            }
+
             $scope.injectElements = function(posts){
                 let container = document.getElementById("discover-posts-container");
                 if(posts.length == 0){
@@ -146,9 +172,12 @@
                         container.appendChild(lastParent)
                     }
                     lastElement = $scope.createElement("div","",[],"",posts[i]);
-                    if(posts[i].data.images){
-                        img = $scope.createImage(posts[i].data.images[0]);
+                    if(posts[i].data.images && posts[i].data.images.length > 0){
+                        img = $scope.createImage(posts[i].data.images[0], posts[i].id);
                         lastElement.appendChild(img);
+                    }
+                    else if(posts[i].data.videos && posts[i].data.videos.length > 0){
+                        let vid = $scope.createVideo(posts[i].data.videos, posts[i].id , lastElement);
                     }
                     
                     lastParent.appendChild(lastElement);
@@ -169,6 +198,55 @@
                 });                       
             }
 
+
+            Discover.getUsersWhoIDontFollow = () =>{
+                let isUserLoggedIn = Discover.SocialItems.userDetails.userId ? true : false;
+                let options = {};
+                if(isUserLoggedIn){
+                    SocialUserProfile.get(Discover.SocialItems.userDetails.userId, (err, socialProfile) =>{
+                        if(err){
+                            options.filter = {};
+                        }
+                        else{
+                            let arrayOfIndexes = []
+                            socialProfile.data.following.forEach(item =>{
+                                arrayOfIndexes.push({"_buildfire.index.array1.string1":{$ne:`userId_${item}`}});
+                            })
+                            
+                            socialProfile.data.blockedUsers.forEach(item =>{
+                                arrayOfIndexes.push({"_buildfire.index.array1.string1":{$ne:`userId_${item}`}});
+                            });
+                            arrayOfIndexes.push({"_buildfire.index.string1":""})
+                            options.filter = {
+                                $and: arrayOfIndexes
+                            }
+
+                        }
+                        options.filter['$and'].push({"_buildfire.index.array1.string1":{$ne:`userId_${Discover.SocialItems.userDetails.userId}`}})
+                        options.skip = 0;
+                        options.limit = 50;
+                        SubscribedUsersData.getUsers(options, (err, data) =>{
+                            console.log(data);
+                            $scope.users = data;
+                            $timeout(function(){
+                                $scope.$digest();
+                            })
+
+                        }, Discover.SocialItems.userDetails.userId)
+                    })
+                }
+                else{
+                    SubscribedUsersData.getUsers({skip:0,limit: 50}, (err, data) =>{
+                        $scope.users = data;
+                        $timeout(function(){
+                            $scope.$digest();
+                        })
+
+                    })
+                }
+            }
+
+
             $scope.getUsersWhoIdontFollow = function(){
                 
                 Buildfire.appData.search({filter:{"$json.userId":Discover.SocialItems.userDetails.userId}},"SocialUserProfile", (err, results) =>{
@@ -184,8 +262,6 @@
                             if(err) console.log(err);
                             else {
                                 $scope.users = data;
-                                console.log("gonna log users");
-                                $scope.users.forEach(user => console.log(user.data.userId))
                                 $timeout(function(){
                                     $scope.$digest();
                                 })

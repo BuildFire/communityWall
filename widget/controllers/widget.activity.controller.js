@@ -5,7 +5,8 @@
         .controller('ActivityCtrl', ['$scope', '$rootScope','$timeout', '$routeParams','SocialDataStore', 'Buildfire','Location', 'EVENTS', 'SubscribedUsersData','SocialUserProfile', 'SocialItems', 'ProfileActivity', function ($scope, $rootScope,$timeout, $routeParams, SocialDataStore, Buildfire, Location, EVENTS, SubscribedUsersData, SocialUserProfile, SocialItems, ProfileActivity) {
             let t = this;
             t.SocialItems = SocialItems.getInstance();
-            t.strings = t.SocialItems.socialLanguages;
+            t.strings = t.SocialItems.languages;
+            console.log(t.strings);
             t.count = 0;
             t.todayActivity = [];
             t.yesterdayActivity = [];
@@ -26,6 +27,12 @@
                 });
             }
             
+            t.goToPost = (postid) =>{
+                console.log(postid);
+                Location.go("#/singlePostView/"+postid);
+            }
+
+
             t.getUserActivity = (callback) =>{
                 let options = {
                     filter:{
@@ -36,6 +43,7 @@
                     sort: {createdOn: -1}
                 }
                 ProfileActivity.search(options, (err, data) =>{
+                    console.log(data);
                     t.count += data.length;
                     if(data && data.length){ 
                         console.log(data);
@@ -130,8 +138,10 @@
             }
             Buildfire.datastore.onUpdate((event) =>{
                 if(event.tag === 'languages'){
-                    t.strings = event.data;
-                    $scope.$digest();
+                    t.SocialItems.getSettings((err, settings) =>{
+                        t.strings = t.SocialItems.languages;
+                        $scope.$digest();
+                    })
                 }
                 t.SocialItems.getSettings(console.log);
             });

@@ -85,9 +85,15 @@
 }
 .badgeleft {
   flex: 2;
+  display: flex;
+  align-items: center;
+
 }
 .badgeright {
   flex: 10;
+  display: flex;
+  align-items: center;
+
 }
 .badgeleft > strong {
   font-size: 16px;

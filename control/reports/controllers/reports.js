@@ -1,42 +1,195 @@
-app.controller('ReportsCtrl', ['$scope', function ($scope) {
+app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $timeout, $q) {
 
     $scope.data = {};
-
+    $scope.event = event;
     let searchTableHelper = null;
-    buildfire.messaging.sendMessageToWidget({
+    window.buildfire.messaging.sendMessageToWidget({
         name: 'ASK_FOR_WALLID'
     });
 
-    buildfire.messaging.onReceivedMessage = function (event) {
+    window.buildfire.messaging.onReceivedMessage = function (event) {
         if (event.name === "SEND_WALLID" || event.name === "POST_REPORTED") return loadTable(event);
     }
 
-    function loadTable(event) {
-        searchTableHelper = new SearchTableHelper("searchResults", 'reports_' + event.wid, searchTableConfig);
-        searchTableHelper.search();
-        searchTableHelper.onCommand('showText', (obj, tr) => {
-            if (obj.data.text.length <= 16) return;
-            buildfire.notifications.alert({
-                title: "Text", message: obj.data.text,  okButton: { text: 'Ok' }
-            }, function (e, data) {
-                if (e) console.error(e);
-                if (data) console.log(data);
+
+    $scope.banUser = function (userId, threadId, username) {
+
+        
+        window.buildfire.dialog.confirm(
+            {
+                title: "Ban User",
+                message: `Are you sure you want to ban ${username || 'this user'}?`,
+                confirmButton: {
+                    text: "Ban User",
+                    type: "danger",
+                },
+            },
+            (err, isConfirmed) => {
+                if (err) console.error(err);
+
+                if (isConfirmed) {
+                    // Called when getting success from SocialDataStore banUser method
+                    var success = function (response) {
+                        console.log(
+                            "User successfully banned and response is :",
+                            response
+                        );
+                        window.location.reload();
+
+                    };
+                    // Called when getting error from SocialDataStore banUser method
+                    var error = function (err) {
+                        console.log("Error while banning a user ", err);
+                    };
+                    // Calling SocialDataStore banUser method for banning a user
+                    banUser(userId).then(
+                        success,
+                        error
+                    );
+                }
+            }
+        );
+    };
+
+
+
+    $scope.deleteReport = function(index){
+        $scope.reports.splice(index, 1);
+        $timeout(function(){
+            $scope.$digest();
+        });
+        window.buildfire.appData.save($scope.reports, 'reports_' + $scope.event.wid, (error, result) => {
+            if (error) return console.log(error);
+            $scope.reports = result.data;
+            console.log($scope.reports);
+            $scope.$digest();
+        });
+    }
+
+        $scope.deletePost = function (postId) {
+
+            console.log(postId);
+            var deletePost = function(postId) {
+                var deferred = $q.defer();
+                window.buildfire.appData.delete(postId, 'wall_posts', function (err, status) {
+                    if (err) return deferred.reject(err);
+                    else return deferred.resolve(status);
+                })
+                return deferred.promise;
+            }
+
+
+            window.buildfire.dialog.confirm(
+                {
+                    title: "Delete Post",
+                    message: `Are you sure you want to delete this post?`,
+                    confirmButton: {
+                        text: "Delete",
+                        type: "danger",
+                    },
+                },
+                (err, isConfirmed) => {
+                    if (err) console.error(err);
+                    if (isConfirmed) {
+                        // Called when getting success from SocialDataStore.deletePost method
+                        var success = function (response) {
+                            console.log('inside success of delete post', response);
+                            if (response) {
+                                window.buildfire.messaging.sendMessageToWidget({ 'name': "POST_DELETED", 'id': postId });
+                                $scope.deleteReport($scope.reports.findIndex(e => e.post.id === postId));
+                            }
+                        };
+                        // Called when getting error from SocialDataStore.deletePost method
+                        var error = function (err) {
+                            $scope.deleteReport($scope.reports.findIndex(e => e.post.id === postId));
+
+                        };
+
+                        // Deleting post having id as postId
+                        deletePost(postId).then(success, error);
+                    }
+                }
+            );
+
+            console.log('delete post method called', postId);
+            
+        };
+
+
+    var banUser = function (userId, wallId) {
+        var deferred = $q.defer();
+
+        let searchOptions = {
+            filter: {
+                $and: [
+                    { "$json.userId": userId },
+                    { '$json.wid': wallId }
+                ]
+            }
+        }
+
+        let searchOptions2 = {
+            filter: {
+                $and: [
+                    { "$json.comments.userId": userId },
+                    { '$json.wid': wallId }
+                ]
+            }
+        }
+
+        window.buildfire.appData.search(searchOptions2, 'wall_posts', (error, data) => {
+            if (error) return deferred.reject(error);
+            let count = 0;
+            if (data && data.length) {
+                data.map(post => {
+                    post.data.comments.map((comment, index) => {
+                        if (comment.userId === userId) {
+                            post.data.comments.splice(index, 1)
+                        }
+                    })
+                    window.buildfire.appData.update(post.id, post.data, 'wall_posts', (error, data) => {
+                        if (error) return deferred.reject(error);
+                    })
+                })
+            }
+            window.buildfire.appData.search(searchOptions, 'wall_posts', (error, data) => {
+                if (error) return deferred.reject(error);
+                if (data && data.length) {
+                    data.map(post => {
+                        window.buildfire.appData.delete(post.id, 'wall_posts', function (err, status) {
+                            if (error) return deferred.reject(error);
+                            return deferred.resolve(status);
+                        })
+                    })
+                }
             });
         });
-        searchTableHelper.onEditRow = (obj, tr) => {
-            buildfire.dialog.confirm({
-                message: "Are you sure you want to ban this user? This action will erase all posts and comments made by this user.",
-                confirmButton: { text: "Ban", type: "danger" }
-            }, (err, data) => {
-                if (err) console.error(err);
-                if (data)
-                    banUser(obj.data);
-            });
-        }
+        return deferred.promise;
+    };
+
+
+    $scope.usersData = [];
+    $scope.getUserName = function (userDetails) {
+        var userName = '';
+        userName = userDetails.displayName || "Someone";
+        return userName;
+    };
+    $scope.getDuration = function (timestamp) {
+        return moment(timestamp.toString()).fromNow();
+    };
+
+    function loadTable(event) {
+        $scope.event = event;
+        window.buildfire.appData.get('reports_' + event.wid, (error, result) => {
+            if (error) return console.log(error);
+            $scope.reports = result.data;
+            console.log($scope.reports);
+            $scope.$digest();
+        });
     }
 
     function banUser(data) {
-        buildfire.spinner.show();
+        window.buildfire.spinner.show();
 
         let searchOptions = {
             filter: { "_buildfire.index.string1": data.wid, $and: [{ "$json.userId": data.reportedUserID }] },
@@ -55,47 +208,25 @@ app.controller('ReportsCtrl', ['$scope', function ($scope) {
             recordCount: true
         }
 
-        buildfire.appData.get('reports_' + data.wid, (error, result) => {
+        window.buildfire.appData.get('reports_' + data.wid, (error, result) => {
             if (error) return console.log(error);
             result.data = result.data.filter(el => el.reportedUserID !== data.reportedUserID);
-            buildfire.appData.update(result.id, result.data, 'reports_' + data.wid, () => {});
+            window.buildfire.appData.update(result.id, result.data, 'reports_' + data.wid, () => {});
         });
 
         let allPosts = [], allComments = [];
-        buildfire.spinner.show();
-        let getComments = function () {
-            function fetchComments() {
-                buildfire.appData.search(searchOptions2, 'wall_posts', (error, postComments) => {
-                    if (error) return console.log(error);
-                    allComments = allComments.concat(postComments.result)
-                    if (postComments.totalRecord > allComments.length) {
-                        searchOptions2.page++;
-                        fetchComments();
-                    } else {
-                        let count = 0;
-                        allComments.map(comment => {
-                            count++;
-                            buildfire.appData.delete(post.id, 'wall_posts', function (error, status) {
-                                if (error) return console.log(error);
-                                if (count === allComments.length)
-                                    buildfire.spinner.hide();
-                            });
-                        });
-                    }
-                });
-            }
-            fetchComments();
-        }
+        window.buildfire.spinner.show();
+
 
         let getPosts = function () {
             function requestBan() {
-                buildfire.messaging.sendMessageToWidget({
+                window.buildfire.messaging.sendMessageToWidget({
                     name: 'BAN_USER', reported: data.reportedUserID, wid: data.wid
                 });
                 loadTable({ wid: data.wid })
             }
             function fetchPosts() {
-                buildfire.appData.search(searchOptions, 'wall_posts', (error, posts) => {
+                window.buildfire.appData.search(searchOptions, 'wall_posts', (error, posts) => {
                     if (error) return console.log(error);
                     allPosts = allPosts.concat(posts.result)
                     if (posts.totalRecord > allPosts.length) {
@@ -104,12 +235,11 @@ app.controller('ReportsCtrl', ['$scope', function ($scope) {
                     } else {
                         let count = 0;
                         allPosts.map(post => {
-                            buildfire.appData.delete(post.id, 'wall_posts', function (error, status) {
+                            window.buildfire.appData.delete(post.id, 'wall_posts', function (error, status) {
                                 if (error) return console.log(error);
                                 count++;
                                 if (count === allPosts.length) {
                                     requestBan();
-                                    getComments();
                                 }
                             });
                         });

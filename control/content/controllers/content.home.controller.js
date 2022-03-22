@@ -50,8 +50,42 @@
             var appId;
             var instanceId;
             var pluginTitle;
+            
+            var save = (data) =>{
+                Buildfire.datastore.save(data, "SocialIcons", (err, data) =>{
+                    
+                })
+            }
+
+            var get = (callback) =>{
+                Buildfire.datastore.get("SocialIcons", (err, results) =>{
+                    return callback(err, results)
+                }) 
+
+            }
+
+            var saveInitial = () =>{
+                save({
+                    bottomNavBar:{
+                        home: "glyphicon glyphicon-home",
+                        addContent: "glyphicon glyphicon-plus",
+                        myProfile: "glyphicon glyphicon-user",
+                        notifications: "glyphicon glyphicon-bell",
+                        discover: "glyphicon glyphicon-search",
+                    },
+                    reactions:{
+                        icon: "glyphicon glyphicon-flash",
+                        color: "rgba(255,0,0,1)",
+                        threshold: 50,
+                    }
+                })
+            }
             var init = function () {
-                
+                get((err, icons) =>{
+                    if(err || (icons && icons.data && Object.keys(icons.data).length == 0 )){
+                        saveInitial();
+                    }
+                })
                 buildfire.datastore.get("languages", (err, result) => {
                     if (result.data && result.data.screenOne) {
                         let data = result.data;
@@ -64,6 +98,7 @@
                             buildfire.datastore.save({ screenOne: stringsConfig.screenOne.labels }, "languages", (err, data) => { console.log(data) });
                         }
                     }
+                    else console.log(result);
                 });
                 Buildfire.getContext(function (err, context) {
                     if (err) return console.log(err);
@@ -632,19 +667,10 @@
                         if (data) console.log(data);
                     });
                 });
-                $scope.badgeSearchTableHelper.onEditRow = (obj, tr) => {
-                    buildfire.dialog.confirm({
-                        message: "Are you sure you want to ban this user? This action will erase all posts and comments made by this user.",
-                        confirmButton: { text: "Ban", type: "danger" }
-                    }, (err, data) => {
-                        if (err) console.error(err);
-                        if (data)
-                            banUser(obj.data);
-                    });
-                }
+                
             }
             $scope.goToAddBadge = function(){
-                window.location.href = "#/addBadge"
+                window.location.href = "#/addBadge/0"
             }
             
             ContentHome.changeHashtagFilter = function(text){

@@ -3,7 +3,7 @@
 
   <div class="inputContainer" style="height: 200px;padding: 0px;">
 
-
+    
 
     <div class="imageContainer" id="imageContainer" ng-click = "selectImage(this)">
       <img ng-src="{{selectedMedia.shown}}" ng-if="selectedMedia.type === 'image' " alt="" />
@@ -30,12 +30,12 @@
   
   <div class="inputContainer">
     <label class="full-flex">#Hashtags</label>    
-    <input placeholder="#" type="text" id="hashtagsInput">
+    <input placeholder="#" ng-value="selectedHashtags" type="text" id="hashtagsInput">
   </div>
   
   <div class="inputContainer" >
     <label  class="full-flex">Tag People</label>    
-    <input placeholder="@" type="text" id="peopleInput">
+    <input placeholder="@"  ng-value="selectedUsers" type="text" id="peopleInput">
   </div>
   
 

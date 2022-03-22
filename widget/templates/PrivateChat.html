@@ -1,0 +1,140 @@
+<div ng-cloak ng-show="!PrivateChat.isLoading">
+    <div id="contents">
+        <div id="chat">
+          <div id="message">
+              <div  ng-show="!isScrollbarLoading" ng-repeat="post in PrivateChat.SocialItems.items | orderBy: 'createdOn' : false" ng-init="$last && isFinishedRendering()" >
+                <div id="{{post.id}}" class="flex-right" ng-if="post.userId === PrivateChat.SocialItems.userDetails.userId">
+                  
+
+                  <div style="    display: flex;
+                  justify-content: flex-end;
+                  align-items: flex-start;">
+                    <div ng-show="post.text.length > 0" class="chatText">
+                      {{post.text}}
+                    </div>
+                    <div ng-if="post.images.length > 0 && post.text.length == 0" class="chatPlaceholder">
+                      <div >
+                        <img  load-image="1x1"
+                        data-final-src="{{post.images[0]}}" crop-width="100"
+                        crop-height="100" crop-type="crop">
+                      </div>
+                    </div>
+                    <div  style="flex: 1.5;" class="forImage">
+                      <img 
+                        ng-if="PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl" 
+                        load-image="1x1"
+                        data-final-src="{{PrivateChat.SocialItems.userDetails.imageUrl}}" 
+                        crop-width="75" 
+                        style="border-radius: 100%;"
+                        crop-height="75" 
+                        crop-type="crop"
+                      />
+                      <img 
+                        ng-if="!(PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl)"
+                        load-image="1x1"
+                        data-final-src="../../../styles/media/avatar-placeholder.png"
+                        data-img-type="local" crop-width="75" crop-height="75"
+                        crop-type="default"
+                      />
+                    </div>
+                  </div>
+
+
+
+
+
+
+
+                  <div class="chatImageContainer">
+                    <div ng-if="post.images.length > 0 && post.text.length != 0" class="chatImage">
+                      <img  load-image="1x1"
+                      data-final-src="{{post.images[0]}}" crop-width="65"
+                      crop-height="65" crop-type="crop">
+                    </div>
+                  </div>
+                 
+
+
+                 
+     
+                </div>
+                <div id="{{post.id}}" class="flex-right" ng-if="post.userId !== PrivateChat.SocialItems.userDetails.userId">
+                  
+
+                  <div style="    display: flex;
+                  justify-content: flex-end;
+                  align-items: flex-start;">
+                    <div  style="flex: 1.5;" class="forImage">
+                      <img 
+                        ng-if="post.userDetails.userId && post.userDetails.imageUrl" 
+                        load-image="1x1"
+                        data-final-src="{{post.userDetails.imageUrl}}" 
+                        crop-width="75" 
+                        style="border-radius: 100%;"
+                        crop-height="75" 
+                        crop-type="crop"
+                      />
+                      <img 
+                        ng-if="!(post.userDetails.userId && post.userDetails.imageUrl)"
+                        load-image="1x1"
+                        data-final-src="../../../styles/media/avatar-placeholder.png"
+                        data-img-type="local" crop-width="75" crop-height="75"
+                        crop-type="default"
+                      />
+                    </div>
+                    <div ng-show="post.text.length > 0" class="chatText">
+                      {{post.text}}
+                    </div>
+                    <div ng-if="post.images.length > 0 && post.text.length == 0" style="justify-content: flex-start !important;" class="chatPlaceholder">
+                      <div >
+                        <img  load-image="1x1"
+                        data-final-src="{{post.images[0]}}" crop-width="100"
+                        crop-height="100" crop-type="crop">
+                      </div>
+                    </div>
+
+                  </div>
+
+
+
+
+
+
+
+                  <div class="chatImageContainer">
+                    <div ng-if="post.images.length > 0 && post.text.length != 0" class="chatImage">
+                      <img  load-image="1x1"
+                      data-final-src="{{post.images[0]}}" crop-width="65"
+                      crop-height="65" crop-type="crop">
+                    </div>
+                  </div>
+                 
+
+
+                 
+     
+                </div>
+          </div>
+        </div>
+        <div id="ta-frame">
+            <div>
+              <img ng-if="PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl" load-image="1x1"
+              data-final-src="{{PrivateChat.SocialItems.userDetails.imageUrl}}" crop-width="40" style="border-radius: 100%;"
+              crop-height="40" crop-type="crop">
+              <img ng-if="!(PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl)"
+              load-image="1x1"
+              data-final-src="../../../styles/media/avatar-placeholder.png"
+              data-img-type="local" crop-width="40" crop-height="40"
+              crop-type="default">
+            </div>
+          <input type="text" ng-model="PrivateChat.text">
+          <span ng-if="PrivateChat.text.length == 0" class="glyphicon glyphicon-camera" ng-click="PrivateChat.chooseMedia()">
+
+          </span>
+          <span ng-if="PrivateChat.text.length != 0" class="glyphicon glyphicon-chevron-right" ng-click="PrivateChat.sendMessage()">
+
+          </span>
+      </div>
+      </div>
+      
+</div>

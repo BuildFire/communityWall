@@ -1,0 +1,43 @@
+.vbHeader {
+  font-size: 22px;
+  margin-left: 15px;
+  font-weight: bold;
+}
+.svg-container {
+  margin-top: 5vh;
+  height: 30vh;
+  margin-bottom: 5vh;
+}
+.svg-container > img {
+    height: 100%;
+    width: 100%;
+}
+.badges-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+.list-svg-container > img {
+  width: 70%;
+  height: 100%;
+}
+.list-svg-container {
+  flex: 1.5;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.list-text{
+    flex: 5;
+}
+.list-text > h5{
+    font-size: 12px;
+    line-height: 11px;
+    margin-bottom: 3px;
+}
+.list-text > h2{
+    font-size: 18px;
+    line-height: 11px;
+}

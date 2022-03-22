@@ -9,26 +9,25 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/createPost.css">
     <link rel="stylesheet" href="assets/css/profile.css">
+    <link rel="stylesheet" href="assets/css/viewBadges.css">
     <link rel="stylesheet" href="assets/css/interests.css">
     <link rel="stylesheet" href="assets/css/discover.css">
     <link rel="stylesheet" href="assets/css/search.css">
     <link rel="stylesheet" href="assets/css/filtered.css">
     <link rel="stylesheet" href="assets/css/activity.css">
-    
+    <link rel="stylesheet" href="assets/css/privatechat.css">
+    <link rel="stylesheet" href="assets/css/autoComplete.css">
     <!-- endbuild -->
 
     <!-- JS -->
     <script src="../../../scripts/jquery/jquery-1.11.2.min.js"></script>
     <script src="../../../scripts/buildfire.js"></script>
-    <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
+    <script src="../../../scripts/buildfire/services/publicFiles/publicFiles.js"></script>
+    <script src="../../../scripts/buildfire/services/camera/camera.js"></script>
     <script src="../../../scripts/angular/angular.min.js"></script>
     <script src="../../../scripts/angular/angular-route.min.js"></script>
-    <script src="../../../scripts/buildfire/services/publicFiles/publicFiles.js"></script>
     <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
-    <script src="./assets/js/shared/autoComplete/autoComplete.js"></script>
-    <script src="./assets/js/shared/hashtags/hashtags.js"></script>
-    <script src="../../../scripts/buildfire/services/camera/camera.js"></script>
     <!-- build:bundleCFFiles  -->    
     <script src="./CommunityFeedAPI/data/analyticKeys.js"></script>
     <script src="./CommunityFeedAPI/data/Errors.js"></script>
@@ -47,6 +46,11 @@
     <script src="app.service.js"></script>
     <script src="enums.js"></script>
     <script src="assets/js/filters.js"></script>
+    <script src="./assets/js/shared/reactions/ui.js"></script>
+    <script src="./assets/js/shared/autoComplete/autoComplete.js"></script>
+    <script src="./assets/js/shared/autoComplete/tagify.js"></script>
+    <script src="./assets/js/shared/autoComplete/tagify.polyfills.min.js"></script>
+    <script src="./assets/js/shared/hashtags/hashtags.js"></script>
     <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
     <script src="controllers/widget.wall.controller.js"></script>
     <script src="controllers/widget.newPost.controller.js"></script>
@@ -54,13 +58,17 @@
     <script src="controllers/widget.discover.controller.js"></script>
     <script src="controllers/widget.bottomnavbar.controller.js"></script>
     <script src="controllers/widget.interests.controller.js"></script>
+    <script src="controllers/widget.privateChat.controller.js"></script>
     <script src="controllers/widget.filtered.controller.js"></script>
     <script src="controllers/widget.activity.controller.js"></script>
+    <script src="controllers/widget.viewBadges.controller.js"></script>
     <script src="controllers/widget.profile.controller.js"></script>
     <script src="controllers/widget.members.controller.js"></script>
+    <script src="controllers/widget.currentProfile.controller.js"></script>
     <script src="controllers/widget.search.controller.js"></script>
     <script src="controllers/widget.thread.controller.js"></script>
     <script src="controllers/widget.blockedUsers.controller.js"></script>
+    <script src="controllers/widget.badge.controller.js"></script>
     <script src="./assets/js/shared/stringsConfig.js"></script>
     <!-- endbuild -->
     <script>
@@ -71,173 +79,259 @@
 
 </head>
 
-<body id="test">
-    <div class="main_view">
-        <div class="slide-right main-thread-section" style="height: 100%;" ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall"
-        ng-cloak>
-            <div class="backgroundColorTheme content">
-                <div class="padding-zero" style="height: 100%;">
-                    <div class="social-plugin social-wall" ng-style="{'display':WidgetWall.SocialItems.items.length > 0 ? 'block' : 'none'}" >
-      
-                        <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
-                            class="post-section backgroundColorTheme" id="main-posts-container" >
-                            <div class="post-infinite-scroll" id="top">
-                                <div>
-                                    <div class="head" ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
-                                        id="pinnedPost" style="height: 100%;">
-                                    </div>
-                                </div>
-                                <div ng-show="WidgetWall.SocialItems.items.length<=0 && WidgetWall.loadedPlugin && !WidgetWall.loading">
-                                    <div class="empty_state"></div>
-                                </div>
-                                <div  class="social-item" ng-repeat="post in WidgetWall.SocialItems.items">
-                                    <div>
+<body ng-cloak id="test">
+    <div ng-controller="BadgeCtrl as Badge">
+        <div ng-cloak ng-if="showBadgeModal"  class="fullscreen">
+            <div class="BadgeContainer">
+                <div class="BadgeCollect">
+                    <img 
+                        src="./assets/img/confetti.png"
+                    >
+                    <div class="BadgeImage">
+                        <img ng-src="{{Badge.badge.icon}}" style="width: 57%;" />
+                    </div>
+                    <div class="center">
+                        <p style="    font-size: 17px;
+                        font-weight: bold;">Congratulations</p>
+                    </div>
+                    <div class="center">
+                        <p>{{Badge.badge.description}}</p>
+                    </div>
+                    <div class="center" style="color: var(--bf-theme-success);font-size: 21px;font-weight: bold;">
+                        <p style="font-size: 21px;">{{Badge.badge.title}}</p>
+                    </div>
+                    
+                    <div class="center">
+                        <button style="margin-top: -10px;width: 40vw;" class="btn btn-success" ng-click="Badge.collectBadge()">
+                            Collect
+                        </button>
+                    </div>
 
-                                        <div class="head">
-                                            <div ng-class="{'social-profile-user-photo': WidgetWall.SocialItems.userDetails.userId == post.userId}"
-                                                class="social-profile-photo">
-                                                <div ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId"
-                                                    class="social-profile-photo">
-                                                    <div ng-class="{'social-copy-user': WidgetWall.SocialItems.userDetails.userId == post.userId}"
-                                                        class="social-copy">
-                                                        <div style="display: flex;">
-                                                            <p class="text-primary ellipsis" style="margin-right: 5px;">
-                                                                <a class="ng-cloak" ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}} </a>
-                                                            </p>
-                                                            <span ng-if="post.createdOn" class="time-ago opacity-seventy ng-cloak">
-                                                                {{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}
-                                                            </span>
-                                                        </div>
-                                                        <div ng-if="!post.originalAuthorName && post.location && post.location.address">
-                                                            <p class="time-ago opacity-seventy ng-cloak">
-                                                                {{post.location.address}}
-                                                            </p>
-                                                        </div>
-                                                        <div ng-if="post.originalAuthorName">
-                                                            <p class="time-ago opacity-seventy ng-cloak">
-                                                                <span class="material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
-                                                                    repeat
-                                                                </span> {{post.originalAuthorName}}
-                                                            </p>
-                                                        </div>
-    
-                                                        
-                                                    </div>
-                                                </div>
-                                                <div class="media-holder ng-cloak" ng-click="WidgetWall.navigateToProfile(post.userId)">
-                                                    <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
-                                                        data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
-                                                        crop-height="40" crop-type="crop">
-                                                    <img ng-if="!(post.userId && post.userDetails.imageUrl)"
-                                                        load-image="1x1"
-                                                        data-final-src="../../../styles/media/avatar-placeholder.png"
-                                                        data-img-type="local" crop-width="40" crop-height="40"
-                                                        crop-type="default">
-                                                </div>
-                                                <div ng-if="WidgetWall.SocialItems.userDetails.userId != post.userId"
-                                                    class="social-profile-photo">
-                                                    <div class="social-copy">
-                                                        <div style="display: flex;">
-                                                            <p class="text-primary ellipsis" style="margin-right: 5px;">
-                                                                <a class="ng-cloak" ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}} </a>
-                                                            </p>
-                                                            <span ng-if="post.createdOn" class="time-ago opacity-seventy ng-cloak">
-                                                                {{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}
-                                                            </span>
-                                                        </div>
-                                                        <div ng-if="!post.originalAuthorName && post.location && post.location.address">
-                                                            <p class="time-ago opacity-seventy ng-cloak">
-                                                                {{post.location.address}}
-                                                            </p>
-                                                        </div>
-                                                        <div ng-if="post.originalAuthorName">
-                                                            <p class="time-ago opacity-seventy ng-cloak">
-                                                                <span class="material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
-                                                                    repeat
-                                                                </span> {{post.originalAuthorName}}
-                                                            </p>
-                                                        </div>
-    
-                                                    </div>
-                                                </div>
-                                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main_view" ng-style="{'height': isPrivateChat ? '100vh' : '90vh'}" ng-cloak>
+        <div ng-show="!isLoading">
+            <div class="slide-right main-thread-section" style="height: 100%;" ng-show="!isLoading && showThread" ng-controller="WidgetWallCtrl as WidgetWall"
+            ng-cloak>
+            <div class="loginPrompt" ng-if="!WidgetWall.SocialItems.userDetails.userId && !WidgetWall.loginModal.isClosed">
+                <div>
+                    <p>
+                        {{WidgetWall.loginModal.message}}
+                    </p>
+                </div>
+                <div>
+                    <button style="margin-right: 15px;" ng-click="WidgetWall.loginModal.isClosed = true">
+                        {{WidgetWall.loginModal.dismiss}}
+                    </button>
+                    <button ng-click="WidgetWall.showLogin()">
+                        {{WidgetWall.loginModal.loginRegister}}
+                    </button>
+                </div>
+            </div>
+                <div class="backgroundColorTheme content">
+                    <div class="padding-zero" style="height: 100%;">
+                        <div class="social-plugin social-wall" ng-style="{'display':WidgetWall.SocialItems.items.length > 0 ? 'block' : 'none'}" >
+          
+                            <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
+                                class="post-section backgroundColorTheme" id="main-posts-container" >
+                                <div class="post-infinite-scroll" id="top">
+                                    <div>
+                                        <div class="head" ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
+                                            id="pinnedPost" style="height: 100%;">
                                         </div>
-                                        <div ng-class="{'post-text-user': WidgetWall.SocialItems.userDetails.userId == post.userId}"
-                                            class="post-text copy">
-                                            <p class="cursor-pointer">
-                                                <span
-                                                    ng-click="WidgetWall.goToSinglePostView(post.id)"
-                                                    ng-bind-html="(WidgetWall.decodeText(post.text) | limitTo : (post.limit || 150) :0) | newLine">
-                                                <!-- post text goes here -->
-                                                </span>
-                                                <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
-                                                    class="ng-cloak">...</span>
-                                                
-                                                    <a ng-if="(post.text.trim().length>150 && !post.seeMore)"
-                                                        ng-click="WidgetWall.seeMore(post)" class="text-info ng-cloak">Read
-                                                        More</a>
-    
-                                                <span ng-if="(post.text.trim().length>150 && post.seeMore) || post.text.trim().length < 150">
-                                                    <span ng-click="WidgetWall.goToDiscover()" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
-                                                        #{{hashtag}} 
+                                    </div>
+                                    <div ng-show="WidgetWall.SocialItems.items.length <= 0 && WidgetWall.loadedPlugin && !WidgetWall.loading">
+                                        <div class="empty_state"></div>
+                                    </div>
+                                    <div id="posts_main_wall">
+                                        <div   ng-repeat="post in WidgetWall.SocialItems.items track by $index" >
+                                            <div class="social-item">
+        
+                                                <div class="head" style="position:relative">
+                                                    <div class="social-profile-photo">
+ 
+                                                        <div class="media-holder ng-cloak" ng-click="WidgetWall.navigateToProfile(post.userId)">
+                                                            <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
+                                                                data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
+                                                                crop-height="40" crop-type="crop">
+                                                            <img ng-if="!(post.userId && post.userDetails.imageUrl)"
+                                                                load-image="1x1"
+                                                                data-final-src="../../../styles/media/avatar-placeholder.png"
+                                                                data-img-type="local" crop-width="40" crop-height="40"
+                                                                crop-type="default">
+                                                        </div>
+                                                        <div class="social-profile-photo">
+                                                            <div class="social-copy">
+                                                                <div style="display: flex;">
+                                                                    <p class="text-primary ellipsis" style="margin-right: 5px;">
+                                                                        <a class="ng-cloak" ng-click="WidgetWall.openChat(post)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}} </a>
+                                                                    </p>
+                                                                    <span ng-if="post.createdOn" class="time-ago opacity-seventy ng-cloak">
+                                                                        {{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}
+                                                                    </span>
+                                                                </div>
+                                                                <div ng-if="!post.originalPost.userId && post.location && post.location.address">
+                                                                    <p class="time-ago opacity-seventy ng-cloak">
+                                                                        {{post.location.address.length > 25 ? post.location.address.substring(0,25) + '...' : post.location.address}}
+                                                                    </p>
+                                                                </div>
+                                                                <div ng-if="post.originalPost.userId">
+                                                                    <p class="time-ago opacity-seventy ng-cloak" style="display: flex;">
+                                                                        <span class="material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
+                                                                            repeat
+                                                                        </span> {{post.originalPost.displayName}}
+                                                                    </p>
+                                                                </div>
+            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style="    position: absolute;
+                                                    top: 25px;
+                                                    right: 15px;" ng-click="WidgetWall.openPostBottomDrawer(post)">
+                                                        <span  class="material-icons">
+                                                            more_vert
+                                                        </span>
+                                                            
+                                                    </div>
+                                                </div>
+                                                <div class="post-text copy">
+                                                    <p class="cursor-pointer">
+                                                        <span
+                                                            ng-click="WidgetWall.goToSinglePostView(post.id)"
+                                                            ng-bind-html="(WidgetWall.decodeText(post.text) | limitTo : (post.limit || 27) :0) | newLine">
+                                                        <!-- post text goes here -->
+                                                        </span>
+                                                        <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
+                                                            class="ng-cloak">...</span>
+                                                        
+                                                            <a ng-if="(post.text.trim().length>150 && !post.seeMore)"
+                                                                ng-click="WidgetWall.seeMore(post)" class="text-info ng-cloak">Read
+                                                                More</a>
+            
+                                                        <span ng-if="(post.text.trim().length>150 && post.seeMore) || post.text.trim().length < 150">
+                                                            <span ng-click="WidgetWall.goToDiscover()" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
+                                                                #{{hashtag}} 
+                                                            </span>
+                                                        </span>
+                                                        
+                                                    </p>
+                                                </div>
+                                                <div class="plugin-slide text-center post-image-container"  ng-repeat="image in post.images">
+                                                    <img src="{{image}}" alt="" style="width: 100% !important;" ng-click="WidgetWall.openImageInFullScreen(image)"> 
+                                                </div>
+                                                <div class="plugin-slide text-center post-image-container"  ng-repeat="video in post.videos">
+                                                    <video alt=""  style="width: 100% !important;height: 100% !important;object-fit: cover;border-radius: 15px;" controls>
+                                                        <source ng-src="{{trustSrc(video+ '#t=0.01')}}" />
+                                                    </video>
+
+
+                                                </div>
+                                                <div ng-if="post.taggedPeople.length > 0">
+                                                    <span style="    display: flex;
+                                                    justify-content: flex-start;
+                                                    align-items: center;
+                                                    margin-top: 5px;
+                                                    margin-left: 12px;">
+                                                        <span class="material-icons">person</span>
+                                                        <span style="margin-left: 5px;color: var(--bf-theme-primary);"> 
+                                                        {{post.taggedPeople.length}} People Tagged
+                                                        </span>
                                                     </span>
-                                                </span>
-                                                
-                                            </p>
-                                        </div>
-                                        <div class="plugin-slide text-center post-image-container"  ng-repeat="image in post.images">
-                                            <img src="{{image}}" alt="" style="width: 100% !important;" ng-click="WidgetWall.openImageInFullScreen(image)">
-                                            
-                                        </div>
-                                        <div ng-if="post.taggedPeople.length > 0">
-                                            <span style="    display: flex;
-                                            justify-content: flex-start;
-                                            align-items: center;
-                                            margin-top: 10px;
-                                            margin-left: 12px;">
-                                                <span class="material-icons">person</span>
-                                                <span style="margin-left: 5px;color: var(--bf-theme-primary);"> 
-                                                {{post.taggedPeople.length}} People Tagged
-                                                </span>
-                                            </span>
-                                        </div>
-                                        <div ng-show="post.userId" class="">
-                                            <div class="status">
-                                                <div class="status-footer">
-                                                    <div style="display: flex;">
-    
-                                                        <div class="footer-item">
-                                                            <a class="social-icon ng-cloak" ng-click="WidgetWall.likeThread(post)">
-                                                                <i class="material-icons-outlined" ng-class="{notActive: !post.isUserLikeActive }" aria-hidden="true">
-                                                                    thumb_up_off_alt
-                                                                </i>
-                                                            </a>
+                                                </div>
+                                                <div ng-show="post.userId && post.userId != WidgetWall.SocialItems.userDetails.userId" class="">
+                                                    <div class="status">
+                                                        <div class="status-footer">
+                                                            <div style="display: flex;">
+            
+                                                                <div class="footer-item">
+                                                                    <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" ng-click="WidgetWall.toggleReaction(post)" data-id="{{post.id}}">
+                                                                        <span class="{{WidgetWall.reaction.icon}} fa-gradient" 
+                                                                        ng-style="{'background': 'linear-gradient(to top, '+WidgetWall.reaction.color+' 0%, '+WidgetWall.reaction.color+' '+  WidgetWall.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  WidgetWall.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)'}" 
+                                                                        ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
+
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                                
+                                                                <div class="footer-item" ng-click="WidgetWall.repostPost(post)">
+                                                                    <a class="social-icon ng-cloak">
+                                                                        <span class="material-icons-outlined">
+                                                                            repeat
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                                <div class="footer-item" ng-click="WidgetWall.openChat(post)">
+                                                                    <a class="social-icon ng-cloak">
+                                                                        <span class="material-icons-outlined">
+                                                                            chat_bubble_outline
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            <div class="right-footer-items">
+            
+                                                                <div class="footer-item" ng-click="WidgetWall.sharePost(post)">
+                                                                    <a class="social-icon ng-cloak">
+                                                                        <span class="material-icons-outlined">
+                                                                            share
+                                                                        </span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        
-                                                        <div class="footer-item" ng-click="WidgetWall.repostPost(post)">
-                                                            <a class="social-icon ng-cloak">
-                                                                <span class="material-icons-outlined">
-                                                                    repeat
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <div class="footer-item" ng-click="WidgetWall.openChat(post.userId)">
-                                                            <a class="social-icon ng-cloak">
-                                                                <span class="material-icons-outlined">
-                                                                    chat_bubble_outline
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        
                                                     </div>
-                                                    <div class="right-footer-items">
-    
-                                                        <div class="footer-item" ng-click="WidgetWall.sharePost(post)">
-                                                            <a class="social-icon ng-cloak">
-                                                                <span class="material-icons-outlined">
-                                                                    share
-                                                                </span>
-                                                            </a>
+                                                </div>
+                                                <div ng-show="post.userId && post.userId == WidgetWall.SocialItems.userDetails.userId" class="">
+                                                    <div class="status">
+                                                        <div class="status-footer">
+                                                            <div style="display: flex;">
+            
+                                                                <div class="footer-item">
+                                                                    <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" data-id="{{post.id}}">
+                                                                        <span class="{{WidgetWall.reaction.icon}} fa-gradient" 
+                                                                        ng-style="{'background': 'linear-gradient(to top, '+WidgetWall.reaction.color+' 0%, '+WidgetWall.reaction.color+' '+  WidgetWall.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  WidgetWall.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)'}" 
+                                                                        ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
+
+                                                                        </span>
+                                                                    </a>
+                                                                    <span>{{post.likesCount}}</span>
+                                                                </div>
+                                                                
+                                                                <div class="footer-item">
+                                                                    <a class="social-icon ng-cloak">
+                                                                        <span class="material-icons-outlined">
+                                                                            repeat
+                                                                        </span>
+                                                                    </a>
+                                                                    <span>{{post.repostsCount}}</span>
+                                                                </div>
+                                                                <div class="footer-item">
+                                                                    <a class="social-icon ng-cloak">
+                                                                        <span class="material-icons-outlined">
+                                                                            chat_bubble_outline
+                                                                        </span>
+                                                                    </a>
+                                                                    <span>{{post.repliesCount}}</span>
+                                                                    
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            <div class="right-footer-items">
+                                                                
+                                                                <div class="footer-item" ng-click="WidgetWall.sharePost(post)">
+                                                                    <a class="social-icon ng-cloak">
+                                                                        <span class="material-icons-outlined">
+                                                                            share
+                                                                        </span>
+                                                                    </a>
+                                                                    <span>{{post.sharesCount}}</span>                                                                    
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -247,45 +341,64 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div ng-if="WidgetWall.SocialItems.items == 0">
-                        <div class="empty_state"></div>
+                        <div ng-if="WidgetWall.SocialItems.items == 0">
+                            <div class="empty_state"></div>
+                        </div>
                     </div>
                 </div>
+    
             </div>
-
+    
+            <div class="slide-left side-thread-section" ng-view="" ng-show="!isLoading && !showThread">
+                <h5 class="titleBarTheme text-center" style="margin-top: 35px;">Something went wrong!! Please try again</h5>
+            </div>
         </div>
+        <div ng-show="isLoading">
+            <div id="authSkeleton">
 
-        <div class="slide-left side-thread-section" ng-view="" ng-hide="showThread">
-            <h5 class="titleBarTheme text-center" style="margin-top: 35px;">Something went wrong!! Please try again</h5>
+
+
+
+                <div class="skeletonPost">
+                  <div class="skeletonInfoContainer">
+                    <div  class="skeletonProfileImageContainer"></div>
+                    <div class="skeletonInfo">
+                      <div  class="skeletonUsername"></div>
+                      <div  class="skeletonPluginTitle"></div>
+                    </div>
+                  </div>
+                  <div class="skeletonLineMedium"></div>
+                  <div class="skeletonImage">
+
+                  </div>
+                </div>
+
         </div>
     </div>
-    <div class="bottomNavBar" ng-controller="BottomNavBarCtrl as BottomNavBar">
-        <div>
-            <span class="material-icons-outlined fa-gradient" ng-click="BottomNavBar.showMainWall()">
-                home
-            </span>              
-        </div>
-        <div>
-            <span class="material-icons-outlined" ng-click="BottomNavBar.goToDiscover()">
-                search
-            </span>            
-        </div>
-        <div>
-            <span class="material-icons-outlined" ng-click="BottomNavBar.openPostSection()" on-touchend="BottomNavBar.openPostSection()">
-                control_point
-            </span>                   
-        </div>
-        <div>
-            <span class="material-icons-outlined" ng-click="BottomNavBar.goToActivity()">
-                notifications
-            </span>                
-        </div>
-        <div>
-            <span class="material-icons" ng-click="BottomNavBar.goToMyProfile();">
-                account_circle
-            </span>
-                            
+    <div ng-controller="BottomNavBarCtrl as BottomNavBar">
+        <div class="bottomNavBar" ng-if="!isPrivateChat">
+            <div>
+                <span style="font-size:24px" ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
+                    
+                </span>              
+            </div>
+            <div>
+                <span style="font-size:24px" ng-class="BottomNavBar.discover" ng-click="BottomNavBar.goToDiscover()">
+                </span>            
+            </div>
+            <div>
+                <span style="font-size:24px" ng-class="BottomNavBar.addContent" ng-click="BottomNavBar.openPostSection()" on-touchend="BottomNavBar.openPostSection()">
+                </span>                   
+            </div>
+            <div>
+                <span style="font-size:24px" ng-class="BottomNavBar.notifications" ng-click="BottomNavBar.goToActivity()">
+                </span>                
+            </div>
+            <div>
+                <span style="font-size:24px" ng-class="BottomNavBar.myProfile" ng-click="BottomNavBar.goToMyProfile();">
+                </span>
+                                
+            </div>
         </div>
     </div>
     <script>

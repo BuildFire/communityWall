@@ -103,7 +103,10 @@
                     filter : {
                         $and:[
                             {
-                                "$json.userId":{$ne:Search.SocialItems.userDetails.userId}
+                                "_buildfire.index.array1.string1":{$ne:`userId_${Search.SocialItems.userDetails.userId}`}
+                            },
+                            {
+                                "_buildfire.index.string1":""
                             },
                             {
                                 $or:[
@@ -119,9 +122,10 @@
                 SubscribedUsersData.getUsers(options, function (err, data){
                     if(err) return callback(err);
                     else {
+                        console.log(data);
                         return callback(null, data);
                     }
-                })
+                }, Search.SocialItems.userDetails.userId)
             }
 
             $scope.cropImage = function(image){

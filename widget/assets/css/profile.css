@@ -2,10 +2,23 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    height: 120px;
     margin-left: 5%;
     width: 90%;
     align-content: center;
+    margin-bottom: 10px;
+}
+.profile-buddies > div > img{
+    height: 40px;
+    width: 40px;
+    margin: 0px 5px;
+}
+.profile-buddies{
+    display: flex;
+    height: 45px;
+    align-items: flex-start;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+    width: 90%;
 }
 .profile-picture-container > img{
     height: 50%;
@@ -31,14 +44,14 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    margin-top: 6.5%;
+    margin-top: 10%;
 }
 .profile-picture-container{
     flex: 2;
     height: 100%;
     width: 100%;
     border-radius: 50%;
-    margin-top: 0%;
+    margin-top: 7%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,6 +90,7 @@
     background-color: rgb(96 184 71);
     border-radius: 5px !important;
     color: white;
+    margin-bottom: 15px;
 }
 .side-by-side{
     display: flex !important;

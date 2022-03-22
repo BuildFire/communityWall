@@ -3,55 +3,55 @@ const stringsConfig = {
 		title: "User Profile",
 		subtitle: "",
 		labels: {
-			follow: {
+			userfollow: {
 				title: "Follow"
 				, placeholder: "Follow"
 				, maxLength: 30
 				, defaultValue: "Follow"
 			},
-			unfollow: {
+			userunfollow: {
 				title: "Unfollow"
 				, placeholder: "Unfollow"
 				, maxLength: 30
 				, defaultValue: "Unfollow"
 			},
-			editProfile: {
+			usereditProfile: {
 				title: "Edit Profile"
 				, placeholder: "Edit Profile"
 				, maxLength: 30
 				, defaultValue: "Edit Profile"
 			},
-			inbox: {
+			userinbox: {
 				title: "Inbox"
 				, placeholder: "Inbox"
 				, maxLength: 30
 				, defaultValue: "Inbox"
 			},
-			posts: {
+			userposts: {
 				title: "Posts"
 				, placeholder: "Posts"
 				, maxLength: 30
 				, defaultValue: "Posts"
 			},
-			tagged: {
+			usertagged: {
 				title: "Tagged"
 				, placeholder: "Tagged"
 				, maxLength: 30
 				, defaultValue: "Tagged"
 			},
-			privateAccountTitle: {
+			userprivateAccountTitle: {
 				title: "Private Account Title"
 				, placeholder: "Private Account Title"
 				, maxLength: 30
 				, defaultValue: "Private Account Title"
 			},
-			privateAccountBody: {
+			userprivateAccountBody: {
 				title: "Private Account Body"
 				, placeholder: "Private Account Body"
 				, maxLength: 30
 				, defaultValue: "Private Account Body"
 			},
-			blocked: {
+			userblocked: {
 				title: "Blocked"
 				, placeholder: "Blocked"
 				, maxLength: 30
@@ -64,49 +64,49 @@ const stringsConfig = {
 		title: "Activity",
 		subtitle: "",
 		labels: {
-			followRequest: {
+			activityfollowRequest: {
 				title: "Follow Request"
 				, placeholder: "Follow Request"
 				, maxLength: 30
 				, defaultValue: "Follow Request"
 			},
-			followRequestAcceptButton: {
+			activityfollowRequestAcceptButton: {
 				title: "Follow Request Accept Button"
 				, placeholder: "Yes"
 				, maxLength: 30
 				, defaultValue: "Yes"
 			},
-			followRequestRejectButton: {
+			activityfollowRequestRejectButton: {
 				title: "Follow Request Reject Button"
 				, placeholder: "No"
 				, maxLength: 30
 				, defaultValue: "No"
 			},
-			startedFollowingYou: {
+			activitystartedFollowingYou: {
 				title: "Started Following you"
 				, placeholder: "Started Following you"
 				, maxLength: 30
 				, defaultValue: "Started Following you"
 			},
-			followBackButton: {
+			activityfollowBackButton: {
 				title: "Follow Back Button"
 				, placeholder: "Follow Back"
 				, maxLength: 30
 				, defaultValue: "Follow Back"
 			},
-			reactedToYourPost: {
+			activityreactedToYourPost: {
 				title: "Reacted To Your Post"
 				, placeholder: "Reacted To Your Post"
 				, maxLength: 30
 				, defaultValue: "Reacted To Your Post"
 			},
-			taggedYouInAPost: {
+			activitytaggedYouInAPost: {
 				title: "Tagged You in a Post"
 				, placeholder: "Tagged You in a Post"
 				, maxLength: 30
 				, defaultValue: "Tagged You in a Post"
 			},
-			acceptedYourFollowRequest: {
+			activityacceptedYourFollowRequest: {
 				title: "Accepted Your Follow Request"
 				, placeholder: "Accepted Your Follow Request"
 				, maxLength: 30
@@ -119,20 +119,20 @@ const stringsConfig = {
 		title: "Log In Banner",
 		subtitle: "",
 		labels: {
-			bannerText: {
+			logInbannerText: {
 				title: "Banner Text"
 				, placeholder: "Add score"
 				, maxLength: 30
 				, defaultValue: "Add score"
 			},
 			
-			dismiss: {
+			logIndismiss: {
 				title: "Dismiss"
 				, placeholder: "Dismiss"
 				, maxLength: 30
 				, defaultValue: "Dismiss"
 			},
-			loginRegister: {
+			logInloginRegister: {
 				title: "Log In/Register"
 				, placeholder: "Log In/Register"
 				, maxLength: 30
@@ -145,26 +145,26 @@ const stringsConfig = {
 		title: "Unfollow Modal",
 		subtitle: "",
 		labels: {
-			title: {
+			unfollowtitle: {
 				title: "Title"
 				, placeholder: "Unfollow user"
 				, maxLength: 30
 				, defaultValue: "Unfollow user"
 			},
 			
-			body: {
+			unfollowbody: {
 				title: "Body"
 				, placeholder: "Are you sure you want to unfollow this user?"
 				, maxLength: 30
 				, defaultValue: "Are you sure you want to unfollow this user?"
 			},
-			cancel: {
+			unfollowcancel: {
 				title: "Cancel Button"
 				, placeholder: "Cancel"
 				, maxLength: 30
 				, defaultValue: "Cancel"
 			},
-			confirm: {
+			unfollowconfirm: {
 				title: "Confirm Button"
 				, placeholder: "Unfollow"
 				, maxLength: 30
@@ -180,26 +180,26 @@ const stringsConfig = {
 		title: "Report Post Modal",
 		subtitle: "",
 		labels: {
-			title: {
+			reportPosttitle: {
 				title: "Title"
 				, placeholder: "Report inappropriate post"
 				, maxLength: 30
 				, defaultValue: "Report inappropriate post"
 			},
 			
-			body: {
+			reportPostbody: {
 				title: "Body"
 				, placeholder: "is this post inappropriate? We will review this report within 24 hrs and if deemed inappropriate the post will be removed"
 				, maxLength: 30
 				, defaultValue: "is this post inappropriate? We will review this report within 24 hrs and if deemed inappropriate the post will be removed"
 			},
-			cancel: {
+			reportPostcancel: {
 				title: "Cancel Button"
 				, placeholder: "Cancel"
 				, maxLength: 30
 				, defaultValue: "Cancel"
 			},
-			confirm: {
+			reportPostconfirm: {
 				title: "Confirm Button"
 				, placeholder: "Report"
 				, maxLength: 30
@@ -215,26 +215,26 @@ const stringsConfig = {
 		title: "Block User Modal",
 		subtitle: "",
 		labels: {
-			title: {
+			blocktitle: {
 				title: "Title"
 				, placeholder: "Block user"
 				, maxLength: 30
 				, defaultValue: "Block user"
 			},
 			
-			body: {
+			blockbody: {
 				title: "Body"
 				, placeholder: "Both of you won't be able to see each other's posts and comments. The user won't be notified that you blocked them."
 				, maxLength: 30
 				, defaultValue: "Both of you won't be able to see each other's posts and comments. The user won't be notified that you blocked them."
 			},
-			cancel: {
+			blockcancel: {
 				title: "Cancel Button"
 				, placeholder: "Cancel"
 				, maxLength: 30
 				, defaultValue: "Cancel"
 			},
-			confirm: {
+			blockconfirm: {
 				title: "Confirm Button"
 				, placeholder: "Block"
 				, maxLength: 30
@@ -246,26 +246,26 @@ const stringsConfig = {
 		title: "Unblock User Modal",
 		subtitle: "",
 		labels: {
-			title: {
+			unblocktitle: {
 				title: "Title"
 				, placeholder: "Unblock user"
 				, maxLength: 30
 				, defaultValue: "Unblock user"
 			},
 			
-			body: {
+			unblockbody: {
 				title: "Body"
 				, placeholder: "Both of you will now be able to see each other's posts and comments. The user won't be notified that you blocked them."
 				, maxLength: 30
 				, defaultValue: "Both of you will now be able to see each other's posts and comments. The user won't be notified that you blocked them."
 			},
-			cancel: {
+			unblockcancel: {
 				title: "Cancel Button"
 				, placeholder: "Cancel"
 				, maxLength: 30
 				, defaultValue: "Cancel"
 			},
-			confirm: {
+			unblockconfirm: {
 				title: "Confirm Button"
 				, placeholder: "Unblock"
 				, maxLength: 30
@@ -277,20 +277,20 @@ const stringsConfig = {
 		title: "Account Banned Modal",
 		subtitle: "",
 		labels: {
-			title: {
+			accountBannedtitle: {
 				title: "Title"
 				, placeholder: "Account Banned"
 				, maxLength: 30
 				, defaultValue: "Account Banned"
 			},
 			
-			body: {
+			accountBannedbody: {
 				title: "Body"
 				, placeholder: "Your account was permanently banned due to violations of our Community Guidelines"
 				, maxLength: 30
 				, defaultValue: "Your account was permanently banned due to violations of our Community Guidelines"
 			},
-			close: {
+			accountBannedclose: {
 				title: "Close Button"
 				, placeholder: "Close"
 				, maxLength: 30

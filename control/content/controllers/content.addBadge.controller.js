@@ -3,42 +3,9 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('addBadgeCtrl', ['$rootScope','$scope', '$location','SocialBadges', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', 'SocialItems', 'Util', function ($rootScope,$scope, $location,SocialBadges, SocialDataStore, Modals, Buildfire, EVENTS, $timeout, SocialItems, Util) {
+        .controller('addBadgeCtrl', ['$rootScope','$scope','$routeParams', '$location','SocialBadges', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', 'SocialItems', 'Util', function ($rootScope,$scope, $routeParams, $location,SocialBadges, SocialDataStore, Modals, Buildfire, EVENTS, $timeout, SocialItems, Util) {
             var t = this;
-            t.enableSave = false;
-            t.showColorModal = false;
-            t.solidColor = {
-                solid : {}
-            }
-
-            t.badge = {
-                icon:null,
-                color: {},
-                title: "",
-                description: "",
-                expires:{
-                    number: 0,
-                    frame: "days",
-                    isTurnedOn: false,
-                },
-                conditions:{
-                    posts:{
-                        type:"More Than",
-                        value: 0,
-                        isTurnedOn: false,
-                    },
-                    reactions:{
-                        type:"More Than",
-                        value: 0,
-                        isTurnedOn: false,
-                    },
-                    reposts:{
-                        type:"More Than",
-                        value: 0,
-                        isTurnedOn: false,
-                    }
-                },
-            }
+            t.badgeId = $routeParams.badgeId;
 
             $scope.checkIfEnableSave = function(){
                 let b = t.badge;
@@ -59,9 +26,60 @@
 
 
             var init = function () {
-                $timeout(function(){
-                    $scope.$digest();
-                })
+                if(t.badgeId == 0){
+
+                    t.enableSave = false;
+                    t.showColorModal = false;
+                    t.solidColor = {
+                        solid : {}
+                    }
+        
+                    t.badge = {
+                        icon:null,
+                        color: {},
+                        title: "",
+                        description: "",
+                        expires:{
+                            number: 0,
+                            frame: "days",
+                            isTurnedOn: false,
+                        },
+                        conditions:{
+                            posts:{
+                                type:"More Than",
+                                value: 0,
+                                isTurnedOn: false,
+                            },
+                            reactions:{
+                                type:"More Than",
+                                value: 0,
+                                isTurnedOn: false,
+                            },
+                            reposts:{
+                                type:"More Than",
+                                value: 0,
+                                isTurnedOn: false,
+                            }
+                        },
+                    }
+        
+                    $timeout(function(){
+                        $scope.$digest();
+                    })
+                }
+                else{
+                    Buildfire.appData.getById(t.badgeId,"SocialBadges",(err, b) =>{
+                        let data = b.data;
+                        t.enableSave = true;
+                        t.showColorModal = false;
+                        t.solidColor = data.color
+                        
+                        t.badge = data;
+                        $timeout(function(){
+                            $scope.$digest();
+                        })
+                    })
+                }
             }
 
             $scope.goBack = function(){
@@ -69,15 +87,16 @@
             }
 
             $scope.selectIcon = function(){
-                Buildfire.imageLib.showDialog({multiSelection: false,showIcons: true, showFiles: false}, (err, result) => {
+                Buildfire.imageLib.showDialog({multiSelection: false,showIcons: false, showFiles: true}, (err, result) => {
                     if (err) return console.error(err);
                     else{
-                        if(result && result.selectedIcons && result.selectedIcons.length > 0){
+                        console.log(result);
+                        if(result && result.selectedFiles && result.selectedFiles.length > 0){
                             let iconPlaceholder = document.getElementById("iconPlaceholder");
-                            t.badge.icon = result.selectedIcons[0];
+                            t.badge.icon = result.selectedFiles[0];
                             console.log(t.badge);
                             iconPlaceholder.classList.remove("nonActive");
-                            iconPlaceholder.innerHTML = `<span class="${result.selectedIcons[0]}" style="font-size: 16px;text-align: center;margin-left: 3px;"></span>`
+                            iconPlaceholder.innerHTML = `<img src=${t.badge.icon} />`
                         }
                     }
                   });
@@ -149,18 +168,29 @@
 
             $scope.save = function(){
                 if(!t.enableSave) return;
-                SocialBadges.insert(t.badge, (err, res) =>{
-                    if(err === "Badge with same name already exists"){ 
-                        Buildfire.dialog.alert({
-                            message: err,
-                        });
-                    }
-                    else if(err) return console.error(err);
-                    else if(res && res.id){
-                        console.log(res);
-                        $scope.goBack();
-                    }
-                })
+                if($routeParams.badgeId == 0){
+                    SocialBadges.insert(t.badge, (err, res) =>{
+                        if(err === "Badge with same name already exists"){ 
+                            Buildfire.dialog.alert({
+                                message: err,
+                            });
+                        }
+                        else if(err) return console.error(err);
+                        else if(res && res.id){
+                            $scope.goBack();
+                        }
+                    })
+
+                }
+                else{
+                    SocialBadges.update($routeParams.badgeId, t.badge, (err, res) =>{
+                        if(err) return console.error(err);
+                        else if(res && res.id){
+                            $scope.goBack();
+                        }
+                    })
+
+                }
             }
 
             init();

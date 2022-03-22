@@ -3,12 +3,15 @@
   ><span class="title"> / Add Badge</span>
   <h1 class="section-title">Add Badge</h1>
 
-  <div class="badgerowitem">
+  <div class="badgerowitem" style="height: 13vh !important">
     <div class="badgeleft">
       <strong>Badge Icon</strong>
     </div>
     <div class="badgeright" ng-click="selectIcon()">
-      <div id="iconPlaceholder" class="imagePlaceholderBox nonActive"></div>
+      <div ng-if="!(addBadge.badge.icon)" style="width: 10%;height: 100%;"  id="iconPlaceholder" class="imagePlaceholderBox nonActive"></div>
+      <div ng-if="(addBadge.badge.icon)"  style="width: 10%;height: 100%;" id="iconPlaceholder" class="imagePlaceholderBox">
+        <img ng-src="{{addBadge.badge.icon}}" />
+      </div>
     </div>
   </div>
   <div class="badgerowitem">
@@ -17,7 +20,8 @@
     </div>
     <div class="badgeright">
       <div class="selectedColorBox" ng-click="bfColorPicker()">
-        <div id="color-picker-bg" class="innerSelectedColorBox noColor"></div>
+        <div ng-if="!(addBadge.badge.color && addBadge.badge.color.solidColor)" id="color-picker-bg" class="innerSelectedColorBox noColor"></div>
+        <div ng-if="(addBadge.badge.color && addBadge.badge.color.solidColor)" id="color-picker-bg" class="innerSelectedColorBox" ng-style="{background: addBadge.badge.color.solidColor}"></div>
       </div>
     </div>
   </div>

@@ -194,10 +194,18 @@ html{
     padding-bottom: 65px !important;
 }
 .fa-gradient {
-	background: linear-gradient(to top, var(--reaction-fill-color) 0%, var(--reaction-fill-color) 50%,black 51%,black 100%);
     background-clip: text;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text !important;
+	-webkit-text-fill-color: rgba(150,150,150, 0);
+    font-size: 25px;
+    padding: 5px;
+    border-radius: 100%;
+    margin-top: -4px;
+}
+.fa-border{
+    border: 1px solid red;
+    border-radius: 100%;
+
 }
 
 
@@ -668,8 +676,17 @@ button.btn--lg,
     font-size: 12px;
 }
 .social-item .post-text{
-    margin-left: 20px;
+    margin-left: 15px;
     margin-right: 16px;
+}
+#posts_main_wall{
+    height: 89vh;
+    overflow-y: auto;
+    scroll-snap-points-y: repeat(92vh);
+    scroll-snap-type: y mandatory;
+}
+#posts_main_wall > *{
+    scroll-snap-align: start;
 }
 .social-item .post-text-user{
     text-align: end;
@@ -683,6 +700,7 @@ button.btn--lg,
     justify-content: space-between;
     padding-top: .5rem;
     margin-left: 14px;
+    margin-top: 5px;
 }
 .status-footer .social-icon,
 .footer .social-icon {
@@ -690,13 +708,29 @@ button.btn--lg,
     align-items: center;
     padding: .5rem;
     font-size: .75rem;
-    margin-right: .75rem;
+    margin-right: 0.1rem;
 }
+.status-footer > div > .footer-item{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.status-footer > div > .footer-item > a{
+    flex: 1;
+}
+.status-footer > div > .footer-item > span{
+    flex: 1;
+}
+
+
 .status-footer .social-icon span:not(.active),
 .footer .social-icon span:not(.active){
     color: rgba(150,150,150,.8) !important;
     /* mix-blend-mode: luminosity; */
 }
+
 
 .status-footer .icon,
 .footer .icon {
@@ -704,7 +738,42 @@ button.btn--lg,
     margin-right: .25rem;
 }
 
+.loginPrompt{
+    position: absolute;
+    z-index: 999999;
+    background: white;
+    width: 100%;
+    height: 15vh;
+    top: 0;
+    left: 0;
+    flex-direction: column;
+    display: flex;
+    box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.2) !important;
+    justify-content: space-around;
+}
+.loginPrompt > *:nth-child(2){
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding-right: 20px;
+}
+.loginPrompt > div > p{
+    padding-left: 10px;
+    padding-top: 10px;
+    font-size: 15px;
+    font-weight: bolder;
+}
+.loginPrompt > div > button{
+    height: auto;
+    font-size: 14px;
+    padding: 0px;
+    color: var(--bf-theme-success);
+    font-weight: bold;
+}
+
+
 .social-item {
+    height: 89vh;
     background-color: rgba(255, 255, 255, .1);
     box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.2) !important;
     margin-bottom: .5rem;
@@ -720,7 +789,6 @@ button.btn--lg,
  .side-thread-section .status-footer {
      margin:0;
      padding-left: .75rem;
-     border-bottom: 1px solid rgba(150,150,150,.3);
 
  }
  .social-comment {
@@ -778,14 +846,12 @@ button.btn--lg,
      margin-left: 10px;
      width: calc(100% - 20px);
      border-radius: 15px;
-     max-height: none !important;
-     height: 68vh !important;
+     height: 54vh !important;
  }
  .post-image-container>img{
      width: 100% !important;
      height: 100% !important;
      border-radius: 15px;
-     max-height: none !important;
  }
 
  .status-footer .likes,
@@ -882,6 +948,237 @@ button.btn--lg,
     height: 3px;
     margin: 5px 0;
     width: 100%;
+}
+
+.fullscreen{
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999999999999999999999999999;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #28222266;
+}
+
+.BadgeCollect{
+    width: 45vh;
+    height: 71vh;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    position: relative;
+    border-radius: 5px;
+}
+.BadgeCollect > img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+.BadgeCollect > div{
+    z-index: 10;
+}
+.BadgeImage{
+    margin: 5vh 0px;
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 75px;
+}
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex: 0.7;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+
+.skeletonPostsContainer{
+    margin-top: 16px;
+    height: auto;
+}
+
+.skeletonPost{
+    margin: 8px;
+    padding: 16px;
+    background: var(--backgroundColor) !important;
+    box-shadow:  0 0 2px 0  var(--box-shadow), 0 2px 4px 0  var(--box-shadow);
+    border-radius: 4px;
+    border: 1px solid #D5D5D5;
+    box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.2) !important;
+}
+
+.skeletonImage{
+    width: 100%;
+    height: 65vh;
+    margin: 15px 0px;
+    background-color: #E5E5E5;
+    border-radius: 15px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+
+
+@keyframes skeletonLoading{
+    0%{
+        background-color: hsl(200, 20%, 70%);
+    }
+    100%{
+        background-color: hsl(200, 20%, 95%);
+    }
+}
+
+.skeletonInfoContainer{
+    display: flex;
+}
+
+.skeletonProfileContainer{
+    display: flex;
+}
+.skeletonInfo{
+    width: 80%;
+    margin-left: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: -15px;
+}
+.skeletonLineTitle{
+    width: 54%;
+    background-color: #E5E5E5;
+    height: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+.skeletonPluginTitle{
+    width: 25%;
+    background-color: #E5E5E5;
+    height: 10px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+.skeletonFollowingUsername{
+    width: 45px;
+    background-color: #E5E5E5;
+    height: 8px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+.skeletonUsername{
+    width: 15%;
+    background-color: #E5E5E5;
+    height: 15px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+.skeletonLineSmall{
+    width: 54%;
+    background-color: #E5E5E5;
+    height: 15px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+.skeletonLineMedium{
+    width: 70%;
+    background-color: #E5E5E5;
+    height: 15px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+.skeletonLineLarge{
+    width: 100%;
+    background-color: #E5E5E5;
+    height: 15px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+
+.skeletonProfileImageContainer{
+    width: 45px;
+    height: 45px;
+    background-color: #E5E5E5;
+    border-radius: 45px;
+    margin-bottom: 15px;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+
+.skeletonFollowingCotainer{
+    margin-top: 16px;
+	width: 100%;
+    height: auto;
+	display: flex;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.skeletonFollowingElement{
+    width: 20%;
+    height: 80px;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.skeletonFollowingUsernameContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: -10px;
+}
+
+.skeletonFollowingImageContainer {
+    width: 44px;
+    height: 44px;
+    margin-top: 1vh;
+    margin-left: 1.5vh;
+    border-radius: 75px;
+    animation: skeletonLoading 1s linear infinite alternate;
+    margin-bottom: 15px;
+}
+
+.skeletonFollowingImageContainer>.imgskeleton{
+    width: 100%;
+    height: 100%;
+    border-radius: 150px;
+}
+
+
+
+
+
+
+
+.BadgeDescription{
+    flex:1
+}
+.BadgeAction{
+    flex:1
+}
+
+.BadgeContainer{
+    position: absolute;
+    width: 100vw;
+    height: 90vh;
+    z-index: 99999999999999999999999999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .cross-icon {
@@ -1214,7 +1511,7 @@ textarea {
 }
 .post-section .post-infinite-scroll,
 .side-thread-section .post-section{
-    padding: .5rem;
+    padding: 0.25rem 0.5rem;
     height: 100vh;
     overflow: scroll;
 }
@@ -1462,6 +1759,12 @@ html[buildfire][safe-area="true"] body {
 
 .notActive {
     color: rgba(150,150,150,.8) !important;
+    border: 1px solid rgba(150,150,150,.8) !important;
+    font-size: 25px;
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 100%;
+    margin-top: -4px;
 }
 
 .iconsFont {

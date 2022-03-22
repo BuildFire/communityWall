@@ -1,128 +1,180 @@
-<div class="social-item" style="margin: 7px;">
-                                    
-    <div class="head">
-        <div class="social-profile-photo">
 
-            <div class="media-holder ng-cloak">
-                <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
-                    data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
-                    crop-height="40" crop-type="crop">
-                <img ng-if="!(post.userId && post.userDetails.imageUrl)"
-                    load-image="1x1"
-                    data-final-src="../../../styles/media/avatar-placeholder.png"
-                    data-img-type="local" crop-width="40" crop-height="40"
-                    crop-type="default">
-            </div>
+<div  class="social-item" ng-if="!SinglePost.isLoading">
+    <div style="    height: 90vh;
+    overflow: auto;">
+
+        <div class="head" style="position:relative">
             <div class="social-profile-photo">
-                <div class="social-copy">
-                    <p class="text-primary ellipsis">
-                        <a class="ng-cloak"
-                            ng-click="SinglePost.navigateToProfile(post.userId)">{{SinglePost.SocialItems.getUserName(post.userDetails)}}</a>
-                    </p>
-                    <div ng-if="post.createdOn">
-                        <p class="time-ago opacity-seventy ng-cloak">
-                            {{SinglePost.getDuration(post.createdOn) | convertTimeFormat}}
-                        </p>
+
+                <div class="media-holder ng-cloak" ng-click="SinglePost.navigateToProfile(post.userId)">
+                    <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
+                        data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
+                        crop-height="40" crop-type="crop">
+                    <img ng-if="!(post.userId && post.userDetails.imageUrl)"
+                        load-image="1x1"
+                        data-final-src="../../../styles/media/avatar-placeholder.png"
+                        data-img-type="local" crop-width="40" crop-height="40"
+                        crop-type="default">
+                </div>
+                <div class="social-profile-photo">
+                    <div class="social-copy">
+                        <div style="display: flex;">
+                            <p class="text-primary ellipsis" style="margin-right: 5px;">
+                                <a class="ng-cloak" ng-click="SinglePost.openChat(post)">{{SinglePost.SocialItems.getUserName(post.userDetails)}} </a>
+                            </p>
+                            <span ng-if="post.createdOn" class="time-ago opacity-seventy ng-cloak">
+                                {{SinglePost.getDuration(post.createdOn) | convertTimeFormat}}
+                            </span>
+                        </div>
+                        <div ng-if="!post.originalAuthorName && post.location && post.location.address">
+                            <p class="time-ago opacity-seventy ng-cloak">
+                                {{post.location.address.length > 25 ? post.location.address.substring(0,25) + '...' : post.location.address}}
+                            </p>
+                        </div>
+                        <div ng-if="post.originalAuthorName">
+                            <p class="time-ago opacity-seventy ng-cloak">
+                                <span class="material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
+                                    repeat
+                                </span> {{post.originalAuthorName}}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div style="    position: absolute;
+            top: 25px;
+            right: 15px;" ng-click="SinglePost.openPostBottomDrawer(post)">
+                <span  class="material-icons">
+                    more_vert
+                </span>
+                    
+            </div>
+        </div>
+        <div class="post-text copy">
+            <p class="cursor-pointer">
+                <span
+                    ng-click="SinglePost.goToSinglePostView(post.id)"
+                    ng-bind-html="(SinglePost.decodeText(post.text))  | newLine">
+                <!-- post text goes here -->
+                </span>
+
+                
+            </p>
+        </div>
+        <div class="plugin-slide text-center post-image-container"  ng-repeat="image in post.images">
+            <img src="{{image}}" alt="" style="width: 100% !important;" ng-click="SinglePost.openImageInFullScreen(image)"> 
+        </div>
+        <div class="plugin-slide text-center post-image-container"  ng-repeat="video in post.videos">
+            <video alt=""  style="width: 100% !important;height: 100% !important;object-fit: cover;border-radius: 15px;" controls>
+                <source ng-src="{{trustSrc(video+ '#t=0.01')}}" />
+            </video>
+
+
+        </div>
+        <div ng-if="post.taggedPeople.length > 0">
+            <span style="    display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 5px;
+            margin-left: 12px;">
+                <span class="material-icons">person</span>
+                <span style="margin-left: 5px;color: var(--bf-theme-primary);"> 
+                    {{taggedUsers}}
+                </span>
+            </span>
+        </div>
+        <div ng-show="post.userId && post.userId != SinglePost.SocialItems.userDetails.userId" class="">
+            <div class="status">
+                <div class="status-footer">
+                    <div style="display: flex;">
+
+                        <div class="footer-item">
+                            <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" ng-click="SinglePost.toggleReaction(post)" data-id="{{post.id}}">
+                                <span class="{{SinglePost.reaction.icon}} fa-gradient" 
+                                ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)'}" 
+                                ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
+
+                                </span>
+                            </a>
+                        </div>
+                        
+                        <div class="footer-item" ng-click="SinglePost.repostPost(post)">
+                            <a class="social-icon ng-cloak">
+                                <span class="material-icons-outlined">
+                                    repeat
+                                </span>
+                            </a>
+                        </div>
+                        <div class="footer-item" ng-click="SinglePost.openChat(post)">
+                            <a class="social-icon ng-cloak">
+                                <span class="material-icons-outlined">
+                                    chat_bubble_outline
+                                </span>
+                            </a>
+                        </div>
+                        
+                    </div>
+                    <div class="right-footer-items">
+
+                        <div class="footer-item" ng-click="SinglePost.sharePost(post)">
+                            <a class="social-icon ng-cloak">
+                                <span class="material-icons-outlined">
+                                    share
+                                </span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="post-text copy">
-        <p class="cursor-pointer">
-            <span
-                ng-click="SinglePost.goToSinglePostView(post.id)"
-                ng-bind-html="(SinglePost.decodeText(post.text) | limitTo : (post.limit || 150) :0) | newLine">
-            <!-- post text goes here -->
-            </span>
-            <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
-                class="ng-cloak">...</span>
-            
-                <a ng-if="(post.text.trim().length>150 && !post.seeMore)"
-                    ng-click="SinglePost.seeMore(post)" class="text-info ng-cloak">Read
-                    More</a>
+        <div ng-show="post.userId && post.userId == SinglePost.SocialItems.userDetails.userId" class="">
+            <div class="status">
+                <div class="status-footer">
+                    <div style="display: flex;">
 
-            <span ng-if="(post.text.trim().length>150 && post.seeMore) || post.text.trim().length < 150">
-                <span ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
-                    #{{hashtag}} 
-                </span>
-            </span>
-            
-        </p>
-    </div>
-    <div class="plugin-slide text-center post-image-container"  ng-repeat="image in post.images">
-        <img src="{{image}}" alt="" style="width: 100% !important;">
-    </div>
-    <div class="plugin-slide text-center post-image-container" ng-if="post.videos.length > 0" ng-repeat="video in post.videos">
-        <video ng-src="{{trustSrc(video)}}" alt="" style="width: 100% !important;height: 100% !important;object-fit: fill;" controls autoplay>
-    </div>
+                        <div class="footer-item">
+                            <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" data-id="{{post.id}}">
+                                <span class="{{SinglePost.reaction.icon}} fa-gradient" 
+                                ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)'}" 
+                                ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
 
-    <div ng-if="taggedUsers">
-        <span style="    display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        margin-top: 10px;
-        margin-left: 12px;">
-            <span class="material-icons">person</span>
-            <span style="margin-left: 5px;color: var(--bf-theme-primary);"> 
-            {{taggedUsers}}
-            </span>
-        </span>
-    </div>
-    <div ng-show="post.userId" class="">
-        <div class="status">
-            <div class="status-footer">
-                <div style="display: flex;">
-
-                    <div class="footer-item">
-                        <a class="social-icon ng-cloak" ng-click="SinglePost.likeThread(post)">
-                            <i class="material-icons-outlined" ng-class="{notActive: !post.isUserLikeActive }" aria-hidden="true">
-                                thumb_up_off_alt
-                            </i>
-                        </a>
+                                </span>
+                            </a>
+                            <span>{{post.likesCount}}</span>
+                        </div>
+                        
+                        <div class="footer-item">
+                            <a class="social-icon ng-cloak">
+                                <span class="material-icons-outlined">
+                                    repeat
+                                </span>
+                            </a>
+                            <span>{{post.repostsCount}}</span>
+                        </div>
+                        <div class="footer-item">
+                            <a class="social-icon ng-cloak">
+                                <span class="material-icons-outlined">
+                                    chat_bubble_outline
+                                </span>
+                            </a>
+                            <span>{{post.repliesCount}}</span>
+                            
+                        </div>
+                        
                     </div>
-                    
-                    <div class="footer-item" ng-click="SinglePost.repostPost(post.originalPostId || post.id)">
-                        <a class="social-icon ng-cloak">
-                            <span class="material-icons-outlined">
-                                repeat
-                            </span>
-                        </a>
-                    </div>
-                    <div class="footer-item" ng-click="SinglePost.openChat(post.userId)">
-                        <a class="social-icon ng-cloak">
-                            <span class="material-icons-outlined">
-                                chat_bubble_outline
-                            </span>
-                        </a>
-                    </div>
-                    
-                </div>
-                <div class="right-footer-items">
-
-                    <div class="footer-item" ng-click="SinglePost.sharePost(post)">
-                        <a class="social-icon ng-cloak">
-                            <span class="material-icons-outlined">
-                                share
-                            </span>
-                        </a>
+                    <div class="right-footer-items">
+                        
+                        <div class="footer-item" ng-click="SinglePost.sharePost(post)">
+                            <a class="social-icon ng-cloak">
+                                <span class="material-icons-outlined">
+                                    share
+                                </span>
+                            </a>
+                            <span>{{post.sharesCount}}</span>                                                                    
+                        </div>
                     </div>
                 </div>
-                <!-- <a class="social-icon ng-cloak" ng-click="SinglePost.likeThread(post)">
-                    <i class="material-icons-outlined" ng-class="{notActive: !post.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
-                    <span class="iconsTheme iconsFont"
-                    ng-class="{notActive: !post.isUserLikeActive}">{{post.likes.length}}</span>
-                </a>
-            
-            <a ng-if="!SinglePost.SocialItems.isPrivateChat"
-                ng-click=" (!SinglePost.SocialItems.isPrivateChat) ? SinglePost.goInToThread(post.id) : return"
-                class="social-icon comments ng-cloak">
-                <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
-                <span class="iconsTheme iconsFont">{{post.comments.length}}</span>
-            </a>
-            <a class="likes social-icon ng-cloak" ng-click="SinglePost.showMoreOptions(post)">
-                <span class="material-icons-outlined">more_horiz</span>
-            </a> -->
             </div>
         </div>
     </div>

@@ -10,7 +10,7 @@
                     controllerAs: 'ContentHome',
                     controller: 'ContentHomeCtrl'
                 })
-                .when('/addBadge', {
+                .when('/addBadge/:badgeId', {
                     templateUrl: 'templates/addBadge.html',
                     controllerAs: 'addBadge',
                     controller: 'addBadgeCtrl'

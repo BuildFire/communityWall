@@ -227,7 +227,7 @@ class BadgeSearchTableHelper {
 
 		let t = this;
 		if (this.config.options.showEditButton) {
-			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="icon icon-pencil"></span></button>', ["editColumn"]);
+			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="glyphicon glyphicon-pencil"></span></button>', ["editColumn"]);
 			td.onclick = () => {
 				t.onEditRow(obj, tr);
 			};
@@ -267,7 +267,7 @@ class BadgeSearchTableHelper {
 	onRowAdded(obj, tr) { }
 
 	onEditRow(obj, tr) {
-		console.log("Edit row", obj);
+		window.location.href = "#/addBadge/"+obj.id;
 	}
 
 	onRowDeleted(obj, tr) {

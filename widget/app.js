@@ -24,7 +24,7 @@
                     controllerAs: 'Members',
                     controller: 'MembersCtrl'
                 })
-                .when('/post/createPost',{
+                .when('/post/createPost/:postId',{
                     templateUrl: 'templates/createPost.html',
                     controllerAs: 'NewPost',
                     controller: 'NewPostCtrl'
@@ -33,6 +33,11 @@
                     templateUrl: 'templates/singlePost.html',
                     controllerAs: 'SinglePost',
                     controller: 'SinglePostCtrl'
+                })
+                .when('/ViewBadges/',{
+                    templateUrl: 'templates/viewBadges.html',
+                    controllerAs: 'ViewBadges',
+                    controller: 'ViewBadgesCtrl'
                 })
                 .when('/profile/:userId',{
                     templateUrl: 'templates/profile.html',
@@ -58,6 +63,11 @@
                     templateUrl: 'templates/search.html',
                     controllerAs: 'Search',
                     controller: 'SearchCtrl'
+                })
+                .when('/PrivateChat',{
+                    templateUrl: 'templates/PrivateChat.html',
+                    controllerAs: 'PrivateChat',
+                    controller: 'PrivateChatCtrl'
                 })
                 .when('/blockedUsers',{
                     templateUrl: 'templates/blockedUsers.html',
@@ -172,6 +182,7 @@
                     element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
 
                     if (attrs.imgType && attrs.imgType.toLowerCase() == 'local') {
+
                         replaceImg(attrs.finalSrc);
                         return;
                     }

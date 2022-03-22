@@ -1,7 +1,7 @@
 
 const badgeSearchTableConfig ={
 	options:{
-		showEditButton:false,
+		showEditButton:true,
         showDeleteButton:true,
         showHeaders: false,
 		allowSearch: true,
