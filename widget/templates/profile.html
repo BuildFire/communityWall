@@ -13,7 +13,7 @@ ng-show="!Profile.isLoading">
         </div>
         <div class="profile-info-container">
             <h5>{{Profile.SocialItems.getUserName(Profile.user.userDetails)}}</h5>
-            <h6>San Diego, CA</h6>
+            <h6>{{Profile.SocialItems.userDetails.location && Profile.SocialItems.userDetails.location.address ? Profile.SocialItems.userDetails.location.address : ''  }}</h6>
             <h5 class="streakText" ng-show="Profile.SocialItems.appSettings.showStreak">2 Streak</h5>
             <p class="longestStreakText" ng-show="Profile.SocialItems.appSettings.showLongestStreak">22</p>
         </div>
