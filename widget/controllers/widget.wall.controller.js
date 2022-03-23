@@ -411,6 +411,19 @@
                             }
                         });
                 }
+                buildfire.deeplink.onUpdate((deeplinkData) => {
+                    if (deeplinkData) {
+                        let wallId = new URLSearchParams(deeplinkData).get('wid');
+                        if (wallId && wallId.length === 48) {
+                            const user1Id = wallId.slice(0, 24);
+                            const user2Id = wallId.slice(24, 48);
+                            const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
+                                ? user2Id : user1Id;
+
+                            WidgetWall.openChat(otherUser);
+                        }
+                    }
+                });
             }
 
             WidgetWall.sanitizeWall = function (callback) {
