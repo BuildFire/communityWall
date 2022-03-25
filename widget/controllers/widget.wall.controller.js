@@ -661,6 +661,8 @@
                                             blockedUsers: [],
                                             pendingFollowers: [],
                                             lastUpdatedOn: new Date(),
+                                            streak: 0,
+                                            highestStreak: 0,
                                             following:[],
                                             badges:[],
                                             _buildfire:{
