@@ -1671,7 +1671,10 @@
                     window.location.reload();
                 }
             })
-            
+            let script = document.createElement("script");
+            let scriptKey = Buildfire.getContext().apiKeys.googleMapKey;
+            script.src = "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key="+scriptKey;
+            document.head.appendChild(script)
             // WidgetWall.goToDiscover();
         }])
 })(window.angular);

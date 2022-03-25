@@ -585,7 +585,10 @@
                     getUsers();
                 },
                 getUsersByIds: function(array, cb){
-                    window.buildfire.appData.search({filter:{$and:[{"_buildfire.index.string1":""},{"$json.userId":{$in:array}}]}}, "subscribedUsersData", function(err, data){
+                    for(let i = 0 ; i < array.length ; i++){
+                        array[i] = `userId_${array[i]}`
+                    }
+                    window.buildfire.appData.search({filter:{$and:[{"_buildfire.index.string1":""},{"_buildfire.index.array1.string1":{$in:array}}]}}, "subscribedUsersData", function(err, data){
                         if(err) return cb(err);
                         else if(data && data.length){
                             return cb(null, data)
