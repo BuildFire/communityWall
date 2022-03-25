@@ -8,11 +8,12 @@
             t.badgeId = $routeParams.badgeId;
 
             $scope.checkIfEnableSave = function(){
+                console.log(t.badge);
                 let b = t.badge;
                 if(!b.conditions.posts.isTurnedOn && !b.conditions.reposts.isTurnedOn && !b.conditions.reactions.isTurnedOn) return t.enableSave = false;
                 if(!b.icon) return t.enableSave = false;
                 if(Object.keys(b.color).length == 0) return t.enableSave = false;
-                if(!b.title || !b.description) return t.enableSave = false;
+                if(!b.title) return t.enableSave = false;
                 if((b.expires.isTurnedOn && b.expires.number <= 0) || (typeof b.expires.number == 'undefined')) return t.enableSave = false;
                 if((b.conditions.posts.isTurnedOn  && b.conditions.posts.value < 0 )|| (typeof  b.conditions.posts.value =='undefined')) return t.enableSave = false;
                 if((b.conditions.reactions.isTurnedOn  && b.conditions.reactions.value < 0) || (typeof b.conditions.reactions.value == 'undefined')) return t.enableSave = false;
@@ -169,6 +170,7 @@
             $scope.save = function(){
                 if(!t.enableSave) return;
                 if($routeParams.badgeId == 0){
+                    t.badge.createdOn = new Date();
                     SocialBadges.insert(t.badge, (err, res) =>{
                         if(err === "Badge with same name already exists"){ 
                             Buildfire.dialog.alert({

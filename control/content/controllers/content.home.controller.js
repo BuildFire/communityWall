@@ -7,8 +7,8 @@
             var ContentHome = this;
             $timeout(function(){
                 $scope.$apply(function(){
-                    ContentHome.hashtagFilters = ["Newest First","Oldest First"];
-                    ContentHome.badgeFilters = ["Newest First","Oldest First"];
+                    ContentHome.hashtagFilters = ["Newest First","Oldest First", "Hashtag Name A - Z", "Hashtag Name Z - A"];
+                    ContentHome.badgeFilters = ["Newest First","Oldest First", "Badge Name A - Z", "Badge Name Z - A"];
                     ContentHome.selectedHashtagFilter = "Newest First";
                     ContentHome.selectedBadgeFilter = "Newest First";
                     $timeout(function(){
@@ -98,7 +98,6 @@
                             buildfire.datastore.save({ screenOne: stringsConfig.screenOne.labels }, "languages", (err, data) => { console.log(data) });
                         }
                     }
-                    else console.log(result);
                 });
                 Buildfire.getContext(function (err, context) {
                     if (err) return console.log(err);
@@ -635,7 +634,7 @@
             };
 
             $scope.loadTable = function() {
-                $scope.searchTableHelper = new SearchTableHelper("hashtags_table", "$$hashtag$$", searchTableConfig, {createdOn: 1});
+                $scope.searchTableHelper = new SearchTableHelper("hashtags_table", "$$hashtag$$", searchTableConfig, {createdOn: -1});
                 $scope.searchTableHelper.search();
                 $scope.searchTableHelper.onCommand('showText', (obj, tr) => {
                     if (obj.data.text.length <= 16) return;
@@ -674,12 +673,20 @@
             }
             
             ContentHome.changeHashtagFilter = function(text){
+                console.log(text);
                 ContentHome.selectedHashtagFilter = text;
                 if(text === 'Newest First'){
                     $scope.searchTableHelper.search({},{createdOn: -1});
                 }
-                else{
+                else if(text === 'Oldest First'){
                     $scope.searchTableHelper.search({},{createdOn: 1});
+                }
+                else if(text === 'Badge Name A - Z'){
+                    console.log("here");
+                    $scope.searchTableHelper.search({},{name: 1})
+                }
+                else{
+                    $scope.searchTableHelper.search({},{name: -1})
                 }
             }
             ContentHome.changeBadgeFilter = function(text){
@@ -687,8 +694,14 @@
                 if(text === 'Newest First'){
                     $scope.badgeSearchTableHelper.search({},{createdOn: -1});
                 }
-                else{
+                else if (text === 'Oldest First'){
                     $scope.badgeSearchTableHelper.search({},{createdOn: 1});
+                }
+                else if(text === 'Badge Name A - Z'){
+                    $scope.badgeSearchTableHelper.search({},{title: 1})
+                }
+                else{
+                    $scope.badgeSearchTableHelper.search({},{title: -1})
                 }
             }
 

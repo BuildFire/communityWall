@@ -54,13 +54,13 @@
                             {{Discover.SocialItems.getUserName(user.data.userDetails)}}
                         </p>    
                         <p >
-                            San Diego, CA
+                            {{user.data.userDetails.location && user.data.userDetails.location.address ? user.data.userDetails.location.address : ''  }}
                         </p>
                     </div>
                 
                     </div>
                     <div class="profileButton" >
-                        <button class="btn btn-success">
+                        <button class="btn btn-success" ng-click="Discover.followUser(user.data.userId)">
                             Follow
                         </button>
                     </div>

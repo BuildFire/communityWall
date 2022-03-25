@@ -58,7 +58,11 @@
                     ng-bind-html="(SinglePost.decodeText(post.text))  | newLine">
                 <!-- post text goes here -->
                 </span>
-
+                <span>
+                    <span ng-click="SinglePost.goToDiscover()" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
+                        #{{hashtag}} 
+                    </span>
+                </span>
                 
             </p>
         </div>

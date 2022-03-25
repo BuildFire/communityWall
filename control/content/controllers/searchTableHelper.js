@@ -135,7 +135,6 @@ class SearchTableHelper {
 
 	_fetchNextPage() {
 		if (this.fetchingNextPage) return;
-        console.log("fetching next page !!!");
 		this.fetchingNextPage = true;
 		let t = this;
 		this._fetchPageOfData(this.filter, this.sort, this.pageIndex + 1, () => {
@@ -150,16 +149,13 @@ class SearchTableHelper {
 		this.pageIndex = pageIndex;
 		let options = {
 			filter: filter
-			, sort: sort
+			, sort: sort ? sort : {createdOn: -1}
 			, page: pageIndex
 			, pageSize: pageSize
 		};
 
 		this.searchOptions = options;
 		buildfire.appData.search(options, this.tag, (e, results) => {
-			console.log('search table:');
-			console.log(e);
-			console.log(results);
 			if (e && callback) return callback(e);
             if(!this.items.length) this.tbody.innerHTML = '';
 			if((results && results.length > 0)){
@@ -185,7 +181,6 @@ class SearchTableHelper {
 		if (this.commands[command]) {
 			this.commands[command](obj, tr)
 		} else {
-			console.log(`Command ${command} does not have any handler`);
 		}
 	}
 
@@ -196,7 +191,6 @@ class SearchTableHelper {
 			tr = this._create('tr');
 			if(atStart) this.tbody.prepend(tr);
 			else this.tbody.appendChild(tr);
-        console.log(obj);
 		tr.setAttribute("objId", obj.id);
 		this.config.columns.forEach(colConfig => {
 			let classes = ["text-left","hashtag_row"];
@@ -214,7 +208,6 @@ class SearchTableHelper {
 					var data = obj.data;
 					output = eval("`" + colConfig.data + "`");
 				} catch (error) {
-					console.log(error);
 				}
 				td = this._create('td', tr, `#${output}`, classes);
 				if(colConfig.command) {
@@ -231,7 +224,7 @@ class SearchTableHelper {
 
 		let t = this;
 		if (this.config.options.showEditButton) {
-			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="icon icon-pencil"></span></button>', ["editColumn"]);
+			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="icon icon-pencil3"></span></button>', ["editColumn"]);
 			td.onclick = () => {
 				t.onEditRow(obj, tr);
 			};
@@ -241,12 +234,11 @@ class SearchTableHelper {
 			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="icon icon-cross2"></span></button>', ["editColumn","force-padding-td"]);
 			td.onclick = () => {
 				buildfire.notifications.confirm({
-					title: "Are you sure?"
-					, message: "Are you sure to delete this record?"
-					, confirmButton: { text: 'Yes', key: 'yes', type: 'danger' }
-					, cancelButton: { text: 'No', key: 'no', type: 'default' }
+					title: "Delete Hashtag"
+					, message: "Are you sure you want to delete this hashtag?"
+					, confirmButton: { text: 'Delete', key: 'yes', type: 'danger' }
+					, cancelButton: { text: 'Cancel', key: 'no', type: 'default' }
 				}, function (e, data) {
-					if (e) console.error(e);
 
 					if (data.selectedButton.key == "yes") {
 						tr.classList.add("hidden");
@@ -271,11 +263,9 @@ class SearchTableHelper {
 	onRowAdded(obj, tr) { }
 
 	onEditRow(obj, tr) {
-		console.log("Edit row", obj);
 	}
 
 	onRowDeleted(obj, tr) {
-		console.log("Record Delete", obj);
 	}
 
 	onCommand(command, cb) {

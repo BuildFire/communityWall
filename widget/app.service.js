@@ -12,7 +12,7 @@
         .factory('Location', [function () {
             var _location = location;
             return {
-                go: function (path) {
+                go: function (path, options = {}) {
                     _location.href = path;
                     let label;
                     if(path.includes('thread')) label.push('thread');
@@ -20,7 +20,7 @@
                     else{
                         label = path
                     } 
-                    buildfire.history.push(label, {});
+                    buildfire.history.push(label, options);
                 },
                 goToHome: function () {
                     buildfire.history.get({
@@ -129,7 +129,7 @@
                         "_buildfire.index.string1" : params.userId,
                     }}, "SocialUserProfile", function(err, data){
                         if(err || data.length == 0){
-                            window.buildfire.appData.insert(params, "SocialUserProfile", console.log);
+                            window.buildfire.appData.insert(params, "SocialUserProfile", () =>{});
                         }
                         else{
                         }
@@ -157,21 +157,33 @@
                             "_buildfire.index.string1":userId
                         }
                     }
-                    window.buildfire.appData.search(options, "SocialUserProfile", function(err, data){
+                        window.buildfire.appData.search(options, "SocialUserProfile", function(err, data){
                         if(err || data.length == 0){
                             return callback(err, null)
                         }
                         else{
                             if(data[0].data.badges.length > 0){
-                                let sp = data[0].data.badges;
+                                let shouldUpdate = false;
+                                let clone = JSON.parse(JSON.stringify(data[0]))
+                                let sp = clone.data.badges;
+                                let originalLength = data[0].data.badges.length;
                                 sp.forEach((badge,index) =>{
                                     buildfire.appData.getById(badge.badgeData, "SocialBadges", (err, res) =>{
-                                        if(res){
-                                            sp[index].badgeData = {id: sp[index].badgeData, ...res.data};
+                                        if(res && res.data && Object.keys(res.data).length > 0){
+                                            clone.data.badges[index].badgeData = {id:clone.data.badges[index].badgeData, ...res.data }; 
                                         }
-                                        if(index === sp.length - 1){
-                                            return callback(null, data[0]); 
+                                        else{
+                                            shouldUpdate = true;
+                                            clone.data.badges.splice(index, 1);
+                                            data[0].data.badges.splice(index,1);
                                         }
+                                        if(index === originalLength - 1){
+                                            data[0].data.badgesWithData = clone.data.badges;
+                                            callback(null, data[0]);
+                                            if(shouldUpdate){
+                                                buildfire.appData.update(data[0].id, data[0].data, "SocialUserProfile", () =>{})
+                                            }
+                                        }                                        
                                     })
                                     
                                 })
@@ -201,7 +213,7 @@
                                                 ]
                                             }},    "subscribedUsersData", (err, res) =>{
                                                 res[0].data._buildfire.index.array1.push({string1:`blocked_${userId}`});
-                                                buildfire.appData.update(res[0].id, res[0].data, "subscribedUsersData", console.log)
+                                                buildfire.appData.update(res[0].id, res[0].data, "subscribedUsersData", () =>{})
                                             });
                                                                  
                                     let index = social.data.following.findIndex(e => e === userId);
@@ -262,7 +274,7 @@
                                             }},    "subscribedUsersData", (err, res) =>{
                                                 let index = res[0].data._buildfire.index.array1.findIndex(e => e.string1 === `blocked_${userId}`);
                                                 if(index >=0) res[0].data._buildfire.index.array1.splice(index, 1);
-                                                buildfire.appData.update(res[0].id, res[0].data, "subscribedUsersData", console.log)
+                                                buildfire.appData.update(res[0].id, res[0].data, "subscribedUsersData", () =>{})
                                             });
                                         social.data.blockedUsers.splice(index, 1);
                                         window.buildfire.appData.update(social.id, social.data, "SocialUserProfile", (err, succ) =>{
@@ -308,7 +320,7 @@
                                             if(item && item.data.type === 'pendingFollow'){
                                                 let data = {...item.data};
                                                 data.type = "follow";
-                                                window.buildfire.appData.update(item.id, data, "ProfileActivity", console.log);
+                                                window.buildfire.appData.update(item.id, data, "ProfileActivity", () =>{});
                                             }
                                         })
                                     }
@@ -408,7 +420,7 @@
                                     createdOn: new Date(),
                                     createdBy: params.currentUser.userId,
                                 }
-                                window.buildfire.appData.insert(newParams, "ProfileActivity", console.log);
+                                window.buildfire.appData.insert(newParams, "ProfileActivity", () =>{});
                                 window.buildfire.appData.search({filter:{
                                 $and:[
                                     {"$json.fromUser.userId": params.user.userId},
@@ -419,7 +431,7 @@
                                 }} , "ProfileActivity", (err, data) =>{
                                     if(data && data.length > 0){
                                         data.forEach(item =>{
-                                            window.buildfire.appData.update(item.id, {...item.data, type: "follow"}, "ProfileActivity", console.log);
+                                            window.buildfire.appData.update(item.id, {...item.data, type: "follow"}, "ProfileActivity", () =>{});
                                         })
                                     }
                                 }
@@ -459,7 +471,7 @@
                                     }} , "ProfileActivity", (err, data) =>{
                                         if(data && data.length > 0){
                                             data.forEach(item =>{
-                                                window.buildfire.appData.delete(item.id, "ProfileActivity", console.log);
+                                                window.buildfire.appData.delete(item.id, "ProfileActivity", () =>{});
                                             })
                                         }
                                     }
@@ -584,13 +596,10 @@
                     })
                 },
                 getUsers: function(options, cb, userId = null){
-                    console.log(options);
                     window.buildfire.appData.search(options, "subscribedUsersData", function (err, users){
                         if(err) return cb(err);
                         else{
                             if(userId){
-                                console.log("inital users");
-                                console.log(users);
                                 let results = [];
                                 users.map(e => {
                                     if(userId){
@@ -602,8 +611,6 @@
                                         results.push(e)
                                     }
                                 })
-                                console.log("results");
-                                console.log(results);
                                 return cb(null, results)
 
                             }
@@ -751,8 +758,60 @@
                     return deferred.promise;
 
                 },
+                datesAreOnSameDay: (first, second) =>{
+                    if(first.getFullYear() === second.getFullYear() &&first.getMonth() === second.getMonth() &&first.getDate() === second.getDate()){
+                        return true;
+                    }              
+                    else {
+                        return false;
+                    }
+                },
+                checkForStreak: function(userId, post){
+                    buildfire.appData.search({filter:{
+                        $and:[
+                            {"_buildfire.index.string1":""},
+                            {"_buildfire.index.array1.string1":`userId_${userId}`},
+                            {"$json.createdOn":{$gt:new Date(Date.now() - 24*60*60 * 1000 * 2)}}
+                        ]
+                    }
+                    },"wall_posts",(err, results) =>{
+                        buildfire.appData.search({filter:{
+                            "_buildfire.index.string1":userId
+                        }},"SocialUserProfile", (err, profiles) =>{
+                            if(profiles && profiles.length > 0){
+                                console.log(profiles);
+                                let profile = profiles[0];
+                                console.log(this.datesAreOnSameDay(new Date(profile.data.lastUpdatedOn), new Date(post.createdOn)));
+                                console.log(new Date(profile.data.lastUpdatedOn));
+                                console.log( new Date(post.createdOn));
+                                if(!this.datesAreOnSameDay(new Date(profile.data.lastUpdatedOn), new Date(post.createdOn))){
+                                    if(!profile.data.streak){
+                                        profile.data.streak = 1;
+                                        profile.data.highestStreak = 1;
+                                    }
+                                    else{
+    
+                                        if(results && results.length > 0){
+                                            profile.data.streak++;
+                                            if(profile.data.streak > profile.data.highestStreak)
+                                                profile.data.highestStreak = profile.data.streak;
+                                        }
+                                        else{
+                                            profile.data.streak = 1;
+                                            if(profile.data.streak > profile.data.highestStreak)
+                                                profile.data.highestStreak = profile.data.streak;
+                                        }
+                                    }
+                                    profile.data.lastUpdatedOn = new Date();
+                                    buildfire.appData.update(profile.id, profile.data, "SocialUserProfile", console.log)
+                                }
+                            }
+
+                        })
+                        
+                    })
+                },
                 checkForBadges : function(userId, callback){
-                    console.log(userId);
                     let filter = {
                         $and:[
                             {"_buildfire.index.array1.string1": `userId_${userId}`},
@@ -760,9 +819,7 @@
                             {"_buildfire.index.string1":""}
                         ]
                     }
-                    console.log(filter);
                     buildfire.appData.search({filter:filter},"wall_posts",(err, posts) =>{
-                            console.log(posts);
                             if(err || (posts && posts.length == 0)){
                                 callback(true)
                             }
@@ -793,7 +850,10 @@
                                                     let myBadges = mySocialProfile.data.badges;
                                                     badges.forEach(badge =>{
                                                         let wonBadge = true;
-                                                        let index = myBadges.findIndex(e => e === badge.id);
+                                                        console.log(myBadges);
+                                                        console.log(badge);
+                                                        let index = myBadges.findIndex(e => e.badgeData === badge.id);
+                                                        console.log(index);
                                                         if(index < 0){
                                                             if(badge.data.conditions.posts.isTurnedOn){
                                                                 if(postsArray.length > badge.data.conditions.posts.value){
@@ -877,6 +937,7 @@
                         index: composeIndex(postData)
                     }
                     buildfire.appData.insert(postData, 'wall_posts', (error, result) => {
+                        this.checkForStreak(postData.userId, postData);
                         this.checkForBadges(postData.userId, (isFinished) =>{
                             if(isFinished){
                                 if (error) return deferred.reject(error);
@@ -923,7 +984,6 @@
                 },
                 reportPost: function (data) {
                     buildfire.appData.get('reports_' + data.wid, (err, result) => {
-                        console.log(result);
                         if (!result.data.length)
                             buildfire.appData.save([{ ...data }], 'reports_' + data.wid, () => { });
                         else {
@@ -932,7 +992,6 @@
                             if (!alreadyReported) {
                                 result.data.push(data);
                                 buildfire.appData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
-                                    console.log(saved);
                                     buildfire.messaging.sendMessageToControl({ 'name': "POST_REPORTED", wid: data.wid });
                                 });
                             }
@@ -1126,7 +1185,11 @@
                     }
                 });
             }
-            SocialItems.prototype.getPosts = function (callback) {
+            SocialItems.prototype.getPosts = function (callback, clear = false) {
+
+                $timeout(function(){
+                    $rootScope.$digest();
+                })
                 const getPostLikes = (id, callback) =>{
                     buildfire.appData.aggregate(
                         {
@@ -1323,7 +1386,6 @@
                                 }
                                 getPostLikes(item.id, (count) =>{
                                     item.likesCount = count;
-                                    console.log(item);
                                     $timeout(function(){
                                         $rootScope.$digest();
                                         callback(null, item);
@@ -1368,7 +1430,7 @@
             }
 
             SocialItems.prototype.getPrivatePosts = function(wid, callback){
-                clearInterval(_this.newPostTimerChecker);
+                clearInterval(_this.newPrivatePostTimerChecker);
                 _this.items = [];
                 $timeout(function(){
                     $rootScope.$digest();
@@ -1451,7 +1513,6 @@
             SocialItems.prototype.formatLanguages = function (response) {
                 const stringsCopy = JSON.parse(JSON.stringify(stringsConfig));
                 _this.languages = {};
-                console.log(response);
                 if (response.data && response.data.screenOne) {
                     Object.keys(response.data.screenOne).forEach((oldKey) => {
                         Object.keys(stringsConfig).forEach((defaultKey) => {
@@ -1479,8 +1540,6 @@
                     });
                 } else {
                     let strings = {};
-                    console.log(response.data);
-                    console.log(response.data && response.data.blockUserModal && response.data.activity && response.data.blockUserModal && response.data.logInBanner && response.data.reportPostModal && response.data.unblockUserModal && response.data.unfollowModal && response.data.userProfile);
                     if (response.data && response.data.blockUserModal && response.data.activity && response.data.blockUserModal && response.data.logInBanner && response.data.reportPostModal && response.data.unblockUserModal && response.data.unfollowModal && response.data.userProfile)
                         strings = Object.assign({}, response.data.accountBannedModal, response.data.activity, response.data.blockUserModal, response.data.logInBanner, response.data.reportPostModal, response.data.unblockUserModal, response.data.unfollowModal, response.data.userProfile);
                     else
@@ -1523,7 +1582,6 @@
                         buildfire.datastore.get("languages", (err, languages) => {
                             if (err) return console.log(err);
                             _this.formatLanguages(languages);
-                            console.log(_this.languages);
                             buildfire.datastore.get("SocialIcons", (err, SocialIcons) =>{
                                 _this.SocialIcons = SocialIcons.data;
                                 buildfire.datastore.get("Social", (err, response) => {

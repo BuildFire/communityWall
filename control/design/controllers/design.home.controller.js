@@ -12,7 +12,6 @@
                         t.saveInitial();
                     }
                     else{
-                        console.log("icons exist");
                         for(const key1 in icons.data){
                             for(const key2 in icons.data[key1]){
                                 t.handleChange(key1, key2, icons.data[key1][key2]);
@@ -62,12 +61,11 @@
 
             t.handleChange = (key1, key2, val, shouldSave = false) =>{
                 t.icons[key1][key2] = val;
-                console.log(t.icons);
                 if(shouldSave) t.save(t.icons);
             }
 
             t.save = (data) =>{
-                Buildfire.datastore.save(data, "SocialIcons", console.log)
+                Buildfire.datastore.save(data, "SocialIcons", () =>{})
             }
 
             t.get = (callback) =>{
@@ -110,7 +108,6 @@
                     }
                 };
                 t.onLoad((err, icons) =>{
-                    console.log("callback from design");
                     if(icons && Object.keys(icons.data).length > 0){
                         t.icons = icons.data;
                     }
@@ -148,7 +145,6 @@
                     () => {},
                     (err, res) => {
                       if (!err) {
-                          console.log(res);
                         const solidColor = res.solid.color;
                         const solidOpacity = parseInt(res.solid.opacity, 10);
                         let el = document.getElementById("color-picker-bg");

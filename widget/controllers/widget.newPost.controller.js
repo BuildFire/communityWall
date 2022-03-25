@@ -333,6 +333,10 @@
             $scope.updatePost = function(postData){
                 console.log(postData);
                 SocialDataStore.updatePost(postData).then(response => {
+                    Buildfire.dialog.toast({
+                        message: "Post updated successfully",
+                    });
+
                     setTimeout(() => {                        
                         if(!$rootScope.wonBadge){
                             Location.go("#/singlePostView/"+response.data.id);
@@ -506,6 +510,9 @@
             $scope.createPost = function(postData){      
 
                 SocialDataStore.createPost(postData).then((response) => {
+                    Buildfire.dialog.toast({
+                        message: "Post created successfully",
+                    });
                     if(response.data.taggedPeople.length > 0){
                         response.data.taggedPeople.forEach(user =>{
                             NewPost.createReactionActivity(user, response.data);

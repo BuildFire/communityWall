@@ -234,6 +234,7 @@ table tbody tr td {
   justify-content: center;
   display: none;
   align-items: center;
+  top: 0;
 }
 
 .add_hashtag {

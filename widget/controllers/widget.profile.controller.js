@@ -5,7 +5,6 @@
         .controller('ProfileCtrl', ['$scope', '$rootScope', '$routeParams', 'SocialBuddies','SocialDataStore', 'Buildfire','Location', 'EVENTS', 'SubscribedUsersData','SocialUserProfile', 'SocialItems', 'ProfileActivity', '$timeout', function ($scope, $rootScope, $routeParams, SocialBuddies, SocialDataStore, Buildfire, Location, EVENTS, SubscribedUsersData, SocialUserProfile, SocialItems , ProfileActivity, $timeout) {
             var t = this;
             t.SocialItems = SocialItems.getInstance();
-            console.log($routeParams.userId);
             t.user = {
                 userId: $routeParams.userId,
                 isCurrentUser:$routeParams.userId == t.SocialItems.userDetails.userId ? true : false
@@ -21,6 +20,26 @@
                     items: [],
                     container: document.getElementById("profile-tagged-posts-container")
                 }
+            }
+            t.getPostsContainerHeight = () =>{
+                let originalHeight = 100;
+                let occupiedHeight = 0;
+                // profile header
+                occupiedHeight+= 10;
+                occupiedHeight+= 5;
+                // if buddies exist
+                if(t.user.buddies && t.user.buddies.length > 0){
+                    console.log("added buddies height");
+                    // originalHeight
+                    occupiedHeight+= 10;
+                    
+                }
+                // buttons
+                occupiedHeight+= 6;
+                // switch
+                occupiedHeight+= 16;
+                console.log();
+                return originalHeight - occupiedHeight;
             }
             t.currentPage = "posts";
             t.strings = t.SocialItems.languages;
@@ -56,12 +75,36 @@
             t.initProfile = (callback) =>{
                 if(t.user.isCurrentUser){
                     t.user.userDetails = t.SocialItems.userDetails;
-                    t.getBuddies((isFinished) =>{
+                    t.getBuddies($routeParams.userId, (isFinished) =>{
                         if(isFinished){
                             SocialUserProfile.get(t.user.userId,(err, socialProfile) =>{
                                 t.user.socialProfile = socialProfile;
-                                t.borderColor = t.user.socialProfile.data.badges.length > 0 ? t.user.socialProfile.data.badges[0].badgeData.color.solidColor : 'transparent'
-                                console.log(t.borderColor);
+                                let shouldUpdate = false;
+                                if(t.user.socialProfile.data.badgesWithData){
+                                    let badgesClone =  t.user.socialProfile.data.badgesWithData.filter(badge =>{
+                                        if(badge.badgeData.expires && badge.badgeData.expires.isTurnedOn){
+                                            badge.badgeData.expires.inDays = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'days' ? 1 : badge.badgeData.expires.frame === 'weeks' ? 7 : 30 );
+                                            let checkIfExpired = moment(new Date()).diff(moment(badge.receivedOn), "days") > badge.badgeData.expires.inDays;
+                                            if(!checkIfExpired){
+                                                return badge
+                                            }
+                                            else{
+                                                shouldUpdate = true;
+                                            }
+                                        }
+                                    });
+                                    let clone = JSON.parse(JSON.stringify(socialProfile));
+                                    clone.data.badges.forEach((badge, index) =>{
+                                        if(badgesClone.findIndex(e => e.badgeData.id === badge.badgeData) < 0){
+                                            clone.data.badges.splice(index, 1);
+                                        }
+                                    });
+                                    if(clone.data.badgesWithData) delete clone.data.badgesWithData
+                                    if(shouldUpdate){
+                                        Buildfire.appData.update(clone.id, clone.data, "SocialUserProfile", () =>{})                                
+                                    }
+                                }
+                                t.borderColor = t.user.socialProfile.data.badgesWithData && t.user.socialProfile.data.badgesWithData.length > 0 &&  t.user.socialProfile.data.badgesWithData[0].badgeData.color ? t.user.socialProfile.data.badgesWithData[0].badgeData.color.solidColor : 'transparent'
                                 return callback(true)
                             })
                         }
@@ -70,15 +113,19 @@
                 else{
                     t.getUserDetails(isFinished =>{
                         if(isFinished){
-                            t.getUserSocialProfile(isFinished =>{
+                            t.getBuddies($routeParams.userId, (isFinished) =>{
                                 if(isFinished){
-                                    t.getMySocialProfile(isFinished =>{
+                                    t.getUserSocialProfile(isFinished =>{
                                         if(isFinished){
-                                            return callback(true);
+                                            t.getMySocialProfile(isFinished =>{
+                                                if(isFinished){
+                                                    return callback(true);
+                                                }
+                                            })
                                         }
                                     })
                                 }
-                            })
+                            });
                         }
                     })
                 }
@@ -91,11 +138,7 @@
             }
 
             t.getUserDetails = (callback) =>{
-                console.log("from get user details");
-                console.log(t.user.userId);
                 SubscribedUsersData.get($routeParams.userId, (err, userDetails) =>{
-                    console.log("response");
-                    console.log(userDetails);
                     t.user.userDetails = userDetails.data.userDetails;
                     return callback(true)
                 })
@@ -103,7 +146,6 @@
             }
             t.getUserSocialProfile = (callback) =>{
                 SocialUserProfile.get(t.user.userId, (err, profile) =>{
-                    console.log(profile);
                     t.user.socialProfile = profile;
                     t.user.isPublicProfile = t.user.socialProfile.data.isPublicProfile;
                     t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
@@ -174,7 +216,6 @@
                                 data: {userId: t.user.userId}
                             }, function (err, result) {
                                 if (err) {
-                                    console.error(err)
                                 } else {
                                     Buildfire.device.share({
                                         text: "Hey Check out this Profile:",
@@ -197,7 +238,6 @@
                                     t.init();
                                 }
                             }, (err,data) =>{
-                                console.log(data);
                             });
 
                             
@@ -278,7 +318,7 @@
                             ProfileActivity.search(params, (err, results) =>{
                                 if(results && results.length > 0){
                                     results.forEach(res =>{
-                                        ProfileActivity.delete(res.id, console.log)
+                                        ProfileActivity.delete(res.id, () =>{})
                                     })
                                 }
                             })
@@ -296,8 +336,7 @@
                     createdBy: data.fromUser.userId,
                 }
                 ProfileActivity.add(activity, (err, res) =>{
-                    if(err) console.error(err);
-                    else console.log(res);
+
                 })
             }
 
@@ -324,16 +363,15 @@
 
             }
 
-            t.getBuddies = (callback) =>{
-                SocialBuddies.search(t.user.userId, (err, data) =>{
+            t.getBuddies = (userId, callback) =>{
+                SocialBuddies.search(userId, (err, data) =>{
                     if(err || !data || (data && data.length == 0)){
                         t.user.buddies = [];
-                        SocialBuddies.init(t.user.userId, console.log);
+                        SocialBuddies.init(t.user.userId, () =>{});
                         return callback(true)
                     } 
                     else{
                         let curr = data[0].data;
-                        console.log(curr);
                         delete curr.userId;
                         delete curr._buildfire;
                         delete curr.createdOn;
@@ -371,10 +409,11 @@
             }
 
             t.init = () =>{
+                t.isLoading = true;
+                Buildfire.spinner.show();
+                $rootScope.showThread = false;
                 t.setInitialState(finished =>{
                     if(finished){
-                        t.isLoading = true;
-                        $rootScope.showThread = false;
                         t.initProfile(finished =>{
                             if(finished){
                                 t.initPosts(finished =>{
@@ -384,6 +423,7 @@
                                                 Buildfire.spinner.hide();
                                                 $timeout(function(){
                                                     t.isLoading = false;
+                                                    Buildfire.spinner.hide();
                                                     $scope.$digest();
                                                 })
                                             }
@@ -488,7 +528,6 @@
                 if(id) e.id = id;
                 if(!post) return e;
                 e.onclick = function(){
-                    console.log(post);
                     t.openSinglePost(post.id)
                 }
                 return e;
@@ -497,7 +536,6 @@
                 let e = document.createElement('img');
                 e.src = Buildfire.imageLib.cropImage(src, {width: 100, height: 100});
                 e.onclick = () =>{
-                    console.log(postId);
                     t.openSinglePost(postId)
                 }
                 return e;
@@ -526,9 +564,6 @@
             }
 
             t.injectElements = function(posts, container, callback){
-                console.log("injecting");
-                console.log(posts);
-                console.log(container);
                 if(!container) return;
                 let lastParent;
                 let lastElement;
@@ -573,9 +608,121 @@
                     })
                     $scope.$digest();
                 }
-                t.SocialItems.getSettings(console.log);
+                t.SocialItems.getSettings(() =>{});
             });
         
+
+
+
+
+            
+            t.openChat = function () {
+                let userId = t.user.userId;
+                t.SocialItems.authenticateUser(null, (err, user) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (user) {
+                        Buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
+                            if (err) return console.error("Getting user profile failed.", err);
+                            if (userId === t.SocialItems.userDetails.userId) return;
+                            t.openPrivateChat(userId, t.SocialItems.getUserName(user));
+                        });
+                    }
+                });
+                
+            };
+
+
+            t.navigateToPrivateChat = function (user) {
+                Buildfire.history.get({
+                    pluginBreadcrumbsOnly: true
+                }, function (err, result) {
+                    result.forEach(e=> buildfire.history.pop());
+                });
+                
+                t.SocialItems.isPrivateChat = true;
+                t.SocialItems.wid = user.wid;
+                t.SocialItems.showMorePosts = true;
+                t.SocialItems.pageSize = 20;
+                t.SocialItems.page = 0;
+                t.SocialItems.pluginTitle = t.SocialItems.getUserName(t.SocialItems.userDetails) + ' | ' + user.name;
+
+                $timeout(function(){
+                    $rootScope.isPrivateChat = true;
+                    Location.go("#/PrivateChat",{isPrivateChat: true});
+                })
+            }
+
+
+
+
+            t.openPrivateChat = function (userId, userName) {
+                let wid = null;
+                if (t.SocialItems.userDetails.userId && t.SocialItems.userDetails.userId != userId) {
+                    if (t.SocialItems.userDetails.userId > userId) {
+                        wid = t.SocialItems.userDetails.userId + userId;
+                    } else {
+                        wid = userId + t.SocialItems.userDetails.userId;
+                    }
+                }
+                SubscribedUsersData.getGroupFollowingStatus(userId, wid, t.SocialItems.context.instanceId, function (err, status) {
+                    if (err) console.error('Error while getting initial group following status.', err);
+                    if (!status.length) {
+                        t.followPrivateWall(userId, wid, userName);
+                    } else {
+                        t.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                    }
+                });
+            }
+
+
+            t.followPrivateWall = function (userId, wid, userName = null) {
+                Buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
+                    if (err) console.log('Error while saving subscribed user data.');
+                    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (re.test(String(user.firstName).toLowerCase()))
+                        user.firstName = 'Someone';
+                    if (re.test(String(user.displayName).toLowerCase()))
+                        user.displayName = 'Someone';
+
+                    var params = {
+                        userId: userId,
+                        userDetails: {
+                            displayName: user.displayName,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl,
+                            email: user.email,
+                            lastUpdated: new Date().getTime(),
+                            location:{
+                                address: user?.userProfile?.address?.fullAddress || null,
+                                lat: user?.userProfile?.address?.geoLocation?.lat || null,
+                                lng: user?.userProfile?.address?.geoLocation?.lng || null,
+
+                            }
+                        },
+                        wallId: wid,
+                        posts: [],
+                        _buildfire: {
+                            index: { text: userId + '-' + wid, string1: wid,
+                            array1:[
+                                {string1: "userId_"+userId}
+                            ]}
+                        }
+
+                    };
+
+                    userName = t.SocialItems.getUserName(params.userDetails)
+                    SubscribedUsersData.save(params, function (err) {
+                        if (err) console.log('Error while saving subscribed user data.');
+                        if (userName)
+                            t.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                    });
+                })
+            }
+
+
+
+
 
             t.init();
         }]);

@@ -18,7 +18,6 @@
             WidgetWall.loadedPlugin = false;
             WidgetWall.SocialItems = SocialItems.getInstance();
             WidgetWall.socialLanguages = WidgetWall.SocialItems.socialLanguages;
-            console.log(WidgetWall.SocialItems);
             $rootScope.showThread = true;
 
             
@@ -551,7 +550,6 @@
                                 }
                             }
                         });
-                        console.log(WidgetWall.SocialItems);
                         WidgetWall.loginModal = {
                             message: WidgetWall.SocialItems.languages.logInbannerText,
                             dismiss: WidgetWall.SocialItems.languages.logIndismiss,
@@ -581,7 +579,6 @@
                         WidgetWall.setAppTheme();
                         WidgetWall.getPosts((err, posts) =>{
                             if(posts){
-                                  console.log(posts);
                                 $timeout(function(){
                                     WidgetWall.SocialItems = SocialItems.getInstance();
                                     $rootScope.$digest();
@@ -663,6 +660,7 @@
                                             followers: [],
                                             blockedUsers: [],
                                             pendingFollowers: [],
+                                            lastUpdatedOn: new Date(),
                                             following:[],
                                             badges:[],
                                             _buildfire:{
@@ -780,16 +778,10 @@
                 WidgetWall.SocialItems.pageSize = 20;
                 WidgetWall.SocialItems.page = 0;
                 WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name;
-                buildfire.history.push(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name, {
-                    isPrivateChat: true,
-                    showLabelInTitlebar: true
-                });
+
                 $timeout(function(){
                     $rootScope.isPrivateChat = true;
-                    WidgetWall.SocialItems.items = [];
-                    
-                    $rootScope.$digest();
-                    Location.go("#/PrivateChat")
+                    Location.go("#/PrivateChat",{isPrivateChat: true});
                 })
             }
 
@@ -799,13 +791,22 @@
 
             $rootScope.$on('navigatedBack', function (event, error) {
                 $rootScope.isLoading = true;
+                $timeout(function(){
+                    clearInterval(WidgetWall.SocialItems.newPrivatePostTimerChecker)
+                    $rootScope.$digest();
+                })
+                
+                $rootScope.isPrivateChat = false;
+                WidgetWall.SocialItems.wid = WidgetWall.SocialItems.mainWallID;
                 WidgetWall.SocialItems.items = [];
                 WidgetWall.SocialItems.isPrivateChat = false;
                 WidgetWall.SocialItems.pageSize = 5;
                 WidgetWall.SocialItems.page = 0;
-                WidgetWall.SocialItems.wid = WidgetWall.SocialItems.mainWallID;
                 WidgetWall.SocialItems.pluginTitle = '';
-                WidgetWall.init();
+                $timeout(function(){
+                    $rootScope.$digest();
+                    WidgetWall.init();
+                })
             });
 
             WidgetWall.openPrivateChat = function (userId, userName) {
@@ -1352,8 +1353,9 @@
             };
 
             WidgetWall.getDuration = function (timestamp) {
-                if (timestamp)
+                if (timestamp){
                     return moment(timestamp.toString()).fromNow();
+                }
             };
 
             WidgetWall.goInToThread = function (threadId) {
@@ -1644,6 +1646,9 @@
                     });
                 });
             });
+            WidgetWall.goToDiscover = function(){
+                Location.go("#/discover/");
+            }
             
             Buildfire.datastore.onUpdate((event) =>{
                 if(event.tag === 'Social' || event.tag === 'languages'){

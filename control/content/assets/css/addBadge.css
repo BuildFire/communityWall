@@ -161,14 +161,6 @@
   transition: 0.4s;
   border-radius: 50%;
 }
-input:checked + .customSlider {
-  background-color: #2196f3;
-}
-input:checked + .customSlider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
 .addbadge_bottom_container {
   position: fixed;
   width: 100%;
@@ -207,4 +199,65 @@ input:checked + .customSlider:before {
     width: 45%;
     float: left;
     margin-top: -5px;
+}
+.button-switch {
+  display: flex;
+  align-items: center;
+  height: 1.5rem;
+}
+.button-switch > input[type="checkbox"] {
+  display: none;
+  margin: 4px 0 0;
+}
+.button-switch > label {
+  cursor: pointer;
+  height: 0;
+  position: relative;
+  width: 40px;
+  text-align: left;
+}
+.label-success {
+  background-color: #14cb5d;
+}
+label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 300;
+}
+.button-switch > input[type="checkbox"]:checked + label::before {
+  background: inherit;
+  opacity: 0.5;
+}
+.button-switch > label::before {
+  background: #909090;
+  border-radius: 18px;
+  content: "";
+  height: 27px;
+  margin-top: -13.5px;
+  position: absolute;
+  opacity: 0.3;
+  transition: all 0.4s ease-in-out;
+  width: 46px;
+}
+.button-switch > input[type="checkbox"]:checked + label::after {
+  background: inherit;
+  left: 23px;
+}
+.button-switch > input[type="checkbox"]:checked + label::after {
+  background: inherit;
+  left: 23px;
+}
+.button-switch > label::after {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 0 5px rgb(0 0 0 / 30%);
+  content: "";
+  height: 24px;
+  left: 0;
+  margin-top: -9px;
+  position: absolute;
+  top: -3px;
+  transition: all 0.3s ease-in-out;
+  width: 24px;
 }

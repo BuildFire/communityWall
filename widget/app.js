@@ -112,6 +112,7 @@
                 buildfire.history.get({
                     pluginBreadcrumbsOnly: true
                 }, function (err, result) {
+                    console.log(result);
                     console.log("BACK BUTTON CLICK", result)
                     if(!result.length) return goBack();
                     if(result[result.length-1].options.isPrivateChat) {

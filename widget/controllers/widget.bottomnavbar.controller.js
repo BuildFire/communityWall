@@ -58,7 +58,6 @@
             t.goToDiscover = function(){
                 let shouldNavigate = $location.absUrl().split('#')[1].includes('discover') ? false : true;  
                 if(shouldNavigate) Location.go("#/discover/");
-                
             }
             t.goToActivity = function(){
                 t.SocialItems = SocialItems.getInstance();

@@ -25,6 +25,25 @@
                 
             }
 
+            Discover.followUser = (userId) =>{
+                let params = {userId, currentUser: Discover.SocialItems.userDetails.userId};
+                SocialUserProfile.followUnfollowUser(params, (err, data) =>{
+                    if(data){
+                        console.log(data);
+                        console.log($scope.users);
+                        let index = $scope.users.findIndex(e => e.data.userId === data.data.userId);
+                        console.log($scope.users[index]);
+                        Buildfire.dialog.toast({
+                            message: "Started Following " + Discover.SocialItems.getUserName($scope.users[index].data.userDetails) ,
+                        });
+                        $scope.users.splice( index , 1);
+                        $timeout(function(){
+                            $scope.$digest();
+                        })
+                    }
+                });
+            }
+            
             Discover.goToFilteredPosts = (type, title) =>{
                 Location.go(`#/filteredResults/${type}/${title}`)
             }

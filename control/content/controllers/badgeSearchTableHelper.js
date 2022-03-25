@@ -150,7 +150,7 @@ class BadgeSearchTableHelper {
 		this.pageIndex = pageIndex;
 		let options = {
 			filter: filter
-			, sort: sort
+			, sort: sort ? sort : {createdOn: -1}
 			, page: pageIndex
 			, pageSize: pageSize
 		};
@@ -227,7 +227,7 @@ class BadgeSearchTableHelper {
 
 		let t = this;
 		if (this.config.options.showEditButton) {
-			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="glyphicon glyphicon-pencil"></span></button>', ["editColumn"]);
+			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="icon icon-pencil3"></span></button>', ["editColumn"]);
 			td.onclick = () => {
 				t.onEditRow(obj, tr);
 			};
@@ -237,10 +237,10 @@ class BadgeSearchTableHelper {
 			let td = this._create('td', tr, '<button class="btn btn--icon"><span class="icon icon-cross2"></span></button>', ["editColumn","force-padding-td"]);
 			td.onclick = () => {
 				buildfire.notifications.confirm({
-					title: "Are you sure?"
-					, message: "Are you sure to delete this record?"
-					, confirmButton: { text: 'Yes', key: 'yes', type: 'danger' }
-					, cancelButton: { text: 'No', key: 'no', type: 'default' }
+					title: "Delete badge"
+					, message: "Are you sure you want to delete this badge?"
+					, confirmButton: { text: 'Delete', key: 'yes', type: 'danger' }
+					, cancelButton: { text: 'Cancel', key: 'no', type: 'default' }
 				}, function (e, data) {
 					if (e) console.error(e);
 

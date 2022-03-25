@@ -1,11 +1,12 @@
 .profile-header{
+    height: 10vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    margin-left: 5%;
+    align-items: center;
     width: 90%;
     align-content: center;
-    margin-bottom: 10px;
+    margin: 1vh 2vh 4vh 2vh;
+
 }
 .profile-buddies > div > img{
     height: 40px;
@@ -14,14 +15,13 @@
 }
 .profile-buddies{
     display: flex;
-    height: 45px;
     align-items: flex-start;
     justify-content: flex-end;
-    margin-bottom: 15px;
     width: 90%;
+    height: 10vh;
 }
 .profile-picture-container > img{
-    height: 50%;
+    height: 100%;
     width: 90%;
     border-radius: 100%;
 
@@ -36,22 +36,22 @@
 }
 .profile-info-container{
     flex: 5;
-    margin-top: 7%;
-    margin-left: 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 10px;
 }
 .options{
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    margin-top: 10%;
 }
 .profile-picture-container{
     flex: 2;
     height: 100%;
     width: 100%;
     border-radius: 50%;
-    margin-top: 7%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -85,7 +85,6 @@
     border-radius: 5px;  
 }
 .button-container > button{
-    width: 100%;
     height: 100%;
     background-color: rgb(96 184 71);
     border-radius: 5px !important;
@@ -98,14 +97,18 @@
     justify-content: space-between !important;
 }
 
-.switch{
-    margin-top: 10%;
+.full-width{
     width: 100%;
-    height: 3%;
+}
+
+.switch{
+    margin-top: 3vh;
+    width: 100%;
+    height: 3vh;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-bottom: 7%;
+    margin-bottom: 7vh;
 }
 .has-bottom-border{
     border-bottom: 3px solid rgb(96 184 71);

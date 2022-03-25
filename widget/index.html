@@ -238,7 +238,7 @@
                                                     margin-left: 12px;">
                                                         <span class="material-icons">person</span>
                                                         <span style="margin-left: 5px;color: var(--bf-theme-primary);"> 
-                                                        {{post.taggedPeople.length}} People Tagged
+                                                        {{post.taggedPeople.length == 1 ? '1 Person Tagged' : post.taggedPeople.length + ' People Tagged'}}
                                                         </span>
                                                     </span>
                                                 </div>

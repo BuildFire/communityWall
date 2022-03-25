@@ -13,13 +13,23 @@
                 SocialUserProfile.get(t.SocialItems.userDetails.userId, (err, socialProfile) =>{
                     console.log(socialProfile);
                     t.user.socialProfile = socialProfile.data;
-                    t.user.socialProfile.badges.reverse();
+                    if(t.user.socialProfile.badgesWithData && t.user.socialProfile.badgesWithData.length > 0)
+                        t.user.socialProfile.badgesWithData.reverse();
+                    else
+                        t.user.socialProfile.badgesWithData = [];
                     t.isLoading = false;
                     $rootScope.showThread = false;
                     $timeout(function(){
                         $scope.$digest();
                     })
                 })
+            }
+            t.getExpiryDate = (badge) =>{
+                let inDays = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'days' ? 1 : badge.badgeData.expires.frame === 'weeks' ? 7 : 30 );
+                let expiryDate = moment(badge.receivedOn).add(inDays, "days");
+                let diff = expiryDate.diff(moment(new Date), "days");
+                if(diff < 1 && diff > 0) return 1;
+                else return diff
             }
             t.init();
         }]);

@@ -21,6 +21,9 @@
                 post.limit = 10000000;
                 if (!$scope.$$phase) $scope.$digest();
             };
+            SinglePost.goToDiscover = function(){
+                Location.go("#/discover/");
+            }
 
             SinglePost.init = function () {
                 SinglePost.SocialItems.getSettings((err, settings) =>{

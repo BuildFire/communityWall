@@ -15,6 +15,10 @@
     <div class="copy padded">
         <p>{{report.post.text}}</p>
     </div>
+    <div class="copy padded" ng-if="report.post.hashtags > 0">
+        <span ng-repeat="hash in report.post.hashtags">#{{report.post.hash}} </span>
+    </div>
+
     <div class="plugin-banner clearfix margin-bottom-fifteen">
         <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}">
             <img ng-repeat="image in report.post.images" src="{{image}}" data-alt="Post image">

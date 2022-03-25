@@ -157,7 +157,7 @@
   border-radius: 50%;
 }
 input:checked + .customSlider {
-  background-color: #2196f3;
+  background-color: #8ae5ae;
 }
 input:checked + .customSlider:before {
   -webkit-transform: translateX(26px);

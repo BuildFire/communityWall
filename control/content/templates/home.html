@@ -7,7 +7,7 @@
             </div>
             <div class="add_hashtag_body">
                 <p>Hashtag Name</p>
-                <input type="text" placeholder="#Hashtag" id="hashtagToAdd">
+                <input type="text" placeholder="Hashtag" id="hashtagToAdd">
                 <p style="color: red;" id="hashtagToAdd_error_msg"></p>
             </div>
             <div class="add_hashtag_bottom" >
@@ -40,7 +40,7 @@
             </div>
             <div>
                 <button class="btn btn-success" ng-click="goToAddBadge()">
-                    Add Badge
+                    + Add Badge
                 </button>
             </div>
         </div>
@@ -74,7 +74,7 @@
             </div>
             <div>
                 <button class="btn btn-success" ng-click="openAddHashtagModal()">
-                    Add Hashtag
+                    + Add Hashtag
                 </button>
             </div>
         </div>
@@ -153,6 +153,9 @@
                         <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
                         <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a>
                     </p>
+                </div>
+                <div class="copy padded" ng-if="post.hashtags.length > 0">
+                    <span ng-repeat="hash in post.hashtags" style="color: var(--bf-theme-primary)">#{{hash}} </span>
                 </div>
                 <div class="plugin-banner clearfix margin-bottom-fifteen">
                     <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}" ng-init="initHesGallery()">

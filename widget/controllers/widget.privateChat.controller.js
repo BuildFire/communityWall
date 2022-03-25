@@ -10,6 +10,11 @@
             $scope.isScrollbarLoading = true;
             t.isFetchingPosts = false;
             t.init = () =>{
+                $rootScope.showThread = false;
+                $timeout(function(){
+                    $rootScope.$digest();
+                    $scope.$digest();
+                })
                 t.isFetchingPosts = true;
                 t.SocialItems.getPrivatePosts(t.SocialItems.wid, (err, posts) =>{
                     if(posts){
@@ -19,7 +24,6 @@
                             $rootScope.$digest();
                             $scope.$digest();
                             t.isLoading = false;
-                            $rootScope.showThread = false;
                         })
                     }
                     else{
@@ -56,7 +60,7 @@
                             });
                         }
                     })
-
+                    
                 }, 300);
                 
             }

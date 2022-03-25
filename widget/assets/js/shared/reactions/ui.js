@@ -15,7 +15,7 @@ const ReactionsUI = {
                     else el.innerHTML = "LIKED";
                     ReactionsUI.search(options, (err, res) =>{
                         if(res){
-                            ReactionsUI.delete(res.id, console.log);
+                            ReactionsUI.delete(res.id, () =>{});
                             el.innerHTML = "LIKE"
                         }                        
                         else{
@@ -38,7 +38,6 @@ const ReactionsUI = {
         })
     },
     search: (options = {}, callback) =>{
-        console.log(options);
         buildfire.appData.search(options,"$$reactions$$",(err, reaction) =>{
             if(err) return callback(err);
             else if(reaction && reaction.length == 0) return callback(null, null)
@@ -64,7 +63,7 @@ const ReactionsUI = {
                     }
                 }
             }
-            ReactionsUI.insert(newReaction, console.log)
+            ReactionsUI.insert(newReaction, () =>{})
         }
         
     },
@@ -75,6 +74,7 @@ const ReactionsUI = {
         })
     },
     getUserReactionsCount: (userId, callback) =>{
+        if(!userId) return callback(0)
         buildfire.appData.aggregate(
             {
               pipelineStages: [
@@ -100,7 +100,6 @@ const ReactionsUI = {
         let options = {filter: {
             "_buildfire.index.array1.string1":{$in:indexes}
         }}
-        console.log("reactions");
         ReactionsUI.search(options, (err, items) =>{
             return callback(err, items)
         })

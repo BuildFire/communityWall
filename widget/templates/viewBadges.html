@@ -1,20 +1,20 @@
 <div ng-if="!ViewBadges.isLoading">
-    <div ng-show="ViewBadges.user.socialProfile.badges.length == 0">
+    <div ng-show="ViewBadges.user.socialProfile.badgesWithData.length == 0">
         <div class="empty_state"></div>
     </div>
-    <div ng-show="ViewBadges.user.socialProfile.badges.length > 0">
+    <div ng-show="ViewBadges.user.socialProfile.badgesWithData.length > 0">
         <h1 class="vbHeader">My Rings</h1>
         <div class="svg-container">
-            <img ng-if="ViewBadges.user.socialProfile.badges.length  > 0" ng-src="{{ViewBadges.user.socialProfile.badges[0].badgeData.icon}}" alt="">
+            <img ng-if="ViewBadges.user.socialProfile.badgesWithData.length  > 0" ng-src="{{ViewBadges.user.socialProfile.badgesWithData[0].badgeData.icon}}" alt="">
         </div>
-        <div class="badges-list" ng-repeat="badge in ViewBadges.user.socialProfile.badges" ng-value="{{$index}}">
+        <div class="badges-list" ng-repeat="badge in ViewBadges.user.socialProfile.badgesWithData" ng-value="{{$index}}">
             <div class="list-svg-container">
                 <img  ng-src="{{badge.badgeData.icon}}" alt="">
             </div>
             <div class="list-text">
                 <h2>{{badge.badgeData.title}}</h2>
                 <h5>{{badge.badgeData.description}}</h5>
-                <h5 ng-if="badge.badgeData.expires.isTurnedOn">Expires in <strong>{{badge.badgeData.expires.number}} {{badge.badgeData.expires.frame}}</strong> </h5>
+                <h5 ng-if="badge.badgeData.expires.isTurnedOn">Expires in <strong>{{ViewBadges.getExpiryDate(badge)}}</strong> days </h5>
             </div>
         </div>
     </div>
