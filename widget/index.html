@@ -220,10 +220,10 @@
                                                         
                                                     </p>
                                                 </div>
-                                                <div class="plugin-slide text-center post-image-container"  ng-repeat="image in post.images">
+                                                <div class="text-center post-image-container"  ng-repeat="image in post.images">
                                                     <img src="{{image}}" alt="" style="width: 100% !important;" ng-click="WidgetWall.openImageInFullScreen(image)"> 
                                                 </div>
-                                                <div class="plugin-slide text-center post-image-container"  ng-repeat="video in post.videos">
+                                                <div class="text-center post-image-container"  ng-repeat="video in post.videos">
                                                     <video alt=""  style="width: 100% !important;height: 100% !important;object-fit: cover;border-radius: 15px;" controls>
                                                         <source ng-src="{{trustSrc(video+ '#t=0.01')}}" />
                                                     </video>
