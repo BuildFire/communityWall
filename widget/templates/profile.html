@@ -13,7 +13,7 @@ ng-show="!Profile.isLoading">
         </div>
         <div class="profile-info-container">
             <h5>{{Profile.SocialItems.getUserName(Profile.user.userDetails)}}</h5>
-            <h6>{{Profile.SocialItems.userDetails.location && Profile.SocialItems.userDetails.location.address ? Profile.SocialItems.userDetails.location.address : ''  }}</h6>
+            <h6>{{Profile.user.userDetails.location && Profile.user.userDetails.location.address ? Profile.user.userDetails.location.address : ''  }}</h6>
             <h5 class="streakText" ng-show="Profile.SocialItems.appSettings.showStreak && (Profile.user.isCurrentUser || Profile.user.isPublicProfile || (!Profile.user.isPublic && Profile.user.amIFollowing))">{{Profile.user.socialProfile.data.streak ? Profile.user.socialProfile.data.streak : 0 }} Streak</h5>
             <p class="longestStreakText" ng-show="Profile.SocialItems.appSettings.showLongestStreak && (Profile.user.isCurrentUser || Profile.user.isPublicProfile || (!Profile.user.isPublic && Profile.user.amIFollowing))">{{Profile.user.socialProfile.data.highestStreak ? Profile.user.socialProfile.data.highestStreak : 0 }}</p>
         </div>
@@ -24,8 +24,9 @@ ng-show="!Profile.isLoading">
         </div>
     </div>
     <div ng-if="Profile.user.buddies && Profile.user.buddies.length > 0" class="profile-buddies">
-        <div ng-repeat="user in Profile.user.buddies" >
+        <div ng-repeat="user in Profile.user.buddies">
             <img ng-if="user.pic" load-image="1x1"
+            ng-click="Profile.goToProfile(user.userId)"
               data-final-src="{{user.pic}}" 
               crop-width="40" 
               style="border-radius: 100%;"
@@ -37,6 +38,8 @@ ng-show="!Profile.isLoading">
               data-final-src="../../../styles/media/avatar-placeholder.png"
               data-img-type="local" crop-width="40" crop-height="40"
               crop-type="default"
+              ng-click="Profile.goToProfile(user.userId)"
+
             />
         </div>
     </div>
@@ -45,11 +48,11 @@ ng-show="!Profile.isLoading">
             {{Profile.user.userDetails.bio}}
         </p>
     </div>
-    <div style="height:6vh" ng-show="Profile.user.isCurrentUser" ng-click="Profile.openBFProfile()" class="button-container side-by-side">
-            <button class="half-width-btn" style="background-color: var(--bf-theme-success) !important;color: white !important;" >
+    <div style="height:6vh" ng-show="Profile.user.isCurrentUser" class="button-container side-by-side">
+            <button class="half-width-btn" ng-click="Profile.openBFProfile()" style="background-color: white;border-color: var(--bf-theme-success);color: black !important;" >
                 {{Profile.strings.usereditProfile}}
             </button>
-            <button class="half-width-btn" >
+            <button class="half-width-btn" ng-click="Profile.goToInbox()">
                 {{Profile.strings.userinbox}}
             </button>
 
@@ -79,7 +82,10 @@ ng-show="!Profile.isLoading">
                 {{Profile.strings.userblocked}}
             </span>             
         </button>
-        <button style="background-color: var(--bf-theme-success) !important;color: white !important;"  class="full-width" ng-if="!Profile.user.didIBlock && !Profile.user.isPublicProfile && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
+        <button 
+        style="color: white !important;"  
+        ng-style="{'background-color': Profile.user.amIPending ? 'white' : 'var(--bf-theme-success)','color': Profile.user.amIPending ? 'black' : 'white','border-color': Profile.user.amIPending ? 'var(--bf-theme-success)' : 'transparent' }"
+        class="full-width" ng-if="!Profile.user.didIBlock && !Profile.user.isPublicProfile && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
             <span ng-show="Profile.user.amIPending">
                 Requested
             </span>             
@@ -100,11 +106,11 @@ ng-show="!Profile.isLoading">
         <div ng-if="(Profile.posts.ownPosts.items.length == 0 && Profile.currentPage === 'posts') || (Profile.posts.taggedPosts.items.length == 0 && Profile.currentPage === 'tagged')">
             <div class="empty_state"></div>
         </div>
-        <div ng-cloak id="profile-posts-container" ng-style="{height: Profile.getPostsContainerHeight() + 'vh' }" ng-bind-html="postsList"  style="overflow: auto;" ng-show="Profile.currentPage === 'posts'">
+        <div ng-cloak id="{{'profile-posts-container-'+Profile.user.userId}}" ng-style="{height: Profile.getPostsContainerHeight() + 'vh' }" ng-bind-html="postsList"  style="overflow: auto;" ng-show="Profile.currentPage === 'posts'">
             
         </div>
         
-        <div ng-cloak id="profile-tagged-posts-container" ng-style="{height: Profile.getPostsContainerHeight() + 'vh' }"  style="overflow: auto;" ng-show="Profile.currentPage === 'tagged'">
+        <div ng-cloak id="{{'profile-tagged-posts-container-'+Profile.user.userId}}"  ng-style="{height: Profile.getPostsContainerHeight() + 'vh' }"  style="overflow: auto;" ng-show="Profile.currentPage === 'tagged'">
             
         </div>
     </div>

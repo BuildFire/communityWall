@@ -316,10 +316,12 @@
                 ContentHome.modalPopupThreadId = threadId;
                 console.log('inside ban user controller method>>>>>>>>>>');
                 
-                buildfire.dialog.confirm(
+                Buildfire.dialog.confirm(
                     {
                         title: "Ban User",
-                        message: `Are you sure you want to ban ${username || 'this user'}?`,
+                        message: `Are you sure you want to ban this user? This action will delete all 
+                        posts and comments made by this user. User will not be able to post 
+                        again`,
                         confirmButton: {
                             text: "Ban User",
                             type: "danger",
@@ -681,7 +683,7 @@
                 else if(text === 'Oldest First'){
                     $scope.searchTableHelper.search({},{createdOn: 1});
                 }
-                else if(text === 'Badge Name A - Z'){
+                else if(text === 'Hashtag Name A - Z'){
                     console.log("here");
                     $scope.searchTableHelper.search({},{name: 1})
                 }

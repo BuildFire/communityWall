@@ -83,7 +83,8 @@
                 Buildfire.spinner.show();
                 $scope.isBusy = true;
                 $scope.trendingHashtags = {};
-                Discover.getPosts({skip:0, limit:8, sort: {createdOn: -1}},function(err, result){
+                Discover.getPosts({filter:{"_buildfire.index.string1":""},skip:0, limit:8, sort: {createdOn: -1}},function(err, result){
+                    console.log(result);
                     $rootScope.showThread = false;
                     $rootScope.$digest();
                     $scope.setActivePage($scope.activePageIndex);
@@ -105,7 +106,8 @@
                         if( $scope.shouldFetchMorePosts && ( container.scrollTop - (container.scrollHeight - container.offsetHeight) > - 30) && !$scope.isBusy ){
                             Buildfire.spinner.show();
                             $scope.isBusy = true;
-                            Discover.getPosts({skip:$scope.posts.length, limit:8, sort: {createdOn: -1} }, function(err, result){
+                            Discover.getPosts({filter:{"_buildfire.index.string1":""},skip:$scope.posts.length, limit:8, sort: {createdOn: -1} }, function(err, result){
+                                console.log(result);
                                 if(result && result.length == 8){ 
                                     $scope.posts.push(...result);
                                     $scope.injectElements(result);
@@ -296,7 +298,7 @@
              }
 
             $scope.crop = function(url, dimensions){
-                return Buildfire.imageLib.cropImage(url, {width: dimensions.width, height: dimensions.height});
+                return Buildfire.imageLib.cropImage(url,{ size: "half_width", aspect: "9:16" });
             }
             Discover.init();
         }]);

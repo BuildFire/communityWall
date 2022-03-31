@@ -18,7 +18,10 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
         window.buildfire.dialog.confirm(
             {
                 title: "Ban User",
-                message: `Are you sure you want to ban ${username || 'this user'}?`,
+                message: `Are you sure you want to ban this user? This action will delete all 
+                posts and comments made by this user. User will not be able to post 
+                again`,
+
                 confirmButton: {
                     text: "Ban User",
                     type: "danger",

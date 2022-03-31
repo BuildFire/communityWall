@@ -145,7 +145,7 @@
                             });  
                         }
                         let getCroppedImage = (url) =>{
-                            return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "16:9" });
+                            return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "9:16" });
                         }
                         $scope.selectedMedia = {
                             type: res.images.length > 0 ? "image" : res.videos.length > 0 ? "video" : "image",
@@ -412,7 +412,7 @@
                                     else{
                                         $scope.selectedMedia.src = imageData;
                                         $scope.selectedMedia.type = "image";
-                                        $scope.selectedMedia.shown  = Buildfire.imageLib.cropImage($scope.selectedMedia.src, { size: "half_width", aspect: "16:9" });
+                                        $scope.selectedMedia.shown  = Buildfire.imageLib.cropImage($scope.selectedMedia.src, { size: "half_width", aspect: "9:16" });
                                         Buildfire.spinner.hide();
                                         $scope.$digest();
                                     }
@@ -508,8 +508,9 @@
 
 
             $scope.createPost = function(postData){      
-
+                console.log(postData);
                 SocialDataStore.createPost(postData).then((response) => {
+                    console.log(response);
                     Buildfire.dialog.toast({
                         message: "Post created successfully",
                     });

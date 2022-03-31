@@ -24,7 +24,7 @@ class SearchTableHelper {
 
     renderSearch(){
         let searchContainer = this._create("div",null,"",["search_input_container"]);
-        let input = this._createInput(`${this.tag}_search`,`Search By Name`);
+        let input = this._createInput(`${this.tag}_search`,`Search Hashtags`);
         let searchButton = this._createSearchButton();
         searchContainer.appendChild(input);
         searchContainer.appendChild(searchButton)
@@ -130,6 +130,10 @@ class SearchTableHelper {
 		this.items = [];
 		this.filter = filter;
 		this.sort = sort;
+		console.log("passed sort: " + sort);
+		console.log(sort);
+		console.log("setting this.sort to: " + this.sort);
+		console.log(this.sort);
 		this._fetchPageOfData(this.filter, this.sort, 0);
 	}
 
@@ -143,7 +147,8 @@ class SearchTableHelper {
 	}
 
 	_fetchPageOfData(filter, sort, pageIndex, callback) {
-
+		console.log("from fetch page of data");
+		console.log(sort);
 		if (pageIndex > 0 && this.endReached) return;
 		let pageSize = 50;
 		this.pageIndex = pageIndex;

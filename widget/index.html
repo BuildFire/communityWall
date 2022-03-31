@@ -193,7 +193,7 @@
                                                     top: 25px;
                                                     right: 15px;" ng-click="WidgetWall.openPostBottomDrawer(post)">
                                                         <span  class="material-icons">
-                                                            more_vert
+                                                            more_horiz
                                                         </span>
                                                             
                                                     </div>
@@ -221,7 +221,7 @@
                                                     </p>
                                                 </div>
                                                 <div class="text-center post-image-container"  ng-repeat="image in post.images">
-                                                    <img src="{{image}}" alt="" style="width: 100% !important;" ng-click="WidgetWall.openImageInFullScreen(image)"> 
+                                                    <img ng-src="{{getCroppedImage(image)}}" alt="" style="width: 100% !important;" ng-click="WidgetWall.openImageInFullScreen(image)"> 
                                                 </div>
                                                 <div class="text-center post-image-container"  ng-repeat="video in post.videos">
                                                     <video alt=""  style="width: 100% !important;height: 100% !important;object-fit: cover;border-radius: 15px;" controls>

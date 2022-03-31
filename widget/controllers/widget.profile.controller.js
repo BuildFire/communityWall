@@ -9,18 +9,7 @@
                 userId: $routeParams.userId,
                 isCurrentUser:$routeParams.userId == t.SocialItems.userDetails.userId ? true : false
             }
-            t.posts = {
-                ownPosts:{
-                    shouldFetchMore: true,
-                    items: [],
-                    container: document.getElementById("profile-posts-container")
-                },
-                taggedPosts:{
-                    shouldFetchMore: true,
-                    items: [],
-                    container: document.getElementById("profile-tagged-posts-container")
-                }
-            }
+
             t.getPostsContainerHeight = () =>{
                 let originalHeight = 100;
                 let occupiedHeight = 0;
@@ -29,7 +18,6 @@
                 occupiedHeight+= 5;
                 // if buddies exist
                 if(t.user.buddies && t.user.buddies.length > 0){
-                    console.log("added buddies height");
                     // originalHeight
                     occupiedHeight+= 10;
                     
@@ -59,18 +47,22 @@
                     ownPosts:{
                         shouldFetchMore: true,
                         items: [],
-                        container: document.getElementById("profile-posts-container")
+                        container: document.getElementById("profile-posts-container-" + t.user.userId)
                     },
                     taggedPosts:{
                         shouldFetchMore: true,
                         items: [],
-                        container: document.getElementById("profile-tagged-posts-container")
+                        container: document.getElementById("profile-tagged-posts-container-" + t.user.userId)
                     }
                 }
-                // t.posts.ownPosts.container.innerHTML = "";
-                // t.posts.taggedPosts.container.innerHTML = "";
+
                 return callback(true);
             }
+
+            t.goToProfile = (userId) =>{
+                Location.go("#/profile/"+userId);
+            }
+
 
             t.initProfile = (callback) =>{
                 if(t.user.isCurrentUser){
@@ -142,8 +134,14 @@
                     t.user.userDetails = userDetails.data.userDetails;
                     return callback(true)
                 })
-
             }
+
+            t.goToInbox = () =>{
+                Buildfire.navigation.navigateTo(
+                    {pluginId: "135d1549-efd2-4a70-a476-99ac45e1d1d4"});
+            }
+
+
             t.getUserSocialProfile = (callback) =>{
                 SocialUserProfile.get(t.user.userId, (err, profile) =>{
                     t.user.socialProfile = profile;
@@ -232,18 +230,43 @@
                             $timeout(function(){
                                 $scope.$digest()
                             })
-            
-                            SocialUserProfile.blockUser(t.user.userId, (err, data) =>{
-                                if(data){
-                                    t.init();
+                            Buildfire.dialog.confirm(
+                                {
+                                    title: t.strings.blocktitle,
+                                    message: t.strings.blockbody,
+                                    confirmButton: {
+                                        text: t.strings.blockconfirm,
+                                    },
+                                },(err, isConfirmed) => {
+                                if(isConfirmed){
+                                    Buildfire.dialog.toast({
+                                        message: "Blocked " + t.SocialItems.getUserName(t.user.userDetails) ,
+                                    });
+                                    SocialUserProfile.blockUser(t.user.userId, (err, data) =>{
+                                        if(data){
+                                            t.init();
+                                        }
+                                    }, (err,data) =>{
+                                    });
                                 }
-                            }, (err,data) =>{
                             });
 
                             
                         }
                         else if(index == 8){
-                            t.unblockUser();
+                            Buildfire.dialog.confirm(
+                                {
+                                    title: t.strings.unblocktitle,
+                                    message: t.strings.unblockbody,
+                                    confirmButton: {
+                                        text: t.strings.unblockconfirm,
+                                    },
+                                },(err, isConfirmed) => {
+                                    if(isConfirmed){
+                                        t.unblockUser();
+                                    }
+                                });
+            
 
 
                         }
@@ -258,11 +281,15 @@
                 $timeout(function(){
                     $scope.$digest()
                 })
-                SocialUserProfile.unblockUser(t.user.userId, (err, data) =>{
-                    if(data){
-                        t.init();
-                    }
-                });
+                    SocialUserProfile.unblockUser(t.user.userId, (err, data) =>{
+                        if(data){
+                            Buildfire.dialog.toast({
+                                message: "Unblocked " + t.SocialItems.getUserName(t.user.userDetails) ,
+                            });
+
+                            t.init();
+                        }
+                    });
             }
 
 
@@ -271,60 +298,150 @@
             }
 
             t.followUnfollowUser = function(){
-                let params = {userId: t.user.userId, currentUser: t.SocialItems.userDetails.userId};
-                SocialUserProfile.followUnfollowUser(params, (err, data) =>{
-                    if(data){
-                        t.user.socialProfile = data;
-                        t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
-                        t.user.amIPending = t.user.socialProfile.data.pendingFollowers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
-                            $scope.$digest();
-                        if(t.user.amIFollowing){
-                            let type = "follow"
-                            let fromUser = {
-                                displayName: t.SocialItems.userDetails.displayName,
-                                imageUrl: t.SocialItems.userDetails.imageUrl,
-                                userId: t.SocialItems.userDetails.userId
+                if(t.user.amIFollowing){
+                    Buildfire.dialog.confirm(
+                        {
+                            title: t.strings.unfollowtitle,
+                            message: t.strings.unfollowbody,
+                            confirmButton: {
+                                text: t.strings.unfollowconfirm,
+                            },
+                        },(err, isConfirmed) => {
+                            if (err) console.error(err);
+                            if (isConfirmed) {                    
+                                let params = {userId: t.user.userId, currentUser: t.SocialItems.userDetails.userId};
+                                SocialUserProfile.followUnfollowUser(params, (err, data) =>{
+                                    if(data){
+                                        t.user.socialProfile = data;
+                                        t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+                                        if(t.user.amIFollowing){
+                                            Buildfire.dialog.toast({
+                                                message: "Started Following " + t.SocialItems.getUserName(t.user.userDetails) ,
+                                            });
+                                        }
+                                        else{
+                                            Buildfire.dialog.toast({
+                                                message: "Unfollowed " + t.SocialItems.getUserName(t.user.userDetails) ,
+                                            });
+                                        }
+                                        t.user.amIPending = t.user.socialProfile.data.pendingFollowers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+                                            $scope.$digest();
+                                        if(t.user.amIFollowing){
+                                            let type = "follow"
+                                            let fromUser = {
+                                                displayName: t.SocialItems.userDetails.displayName,
+                                                imageUrl: t.SocialItems.userDetails.imageUrl,
+                                                userId: t.SocialItems.userDetails.userId
+                                            }
+                                            let toUser = {
+                                                displayName: t.user.userDetails.displayName,
+                                                userId: t.user.userId
+                                            }
+                                            t.createActivity(type, {toUser, fromUser});
+                                        } 
+                                        else if(t.user.amIPending){
+                                            let type = "pendingFollow"
+                                            let fromUser = {
+                                                displayName: t.SocialItems.userDetails.displayName,
+                                                imageUrl: t.SocialItems.userDetails.imageUrl,
+                                                userId: t.SocialItems.userDetails.userId
+                                            }
+                                            let toUser = {
+                                                displayName: t.user.userDetails.displayName,
+                                                userId: t.user.userId
+                                            }
+                                            t.createActivity(type, {toUser, fromUser});
+                                        } 
+                                        else{
+                                            let params = {
+                                                filter:{$and:[
+                                                    {"$json.fromUser.userId":t.SocialItems.userDetails.userId},
+                                                    {"$json.toUser.userId": t.user.userId},
+                                                    {$or:[
+                                                        {"$json.type":"follow"},
+                                                        {"$json.type":"pendingFollow"},
+                                                    ]}
+                                                ]}
+                                            }
+                                            ProfileActivity.search(params, (err, results) =>{
+                                                if(results && results.length > 0){
+                                                    results.forEach(res =>{
+                                                        ProfileActivity.delete(res.id, () =>{})
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    }
+                                });
                             }
-                            let toUser = {
-                                displayName: t.user.userDetails.displayName,
-                                userId: t.user.userId
+                        });
+                }
+                else{
+                    let params = {userId: t.user.userId, currentUser: t.SocialItems.userDetails.userId};
+                    SocialUserProfile.followUnfollowUser(params, (err, data) =>{
+                        if(data){
+                            t.user.socialProfile = data;
+                            t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+                            if(t.user.amIFollowing){
+                                Buildfire.dialog.toast({
+                                    message: "Started Following " + t.SocialItems.getUserName(t.user.userDetails) ,
+                                });
                             }
-                            t.createActivity(type, {toUser, fromUser});
-                        } 
-                        else if(t.user.amIPending){
-                            let type = "pendingFollow"
-                            let fromUser = {
-                                displayName: t.SocialItems.userDetails.displayName,
-                                imageUrl: t.SocialItems.userDetails.imageUrl,
-                                userId: t.SocialItems.userDetails.userId
+                            else{
+                                Buildfire.dialog.toast({
+                                    message: "Unfollowed " + t.SocialItems.getUserName(t.user.userDetails) ,
+                                });
                             }
-                            let toUser = {
-                                displayName: t.user.userDetails.displayName,
-                                userId: t.user.userId
-                            }
-                            t.createActivity(type, {toUser, fromUser});
-                        } 
-                        else{
-                            let params = {
-                                filter:{$and:[
-                                    {"$json.fromUser.userId":t.SocialItems.userDetails.userId},
-                                    {"$json.toUser.userId": t.user.userId},
-                                    {$or:[
-                                        {"$json.type":"follow"},
-                                        {"$json.type":"pendingFollow"},
-                                    ]}
-                                ]}
-                            }
-                            ProfileActivity.search(params, (err, results) =>{
-                                if(results && results.length > 0){
-                                    results.forEach(res =>{
-                                        ProfileActivity.delete(res.id, () =>{})
-                                    })
+                            t.user.amIPending = t.user.socialProfile.data.pendingFollowers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+                                $scope.$digest();
+                            if(t.user.amIFollowing){
+                                let type = "follow"
+                                let fromUser = {
+                                    displayName: t.SocialItems.userDetails.displayName,
+                                    imageUrl: t.SocialItems.userDetails.imageUrl,
+                                    userId: t.SocialItems.userDetails.userId
                                 }
-                            })
+                                let toUser = {
+                                    displayName: t.user.userDetails.displayName,
+                                    userId: t.user.userId
+                                }
+                                t.createActivity(type, {toUser, fromUser});
+                            } 
+                            else if(t.user.amIPending){
+                                let type = "pendingFollow"
+                                let fromUser = {
+                                    displayName: t.SocialItems.userDetails.displayName,
+                                    imageUrl: t.SocialItems.userDetails.imageUrl,
+                                    userId: t.SocialItems.userDetails.userId
+                                }
+                                let toUser = {
+                                    displayName: t.user.userDetails.displayName,
+                                    userId: t.user.userId
+                                }
+                                t.createActivity(type, {toUser, fromUser});
+                            } 
+                            else{
+                                let params = {
+                                    filter:{$and:[
+                                        {"$json.fromUser.userId":t.SocialItems.userDetails.userId},
+                                        {"$json.toUser.userId": t.user.userId},
+                                        {$or:[
+                                            {"$json.type":"follow"},
+                                            {"$json.type":"pendingFollow"},
+                                        ]}
+                                    ]}
+                                }
+                                ProfileActivity.search(params, (err, results) =>{
+                                    if(results && results.length > 0){
+                                        results.forEach(res =>{
+                                            ProfileActivity.delete(res.id, () =>{})
+                                        })
+                                    }
+                                })
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
             
             t.createActivity = function(type, data){
@@ -416,6 +533,18 @@
                     if(finished){
                         t.initProfile(finished =>{
                             if(finished){
+                                t.posts = {
+                                    ownPosts:{
+                                        shouldFetchMore: true,
+                                        items: [],
+                                        container: document.getElementById("profile-posts-container-" + $routeParams.userId)
+                                    },
+                                    taggedPosts:{
+                                        shouldFetchMore: true,
+                                        items: [],
+                                        container: document.getElementById("profile-tagged-posts-container-" + $routeParams.userId)
+                                    }
+                                }
                                 t.initPosts(finished =>{
                                     if(finished){
                                         t.initTaggedPosts(finished =>{
@@ -534,7 +663,7 @@
             }
             t.createImage = function(src, postId){
                 let e = document.createElement('img');
-                e.src = Buildfire.imageLib.cropImage(src, {width: 100, height: 100});
+                e.src = Buildfire.imageLib.cropImage(src,{ size: "half_width", aspect: "9:16" });
                 e.onclick = () =>{
                     t.openSinglePost(postId)
                 }

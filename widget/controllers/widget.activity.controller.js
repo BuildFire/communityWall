@@ -27,6 +27,21 @@
                 });
             }
             
+            t.handleActivity = (activity) =>{
+                console.log("clicked");
+                if(activity.type === "reactedToYourpost" || activity.type === "taggedYouInAPost"){
+                    console.log("clicked");
+                    // navigate to post
+                    t.goToPost(activity.post.id)
+                }
+                else{
+                    // navigate to user profile
+                    $scope.navigateToProfile(activity.fromUser.userId);
+                }
+            }
+
+            
+
             t.goToPost = (postid) =>{
                 console.log(postid);
                 Location.go("#/singlePostView/"+postid);

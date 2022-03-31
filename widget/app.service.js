@@ -585,10 +585,11 @@
                     getUsers();
                 },
                 getUsersByIds: function(array, cb){
+                    let tempArray = [];
                     for(let i = 0 ; i < array.length ; i++){
-                        array[i] = `userId_${array[i]}`
+                        tempArray.push(`userId_${array[i]}`);
                     }
-                    window.buildfire.appData.search({filter:{$and:[{"_buildfire.index.string1":""},{"_buildfire.index.array1.string1":{$in:array}}]}}, "subscribedUsersData", function(err, data){
+                    window.buildfire.appData.search({filter:{$and:[{"_buildfire.index.string1":""},{"_buildfire.index.array1.string1":{$in:tempArray}}]}}, "subscribedUsersData", function(err, data){
                         if(err) return cb(err);
                         else if(data && data.length){
                             return cb(null, data)
@@ -1394,8 +1395,19 @@
                                         callback(null, item);
                                     })
                                 });
-
+                                
                             });
+                        }
+                        else{
+                            getPostLikes(item.id, (count) =>{
+                                item.likesCount = count;
+                                item.liked = false;
+                                $timeout(function(){
+                                    $rootScope.$digest();
+                                    callback(null, item);
+                                })
+                            });
+
                         }
                             
                     });

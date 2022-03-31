@@ -24,7 +24,7 @@ class BadgeSearchTableHelper {
 
     renderSearch(){
         let searchContainer = this._create("div",null,"",["badge_search_input_container"]);
-        let input = this._createInput(`${this.tag}_search`,`Search By Name`);
+        let input = this._createInput(`${this.tag}_search`,`Search Badges`);
         let searchButton = this._createSearchButton();
         searchContainer.appendChild(input);
         searchContainer.appendChild(searchButton)

@@ -301,6 +301,9 @@
                                     let index = taggedPeople.findIndex(e => e === WidgetWall.SocialItems.userDetails.userId);
                                     taggedPeople.splice(index, 1);
                                     SocialDataStore.updatePost(post).then((updatedpost) =>{
+                                        Buildfire.dialog.toast({
+                                            message: "Tag removed successfully",
+                                        });
                                         console.log(updatedpost);
                                         let inArray = WidgetWall.SocialItems.items.findIndex(e => e.id === post.id);
                                         WidgetWall.SocialItems.items[inArray].taggedPeople = updatedpost.data.taggedPeople;
@@ -521,6 +524,25 @@
                     });
                 }
             };
+            WidgetWall.openPrivateChat = function (userId, userName) {
+                let wid = null;
+                if (WidgetWall.SocialItems.userDetails.userId && WidgetWall.SocialItems.userDetails.userId != userId) {
+                    if (WidgetWall.SocialItems.userDetails.userId > userId) {
+                        wid = WidgetWall.SocialItems.userDetails.userId + userId;
+                    } else {
+                        wid = userId + WidgetWall.SocialItems.userDetails.userId;
+                    }
+                }
+                SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                    if (err) console.error('Error while getting initial group following status.', err);
+                    if (!status.length) {
+                        WidgetWall.followPrivateWall(userId, wid, userName);
+                    } else {
+                        WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                    }
+                });
+            }
+
 
             WidgetWall.init = function () {
                 WidgetWall.SocialItems.getSettings((err, result) => {
@@ -616,6 +638,7 @@
                             }
                             WidgetWall.saveActivity(type, {fromUser, toUser, post: {image: post.images[0],id: post.id}})
                         }
+
                         WidgetWall.toggleReaction = (post) =>{
                             if(!WidgetWall.SocialItems.userDetails.userId){
                                 Buildfire.auth.login({},() => {});
@@ -811,24 +834,7 @@
                 })
             });
 
-            WidgetWall.openPrivateChat = function (userId, userName) {
-                let wid = null;
-                if (WidgetWall.SocialItems.userDetails.userId && WidgetWall.SocialItems.userDetails.userId != userId) {
-                    if (WidgetWall.SocialItems.userDetails.userId > userId) {
-                        wid = WidgetWall.SocialItems.userDetails.userId + userId;
-                    } else {
-                        wid = userId + WidgetWall.SocialItems.userDetails.userId;
-                    }
-                }
-                SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                    if (err) console.error('Error while getting initial group following status.', err);
-                    if (!status.length) {
-                        WidgetWall.followPrivateWall(userId, wid, userName);
-                    } else {
-                        WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
-                    }
-                });
-            }
+
 
             var counter = 0;
             $scope.setupImageList = function (post) {
@@ -1176,6 +1182,13 @@
                     post: post,
                     wid: WidgetWall.SocialItems.wid
                 });
+                Buildfire.dialog.toast({
+                    message: "Post created successfully",
+                });
+            }
+
+            $scope.getCroppedImage = (url) =>{
+                return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "9:16" });
             }
 
             WidgetWall.showMoreOptions = function (post) {
@@ -1375,6 +1388,9 @@
             WidgetWall.deletePost = function (postId) {
                 var success = function (response) {
                     if (response) {
+                        Buildfire.dialog.toast({
+                            message: "Post deleted successfully",
+                        });
                         Buildfire.messaging.sendMessageToControl({ 'name': EVENTS.POST_DELETED, 'id': postId });
                         let postToDelete = WidgetWall.SocialItems.items.find(element => element.id === postId)
                         console.log(postToDelete);

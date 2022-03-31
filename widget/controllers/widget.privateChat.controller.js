@@ -91,7 +91,7 @@
                                     else{
                                         $scope.selectedMedia.src = imageData;
                                         $scope.selectedMedia.type = "image";
-                                        $scope.selectedMedia.shown  = Buildfire.imageLib.cropImage($scope.selectedMedia.src, { size: "half_width", aspect: "16:9" });
+                                        $scope.selectedMedia.shown  = Buildfire.imageLib.cropImage($scope.selectedMedia.src, { size: "half_width", aspect: "9:16" });
                                         Buildfire.spinner.hide();
                                         $scope.$digest();
                                     }

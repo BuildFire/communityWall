@@ -195,7 +195,6 @@ table tbody tr td {
   background-color: transparent;
 }
 .dropdown {
-  width: 19%;
   margin-bottom: 2vh;
 }
 .hashtags_filters {
@@ -226,7 +225,7 @@ table tbody tr td {
 
 .full_container {
   width: 100%;
-  background: #5d606354;
+  background: #5d6063d4;
   height: 100vh;
   position: absolute;
   z-index: 19;
