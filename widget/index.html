@@ -156,9 +156,10 @@
                                                 ng-bind-html="(WidgetWall.util.injectAnchors(post.text) | limitTo : (post.limit || 150) :0) | newLine"></span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 class="ng-cloak">...</span>
-                                            <a ng-if="(post.text.trim().length>150 && !post.seeMore)"
+                                            <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 ng-click="WidgetWall.seeMore(post)" class="text-info ng-cloak">Read
-                                                More</a>
+                                                More</span>
+                                                <p ng-if="(post.text.trim().length>150 && post.seeMore)" class="text-info" ng-click="WidgetWall.seeLess(post)">Read Less</p>
                                         </p>
                                     </div>
                                     <div class="plugin-banner">
