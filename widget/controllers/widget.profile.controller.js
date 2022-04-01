@@ -355,12 +355,14 @@
                                         else{
                                             let params = {
                                                 filter:{$and:[
-                                                    {"$json.fromUser.userId":t.SocialItems.userDetails.userId},
-                                                    {"$json.toUser.userId": t.user.userId},
+                                                    {"_buildfire.index.array1.string1":`fromUser_${t.SocialItems.userDetails.userId}`},
+                                                    {"_buildfire.index.array1.string1":`toUser_${t.user.userId}`},
                                                     {$or:[
-                                                        {"$json.type":"follow"},
-                                                        {"$json.type":"pendingFollow"},
-                                                    ]}
+                                                        {"_buildfire.index.array1.string":"type_follow"},
+                                                        {"_buildfire.index.array1.string":"type_pendingFollow"},
+
+                                                    ]},
+                                                    
                                                 ]}
                                             }
                                             ProfileActivity.search(params, (err, results) =>{

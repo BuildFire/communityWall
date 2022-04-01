@@ -54,7 +54,7 @@
             t.getUserActivity = (callback) =>{
                 let options = {
                     filter:{
-                        "$json.toUser.userId":t.SocialItems.userDetails.userId
+                        "_buildfire.index.array1.string1":`toUser_${t.SocialItems.userDetails.userId}`
                     },
                     skip: t.count,
                     limit: 50,

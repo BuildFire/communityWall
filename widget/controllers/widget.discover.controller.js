@@ -270,7 +270,7 @@
 
             $scope.getUsersWhoIdontFollow = function(){
                 
-                Buildfire.publicData.search({filter:{"$json.userId":Discover.SocialItems.userDetails.userId}},"SocialUserProfile", (err, results) =>{
+                Buildfire.publicData.search({filter:{"_buildfire.index.string1":Discover.SocialItems.userDetails.userId}},"SocialUserProfile", (err, results) =>{
                     if(err) return;
                     else if(results){
                         let arr = [...results[0].data.following, Discover.SocialItems.userDetails.userId];

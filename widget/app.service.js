@@ -325,7 +325,7 @@
                                 err ? callback(err) : callback(null, res);
                             });
                             if(data.isPublicProfile){
-                                window.buildfire.publicData.search({filter:{"$json.toUser.userId":data.userId}}, "ProfileActivity",(err, data) =>{
+                                window.buildfire.publicData.search({filter:{"_buildfire.index.array1.string1":"toUser_"+data.userId}}, "ProfileActivity",(err, data) =>{
                                     if(data && data.length > 0){
                                         data.forEach(item =>{
                                             if(item && item.data.type === 'pendingFollow'){
@@ -360,7 +360,7 @@
                                 }
                                 window.buildfire.publicData.update(socialProfile.id, updatedObj, "SocialUserProfile", (err, data) =>{
                                     err ? callback(err) : callback(null, data);
-                                    window.buildfire.publicData.search({filter:{"$json.userId":params.currentUser}} , "SocialUserProfile", (err, results) =>{
+                                    window.buildfire.publicData.search({filter:{"_buildfire.index.string1":params.currentUser}} , "SocialUserProfile", (err, results) =>{
                                         let p = results[0];
                                         if(index == -1) p.data.following.push(params.userId);
                                         else p.data.following.splice(index,1);
@@ -394,7 +394,7 @@
 
                                 window.buildfire.publicData.update(socialProfile.id, updatedObj, "SocialUserProfile", (err, data) =>{
                                     err ? callback(err) : callback(null, data);
-                                    window.buildfire.publicData.search({filter:{"$json.userId":params.currentUser}} , "SocialUserProfile", (err, results) =>{
+                                    window.buildfire.publicData.search({filter:{"_buildfire.index.string1":params.currentUser}} , "SocialUserProfile", (err, results) =>{
                                         let p = results[0];
                                         if(index == -1 && index2 >= 0) p.data.following.splice(index2, 1);
 
@@ -434,9 +434,9 @@
                                 window.buildfire.publicData.insert(newParams, "ProfileActivity", () =>{});
                                 window.buildfire.publicData.search({filter:{
                                 $and:[
-                                    {"$json.fromUser.userId": params.user.userId},
-                                    {"$json.toUser.userId": params.currentUser.userId},
-                                    {"$json.type": "pendingFollow"}
+                                    {"_buildfire.index.array1.string1":"fromUser_"+ params.user.userId},
+                                    {"_buildfire.index.array1.string1": "toUser_"+ params.currentUser.userId},
+                                    {"_buildfire.index.array1.string1": "type_pendingFollow"}
                                 ]
                                     
                                 }} , "ProfileActivity", (err, data) =>{
@@ -474,9 +474,9 @@
                                 callback(err ? err : null, res);
                                 window.buildfire.publicData.search({filter:{
                                     $and:[
-                                        {"$json.fromUser.userId": params.userId},
-                                        {"$json.toUser.userId": params.currentUserId},
-                                        {"$json.type": "pendingFollow"}
+                                        {"_buildfire.index.array1.string1":"fromUser_"+ params.userId},
+                                        {"_buildfire.index.array1.string1": "toUser_"+params.currentUserId},
+                                        {"_buildfire.index.array1.string1": "type_pendingFollow"}
                                     ]
                                         
                                     }} , "ProfileActivity", (err, data) =>{
