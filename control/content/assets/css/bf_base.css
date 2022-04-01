@@ -457,9 +457,7 @@ button{
 .img-select.has-img .delete-img{
   display: flex;
 }
-.chevron{
-  top: -15px !important;
-}
+
 /* Checkbox */
 .checkbox input[type=checkbox] {
   opacity: 0;
