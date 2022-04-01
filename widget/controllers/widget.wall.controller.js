@@ -398,7 +398,7 @@
                                     else if (status.length && status[0].data.leftWall) {
                                         status[0].data.leftWall = false;
                                         Follows.followPlugin((e , u) => e ? console.log(e) : console.log(u));                                        
-                                        buildfire.appData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
+                                        buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', console.log);
                                         buildfire.notifications.pushNotification.subscribe(
                                             {
                                                 groupName: WidgetWall.SocialItems.wid === '' ?
@@ -729,7 +729,7 @@
             }
 
             WidgetWall.sanitizeWall = function (callback) {
-                buildfire.appData.search(
+                buildfire.publicData.search(
                     { filter: { '_buildfire.index.string1': WidgetWall.SocialItems.wid } },
                     'subscribedUsersData', function (err, result) {
                         if (err) console.log(err);
@@ -738,7 +738,7 @@
                             const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
                             result.map(item => {
                                 if (item.data.userId !== user1Id && item.data.userId !== user2Id) {
-                                    buildfire.appData.delete(item.id, 'subscribedUsersData');
+                                    buildfire.publicData.delete(item.id, 'subscribedUsersData');
                                 }
                             });
                         }
@@ -966,7 +966,7 @@
                         }
                     };
 
-                    buildfire.appData.search(filters, WidgetWall.threadTag, (err, records) => {
+                    buildfire.publicData.search(filters, WidgetWall.threadTag, (err, records) => {
                         if (err) return callback(err);
 
                         const createdBy = user._id;
@@ -976,7 +976,7 @@
                                 data: { users, wallId, wallTitle, createdBy }
                             });
 
-                            buildfire.appData.insert(
+                            buildfire.publicData.insert(
                                 thread.toJSON(),
                                 WidgetWall.threadTag,
                                 false,
@@ -1022,7 +1022,7 @@
                         };
                         thread.navigationData = navigationData;
 
-                        buildfire.appData.update(
+                        buildfire.publicData.update(
                             thread.id,
                             thread.toJSON(),
                             WidgetWall.threadTag,
@@ -1497,7 +1497,7 @@
             function updatePostsWithNames(user, status) {
                 let page = 0, pageSize = 50, allPosts = [];
                 function get() {
-                    buildfire.appData.search({
+                    buildfire.publicData.search({
                         filter: {
                             $or: [
                                 { "$json.userId": user._id },
@@ -1528,7 +1528,7 @@
                                         let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
                                         WidgetWall.SocialItems.items[postIndex] = item.data;
                                     }
-                                    buildfire.appData.update(item.id, item.data, 'wall_posts', (err, updatedPost) => {
+                                    buildfire.publicData.update(item.id, item.data, 'wall_posts', (err, updatedPost) => {
                                         console.log(updatedPost)
                                         if (!$scope.$$phase) $scope.$digest();
 
@@ -1547,7 +1547,7 @@
                 if (status && status[0]) {
                     if (!status[0].data.userDetails.lastUpdated) {
                         status[0].data.userDetails.lastUpdated = user.lastUpdated;
-                        window.buildfire.appData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
+                        window.buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
                             if (err) return console.error(err);
                         });
                     } else {
@@ -1567,7 +1567,7 @@
                             status[0].data.userDetails.imageUrl = user.imageUrl;
                             status[0].data.userDetails.lastUpdated = user.lastUpdated;
 
-                            window.buildfire.appData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
+                            window.buildfire.publicData.update(status[0].id, status[0].data, 'subscribedUsersData', function (err, data) {
                                 if (err) return console.error(err);
                                 updatePostsWithNames(user, status);
                             });

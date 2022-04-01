@@ -481,7 +481,7 @@
                         searchOptions.filter = { "_buildfire.index.string1": "" }
                     else
                         searchOptions.filter = { "_buildfire.index.string1": { "$regex": wid, "$options": "i" } }
-                        buildfire.appData.search(searchOptions, 'wall_posts', function(err, data) {
+                        buildfire.publicData.search(searchOptions, 'wall_posts', function(err, data) {
                             if(data && data.result.length) {
                                 data.result.map(item => allPosts.push(item));
                                 if(data.totalRecord > allPosts.length) {

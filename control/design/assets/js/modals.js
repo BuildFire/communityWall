@@ -141,7 +141,7 @@
                 if (!query)
                     query = {};
 
-                buildfire.appData.search(query, 'mainThreads', function (err, data) {
+                buildfire.publicData.search(query, 'mainThreads', function (err, data) {
                     if(callback)
                         callback(err,data);
                 });

@@ -34,6 +34,9 @@
                     // navigate to post
                     t.goToPost(activity.post.id)
                 }
+                else if(activity.type === "pendingFollow"){
+                    return;
+                }
                 else{
                     // navigate to user profile
                     $scope.navigateToProfile(activity.fromUser.userId);
@@ -116,7 +119,7 @@
                             element.parentElement.style.display = "none"
                             element.parentElement.parentElement.parentElement.children[1].children[1].innerHTML = "Started Following You"
                         }
-                        Buildfire.appData.search({filter:{}})
+                        Buildfire.publicData.search({filter:{}})
                     }
                 });
                 

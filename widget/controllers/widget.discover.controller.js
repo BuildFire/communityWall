@@ -59,7 +59,7 @@
                 let date = new Date();
                 let tag = "$$$hashtags_count$$$_"+date.getDay() + "$" + date.getMonth() + "$" + date.getYear();
                 console.log(tag);
-                Buildfire.appData.search({},tag, (err, results) =>{
+                Buildfire.publicData.search({},tag, (err, results) =>{
                     if(err || (results && results.length == 0)) return callback(null, null);
                     console.log(results);
                     let data = {...results[0].data};
@@ -68,7 +68,7 @@
                     .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
                     let length = Object.entries(sortable).length;
                     for(let i = 0 ; i < length ; i++){
-                        Buildfire.appData.search({filter:{"$json.hashtags":Object.keys(sortable)[i]},skip:0, limit: 10, sort:{createdOn: -1}} , "wall_posts",(err, data) =>{
+                        Buildfire.publicData.search({filter:{"$json.hashtags":Object.keys(sortable)[i]},skip:0, limit: 10, sort:{createdOn: -1}} , "wall_posts",(err, data) =>{
                             if(data){
                                 sortable[Object.keys(sortable)[i]] = data;
                             }
@@ -213,7 +213,7 @@
                 Location.go("#/search");
             }
             Discover.getPosts = function(options, callback){                
-                Buildfire.appData.search(options,"wall_posts", function (err, data) {
+                Buildfire.publicData.search(options,"wall_posts", function (err, data) {
                     // Discover.showUserLikes();
                     return callback(err, data)
                 });                       
@@ -270,7 +270,7 @@
 
             $scope.getUsersWhoIdontFollow = function(){
                 
-                Buildfire.appData.search({filter:{"$json.userId":Discover.SocialItems.userDetails.userId}},"SocialUserProfile", (err, results) =>{
+                Buildfire.publicData.search({filter:{"$json.userId":Discover.SocialItems.userDetails.userId}},"SocialUserProfile", (err, results) =>{
                     if(err) return;
                     else if(results){
                         let arr = [...results[0].data.following, Discover.SocialItems.userDetails.userId];

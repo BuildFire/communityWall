@@ -28,17 +28,17 @@ const ReactionsUI = {
         })
     },
     delete: (id, callback) =>{
-        buildfire.appData.search({filter:{"_buildfire.index.array1.string1":id}}, "$$reactions$$", (err, results) =>{
+        buildfire.publicData.search({filter:{"_buildfire.index.array1.string1":id}}, "$$reactions$$", (err, results) =>{
             if(results && results.length > 0){
 
-                buildfire.appData.delete(results[0].id,"$$reactions$$",(err, deleted) =>{
+                buildfire.publicData.delete(results[0].id,"$$reactions$$",(err, deleted) =>{
                     return callback(err, deleted);
                 });
             }            
         })
     },
     search: (options = {}, callback) =>{
-        buildfire.appData.search(options,"$$reactions$$",(err, reaction) =>{
+        buildfire.publicData.search(options,"$$reactions$$",(err, reaction) =>{
             if(err) return callback(err);
             else if(reaction && reaction.length == 0) return callback(null, null)
             else return callback(null, reaction)
@@ -68,14 +68,14 @@ const ReactionsUI = {
         
     },
     insert: (reaction, callback) =>{
-        buildfire.appData.insert(reaction, "$$reactions$$", (err, result) =>{
+        buildfire.publicData.insert(reaction, "$$reactions$$", (err, result) =>{
             if(err) return callback(err);
             else return callback(null, result)
         })
     },
     getUserReactionsCount: (userId, callback) =>{
         if(!userId) return callback(0)
-        buildfire.appData.aggregate(
+        buildfire.publicData.aggregate(
             {
               pipelineStages: [
                 { $match: { 

@@ -25,7 +25,7 @@ class Hashtags{
     static TAG = "$$hashtag$$";
 
     static search = (options, callback) =>{
-        buildfire.appData.search(options, Hashtags.TAG, (err, r) =>{
+        buildfire.publicData.search(options, Hashtags.TAG, (err, r) =>{
             if(err) return callback(new Error(err));
             else{
                 return callback(null, r);
@@ -35,7 +35,7 @@ class Hashtags{
 
 
     static get = (name, callback) =>{
-        buildfire.appData.getById(name, Hashtags.TAG, (err, r) =>{
+        buildfire.publicData.getById(name, Hashtags.TAG, (err, r) =>{
             if(err) return callback(new Error(err));
             else{
                 return callback(null, r);
@@ -49,11 +49,11 @@ class Hashtags{
               "_buildfire.index.array1.string1": `name_${name.toLowerCase()}`,
             },
         };
-        buildfire.appData.search(searchThroughArrayOfObjects , Hashtags.TAG, (err, r ) =>{
+        buildfire.publicData.search(searchThroughArrayOfObjects , Hashtags.TAG, (err, r ) =>{
             if(err) return callback(err);
             else if(r && r.length > 0) return callback("Hashtag already exists");
             else {
-                buildfire.appData.insert(new Hashtag({name}), Hashtags.TAG, (err, r) =>{
+                buildfire.publicData.insert(new Hashtag({name}), Hashtags.TAG, (err, r) =>{
                     if(err) return callback(err);
                     else return callback(null, r);
                 })
@@ -62,11 +62,11 @@ class Hashtags{
     }
 
     static delete = (id, callback) =>{
-        buildfire.appData.getById(id, Hashtags.TAG, (err, r ) =>{
+        buildfire.publicData.getById(id, Hashtags.TAG, (err, r ) =>{
             if(err) return callback(err);
             else if(!r || (r && r.length == 0)) return callback(new Error("Couldn't find Hashtag with this ID"));
             else {
-                buildfire.appData.delete(id, Hashtags.TAG, (err, _) => {
+                buildfire.publicData.delete(id, Hashtags.TAG, (err, _) => {
                     if (err) return callback(new Error(err));
                     return callback(null, "Hashtag Deleted.");
                 });

@@ -16,7 +16,7 @@
                 $scope.googlePlace;
                 $scope.googlePlaceDetails;
                 NewPost.loadedHashtags = [];
-                Buildfire.appData.search({},"$$hashtag$$",(err, r) =>{
+                Buildfire.publicData.search({},"$$hashtag$$",(err, r) =>{
                     if(err) return;
                     else {
                         NewPost.handleLoadedHashtagsUpdate(r);
@@ -238,7 +238,7 @@
                     p.tagify.loading(true);
                     if(e.detail.value.length >= 2){
                         let regexToSearch = e.detail.value;
-                        Buildfire.appData.search({filter:{
+                        Buildfire.publicData.search({filter:{
                             $and:[
                                 {
                                     "$json.userDetails.displayName":{"$regex":regexToSearch,"$options":"i"}

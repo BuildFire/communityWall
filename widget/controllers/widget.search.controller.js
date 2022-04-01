@@ -139,7 +139,7 @@
                     limit : 25,
                     skip: 0
                 }
-                Buildfire.appData.search(options, "$$hashtag$$",(err, data) =>{
+                Buildfire.publicData.search(options, "$$hashtag$$",(err, data) =>{
                     err ? callback(err) : callback(null, data);
                 })
             }

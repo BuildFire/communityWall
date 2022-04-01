@@ -156,7 +156,7 @@ class BadgeSearchTableHelper {
 		};
 
 		this.searchOptions = options;
-		buildfire.appData.search(options, this.tag, (e, results) => {
+		buildfire.publicData.search(options, this.tag, (e, results) => {
 			if (e && callback) return callback(e);
             if(!this.items.length) this.tbody.innerHTML = '';
 			if((results && results.length > 0)){
@@ -246,7 +246,7 @@ class BadgeSearchTableHelper {
 
 					if (data.selectedButton.key == "yes") {
 						tr.classList.add("hidden");
-						buildfire.appData.delete(obj.id, t.tag, e => {
+						buildfire.publicData.delete(obj.id, t.tag, e => {
 							if (e)
 								tr.classList.remove("hidden");
 							else

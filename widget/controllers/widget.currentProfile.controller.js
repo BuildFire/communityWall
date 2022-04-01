@@ -118,7 +118,7 @@
                 else{
                     options.filter = {"_buildfire.index.array1.string1":`tagged_${t.user.userId}`};
                 }
-                Buildfire.appData.search(options,"wall_posts",(err, data) =>{
+                Buildfire.publicData.search(options,"wall_posts",(err, data) =>{
                     if(err) return callback(err);
                     else{
                         if(data && data.length != 8) t.posts[type].shouldFetchMore = false;

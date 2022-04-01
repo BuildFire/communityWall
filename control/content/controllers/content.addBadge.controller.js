@@ -69,7 +69,7 @@
                     })
                 }
                 else{
-                    Buildfire.appData.getById(t.badgeId,"SocialBadges",(err, b) =>{
+                    Buildfire.publicData.getById(t.badgeId,"SocialBadges",(err, b) =>{
                         let data = b.data;
                         t.enableSave = true;
                         t.showColorModal = false;

@@ -9,7 +9,7 @@
             t.userHashtags = [];
             t.interests = [];
             t.init = function(){
-                Buildfire.appData.search({}, "$$hashtag$$", function(err, results){
+                Buildfire.publicData.search({}, "$$hashtag$$", function(err, results){
                     if(results && results.length > 0){
                             t.hashtags = results;
                             let options = {

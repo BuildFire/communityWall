@@ -61,7 +61,7 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
         $timeout(function(){
             $scope.$digest();
         });
-        window.buildfire.appData.save($scope.reports, 'reports_' + $scope.event.wid, (error, result) => {
+        window.buildfire.publicData.save($scope.reports, 'reports_' + $scope.event.wid, (error, result) => {
             if (error) return console.log(error);
             $scope.reports = result.data;
             console.log($scope.reports);
@@ -74,7 +74,7 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
             console.log(postId);
             var deletePost = function(postId) {
                 var deferred = $q.defer();
-                window.buildfire.appData.delete(postId, 'wall_posts', function (err, status) {
+                window.buildfire.publicData.delete(postId, 'wall_posts', function (err, status) {
                     if (err) return deferred.reject(err);
                     else return deferred.resolve(status);
                 })
@@ -140,7 +140,7 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
             }
         }
 
-        window.buildfire.appData.search(searchOptions2, 'wall_posts', (error, data) => {
+        window.buildfire.publicData.search(searchOptions2, 'wall_posts', (error, data) => {
             if (error) return deferred.reject(error);
             let count = 0;
             if (data && data.length) {
@@ -150,16 +150,16 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
                             post.data.comments.splice(index, 1)
                         }
                     })
-                    window.buildfire.appData.update(post.id, post.data, 'wall_posts', (error, data) => {
+                    window.buildfire.publicData.update(post.id, post.data, 'wall_posts', (error, data) => {
                         if (error) return deferred.reject(error);
                     })
                 })
             }
-            window.buildfire.appData.search(searchOptions, 'wall_posts', (error, data) => {
+            window.buildfire.publicData.search(searchOptions, 'wall_posts', (error, data) => {
                 if (error) return deferred.reject(error);
                 if (data && data.length) {
                     data.map(post => {
-                        window.buildfire.appData.delete(post.id, 'wall_posts', function (err, status) {
+                        window.buildfire.publicData.delete(post.id, 'wall_posts', function (err, status) {
                             if (error) return deferred.reject(error);
                             return deferred.resolve(status);
                         })
@@ -183,7 +183,7 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
 
     function loadTable(event) {
         $scope.event = event;
-        window.buildfire.appData.get('reports_' + event.wid, (error, result) => {
+        window.buildfire.publicData.get('reports_' + event.wid, (error, result) => {
             if (error) return console.log(error);
             $scope.reports = result.data;
             console.log($scope.reports);
@@ -211,10 +211,10 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
             recordCount: true
         }
 
-        window.buildfire.appData.get('reports_' + data.wid, (error, result) => {
+        window.buildfire.publicData.get('reports_' + data.wid, (error, result) => {
             if (error) return console.log(error);
             result.data = result.data.filter(el => el.reportedUserID !== data.reportedUserID);
-            window.buildfire.appData.update(result.id, result.data, 'reports_' + data.wid, () => {});
+            window.buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, () => {});
         });
 
         let allPosts = [], allComments = [];
@@ -229,7 +229,7 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
                 loadTable({ wid: data.wid })
             }
             function fetchPosts() {
-                window.buildfire.appData.search(searchOptions, 'wall_posts', (error, posts) => {
+                window.buildfire.publicData.search(searchOptions, 'wall_posts', (error, posts) => {
                     if (error) return console.log(error);
                     allPosts = allPosts.concat(posts.result)
                     if (posts.totalRecord > allPosts.length) {
@@ -238,7 +238,7 @@ app.controller('ReportsCtrl', ['$scope','$timeout','$q', function ($scope, $time
                     } else {
                         let count = 0;
                         allPosts.map(post => {
-                            window.buildfire.appData.delete(post.id, 'wall_posts', function (error, status) {
+                            window.buildfire.publicData.delete(post.id, 'wall_posts', function (error, status) {
                                 if (error) return console.log(error);
                                 count++;
                                 if (count === allPosts.length) {

@@ -38,7 +38,7 @@
 
             }
             Filtered.getPosts = function(options, callback){                
-                Buildfire.appData.search(options,"wall_posts", function (err, data) {
+                Buildfire.publicData.search(options,"wall_posts", function (err, data) {
                     return callback(err, data)
                 });                       
             }

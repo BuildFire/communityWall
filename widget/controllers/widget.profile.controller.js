@@ -93,7 +93,7 @@
                                     });
                                     if(clone.data.badgesWithData) delete clone.data.badgesWithData
                                     if(shouldUpdate){
-                                        Buildfire.appData.update(clone.id, clone.data, "SocialUserProfile", () =>{})                                
+                                        Buildfire.publicData.update(clone.id, clone.data, "SocialUserProfile", () =>{})                                
                                     }
                                 }
                                 t.borderColor = t.user.socialProfile.data.badgesWithData && t.user.socialProfile.data.badgesWithData.length > 0 &&  t.user.socialProfile.data.badgesWithData[0].badgeData.color ? t.user.socialProfile.data.badgesWithData[0].badgeData.color.solidColor : 'transparent'
@@ -423,11 +423,11 @@
                             else{
                                 let params = {
                                     filter:{$and:[
-                                        {"$json.fromUser.userId":t.SocialItems.userDetails.userId},
-                                        {"$json.toUser.userId": t.user.userId},
+                                        {"_buildifre.index.array1.string1":`fromUser_${t.SocialItems.userDetails.userId}`},
+                                        {"_buildifre.index.array1.string1": `toUser_${t.user.userId}`},
                                         {$or:[
-                                            {"$json.type":"follow"},
-                                            {"$json.type":"pendingFollow"},
+                                            {"_buildifre.index.array1.string1":"type_follow"},
+                                            {"_buildifre.index.array1.string1":"type_pendingFollow"},
                                         ]}
                                     ]}
                                 }
@@ -603,7 +603,7 @@
                 else{
                     options.filter = {"_buildfire.index.array1.string1":`tagged_${t.user.userId}`};
                 }
-                Buildfire.appData.search(options,"wall_posts",(err, data) =>{
+                Buildfire.publicData.search(options,"wall_posts",(err, data) =>{
                     if(err) return callback(err);
                     else{
                         if(data && data.length != 8) t.posts[type].shouldFetchMore = false;

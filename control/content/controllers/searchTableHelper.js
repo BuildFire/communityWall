@@ -130,10 +130,6 @@ class SearchTableHelper {
 		this.items = [];
 		this.filter = filter;
 		this.sort = sort;
-		console.log("passed sort: " + sort);
-		console.log(sort);
-		console.log("setting this.sort to: " + this.sort);
-		console.log(this.sort);
 		this._fetchPageOfData(this.filter, this.sort, 0);
 	}
 
@@ -147,8 +143,6 @@ class SearchTableHelper {
 	}
 
 	_fetchPageOfData(filter, sort, pageIndex, callback) {
-		console.log("from fetch page of data");
-		console.log(sort);
 		if (pageIndex > 0 && this.endReached) return;
 		let pageSize = 50;
 		this.pageIndex = pageIndex;
@@ -160,7 +154,7 @@ class SearchTableHelper {
 		};
 
 		this.searchOptions = options;
-		buildfire.appData.search(options, this.tag, (e, results) => {
+		buildfire.publicData.search(options, this.tag, (e, results) => {
 			if (e && callback) return callback(e);
             if(!this.items.length) this.tbody.innerHTML = '';
 			if((results && results.length > 0)){
@@ -247,7 +241,7 @@ class SearchTableHelper {
 
 					if (data.selectedButton.key == "yes") {
 						tr.classList.add("hidden");
-						buildfire.appData.delete(obj.id, t.tag, e => {
+						buildfire.publicData.delete(obj.id, t.tag, e => {
 							if (e)
 								tr.classList.remove("hidden");
 							else

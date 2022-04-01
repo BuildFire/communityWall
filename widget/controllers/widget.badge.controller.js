@@ -67,7 +67,7 @@
                         else Location.go("");
                     }
                 })
-                // Buildfire.appData.insert()
+                // Buildfire.publicData.insert()
             }
         }]);
 })(window.angular);
