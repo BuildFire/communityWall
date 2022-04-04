@@ -110,7 +110,7 @@ class Posts{
                 if(err || !r || r.length == 0) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"});
                 r.forEach(p =>{
                     if(!p) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"})
-                    if(p.data.userId != currentUser._id) return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
+                    if(p.data.userId != currentUser._id && buildfire.getContext().type !== 'control') return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
                     buildfire.appData.delete(p.id, Posts.TAG, (err, r) =>{
                         if(err) return console.error(err);
                         callback(r);
