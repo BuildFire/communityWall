@@ -24,7 +24,7 @@
 
                 Buildfire.appearance.getAppTheme((err, obj) => {
                     if (err) return console.log(err);
-                    document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
+                    // document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
                 });
 
                 Members.appSettings = Members.SocialItems.appSettings;
@@ -146,11 +146,15 @@
                             imageUrl: user.imageUrl,
                             email: user.email,
                             lastUpdated: new Date().getTime(),
+
                         },
                         wallId: wid,
                         posts: [],
                         _buildfire: {
-                            index: { text: userId + '-' + wid, string1: wid }
+                            index: { text: userId + '-' + wid, string1: wid,
+                            array1:[
+                                {string1: "userId_"+userId}
+                            ]}
                         }
                     };
 

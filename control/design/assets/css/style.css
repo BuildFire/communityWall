@@ -1,0 +1,405 @@
+.no-margin {
+  margin: 0 !important;
+}
+.text-white {
+  color: #fff !important;
+}
+
+/*Export Modal*/
+
+.export-dropdown-group .dropdown-toggle.btn-primary {
+  background-color: #09a3ee !important;
+}
+
+.export-dropdown-group .dropdown-menu {
+  right: 0px;
+  left: inherit;
+}
+
+.export-modal-container .search-container {
+  position: fixed;
+  width: 100%;
+  padding: 15px 15px;
+}
+
+.export-modal-container .content-container {
+  padding: 103px 15px 30px 15px;
+}
+
+.export-modal-container .content-container .content {
+  border-top: 1px solid #c1c1c1;
+  border-bottom: 1px solid #c1c1c1;
+  padding-top: 25px;
+  padding-bottom: 16px;
+  max-height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+/*#Export Modal*/
+.social-item:last-of-type {
+  margin-bottom: 40px;
+}
+.social-item .head {
+  background-color: rgba(150, 150, 150, 0.1);
+  padding: 8px 12px;
+}
+.social-comment .head {
+  padding: 0 0 16px 0;
+  background-color: transparent;
+  border-bottom: 0;
+}
+
+.social-comment .plugin-banner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 12px;
+  row-gap: 12px;
+  padding: 16px 0;
+}
+.social-comment .plugin-banner .plugin-slide {
+  border-radius: 8px;
+  height: 120px;
+  overflow: hidden;
+}
+.social-comment .plugin-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*Animation*/
+
+.glyphicon-refresh-animate {
+  -animation: spin 0.7s infinite linear;
+  -webkit-animation: spin2 0.7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.social-icon,
+.icons {
+  display: flex;
+}
+
+.number {
+  padding-left: 5px;
+}
+
+.material-icons-outlined {
+  font-size: 20px !important;
+}
+
+.social-icon {
+  color: rgba(150, 150, 150, 0.8) !important;
+}
+.social-icon.comments {
+  color: #09a3ee !important;
+}
+.thread-comment {
+  position: relative;
+}
+.thread-comment::before {
+  display: block;
+  position: absolute;
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  left: -40px;
+  top: 8px;
+  background-color: #ddd;
+}
+.social-comment .plugin-banner:empty {
+  display: none;
+}
+table > thead > th {
+  padding: 0.5rem !important;
+  font-weight: bold;
+}
+thead,
+tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed; /* even columns width , fix width of table too*/
+}
+th {
+  padding: 15px 8px 13px;
+  line-height: 26px;
+  vertical-align: top;
+  border-bottom: 1px solid #d8d8d8;
+}
+th > span {
+  padding-left: 5px;
+  cursor: pointer;
+}
+td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 40px;
+}
+tbody {
+  display: block;
+  max-height: 380px;
+  overflow: auto;
+}
+tr {
+  border: 1px solid #d8d8d8;
+}
+table tbody tr td {
+  border-top: none !important;
+  border-bottom: 1px solid #d8d8d8;
+}
+.editColumn,
+.deleteColumn {
+  width: 40px;
+  text-align: end;
+}
+.editColumn > button > span {
+  font-size: 20px !important;
+}
+.editColumn > button {
+  margin-right: 12px;
+}
+.table-striped > tbody > tr {
+  background-color: transparent !important;
+}
+.hashtag_row {
+  width: 120px;
+  font-weight: bold;
+  font-size: 15px;
+  padding-left: 15px !important;
+}
+.force-padding-td {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+.table-striped > tbody > tr > td button {
+  background-color: transparent;
+}
+.dropdown {
+  width: 19%;
+  margin-bottom: 2vh;
+}
+.hashtags_filters {
+  display: flex;
+  justify-content: space-between;
+}
+.badge_search_input_container {
+  width: 100%;
+  margin-bottom: 2vh;
+  border: 1px solid #d5d5d5;
+  display: flex;
+  border-radius: 7px;
+}
+.search_input_container {
+  width: 100%;
+  margin-bottom: 2vh;
+  border: 1px solid #d5d5d5;
+  display: flex;
+  border-radius: 7px;
+}
+.search_input {
+  border: 0px;
+  padding: 10px 0px;
+  font-size: 14px;
+  margin-left: 10px;
+  flex: 5;
+}
+
+.full_container {
+  width: 100%;
+  background: #5d606354;
+  height: 100vh;
+  position: absolute;
+  z-index: 19;
+  display: flex;
+  justify-content: center;
+  display: none;
+  align-items: center;
+}
+
+.add_hashtag {
+  width: 55vw;
+  height: 43vh;
+  background: white;
+  position: relative;
+}
+.add_hashtag_header > *:first-child {
+  font-size: 17px;
+  font-weight: bold;
+}
+.add_hashtag_header > *:nth-child(2) {
+  font-size: 22px;
+}
+.add_hashtag_header {
+  display: flex;
+  padding: 11px 8px;
+  justify-content: space-between;
+  background: #e5e5e5;
+}
+.add_hashtag_body {
+  padding: 12px 15px;
+}
+.add_hashtag_body > input {
+  width: 100%;
+}
+.add_hashtag_bottom {
+  padding: 17px 15px;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  left: 0px;
+  z-index: 999999999999999999999999999;
+}
+.add_hashtag_bottom > button {
+  margin-left: 15px;
+}
+
+/*#Animation*/
+
+/* fallback */
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialicons/v98/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2)
+    format("woff2");
+  font-display: block;
+}
+/* fallback */
+@font-face {
+  font-family: "Material Icons Outlined";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialiconsoutlined/v75/gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2)
+    format("woff2");
+  font-display: block;
+}
+/* fallback */
+@font-face {
+  font-family: "Material Icons Round";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialiconsround/v74/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmP.woff2)
+    format("woff2");
+  font-display: block;
+}
+/* fallback */
+@font-face {
+  font-family: "Material Icons Sharp";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialiconssharp/v75/oPWQ_lt5nv4pWNJpghLP75WiFR4kLh3kvmvR.woff2)
+    format("woff2");
+  font-display: block;
+}
+/* fallback */
+@font-face {
+  font-family: "Material Icons Two Tone";
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialiconstwotone/v73/hESh6WRmNCxEqUmNyh3JDeGxjVVyMg4tHGctNCu0.woff2)
+    format("woff2");
+  font-display: block;
+}
+
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-icons-outlined {
+  font-family: "Material Icons Outlined";
+  font-display: block;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-icons-round {
+  font-family: "Material Icons Round";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-icons-sharp {
+  font-family: "Material Icons Sharp";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-icons-two-tone {
+  font-family: "Material Icons Two Tone";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}

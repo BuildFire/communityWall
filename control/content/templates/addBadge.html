@@ -1,0 +1,175 @@
+<div class="padded badge-view">
+  <span class="title primary">Badges</span
+  ><span class="title"> / Add Badge</span>
+  <h1 class="section-title">Add Badge</h1>
+
+  <div class="badgerowitem" style="height: 13vh !important">
+    <div class="badgeleft">
+      <strong>Badge Icon</strong><span style="color: red;font-size: 20px;">*</span>
+    </div>
+    <div class="badgeright" ng-click="selectIcon()">
+      <div ng-if="!(addBadge.badge.icon)" style="width: 10%;height: 100%;"  id="iconPlaceholder" class="imagePlaceholderBox nonActive"></div>
+      <div ng-if="(addBadge.badge.icon)"  style="width: 10%;height: 100%;" id="iconPlaceholder" class="imagePlaceholderBox">
+        <img ng-src="{{addBadge.badge.icon}}" />
+      </div>
+    </div>
+  </div>
+  <div class="badgerowitem">
+    <div class="badgeleft">
+      <strong>Badge Color</strong><span style="color: red;font-size: 20px;">*</span>
+    </div>
+    <div class="badgeright">
+      <div class="selectedColorBox" ng-click="bfColorPicker()">
+        <div ng-if="!(addBadge.badge.color && addBadge.badge.color.solidColor)" id="color-picker-bg" class="innerSelectedColorBox noColor"></div>
+        <div ng-if="(addBadge.badge.color && addBadge.badge.color.solidColor)" id="color-picker-bg" class="innerSelectedColorBox" ng-style="{background: addBadge.badge.color.solidColor}"></div>
+      </div>
+    </div>
+  </div>
+  <div class="badgerowitem">
+    <div class="badgeleft">
+      <strong>Badge Title</strong><span style="color: red;font-size: 20px;">*</span>
+    </div>
+    <div class="badgeright">
+      <input maxlength="30" type="text" class="full_width_input" 
+      ng-model="addBadge.badge.title"
+      ng-change="checkIfEnableSave()" placeholder="Enter Title" />
+    </div>
+  </div>
+  <div class="badgerowitem">
+    <div class="badgeleft">
+      <strong>Badge Description</strong>
+    </div>
+    <div class="badgeright">
+      <input
+        maxlength="50"
+        type="text"
+        ng-model="addBadge.badge.description"
+        ng-change="checkIfEnableSave()"
+        class="full_width_input"
+        placeholder="Enter Description"
+      />
+    </div>
+  </div>
+  <div class="badgerowitem">
+    <div class="badgeleft">
+      <strong> Expires </strong>
+    </div>
+    <div
+      class="badgeright"
+      style="display: flex; justify-content: space-between"
+    >
+      <div style="width: 50%">
+        <input
+          type="number"  min="0"
+          style="width: 45%; margin-right: 5%"
+          ng-model="addBadge.badge.expires.number"
+          ng-disabled="!addBadge.badge.expires.isTurnedOn"
+          ng-change="checkIfEnableSave()"
+          placeholder="Enter Number"
+        />
+        <select style="width: 45%"
+        ng-disabled="!addBadge.badge.expires.isTurnedOn"
+        ng-model="addBadge.badge.expires.frame"
+        ng-change="checkIfEnableSave()">
+          <option value="days">Days</option>
+          <option value="weeks">Weeks</option>
+          <option value="months">Months</option>
+        </select>
+      </div>
+      <div class="button-switch">
+        <input 
+        id="titleBarSwitch" 
+        type="checkbox" 
+        ng-change="checkIfEnableSave()" 
+        ng-model="addBadge.badge.expires.isTurnedOn"   
+        class="ng-untouched ng-valid ng-dirty ng-valid-parse" >
+        <label for="titleBarSwitch" class="label-success"></label>
+      </div>
+
+    </div>
+  </div>
+  <h3 style="font-size: 17px; font-weight: bold; margin-bottom: 1.5rem">
+    Conditions
+  </h3>
+  <p class="info-note">At least one condition is required <span style="color: red;font-size: 20px;">*</span></p>
+  <div class="badgerowitem">
+    <div class="badgeleft">
+      <strong> Posts </strong>
+    </div>
+    <div
+      class="badgeright"
+      style="display: flex; justify-content: space-between"
+    >
+      <div class="conditions-row">
+        <p>More Than</p>
+
+        <input type="number"  min="0" ng-disabled="!addBadge.badge.conditions.posts.isTurnedOn" placeholder="Enter Number" ng-model="addBadge.badge.conditions.posts.value" ng-change="checkIfEnableSave()" />
+      </div>
+      <div class="button-switch">
+        <input 
+        id="titleBarSwitch2" 
+        type="checkbox" 
+        ng-change="checkIfEnableSave()" 
+        ng-model="addBadge.badge.conditions.posts.isTurnedOn"
+        class="ng-untouched ng-valid ng-dirty ng-valid-parse" >
+        <label for="titleBarSwitch2" class="label-success"></label>
+      </div>
+
+    </div>
+  </div>
+  <div class="badgerowitem">
+    <div class="badgeleft">
+      <strong> Reactions </strong>
+    </div>
+    <div
+      class="badgeright"
+      style="display: flex; justify-content: space-between"
+    >
+      <div class="conditions-row">
+        <p>More Than</p>
+
+        <input type="number"  min="0" ng-disabled="!addBadge.badge.conditions.reactions.isTurnedOn" placeholder="Enter Number" ng-model="addBadge.badge.conditions.reactions.value" ng-change="checkIfEnableSave()" />
+      </div>
+      <div class="button-switch">
+        <input 
+        id="titleBarSwitch3" 
+        type="checkbox" 
+        ng-change="checkIfEnableSave()" 
+        ng-model="addBadge.badge.conditions.reactions.isTurnedOn"
+        class="ng-untouched ng-valid ng-dirty ng-valid-parse" >
+        <label for="titleBarSwitch3" class="label-success"></label>
+      </div>
+
+    </div>
+  </div>
+  <div style="margin-bottom: 10vh" class="badgerowitem">
+    <div class="badgeleft">
+      <strong> Reposts </strong>
+    </div>
+    <div
+      class="badgeright"
+      style="display: flex; justify-content: space-between"
+    >
+      <div class="conditions-row">
+        <p>More Than</p>
+        <input type="number"  min="0" ng-disabled="!addBadge.badge.conditions.reposts.isTurnedOn" placeholder="Enter Number" ng-model="addBadge.badge.conditions.reposts.value" ng-change="checkIfEnableSave()" />
+      </div>
+      <div class="button-switch">
+        <input 
+        id="titleBarSwitch4" 
+        type="checkbox" 
+        ng-change="checkIfEnableSave()" 
+        ng-model="addBadge.badge.conditions.reposts.isTurnedOn" 
+        class="ng-untouched ng-valid ng-dirty ng-valid-parse" >
+        <label for="titleBarSwitch4" class="label-success"></label>
+      </div>
+    </div>
+  </div>
+  <div class="addbadge_bottom_container">
+    <button class="btn btn-secondary btn-outlined" ng-click="goBack()">
+      Cancel
+    </button>
+    <button ng-disabled="!addBadge.enableSave" ng-click="save()" class="btn btn-success">Save</button>
+  </div>
+</div>
+	

@@ -1,0 +1,20 @@
+<div id="filtered-container" style="height: 100%;">
+    <div class="filtered-header" style="height: 15%;">
+        <div class="filtered-imageContainer" ng-if="type === 'location'">
+            <span class="material-icons-outlined">
+                place
+            </span>                        
+        </div>
+        <div class="filtered-imageContainer" ng-if="type === 'hashtag'">
+            <p>#</p>                     
+        </div>
+        <div>
+            <h4 class="filtered-title">
+                {{title}}
+            </h4>
+        </div>
+    </div>
+    <div class="filtered-posts-container" id="filtered-posts-container" style="height: 70vh;overflow: auto;">
+
+    </div>
+</div>

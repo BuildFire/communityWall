@@ -1,0 +1,45 @@
+<div ng-if="!BlockedUsers.loading">
+  <h1 style="font-size: 17px; font-weight: bold; padding: 0px 15px">
+    Blocked Users
+  </h1>
+  <div ng-if="BlockedUsers.users.length > 0">
+      <div ng-repeat="user in BlockedUsers.users">
+        <div class="act-block">
+          <div class="act-left-section">
+            <img
+              ng-if="user.userDetails.imageUrl"
+              load-image="1x1"
+              data-final-src="{{user.userDetails.imageUrl}}"
+            />
+            <img
+              ng-if="!user.userDetails.imageUrl"
+              load-image="1x1"
+              data-final-src="../../../styles/media/avatar-placeholder.png"
+              data-img-type="local"
+              crop-width="40"
+              crop-height="40"
+              crop-type="default"
+            />
+          </div>
+          <div class="act-middle-section">
+            <h5>{{BlockedUsers.SocialItems.getUserName(user.userDetails)}}</h5>
+            <p>{{user.createdOn}}</p>
+          </div>
+          <div class="act-right-section">
+            <div>
+              <button
+                ng-click="BlockedUsers.unblockUser(user.userId)"
+                class="btn btn-success"
+                style="margin-right: 15px; margin-top: 2px"
+              >
+                Unblock
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div ng-if="BlockedUsers.users.length == 0">
+    <div class="empty_state"></div>
+  </div>
+</div>

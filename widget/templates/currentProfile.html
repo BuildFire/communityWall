@@ -1,0 +1,76 @@
+
+<div 
+style="width: 100%;height: 100%;overflow-y: auto;overflow-x: hidden;"  
+ng-show="!CurrentProfile.isLoading">
+    <div class="profile-header">
+        <div class="profile-picture-container">
+            <img ng-show="CurrentProfile.user.userDetails.imageUrl" src="{{CurrentProfile.user.userDetails.imageUrl}}" alt="User CurrentProfile Picture">
+            <img ng-show="!CurrentProfile.user.userDetails.imageUrl" load-image="1x1"
+                  data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
+                  crop-height="40" crop-type="default">
+        </div>
+        <div class="profile-info-container">
+            <h5>{{CurrentProfile.SocialItems.getUserName(CurrentProfile.user.userDetails)}}</h5>
+            <h6>San Diego, CA</h6>
+            <h5 class="streakText" ng-show="CurrentProfile.SocialItems.appSettings.showStreak">2 Streak</h5>
+            <p class="longestStreakText" ng-show="CurrentProfile.SocialItems.appSettings.showLongestStreak">22</p>
+        </div>
+        <div class="options">
+            <span class="material-icons" ng-click="CurrentProfile.openDrawer()">
+                more_vert
+            </span>
+        </div>
+    </div>
+    <div class="profile-bio" ng-show="CurrentProfile.user.userDetails && CurrentProfile.user.userDetails.bio">
+        <p>
+            {{CurrentProfile.user.userDetails.bio}}
+        </p>
+    </div>
+    <div ng-show="CurrentProfile.user.isCurrentUser" class="button-container side-by-side">
+            <button class="half-width-btn">
+                {{CurrentProfile.strings.userProfile.editProfile.value || CurrentProfile.strings.userProfile.editProfile.defaultValue}}
+            </button>
+            <button class="half-width-btn">
+                {{CurrentProfile.strings.userProfile.inbox.value || CurrentProfile.strings.userProfile.inbox.defaultValue}}
+            </button>
+
+    </div>
+    <!-- ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
+    <div ng-show="!CurrentProfile.user.isCurrentUser" class="button-container">        
+        <button ng-if="!CurrentProfile.user.didIBlock && !CurrentProfile.user.isCurrentUser" ng-click="CurrentProfile.followUnfollowUser(this)">
+            <span ng-show="!CurrentProfile.user.amIFollowing && !CurrentProfile.user.amIPending ">
+                {{CurrentProfile.strings.userProfile.follow.value || CurrentProfile.strings.userProfile.follow.defaultValue}}
+            </span> 
+            <span ng-show="CurrentProfile.user.amIPending && !CurrentProfile.user.isPublicProfile">
+                Requested
+            </span>
+            <span ng-show="CurrentProfile.user.amIFollowing">
+                {{CurrentProfile.strings.userProfile.unfollow.value || CurrentProfile.strings.userProfile.unfollow.defaultValue}}
+            </span>
+            
+        </button>
+    
+        <button ng-if="CurrentProfile.user.didIBlock && !CurrentProfile.user.isCurrentUser" ng-click="CurrentProfile.unblockUser()">
+            <span ng-show="CurrentProfile.user.didIBlock">
+                {{CurrentProfile.strings.userProfile.blocked.value || CurrentProfile.strings.userProfile.blocked.defaultValue}}
+            </span>
+        </button>
+    </div>
+
+    
+    
+    <!--  ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
+    <div ng-show="CurrentProfile.shouldShowSwitch()" class="switch">
+        <div id="profile-posts" class="has-bottom-border" ng-click="CurrentProfile.loadPage('posts')"> {{CurrentProfile.strings.userProfile.posts.value || CurrentProfile.strings.userProfile.posts.defaultValue}}</div>
+        <div id="profile-tagged" ng-click="CurrentProfile.loadPage('tagged')"> {{CurrentProfile.strings.userProfile.tagged.value || CurrentProfile.strings.userProfile.tagged.defaultValue}}</div>
+    </div>
+
+    <div ng-show="CurrentProfile.shouldShowPosts()">
+        <div id="profile-posts-container" ng-bind-html="postsList"  style="height: 54vh;overflow: auto;" ng-show="CurrentProfile.currentPage === 'posts'">
+            
+        </div>
+        <div id="profile-tagged-posts-container"  style="height: 54vh;overflow: auto;" ng-show="CurrentProfile.currentPage === 'tagged'">
+            
+        </div>
+    </div>
+</div>

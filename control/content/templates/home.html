@@ -1,9 +1,96 @@
 <div class="padded">
+    <div class="full_container" id="hashtag_modal">
+        <div class="add_hashtag">
+            <div class="add_hashtag_header">
+                <span>Add Hashtag</span>
+                <span ng-click="closeAddHashtagModal()" style="font-size: 22px;">X</span>
+            </div>
+            <div class="add_hashtag_body">
+                <p>Hashtag Name</p>
+                <input type="text" placeholder="Hashtag" id="hashtagToAdd">
+                <p style="color: red;" id="hashtagToAdd_error_msg"></p>
+            </div>
+            <div class="add_hashtag_bottom" >
+                <button class="btn btn-outlined" style="border:1px solid #D5D5D5" ng-click="closeAddHashtagModal()">Cancel</button>
+                <button class="btn btn-success" ng-click="addHashtag()">Save</button>
+            </div>
+        </div>
+    </div>
+    <!--  badges start -->
+    <h1 class="section-title">
+        Badges
+    </h1>
+    <p class="info-note">
+        Add sense of achievement for your users using badges
+    </p>
+    <div>
+        <div class="hashtags_filters"  ng-if="ContentHome.badgeFilters">
+            <div class="dropdown" dropdown="" >
+                <button class="btn btn-default text-left dropdown-toggle" data-toggle="dropdown" dropdown-toggle="" aria-expanded="false" aria-haspopup="true">
+                    <span class="pull-left ng-binding"><span style="color: #a5a5a5;">Sort: </span>{{ContentHome.selectedBadgeFilter}}</span>
+                    <span class="chevron icon-chevron-down pull-right"></span>
+                </button>
+                <ul class="dropdown-menu extended" role="menu">
+                    <li ng-repeat="badgeFilter in ContentHome.badgeFilters" class="ng-scope">
+                        <a tabindex="-1" class="transition-third ng-binding" ng-click="ContentHome.changeBadgeFilter(badgeFilter)">{{badgeFilter}}</a>
+                    </li>
+    
+                    
+                </ul>
+            </div>
+            <div>
+                <button class="btn btn-success" ng-click="goToAddBadge()">
+                    + Add Badge
+                </button>
+            </div>
+        </div>
+        
+        <table id="badges_table" style="margin-bottom: 5vh;">
+
+        </table>
+    </div>
+
+    <!-- badges end -->
+    <h1 class="section-title">
+        Hashtags
+    </h1>
+    <p class="info-note">
+        List of default hashtags helps with serving better content for your users
+    </p>
+    <div>
+        <div class="hashtags_filters"  ng-if="ContentHome.hashtagFilters">
+            <div class="dropdown" dropdown="" >
+                <button class="btn btn-default text-left dropdown-toggle" data-toggle="dropdown" dropdown-toggle="" aria-expanded="false" aria-haspopup="true">
+                    <span class="pull-left ng-binding"><span style="color: #a5a5a5;">Sort: </span>{{ContentHome.selectedHashtagFilter}}</span>
+                    <span class="chevron icon-chevron-down pull-right"></span>
+                </button>
+                <ul class="dropdown-menu extended" role="menu">
+                    <li ng-repeat="hashtagFilter in ContentHome.hashtagFilters" class="ng-scope">
+                        <a tabindex="-1" class="transition-third ng-binding" ng-click="ContentHome.changeHashtagFilter(hashtagFilter)">{{hashtagFilter}}</a>
+                    </li>
+    
+                    
+                </ul>
+            </div>
+            <div>
+                <button class="btn btn-success" ng-click="openAddHashtagModal()">
+                    + Add Hashtag
+                </button>
+            </div>
+        </div>
+        
+        <table id="hashtags_table" style="margin-bottom: 5vh;">
+
+        </table>
+    </div>
+    <h1 class="section-title">
+        Posts
+    </h1>
     <div  class="item row">
         <div class="col-xs-12 text-right export-dropdown-group pull-right">
             <div class="btn-group margin-bottom-fifteen" dropdown>
                 <button ladda="ContentHome.exportingThreads" ng-click="ContentHome.exportMainWallPosts()" ng-disabled="ContentHome.exportingThreads"  data-style="zoom-in" id="export-button" type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle >
-                    Export All Posts and Comments to CSV
+                    Export All to CSV
                 </button>
             </div>
         </div>
@@ -41,14 +128,23 @@
                         <p class="time-ago caption margin-bottom-zero">{{ContentHome.getDuration(post.createdOn) | convertTimeFormat}}</p>
                     </div>
                     <div class="icons left-auto">
-                        <a class="social-icon"
-                        ng-click="ContentHome.loadMoreComments(post,'viewComment')">
-                        <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
-                            <span class="number">{{post.comments.length}}</span>
-                        </a>
                         <span class="social-icon margin-left-twenty">
                             <i class="material-icons-outlined likes-count" aria-hidden="true">thumb_up_off_alt</i>
-                            <span class="number">{{post.likes.length}}</span>
+                            <span class="number">{{post.likesCount}}</span>
+                        </span>
+
+                        <span class="social-icon margin-left-twenty">
+                            <i class="material-icons-outlined likes-count" aria-hidden="true">repeat</i>
+                            <span class="number">{{post.repostsCount}}</span>
+                        </span>
+
+                        <span class="social-icon margin-left-twenty">
+                            <i class="material-icons-outlined likes-count" aria-hidden="true">chat_bubble_outline</i>
+                            <span class="number">{{post.repliesCount}}</span>
+                        </span>
+                        <span class="social-icon margin-left-twenty">
+                            <i class="material-icons-outlined likes-count" aria-hidden="true">share</i>
+                            <span class="number">{{post.sharesCount}}</span>
                         </span>
                     </div>
                 </div>
@@ -57,6 +153,9 @@
                         <snap ng-if="(post.text.length>150 && !post.seeMore)">...</snap>
                         <a ng-if="(post.text.length>150 && !post.seeMore)" ng-click="ContentHome.seeMore(post)">Read More</a>
                     </p>
+                </div>
+                <div class="copy padded" ng-if="post.hashtags.length > 0">
+                    <span ng-repeat="hash in post.hashtags" style="color: var(--bf-theme-primary)">#{{hash}} </span>
                 </div>
                 <div class="plugin-banner clearfix margin-bottom-fifteen">
                     <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}" ng-init="initHesGallery()">

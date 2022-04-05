@@ -1,0 +1,45 @@
+
+<div class="main-container">
+
+  <div class="inputContainer" style="height: 200px;padding: 0px;">
+
+    
+
+    <div class="imageContainer" id="imageContainer" ng-click = "selectImage(this)">
+      <img ng-src="{{selectedMedia.shown}}" ng-if="selectedMedia.type === 'image' " alt="" />
+      <video ng-src="{{trustSrc(selectedMedia.shown)}}" ng-if="selectedMedia.type === 'video'" controls></video>
+    </div>
+
+  </div>
+  
+  <div class="inputContainer">
+    <label for="text" class="full-flex">Caption</label>    
+    <div id="text" ng-model="text" ng-show="text" ng-click="openPostTextSection(this)">
+      {{text}}
+    </div>
+    <div class="placeholder" ng-show="!text" id="placeholder" ng-click="openPostTextSection(this)">
+      Enter caption here
+    </div>
+  </div>
+  
+
+  <div class="inputContainer">
+    <label class="full-flex">Location</label>    
+    <input ng-model="NewPost.choosenLocationName" googleplace/>
+  </div>
+  
+  <div class="inputContainer">
+    <label class="full-flex">#Hashtags</label>    
+    <input placeholder="#" ng-value="selectedHashtags" type="text" id="hashtagsInput">
+  </div>
+  
+  <div class="inputContainer" >
+    <label  class="full-flex">Tag People</label>    
+    <input placeholder="@"  ng-value="selectedUsers" type="text" id="peopleInput">
+  </div>
+  
+
+  
+  <button ng-click="checkIfCanSubmit()" style="margin-bottom: 2vh;background-color: var(--bf-theme-success);color: var(--bf-theme-background)">Post</button>
+
+</div>

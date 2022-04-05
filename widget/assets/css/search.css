@@ -1,0 +1,36 @@
+.result-imageContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: #f2f2f2;
+    border-radius: 40px;
+    width: 40px;
+    height: 40px;
+}
+#searchInput{
+    background-color: transparent;
+    width: 86%;
+}
+
+.result-imageContainer > p{
+    text-align: center;
+    margin-bottom: 0px;
+    font-size: 28px;
+}
+.search-item{
+    display: flex;
+    justify-content: flex-start;
+    margin: 17px;
+}
+
+.result-content{
+    flex: 8;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    text-transform: capitalize;
+}

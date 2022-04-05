@@ -2,7 +2,8 @@
 const searchTableConfig ={
 	options:{
 		showEditButton:true
-		,showDeleteButton:false
+		,showDeleteButton:false,
+		showHeaders: true,
 	}
 	,columns:[
 		{

@@ -24,6 +24,61 @@
                     controllerAs: 'Members',
                     controller: 'MembersCtrl'
                 })
+                .when('/post/createPost/:postId',{
+                    templateUrl: 'templates/createPost.html',
+                    controllerAs: 'NewPost',
+                    controller: 'NewPostCtrl'
+                })
+                .when('/singlePostView/:postId',{
+                    templateUrl: 'templates/singlePost.html',
+                    controllerAs: 'SinglePost',
+                    controller: 'SinglePostCtrl'
+                })
+                .when('/ViewBadges/',{
+                    templateUrl: 'templates/viewBadges.html',
+                    controllerAs: 'ViewBadges',
+                    controller: 'ViewBadgesCtrl'
+                })
+                .when('/profile/:userId',{
+                    templateUrl: 'templates/profile.html',
+                    controllerAs: 'Profile',
+                    controller: 'ProfileCtrl'
+                })
+                .when('/filteredResults/:type/:title',{
+                    templateUrl: 'templates/filteredResults.html',
+                    controllerAs: 'Filtered',
+                    controller: 'FilteredCtrl'
+                })
+                .when('/interests',{
+                    templateUrl: 'templates/interests.html',
+                    controllerAs: 'Interests',
+                    controller: 'InterestsCtrl'
+                })
+                .when('/discover',{
+                    templateUrl: 'templates/discover.html',
+                    controllerAs: 'Discover',
+                    controller: 'DiscoverCtrl'
+                })
+                .when('/search',{
+                    templateUrl: 'templates/search.html',
+                    controllerAs: 'Search',
+                    controller: 'SearchCtrl'
+                })
+                .when('/PrivateChat',{
+                    templateUrl: 'templates/PrivateChat.html',
+                    controllerAs: 'PrivateChat',
+                    controller: 'PrivateChatCtrl'
+                })
+                .when('/blockedUsers',{
+                    templateUrl: 'templates/blockedUsers.html',
+                    controllerAs: 'BlockedUsers',
+                    controller: 'BlockedUsersCtrl'
+                })
+                .when('/activity',{
+                    templateUrl: 'templates/activity.html',
+                    controllerAs: 'Activity',
+                    controller: 'ActivityCtrl'
+                })
                 .otherwise('/');
 
             var interceptor = ['$q', function ($q) {
@@ -57,6 +112,7 @@
                 buildfire.history.get({
                     pluginBreadcrumbsOnly: true
                 }, function (err, result) {
+                    console.log(result);
                     console.log("BACK BUTTON CLICK", result)
                     if(!result.length) return goBack();
                     if(result[result.length-1].options.isPrivateChat) {
@@ -74,6 +130,21 @@
                             $rootScope.$digest();
                             buildfire.history.pop();
                         } 
+                        else{
+                            if(result.length == 1){
+                                result.map(item => buildfire.history.pop());
+                                $rootScope.showThread = true;
+                                $location.path('/');
+                                $rootScope.$broadcast("navigatedBack");
+                            }
+                            else{
+                                buildfire.history.pop();
+                                result.pop();
+                                let pathToGo = result[result.length - 1].label;
+                                window.location.href = pathToGo;
+                            }
+
+                        }
                     }
                 });
             }
@@ -112,6 +183,7 @@
                     element.attr("src", "../../../styles/media/holder-" + attrs.loadImage + ".gif");
 
                     if (attrs.imgType && attrs.imgType.toLowerCase() == 'local') {
+
                         replaceImg(attrs.finalSrc);
                         return;
                     }
@@ -146,6 +218,26 @@
                         };
                         elem.attr("src", finalSrc);
                     }
+                }
+            };
+        })
+        .directive('googleplace', function() {
+            return {
+                
+                require: 'ngModel',
+                link: function(scope, element, attrs, model) {
+                    scope.googlePlace = new google.maps.places.Autocomplete(element[0], {});
+                    google.maps.event.addListener(scope.googlePlace, 'place_changed', function() {
+                        var geoComponents = scope.googlePlace.getPlace();
+                        scope.googlePlaceDetails = {
+                            address: geoComponents.formatted_address,
+                            lat: geoComponents.geometry.location.lat(),
+                            lng: geoComponents.geometry.location.lng()
+                        }
+                        scope.$apply(function() {
+                            model.$setViewValue(element.val());                
+                        });
+                    });
                 }
             };
         })

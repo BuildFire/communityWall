@@ -9,6 +9,7 @@
     <link href="../../../../styles/siteIcons.css" rel="stylesheet">
 
     <!-- build:bundleCSSFiles  -->
+    <link rel="stylesheet" href="assets/css/addBadge.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/ladda-themeless.min.css">
     <link rel="stylesheet" href="assets/css/reset.css">
@@ -32,18 +33,23 @@
     <script src="assets/js/ladda/ladda.min.js"></script>
     <script src="assets/js/ladda/angular-ladda.min.js"></script>
     <script src="assets/js/modals.js"></script>
+    <script src="assets/js/papaparse.min.js"></script>
+    <script src="assets/js/moment.js"></script>
+    <script src="assets/js/hes-gallery.min.js"></script>
     <script src="app.js"></script>
     <script src="app.service.js"></script>
     <script src="enums.js"></script>
     <script src="assets/js/filters.js"></script>
     <script src="controllers/content.home.controller.js"></script>
-    <script src="assets/js/papaparse.min.js"></script>
-    <script src="assets/js/moment.js"></script>
-    <script src="assets/js/hes-gallery.min.js"></script>
-
+    <script src="controllers/content.addBadge.controller.js"></script>
     <!-- endbuild -->
     <!-- build:bundleSharedJSFiles  -->
+    <script src="../../widget/assets/js/shared/hashtags/hashtags.js"></script>
     <script src="../../widget/assets/js/shared/stringsConfig.js"></script>
+    <script src="controllers/searchTableHelper.js"></script>
+    <script src="controllers/badgeSearchTableHelper.js"></script>
+    <script src="controllers/searchTableConfig.js"></script>
+    <script src="controllers/badgeSearchTableConfig.js"></script>
     <!-- endbuild -->
 
     <script>
@@ -54,9 +60,6 @@
 </head>
 <body class="scrollable">
 <div class="">
-    <div class="padded">
-        <textarea name="content"></textarea>
-    </div>
     <div class="content" ng-view=""></div>
 </div>
 </body>

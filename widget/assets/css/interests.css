@@ -1,0 +1,42 @@
+.interests-buttonContainer{
+    display: block;
+    position: absolute;
+    bottom: 1%;
+    left: 5%;
+    width: 90%;
+    height: 40px;
+    background: #60b847;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+.interests-buttonContainer > button{
+    background: transparent;
+    width: 20%;
+    height: 100%;
+    color: white;
+}
+.interests-item{
+    padding: 7px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border-radius: 100px;
+    float: left;
+    background-color: #dff0da;
+    margin: 5px;
+    
+}
+
+.interests-container{
+    width: 100%;
+    height: 100%;
+    padding:0px 2%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.interests-title{
+    font-size: 21px;
+    font-weight: bold;
+}

@@ -1,0 +1,19 @@
+<div class="interests-container" style="height: 89vh !important;position: relative;" ng-if="Interests.interests"> 
+    <h1 class="interests-title">Choose Your Interests</h1>
+    <div style="height: 70vh !important;">
+
+        <div class="interests-item" 
+        ng-repeat="hashtag in Interests.interests"    
+        ng-style="{'background-color': hashtag.isSelected ? '#60b847' : '#dff0da'}" 
+        ng-click="Interests.toggle(hashtag)">
+            <span  ng-style="{'color': hashtag.isSelected ? 'white' : 'black'}">#</span><span style="text-transform: capitalize;" ng-style="{'color': hashtag.isSelected ? 'white' : 'black'}">{{hashtag.name}}</span>
+        </div>
+    </div>
+
+    <div class="interests-buttonContainer">
+        <button ng-click = "Interests.save()">
+            Next
+        </button>
+    </div>
+
+</div>

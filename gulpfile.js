@@ -1,7 +1,7 @@
 const gulp = require("gulp");
 const del = require("del");
 const minHTML = require("gulp-htmlmin");
-const minifyCSS = require("gulp-csso");
+const minifyCSS = require("gulp-minify-css");
 const concat = require("gulp-concat");
 const htmlReplace = require("gulp-html-replace");
 const uglifyes = require("uglify-es");
@@ -68,7 +68,6 @@ cfTasks.forEach(function (task){
       .pipe(babel({
         presets: ['@babel/env']
         }))
-      .pipe(uglify())
       .pipe(concat("cfScripts.min.js"))
       .pipe(gulp.dest(destinationFolder+task.dest))
     );
@@ -92,9 +91,10 @@ jsTasks.forEach(function (task) {
     return (
       gulp
         .src(task.src, { base: "." })
-
+        .pipe(babel({
+          presets: ['@babel/env']
+          }))
         /// obfuscate and minify the JS files
-        .pipe(uglify())
 
         /// merge all the JS files together. If the
         /// order matters you can pass each file to the function
@@ -111,8 +111,10 @@ jsTasks.forEach(function (task) {
 
 gulp.task("sharedJS", function () {
     return gulp
-      .src(["widget/assets/js/shared/**.js"], { base: "." })
-      .pipe(uglify())
+      .src(["widget/assets/js/shared/**/**.js"], { base: "." })
+      .pipe(babel({
+        presets: ['@babel/env']
+        }))
       .pipe(concat("scripts.shared-min.js"))
       .pipe(gulp.dest(destinationFolder + "/widget"));
 });

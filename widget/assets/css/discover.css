@@ -1,0 +1,274 @@
+.discover-container{
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 10px;
+}
+.container{
+    width: 100%;
+    height: 100%;
+    padding:0px 2%;
+    background-color: red;
+}
+.element{
+    padding: 7px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border-radius: 100px;
+    float: left;
+    background-color: #dff0da;
+    margin: 5px;
+}
+
+.gridSkeleton{
+    width: 90%;
+    min-height: 70vh;
+    display: grid;
+    margin-left: 5%;
+    margin-bottom: 11px;
+    grid-template-areas:
+    "item1 item1 item1 item1 item2 item2 item2 item2 item2 item2"
+    "item1 item1 item1 item1 item2 item2 item2 item2 item2 item2"
+    "item1 item1 item1 item1 item2 item2 item2 item2 item2 item2"
+    "item5 item5 item5 item5 item2 item2 item2 item2 item2 item2"
+    "item5 item5 item5 item5 item3 item3 item3 item4 item4 item4"
+    "item5 item5 item5 item5 item3 item3 item3 item4 item4 item4"
+    ;
+    grid-gap: 11px;
+}
+.gridSkeleton > *:nth-child(1){
+    grid-area: item1;    
+}
+.gridSkeleton > *:nth-child(2){
+    grid-area: item2;    
+}
+.gridSkeleton > *:nth-child(3){
+    grid-area: item3;    
+}
+.gridSkeleton > *:nth-child(4){
+    grid-area: item4;    
+}
+.gridSkeleton > *:nth-child(5){
+    grid-area: item5;    
+}
+.gridSkeleton > *:nth-child(6){
+    grid-area: item6;    
+}
+
+.gridSkeletonItem{
+    background-color: #E5E5E5;
+    animation: skeletonLoading 1s linear infinite alternate;
+}
+@keyframes skeletonLoading{
+    0%{
+        background-color: hsl(200, 20%, 70%);
+    }
+    100%{
+        background-color: hsl(200, 20%, 95%);
+    }
+}
+
+.grid > *:nth-child(1){
+    grid-area: image1;    
+}
+.grid > *:nth-child(2){
+    grid-area: image2;    
+}
+.grid > *:nth-child(3){
+    grid-area: image3;    
+}
+.grid > *:nth-child(4){
+    grid-area: image4;    
+}
+.grid > *:nth-child(5){
+    grid-area: image5;    
+}
+.grid > *:nth-child(6){
+    grid-area: image6;    
+}
+.grid > *:nth-child(7){
+    grid-area: image7;    
+}
+.grid > *:nth-child(8){
+    grid-area: image8;    
+}
+.grid > *:nth-child(9){
+    grid-area: image9;    
+}
+
+.row-grid{
+    width: 90%;
+    min-height: 20vh;
+    display: grid;
+    margin-left: 5%;
+    margin-top: 11px;
+    margin-bottom: 11px;
+    grid-template-areas:"el1 el1 el1 el2 el2 el2 el3 el3 el3";
+    grid-gap: 11px;
+
+}
+
+.grid{
+    width: 90%;
+    min-height: 70vh;
+    display: grid;
+    margin-left: 5%;
+    margin-bottom: 11px;
+    grid-template-areas:
+    "image1 image1 image1 image1 image2 image2 image2 image2 image2 image2"
+    "image1 image1 image1 image1 image2 image2 image2 image2 image2 image2"
+    "image1 image1 image1 image1 image2 image2 image2 image2 image2 image2"
+    "image5 image5 image5 image5 image2 image2 image2 image2 image2 image2"
+    "image5 image5 image5 image5 image3 image3 image3 image4 image4 image4"
+    "image5 image5 image5 image5 image3 image3 image3 image4 image4 image4"
+    ;
+    grid-gap: 11px;
+}
+.grid > *{
+    height: 100%;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.12), 0 2px 4px 0 rgba(0,0,0,0.12);;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.grid > * > img{
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+}
+
+
+.row-grid > *{
+    height: 100%;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.12), 0 2px 4px 0 rgba(0,0,0,0.12);;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+.row-grid > * > img{
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+}
+.row-grid> *:nth-child(1){
+    grid-area: el1;
+}
+.row-grid> *:nth-child(2){
+    grid-area: el2;
+}
+.row-grid> *:nth-child(3){
+    grid-area: el3;
+}
+
+.navBar{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.navBar > *{
+    border-bottom: 0px solid var(--bf-theme-primary);
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 30%;
+}
+.searchContainer{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: calc(100% - 25px);
+    margin-left: 11px;
+    border: 1px solid #E5E5E5;
+    margin-top: 15px;
+    padding: 5px;
+    border-radius: 5px;
+}
+.searchContainer > span{
+    margin-left: 10px;
+}
+.searchContainer > p{
+    font-size: 15px;
+    margin-left: 5px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+}
+.searchContainer > input{
+    font-size: 15px;
+    margin-left: 5px;
+    margin-top: 2px;
+}
+
+#discover-people-container > div{
+    margin-top: 20px;
+}
+
+#discover-people-container > div > div{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 10px;
+}
+.discover-people-profile-picture, .discover-people-profile-picture > img{
+    width: 45px;
+    height: 45px;
+    border-radius: 45px;
+}
+.profileName{
+    flex: 5;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 15px;
+}
+.profileUsername{
+    margin-bottom: -12px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    flex-direction: column;
+}
+.profileUsername > *:nth-child(1){
+    line-height: 0px;
+}
+.profileUsername > *:nth-child(2){
+    line-height: 17px;
+}
+.profileButton{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 15px;
+}
+.discover-h-title{
+    margin-left: 15px;
+                font-size: 17px;
+                font-weight: bold;
+                color: var(--bf-theme-success);
+                margin-bottom: 5px;
+}
+.discover-h-images-container{
+    white-space: nowrap;
+    overflow-x: auto;
+    margin-left: 5px;
+}
+.discover-h-item-div{
+    margin-left: 5px;margin-right: 5px;width:30vw; height: 30vw;display: inline-block;
+}
+.discover-h-single-image{
+    width: 100%;height: 100%;border-radius: 10px;
+}
+.discover-h-repeated{
+    margin-top: 10px;
+}

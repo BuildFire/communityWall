@@ -1,0 +1,120 @@
+<div ng-show="!DesignHome.isLoading">
+    <h1 class="section-title">
+        Bottom Navbar Icons
+    </h1>
+    <p class="info-note">
+        Bottom Navbar 
+    </p>
+    <div class="designContainer" style="display: flex;">
+        <div class="left" style="width: 50vw;">
+            <div class="badgerowitem">
+                <div class="badgeleft" style="flex: 1;">
+
+                  <strong>Home</strong>
+                </div>
+                <div class="badgeright" style="flex: 1;" ng-click="DesignHome.openIconPicker('bottomNavBar','home')">
+                  <div id="iconPlaceholder" class="imagePlaceholderBox">
+                    
+                      <span ng-class="DesignHome.icons.bottomNavBar.home" style="font-size: 16px;text-align: center">
+                      </span>
+                  </div>
+                </div>
+            </div>
+            <div class="badgerowitem">
+                <div class="badgeleft" style="flex: 1;">
+                  <strong>Add Content</strong>
+                </div>
+                <div class="badgeright" style="flex: 1;" ng-click="DesignHome.openIconPicker('bottomNavBar','addContent')">
+                  <div id="iconPlaceholder" class="imagePlaceholderBox">
+                      <span ng-class="DesignHome.icons.bottomNavBar.addContent" style="font-size: 16px;text-align: center">
+                      </span>
+
+                  </div>
+                </div>
+            </div>
+            <div class="badgerowitem">
+                <div class="badgeleft" style="flex: 1;">
+
+                  <strong>My Profile</strong>
+                </div>
+                <div class="badgeright" style="flex: 1;" ng-click="DesignHome.openIconPicker('bottomNavBar','myProfile')">
+                  <div id="iconPlaceholder" class="imagePlaceholderBox">
+                    <span ng-class="DesignHome.icons.bottomNavBar.myProfile" style="font-size: 16px;text-align: center">
+                    </span>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="right" style="width: 50vw;">
+            <div class="badgerowitem">
+                <div class="badgeleft" style="flex: 1;">
+                  <strong>Discover</strong>
+                </div>
+                <div class="badgeright" style="flex: 1;" ng-click="DesignHome.openIconPicker('bottomNavBar','discover')">
+                  <div id="iconPlaceholder" class="imagePlaceholderBox">
+                      <span ng-class="DesignHome.icons.bottomNavBar.discover"  style="font-size: 16px;text-align: center">
+                      </span>
+
+                  </div>
+                </div>
+            </div>
+            <div class="badgerowitem">
+                <div class="badgeleft" style="flex: 1;">
+                  <strong>Notifications</strong>
+                </div>
+                <div class="badgeright" style="flex: 1;" ng-click="DesignHome.openIconPicker('bottomNavBar','notifications')">
+                  <div id="iconPlaceholder" class="imagePlaceholderBox">
+                      <span ng-class="DesignHome.icons.bottomNavBar.notifications"  style="font-size: 16px;text-align: center">
+                      </span>
+
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1 class="section-title">
+        Reaction Settings
+    </h1>
+    <div style="width: 100%;display: flex;">
+        <div class="badgerowitem">
+            <div class="badgeleft" style="flex: 1;">
+              <strong>Reaction Icon</strong>
+            </div>
+            <div class="badgeright" style="flex: 1;" ng-click="DesignHome.openIconPicker('reactions','icon')">
+              <div id="iconPlaceholder" class="imagePlaceholderBox">
+                  <span ng-class="DesignHome.icons.reactions.icon"  style="font-size: 16px;text-align: center">
+                  </span>
+
+              </div>
+            </div>
+        </div>
+        <div class="badgerowitem">
+            <div class="badgeleft" style="flex: 1;">
+              <strong>Fill Color</strong>
+            </div>
+            <div class="badgeright" style="flex: 1;" ng-click="DesignHome.bfColorPicker()">
+                <div class="selectedColorBox">
+                    <div id="color-picker-bg" ng-class="DesignHome.icons.reactions.color && noColor" ng-style="{'background-color': DesignHome.icons.reactions.color ? DesignHome.icons.reactions.color : 'transparent'}" class="innerSelectedColorBox"></div>
+                  </div>
+            </div>
+        </div>
+    </div>
+    <p style="    margin-top: 15px;
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 15px;">
+        Icon Fill Threshold Settings
+    </p>
+    <p class="info-note">
+        Enter number of reactions that is needed to reach maximum threshold. We will handle the rest !
+    </p>
+    <div class="badgerowitem" style="width: 30%;margin-bottom: 5vh;">
+        <div class="badgeleft" style="flex: 1;">
+          <strong>100% fill</strong>
+        </div>
+        <div class="badgeright" style="flex: 1;" ng-click="selectIcon()">
+            <input type="number" ng-model="DesignHome.icons.reactions.threshold" ng-change="evaluateChange()" min="0" placeholder="50">
+        </div>
+    </div>
+</div>

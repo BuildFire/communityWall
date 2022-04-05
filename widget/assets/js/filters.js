@@ -15,9 +15,9 @@
                 } else if(time && time.indexOf(' seconds ago') != -1) {
                     formattedTime = formattedTime.replace('seconds ago', 's');
                 } else if(time && time.indexOf('a minute ago') != -1) {
-                    formattedTime = formattedTime.replace('a minute ago', '1 mi');
+                    formattedTime = formattedTime.replace('a minute ago', '1 min');
                 } else if(time && time.indexOf(' minutes ago') != -1) {
-                    formattedTime = formattedTime.replace('minutes ago', 'mi');
+                    formattedTime = formattedTime.replace('minutes ago', 'mins');
                 } else if(time && time.indexOf('an hour ago') != -1) {
                     formattedTime = formattedTime.replace('an hour ago', '1h');
                 } else if(time && time.indexOf(' hours ago') != -1) {

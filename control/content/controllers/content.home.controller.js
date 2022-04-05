@@ -5,6 +5,17 @@
         .module('socialPluginContent')
         .controller('ContentHomeCtrl', ['$scope', '$location', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', 'SocialItems', 'Util', function ($scope, $location, SocialDataStore, Modals, Buildfire, EVENTS, $timeout, SocialItems, Util) {
             var ContentHome = this;
+            $timeout(function(){
+                $scope.$apply(function(){
+                    ContentHome.hashtagFilters = ["Newest First","Oldest First", "Hashtag Name A - Z", "Hashtag Name Z - A"];
+                    ContentHome.badgeFilters = ["Newest First","Oldest First", "Badge Name A - Z", "Badge Name Z - A"];
+                    ContentHome.selectedHashtagFilter = "Newest First";
+                    ContentHome.selectedBadgeFilter = "Newest First";
+                    $timeout(function(){
+                        $scope.$digest();        
+                    })
+                })
+            })
             ContentHome.usersData = [];
             var userIds = [];
             var initialCommentsLength;
@@ -19,7 +30,6 @@
             ContentHome.util = Util;
             var counter = 0;
             ContentHome.loading = true;
-            
             $scope.setupImageList = function (post) {
                 if (post.imageUrl) {
                     post.imageListId = "imageList_" + (counter++);
@@ -40,7 +50,42 @@
             var appId;
             var instanceId;
             var pluginTitle;
+            
+            var save = (data) =>{
+                Buildfire.datastore.save(data, "SocialIcons", (err, data) =>{
+                    
+                })
+            }
+
+            var get = (callback) =>{
+                Buildfire.datastore.get("SocialIcons", (err, results) =>{
+                    return callback(err, results)
+                }) 
+
+            }
+
+            var saveInitial = () =>{
+                save({
+                    bottomNavBar:{
+                        home: "glyphicon glyphicon-home",
+                        addContent: "glyphicon glyphicon-plus",
+                        myProfile: "glyphicon glyphicon-user",
+                        notifications: "glyphicon glyphicon-bell",
+                        discover: "glyphicon glyphicon-search",
+                    },
+                    reactions:{
+                        icon: "glyphicon glyphicon-flash",
+                        color: "rgba(255,0,0,1)",
+                        threshold: 50,
+                    }
+                })
+            }
             var init = function () {
+                get((err, icons) =>{
+                    if(err || (icons && icons.data && Object.keys(icons.data).length == 0 )){
+                        saveInitial();
+                    }
+                })
                 buildfire.datastore.get("languages", (err, result) => {
                     if (result.data && result.data.screenOne) {
                         let data = result.data;
@@ -78,6 +123,32 @@
                         }, 500);
                     });
                 });
+
+
+                $scope.openAddHashtagModal = function(){
+                    document.getElementById("hashtagToAdd").value = "";
+                    document.getElementById("hashtagToAdd_error_msg").innerHTML = "";
+                    document.getElementById("hashtag_modal").style.display = "flex";
+                }
+                $scope.closeAddHashtagModal = function(){
+                    document.getElementById("hashtagToAdd").value = "";
+                    document.getElementById("hashtagToAdd_error_msg").innerHTML = "";
+                    document.getElementById("hashtag_modal").style.display = "none";
+                }
+
+                $scope.addHashtag = function(){
+                    document.getElementById("hashtagToAdd_error_msg").innerHTML = "";
+                    let el = document.getElementById("hashtagToAdd");
+                    Hashtags.use(el.value, (err, res) =>{
+                        if(err) document.getElementById("hashtagToAdd_error_msg").innerHTML = "Hashtag already exists";
+                        else{
+                            console.log(res);
+                            $scope.searchTableHelper.search({},ContentHome.selectedHashtagFilter === 'Newest First' ? {createdOn : -1} : {createdOn: 1});
+                            el.value = "";
+                            $scope.closeAddHashtagModal();
+                        }
+                    })
+                }
 
                 function myCustomURLConverter(url, node, on_save, name) {
                     if (!/^https?:\/\//i.test(url)) {
@@ -245,10 +316,12 @@
                 ContentHome.modalPopupThreadId = threadId;
                 console.log('inside ban user controller method>>>>>>>>>>');
                 
-                buildfire.dialog.confirm(
+                Buildfire.dialog.confirm(
                     {
                         title: "Ban User",
-                        message: `Are you sure you want to ban ${username || 'this user'}?`,
+                        message: `Are you sure you want to ban this user? This action will delete all 
+                        posts and comments made by this user. User will not be able to post 
+                        again`,
                         confirmButton: {
                             text: "Ban User",
                             type: "danger",
@@ -408,7 +481,7 @@
                         searchOptions.filter = { "_buildfire.index.string1": "" }
                     else
                         searchOptions.filter = { "_buildfire.index.string1": { "$regex": wid, "$options": "i" } }
-                        buildfire.publicData.search(searchOptions, 'posts', function(err, data) {
+                        buildfire.publicData.search(searchOptions, 'wall_posts', function(err, data) {
                             if(data && data.result.length) {
                                 data.result.map(item => allPosts.push(item));
                                 if(data.totalRecord > allPosts.length) {
@@ -452,6 +525,7 @@
 
             $scope.getUserName = function(userDetails) {
                 let name = null;
+                if(!userDetails) return "Someone";
                 if (userDetails.displayName !== 'Someone'
                 && userDetails.displayName) {
                     name = userDetails.displayName;
@@ -560,6 +634,80 @@
                         $scope.$digest();
                 }
             };
+
+            $scope.loadTable = function() {
+                $scope.searchTableHelper = new SearchTableHelper("hashtags_table", "$$hashtag$$", searchTableConfig, {createdOn: -1});
+                $scope.searchTableHelper.search();
+                $scope.searchTableHelper.onCommand('showText', (obj, tr) => {
+                    if (obj.data.text.length <= 16) return;
+                    buildfire.notifications.alert({
+                        title: "Text", message: obj.data.text,  okButton: { text: 'Ok' }
+                    }, function (e, data) {
+                        if (e) console.error(e);
+                        if (data) console.log(data);
+                    });
+                });
+                $scope.searchTableHelper.onEditRow = (obj, tr) => {
+                    buildfire.dialog.confirm({
+                        message: "Are you sure you want to ban this user? This action will erase all posts and comments made by this user.",
+                        confirmButton: { text: "Ban", type: "danger" }
+                    }, (err, data) => {
+                        if (err) console.error(err);
+                        if (data)
+                            banUser(obj.data);
+                    });
+                }
+                $scope.badgeSearchTableHelper = new BadgeSearchTableHelper("badges_table", "SocialBadges", badgeSearchTableConfig, {createdOn: 1});
+                $scope.badgeSearchTableHelper.search();
+                $scope.badgeSearchTableHelper.onCommand('showText', (obj, tr) => {
+                    if (obj.data.text.length <= 16) return;
+                    buildfire.notifications.alert({
+                        title: "Text", message: obj.data.text,  okButton: { text: 'Ok' }
+                    }, function (e, data) {
+                        if (e) console.error(e);
+                        if (data) console.log(data);
+                    });
+                });
+                
+            }
+            $scope.goToAddBadge = function(){
+                window.location.href = "#/addBadge/0"
+            }
+            
+            ContentHome.changeHashtagFilter = function(text){
+                console.log(text);
+                ContentHome.selectedHashtagFilter = text;
+                if(text === 'Newest First'){
+                    $scope.searchTableHelper.search({},{createdOn: -1});
+                }
+                else if(text === 'Oldest First'){
+                    $scope.searchTableHelper.search({},{createdOn: 1});
+                }
+                else if(text === 'Hashtag Name A - Z'){
+                    console.log("here");
+                    $scope.searchTableHelper.search({},{name: 1})
+                }
+                else{
+                    $scope.searchTableHelper.search({},{name: -1})
+                }
+            }
+            ContentHome.changeBadgeFilter = function(text){
+                ContentHome.selectedBadgeFilter = text;
+                if(text === 'Newest First'){
+                    $scope.badgeSearchTableHelper.search({},{createdOn: -1});
+                }
+                else if (text === 'Oldest First'){
+                    $scope.badgeSearchTableHelper.search({},{createdOn: 1});
+                }
+                else if(text === 'Badge Name A - Z'){
+                    $scope.badgeSearchTableHelper.search({},{title: 1})
+                }
+                else{
+                    $scope.badgeSearchTableHelper.search({},{title: -1})
+                }
+            }
+
+            $scope.loadTable();
 
             // Init WYSIWYG
             let appSettings = {};
