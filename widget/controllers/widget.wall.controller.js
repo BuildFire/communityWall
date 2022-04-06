@@ -291,36 +291,49 @@
                 if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
                 if (WidgetWall.SocialItems.isPrivateChat) {
-                    const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
-                    const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
-                    let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId
-                        ? user2Id : user1Id;
-                    SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                        if (err) console.error('Error while getting initial group following status.', err);
-                        if (status.length && status[0].data && !status[0].data.leftWall) {
-                            options.users.push(userToSend);
-                            options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on '
-                                + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
-                                
-                            buildfire.notifications.pushNotification.schedule(options, function 
-                                (err) {
-                                
-                                if (err) return console.error('Error while setting PN schedule.', err);
-                             
-                            });
-                        } else if(!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
-                            buildfire.auth.getUserProfile({ userId: userToSend }, (err, user) => {
-                                if (err || !user) return console.error(err);
+                    // TODO
+                  
+
+                    let userIdsTosSend = [];
+                    if (WidgetWall.SocialItems.userIds) {
+                        const userIds  = WidgetWall.SocialItems.userIds.split(',').filter((userId) => userId !== WidgetWall.SocialItems.userDetails.userId);
+                        userIdsTosSend = userIds;
+                    } else {
+                        const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
+                        const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
+                        let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId
+                            ? user2Id : user1Id;
+                        userIdsTosSend.push(userToSend);
+                    }
+
+                    for (const userToSend of userIdsTosSend) {
+                        SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                            if (err) console.error('Error while getting initial group following status.', err);
+                            if (status.length && status[0].data && !status[0].data.leftWall) {
                                 options.users.push(userToSend);
                                 options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on '
-                                    + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(user);
-                                buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                    + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
+                                    
+                                buildfire.notifications.pushNotification.schedule(options, function 
+                                    (err) {
+                                    
                                     if (err) return console.error('Error while setting PN schedule.', err);
-                                    console.log("SENT NOTIFICATION", options);
-                                });  
-                              });
-                        }
-                    });
+                                
+                                });
+                            } else if(!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
+                                buildfire.auth.getUserProfile({ userId: userToSend }, (err, user) => {
+                                    if (err || !user) return console.error(err);
+                                    options.users.push(userToSend);
+                                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on '
+                                        + WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(user);
+                                    buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                        if (err) return console.error('Error while setting PN schedule.', err);
+                                        console.log("SENT NOTIFICATION", options);
+                                    });  
+                                });
+                            }
+                        });
+                     }
                 } else {
                     if (text === 'like') {
                         options.users.push(post.userId);
@@ -402,25 +415,41 @@
                 if (WidgetWall.SocialItems.isPrivateChat) {  
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
                             if (err) return console.log(err);
-                            const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
-                            const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
-                            if (!users.length) {
+
+                            const otherUserIds = [];
+                            if (!WidgetWall.SocialItems.userIds) {
+                                const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
+                                const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
                                 var otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
                                     ? user2Id : user1Id;
-                                WidgetWall.followPrivateWall(otherUser, WidgetWall.SocialItems.wid);
+                                    otherUserIds.push(otherUser)
+                            } else {
+                                const userIds = WidgetWall.SocialItems.userIds.split(',');
+                                for (const uid of userIds) {
+                                    otherUserIds.push(uid.trim());
+                                }
+                            }
+                            
+                            if (!users.length) {
+                                for (const userId of otherUserIds) {
+                                    WidgetWall.followPrivateWall(userId, WidgetWall.SocialItems.wid);
+                                }
                             }
                         });
                 }
                 buildfire.deeplink.onUpdate((deeplinkData) => {
                     if (deeplinkData) {
                         let wallId = new URLSearchParams(deeplinkData).get('wid');
-                        if (wallId && wallId.length === 48) {
+                        let userIds = new URLSearchParams(deeplinkData).get('userIds');
+                        if (!userIds && wallId && wallId.length === 48) {
                             const user1Id = wallId.slice(0, 24);
                             const user2Id = wallId.slice(24, 48);
                             const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
                                 ? user2Id : user1Id;
 
                             WidgetWall.openChat(otherUser);
+                        } else  {
+                            WidgetWall.openGroupChat(userIds, wallId);
                         }
                     }
                 });
@@ -507,6 +536,23 @@
                 WidgetWall.SocialItems.pluginTitle = '';
                 WidgetWall.init();
             });
+
+            // TODO
+            /**
+             * 
+             */
+
+            
+            WidgetWall.openGroupChat = function (userIds, wid) {
+                if (WidgetWall.allowPrivateChat) {
+                    WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                        if (err) return console.error("Getting user failed.", err);
+                        if (user) {
+                            WidgetWall.navigateToPrivateChat({ id: userIds, name: 'someone', wid: wid });
+                        }
+                    });
+                }
+            }
 
             WidgetWall.openPrivateChat = function (userId, userName) {
                 let wid = null;
