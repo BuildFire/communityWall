@@ -43,24 +43,24 @@
         </div>
         <div id="discover-people-container"  ng-show="activePageIndex == 2" style="height: 100%;overflow-y: auto;" >
             <div ng-if="users && users.length > 0" ng-repeat="user in users">
-                <div>
-                    <div class="discover-people-profile-picture" ng-click="navigateToProfile(user.data.userId)">
+                <div  ng-click="navigateToProfile(user.data.userId)">
+                    <div class="discover-people-profile-picture">
                         <img ng-src="{{crop(user.data.userDetails.imageUrl, {width: 50,height: 50})}}" ng-if="user.data.userDetails.imageUrl" />
                         <img src="../../../../styles/media/avatar-placeholder.png" ng-if="!user.data.userDetails.imageUrl" />
                     </div>
                     <div class="profileName">
-                    <div class="profileUsername" ng-click="navigateToProfile(user.data.userId)">
-                        <p>
-                            {{Discover.SocialItems.getUserName(user.data.userDetails)}}
-                        </p>    
-                        <p >
-                            {{user.data.userDetails.location && user.data.userDetails.location.address ? user.data.userDetails.location.address : ''  }}
-                        </p>
-                    </div>
+                        <div class="profileUsername">
+                            <p>
+                                {{Discover.SocialItems.getUserName(user.data.userDetails)}}
+                            </p>    
+                            <p >
+                                {{user.data.userDetails.location && user.data.userDetails.location.address ? user.data.userDetails.location.address : ''  }}
+                            </p>
+                        </div>
                 
                     </div>
                     <div class="profileButton" >
-                        <button class="btn btn-success" ng-click="Discover.followUser(user.data.userId)">
+                        <button class="btn btn-success" ng-click="Discover.followUser(user.data.userId);$event.stopPropagation()">
                             Follow
                         </button>
                     </div>

@@ -618,7 +618,7 @@
                                 let results = [];
                                 users.map(e => {
                                     if(userId){
-                                        if(e.data._buildfire.index.array1.findIndex(e=> e.string1 === `blocked_${userId}`) < 0){
+                                        if(e.data._buildfire.index.array1 && e.data._buildfire.index.array1.findIndex(e=> e.string1 === `blocked_${userId}`) < 0){
                                             results.push(e);
                                         }
                                     }

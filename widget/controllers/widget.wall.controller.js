@@ -1183,7 +1183,7 @@
                     wid: WidgetWall.SocialItems.wid
                 });
                 Buildfire.dialog.toast({
-                    message: "Post created successfully",
+                    message: "Report created successfully",
                 });
             }
 

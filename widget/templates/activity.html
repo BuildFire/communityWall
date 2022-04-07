@@ -2,10 +2,11 @@
     <div class="act-container" ng-if="Activity.show">
         <div ng-if="Activity.todayActivity.length > 0">
             <h5 class="act-header">Today</h5>
-            <div ng-repeat="activity in Activity.todayActivity">
+            <div class="act-list" ng-repeat="activity in Activity.todayActivity">
                 <div class="act-block" ng-click="Activity.handleActivity(activity)">
                     <div class="act-left-section" >
-                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture">
+                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture"
+                           crop-width="50" crop-height="50" crop-type="crop">
                         <img ng-if="!activity.fromUser.imageUrl" load-image="1x1"
                         data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
                         crop-height="40" crop-type="default">
@@ -30,8 +31,8 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div style="    height: 100%;" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img style="border-radius: 15px;height: 100%;width: 100%;" ng-src="{{activity.post.image}}" />
+                        <div class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
+                            <img  ng-src="{{activity.post.image}}" crop-width="40" crop-height="40" crop-type="crop"/>
                         </div>
                     </div>
                 </div>
@@ -39,10 +40,11 @@
         </div>
         <div ng-if="Activity.yesterdayActivity.length > 0">
             <h5 class="act-header">Yesterday</h5>
-            <div ng-repeat="activity in Activity.yesterdayActivity">
+            <div class="act-list" ng-repeat="activity in Activity.yesterdayActivity">
                 <div class="act-block" ng-click="Activity.handleActivity(activity)">
                     <div class="act-left-section" >
-                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture">
+                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture"
+                            crop-width="50" crop-height="50" crop-type="crop">
                         <img ng-if="!activity.fromUser.imageUrl" load-image="1x1"
                         data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
                         crop-height="40" crop-type="default">
@@ -67,20 +69,21 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div style="    height: 100%;" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img style="border-radius: 15px;height: 100%;width: 100%;" ng-src="{{activity.post.image}}" />
-                        </div>                    </div>
+                        <div  class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
+                            <img ng-src="{{activity.post.image}}" crop-width="40" crop-height="40" crop-type="crop"/>
+                        </div>                   
+                     </div>
                     </div>
                 </div>
         </div>
     
-
         <div ng-if="Activity.lastMonthActivity.length > 0">
             <h5 class="act-header">Last Month</h5>
-            <div ng-repeat="activity in Activity.lastMonthActivity">
+            <div class="act-list" ng-repeat="activity in Activity.lastMonthActivity">
                 <div class="act-block" ng-click="Activity.handleActivity(activity)">
                     <div class="act-left-section" >
-                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture">
+                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture"
+                            crop-width="50" crop-height="50" crop-type="crop">
                         <img ng-if="!activity.fromUser.imageUrl" load-image="1x1"
                         data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
                         crop-height="40" crop-type="default">
@@ -104,19 +107,21 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div style="    height: 100%;" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img style="border-radius: 15px;height: 100%;width: 100%;" ng-src="{{activity.post.image}}" />
-                        </div>                    </div>
+                        <div class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
+                            <img ng-src="{{activity.post.image}}" crop-width="40" crop-height="40" crop-type="crop"/>
+                        </div>                   
                     </div>
                 </div>
             </div>
+        </div>
     
         <div ng-if="Activity.olderActivity.length > 0">
             <h5 class="act-header">Older</h5>
-            <div ng-repeat="activity in Activity.olderActivity">
+            <div class="act-list" ng-repeat="activity in Activity.olderActivity">
                 <div class="act-block" ng-click="Activity.handleActivity(activity)">
                     <div class="act-left-section" >
-                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture">
+                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture"
+                            crop-width="50" crop-height="50" crop-type="crop">
                         <img ng-if="!activity.fromUser.imageUrl" load-image="1x1"
                         data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
                         crop-height="40" crop-type="default">
@@ -141,8 +146,8 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div style="    height: 100%;" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img style="border-radius: 15px;height: 100%;width: 100%;" ng-src="{{activity.post.image}}" />
+                        <div class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
+                            <img  ng-src="{{activity.post.image}}" crop-width="40" crop-height="40" crop-type="crop"/>
                         </div>                    
                     </div>
                 </div>

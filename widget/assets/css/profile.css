@@ -22,9 +22,9 @@
 }
 .profile-picture-container > img{
     height: 100%;
-    width: 90%;
+    /* width: 100%; */
     border-radius: 100%;
-
+    object-fit: cover;
 }
 
 .profile-info-container > *{
@@ -102,13 +102,13 @@
 }
 
 .switch{
-    margin-top: 3vh;
     width: 100%;
     height: 3vh;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-bottom: 7vh;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
 }
 .has-bottom-border{
     border-bottom: 3px solid rgb(96 184 71);

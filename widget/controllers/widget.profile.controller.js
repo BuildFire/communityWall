@@ -131,7 +131,7 @@
 
             t.getUserDetails = (callback) =>{
                 SubscribedUsersData.get($routeParams.userId, (err, userDetails) =>{
-                    t.user.userDetails = userDetails.data.userDetails;
+                    t.user.userDetails = userDetails? userDetails.data.userDetails : null;
                     return callback(true)
                 })
             }

@@ -856,6 +856,7 @@ button.btn--lg,
      width: 100% !important;
      height: 100% !important;
      border-radius: 15px;
+     object-fit: cover;
  }
 
  .status-footer .likes,
@@ -1528,7 +1529,7 @@ textarea {
 }
 
 .side-thread-section{
-    height:100%;
+    height:100vh;
     overflow: hidden;
 }
 
