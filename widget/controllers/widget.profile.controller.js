@@ -22,6 +22,10 @@
                     occupiedHeight+= 10;
                     
                 }
+                if (t.user.userDetails && t.user.userDetails.bio) {
+                    // bio
+                   occupiedHeight+= 8;
+                }
                 // buttons
                 occupiedHeight+= 6;
                 // switch
@@ -334,7 +338,7 @@
                                                 userId: t.SocialItems.userDetails.userId
                                             }
                                             let toUser = {
-                                                displayName: t.user.userDetails.displayName,
+                                                displayName: t.user.userDetails? t.user.userDetails.displayName : '',
                                                 userId: t.user.userId
                                             }
                                             t.createActivity(type, {toUser, fromUser});
@@ -347,7 +351,7 @@
                                                 userId: t.SocialItems.userDetails.userId
                                             }
                                             let toUser = {
-                                                displayName: t.user.userDetails.displayName,
+                                                displayName: t.user.userDetails? t.user.userDetails.displayName : '',
                                                 userId: t.user.userId
                                             }
                                             t.createActivity(type, {toUser, fromUser});

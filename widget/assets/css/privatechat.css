@@ -36,6 +36,7 @@
 }
 #ta-frame > div > img {
   height: 100%;
+  object-fit: cover;
 }
 #ta-frame > input {
   flex: 8.5;
@@ -97,6 +98,6 @@
 }
 .chatImageContainer{
   display: flex;
-                  justify-content: flex-end;
-                  align-items: flex-start;
+  justify-content: flex-end;
+  align-items: flex-start;
 }

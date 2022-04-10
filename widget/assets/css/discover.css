@@ -114,7 +114,7 @@
     min-height: 70vh;
     display: grid;
     margin-left: 5%;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
     grid-template-areas:
     "image1 image1 image1 image1 image2 image2 image2 image2 image2 image2"
     "image1 image1 image1 image1 image2 image2 image2 image2 image2 image2"
@@ -221,10 +221,15 @@
     align-items: center;
     margin: 10px;
 }
-.discover-people-profile-picture, .discover-people-profile-picture > img{
+.discover-people-profile-picture {
     width: 45px;
     height: 45px;
     border-radius: 100%;
+    overflow: hidden;
+}
+ .discover-people-profile-picture > img{
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 .profileName{
@@ -242,7 +247,7 @@
     flex-direction: column;
 }
 .profileUsername > *:nth-child(1){
-    line-height: 0px;
+    /* line-height: 0px; */
 }
 .profileUsername > *:nth-child(2){
     line-height: 17px;

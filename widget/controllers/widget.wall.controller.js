@@ -1183,7 +1183,7 @@
                     wid: WidgetWall.SocialItems.wid
                 });
                 Buildfire.dialog.toast({
-                    message: "Report created successfully",
+                    message: "Post has been reported",
                 });
             }
 
@@ -1277,6 +1277,9 @@
                     "attachments": {
                         "images": { enable: false },
                         "gifs": { enable: false }
+                    },
+                    defaultAttachments: {
+                        images: post.images
                     }
                 }, (err, data) => {
                     if(err || !data || !data.results || !data.results.length > 0) return;
@@ -1516,6 +1519,7 @@
                                     item.data.userDetails = status[0].data.userDetails;
                                     needsUpdate = true;
                                 }
+                                item.data.comments = item.data.comments ? item.data.comments : [];
                                 item.data.comments.map(comment => {
                                     if (comment.userId === user._id) {
                                         comment.userDetails = status[0].data.userDetails;

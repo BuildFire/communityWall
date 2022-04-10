@@ -3,22 +3,32 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 90%;
+    /* width: 90%; */
     align-content: center;
-    margin: 1vh 2vh 4vh 2vh;
+    margin: 1rem;
 
 }
-.profile-buddies > div > img{
+
+.profile-buddies .profile-buddy-item {
     height: 40px;
     width: 40px;
     margin: 0px 5px;
+    overflow:hidden;
+    border-radius: 100%;
+}
+.profile-buddies .profile-buddy-item > img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
 }
 .profile-buddies{
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    width: 90%;
-    height: 10vh;
+    /* width: 90%; */
+    padding: .5rem 1rem;
+
+    /* height: 6vh; */
 }
 .profile-picture-container > img{
     height: 100%;
@@ -64,15 +74,16 @@
 .longestStreakText{
     font-size: 13px !important;
 }
-.profile-bio > *{
+
+.profile-bio > p{
     color: black;
     font-size: 12.5px !important;
     font-weight: 500;
     line-height: 15px;
+    margin-bottom: 0;
 }
 .profile-bio{
-    width: 90%;
-    margin-left: 5%;
+    padding: .5rem 1rem;
     word-break: break-word;
 }
 .button-container{
@@ -83,13 +94,15 @@
     display: flex;
     height: 5.5%;
     border-radius: 5px;  
+    margin-top: 15px;
+    margin-bottom: 15px;
+
 }
 .button-container > button{
     height: 100%;
-    background-color: rgb(96 184 71);
     border-radius: 5px !important;
-    color: white;
-    margin-bottom: 15px;
+    /* background-color: rgb(96 184 71);
+    color: white; */
 }
 .side-by-side{
     display: flex !important;
@@ -143,8 +156,18 @@
 
 .half-width-btn{
     width: 48% !important;
+}
+
+.outline-btn-success {
+    border: 1px solid var(--bf-theme-success);
     background-color: transparent !important;
-    border: 1px solid rgb(96 184 71) !important;
-    border-radius: 3px !important;
     color: black !important;
+    border-radius: 5px !important;
+}
+
+.solid-btn-success {
+    background-color: var(--bf-theme-success) !important;
+    color: white !important;
+    border-radius: 5px !important;
+
 }

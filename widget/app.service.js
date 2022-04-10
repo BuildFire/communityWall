@@ -346,7 +346,7 @@
                 followUnfollowUser: function(params, callback, callbackForCurrentUser = null){
                     window.buildfire.publicData.search({filter:{"_buildfire.index.string1":params.userId}}, "SocialUserProfile", function(err, socialProfile){
                         socialProfile = socialProfile[0];
-                        if(socialProfile.data){
+                        if(socialProfile && socialProfile.data){
                             let followers;
                             let updatedObj = {...socialProfile.data};
                             if(socialProfile.data.isPublicProfile){
@@ -1165,6 +1165,7 @@
                 return name;
             }
             SocialItems.prototype.authenticateUser = function (loggedUser, callback) {
+                
                 function prepareData(user) {
                     let location = {
                         address: user.userProfile.address && user.userProfile.address.fullAddress ?  user.userProfile.address.fullAddress :  null,
@@ -1180,7 +1181,8 @@
                         displayName: user.displayName ? user.displayName : "",
                         location:  location,
                         imageUrl: user.imageUrl,
-                        userTags: user.tags ? user.tags : {}
+                        userTags: user.tags ? user.tags : {},
+                        bio: user.userProfile && user.userProfile.bio? user.userProfile.bio : "",
                     }
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (re.test(String(user.firstName).toLowerCase()))
@@ -1192,8 +1194,13 @@
                 else buildfire.auth.getCurrentUser((err, user) => {
                     if (err) return callback(err, null);
                     if (user) {
-                        prepareData(user);
-                        return callback(null, user);
+                        buildfire.auth.getUserProfile({ userId: user._id }, function (err, userProfile) {
+                            if (err) return console.error("Getting user profile failed.", err);
+                            user.userProfile = userProfile;
+                            prepareData(user);
+                            return callback(null, user);
+                        });
+                        
                     } else {
                         _this.forcedToLogin = false;
                         callback(null, null);

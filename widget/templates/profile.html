@@ -5,8 +5,7 @@ ng-show="!Profile.isLoading">
     <div class="profile-header">
         <div class="profile-picture-container" ng-click="Profile.GoToBadgeView()" ng-if="Profile.user.socialProfile.data">
             <img ng-style="{'border':'1px solid ' + Profile.borderColor }"  ng-show="Profile.user.userDetails.imageUrl" load-image="1x1"
-            data-final-src="{{Profile.user.userDetails.imageUrl}}" crop-width="40"
-            crop-height="40" crop-type="crop">
+                data-final-src="{{Profile.user.userDetails.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
             <img ng-style="{'border':'1px solid ' + Profile.borderColor }" ng-show="!Profile.user.userDetails.imageUrl" load-image="1x1"
                   data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
                   crop-height="40" crop-type="default">
@@ -23,8 +22,13 @@ ng-show="!Profile.isLoading">
             </span>
         </div>
     </div>
+    <div class="profile-bio" ng-show="Profile.user.userDetails && Profile.user.userDetails.bio">
+        <p>
+            {{Profile.user.userDetails.bio}}
+        </p>
+    </div>
     <div ng-if="Profile.user.buddies && Profile.user.buddies.length > 0" class="profile-buddies">
-        <div ng-repeat="user in Profile.user.buddies">
+        <div ng-repeat="user in Profile.user.buddies" class="profile-buddy-item">
             <img ng-if="user.pic" load-image="1x1"
             ng-click="Profile.goToProfile(user.userId)"
               data-final-src="{{user.pic}}" 
@@ -43,23 +47,18 @@ ng-show="!Profile.isLoading">
             />
         </div>
     </div>
-    <div class="profile-bio" ng-show="Profile.user.userDetails && Profile.user.userDetails.bio">
-        <p>
-            {{Profile.user.userDetails.bio}}
-        </p>
-    </div>
     <div style="height:6vh" ng-show="Profile.user.isCurrentUser" class="button-container side-by-side">
-            <button class="half-width-btn" ng-click="Profile.openBFProfile()" style="background-color: white;border-color: var(--bf-theme-success);color: black !important;" >
+            <button class="half-width-btn outline-btn-success" ng-click="Profile.openBFProfile()" >
                 {{Profile.strings.usereditProfile}}
             </button>
-            <button class="half-width-btn" ng-click="Profile.goToInbox()">
+            <button class="half-width-btn outline-btn-success" ng-click="Profile.goToInbox()">
                 {{Profile.strings.userinbox}}
             </button>
 
     </div>
     <!-- ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
     <div style="height:6vh" ng-show="!Profile.user.isCurrentUser && (Profile.user.isPublicProfile || (!Profile.user.isPublicProfile && Profile.user.amIFollowing))  && !Profile.user.didIBlock" class="button-container side-by-side">        
-        <button style="background-color: var(--bf-theme-success) !important;color: white !important;"  class="half-width-btn" ng-if="!Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
+        <button class="half-width-btn" ng-class="!Profile.user.amIFollowing && !Profile.user.amIPending? 'solid-btn-success': 'outline-btn-success'"  ng-if="!Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
             <span ng-show="!Profile.user.amIFollowing && !Profile.user.amIPending ">
                 {{Profile.strings.userfollow}}
             </span> 
@@ -70,22 +69,20 @@ ng-show="!Profile.isLoading">
             
         </button>
     
-        <button  class="half-width-btn" ng-click="Profile.openChat()">
+        <button  class="half-width-btn outline-btn-success" ng-click="Profile.openChat()">
             <span>
-                Send Message
+                Message
             </span>
         </button>
     </div>
-    <div style="height:6vh" ng-show="!Profile.user.isCurrentUser && ((!Profile.user.isPublicProfile && !Profile.user.amIFollowing) || Profile.user.didIBlock)" class="button-container not-side-by-side">        
-        <button style="background-color: var(--bf-theme-success) !important;color: white !important;"  class="full-width" ng-if="Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.unblockUser(this)">
+    <div style="height:6vh" ng-show="!Profile.user.isCurrentUser && ((!Profile.user.isPublicProfile && !Profile.user.amIFollowing) || Profile.user.didIBlock)" class="button-container">        
+        <button class="full-width solid-btn-success" ng-if="Profile.user.didIBlock && !Profile.user.isCurrentUser" ng-click="Profile.unblockUser(this)">
             <span  ng-show="Profile.user.didIBlock">
                 {{Profile.strings.userblocked}}
             </span>             
         </button>
-        <button 
-        style="color: white !important;"  
-        ng-style="{'background-color': Profile.user.amIPending ? 'white' : 'var(--bf-theme-success)','color': Profile.user.amIPending ? 'black' : 'white','border-color': Profile.user.amIPending ? 'var(--bf-theme-success)' : 'transparent' }"
-        class="full-width" ng-if="!Profile.user.didIBlock && !Profile.user.isPublicProfile && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
+        <button class="full-width" ng-class="Profile.user.amIPending? 'outline-btn-success' : 'solid-btn-success'"
+            ng-if="!Profile.user.didIBlock && !Profile.user.isPublicProfile && !Profile.user.isCurrentUser" ng-click="Profile.followUnfollowUser(this)">
             <span ng-show="Profile.user.amIPending">
                 Requested
             </span>             

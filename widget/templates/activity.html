@@ -5,11 +5,11 @@
             <div class="act-list" ng-repeat="activity in Activity.todayActivity">
                 <div class="act-block" ng-click="Activity.handleActivity(activity)">
                     <div class="act-left-section" >
-                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture"
-                           crop-width="50" crop-height="50" crop-type="crop">
+                        <img  ng-if="activity.fromUser.imageUrl" src="{{activity.fromUser.imageUrl}}" alt="User Profile Picture"  load-image="1x1"
+                           crop-width="50" crop-height="50" crop-type="default">
                         <img ng-if="!activity.fromUser.imageUrl" load-image="1x1"
-                        data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
-                        crop-height="40" crop-type="default">
+                            data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
+                            crop-height="40" crop-type="default">
                     </div>
                     <div class="act-middle-section" >
                         <h5 ng-if="activity.fromUser.displayName.length > 15">{{activity.fromUser.displayName.substring(0,15)}}...</h5>
@@ -32,7 +32,7 @@
                             </button>
                         </div>
                         <div class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img  ng-src="{{activity.post.image}}" crop-width="40" crop-height="40" crop-type="crop"/>
+                            <img  src="{{activity.post.image}}"  load-image="1x1" crop-width="40" crop-height="40" crop-type="crop"/>
                         </div>
                     </div>
                 </div>
