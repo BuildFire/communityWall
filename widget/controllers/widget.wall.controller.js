@@ -291,11 +291,10 @@
                 if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
                 if (WidgetWall.SocialItems.isPrivateChat) {
-                    // TODO
-                  
-
+                    
                     let userIdsTosSend = [];
                     if (WidgetWall.SocialItems.userIds) {
+                        options.queryString += `&userIds=${WidgetWall.SocialItems.userIds}` 
                         const userIds  = WidgetWall.SocialItems.userIds.split(',').filter((userId) => userId !== WidgetWall.SocialItems.userDetails.userId);
                         userIdsTosSend = userIds;
                     } else {
