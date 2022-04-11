@@ -551,6 +551,8 @@
                             _this.userIds =  Util.getParameterByName("userIds") ? 
                             Util.getParameterByName("userIds") : userIds;
                         }
+                        console.log('WallId', _this.wid);
+                        console.log('UserIds',_this.userIds);
 
                         if (_this.wid.length === 48 || _this.userIds) {
                             _this.isPrivateChat = true;
