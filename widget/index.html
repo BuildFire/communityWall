@@ -167,7 +167,7 @@
                                                             <div class="social-copy">
                                                                 <div style="display: flex;">
                                                                     <p class="text-primary ellipsis" style="margin-right: 5px;">
-                                                                        <a class="ng-cloak" ng-click="WidgetWall.openChat(post)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}} </a>
+                                                                        <a class="ng-cloak" ng-click="WidgetWall.navigateToProfile(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}} </a>
                                                                     </p>
                                                                     <span ng-if="post.createdOn" class="time-ago opacity-seventy ng-cloak">
                                                                         {{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}

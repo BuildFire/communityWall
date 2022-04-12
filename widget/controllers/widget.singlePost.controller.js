@@ -271,8 +271,26 @@
                                             Location.go("#/post/createPost/"+post.id);
                                         }
                                         else if(result && result.index == 5){
-                                            SinglePost.deletePost(post.id);
-                                            Location.go("");
+                                            buildfire.dialog.confirm(
+                                                {
+                                                    title: 'Delete Post?',
+                                                    message: 'Are you sure you want to delete this post?',
+                                                    confirmButton:{ 
+                                                        type: "primary", 
+                                                        text: 'DELETE'
+                                                    }
+                                                    
+                                                },
+                                                (err, isConfirmed) => {
+                                                  if (err) console.error(err);
+                                              
+                                                  if (isConfirmed) {
+                                                    SinglePost.deletePost(post.id);
+                                                     Location.go("");
+                                                  } 
+                                                }
+                                              );
+                                            
                                         }
                                         else if(result && result.index == 6){
                                             SinglePost.sharePost(post);
@@ -460,8 +478,11 @@
                     "placeholder": "Enter a caption to repost",
                     "defaultValue": "",
                     "attachments": {
-                        "images": { enable: false },
+                        "images": { enable: true },
                         "gifs": { enable: false }
+                    },
+                    defaultAttachments: {
+                        images: post.images
                     }
                 }, (err, data) => {
                     if(err || !data || !data.results || !data.results.length > 0) return;

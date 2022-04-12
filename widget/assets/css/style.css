@@ -683,6 +683,7 @@ button.btn--lg,
     margin: 10px 16px 5px 15px;
 }
 #posts_main_wall{
+    padding-bottom: 5rem;
     height: 89vh;
     overflow-y: auto;
     scroll-snap-points-y: repeat(92vh);
@@ -849,7 +850,7 @@ button.btn--lg,
     margin-left: 10px;
     width: calc(100% - 20px);
     border-radius: 15px;     
-    height: 60vh !important;
+    height: 50vh !important;
 
  }
  .post-image-container>img{

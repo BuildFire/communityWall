@@ -315,7 +315,24 @@
                                     Location.go("#/post/createPost/"+post.id);
                                 }
                                 else if(result && result.index == 5){
-                                    WidgetWall.deletePost(post.id)
+                                    buildfire.dialog.confirm(
+                                        {
+                                            title: 'Delete Post?',
+                                            message: 'Are you sure you want to delete this post?',
+                                            confirmButton:{ 
+                                                type: "primary", 
+                                                text: 'DELETE'
+                                            }
+                                            
+                                        },
+                                        (err, isConfirmed) => {
+                                          if (err) console.error(err);
+                                      
+                                          if (isConfirmed) {
+                                            WidgetWall.deletePost(post.id)
+                                          } 
+                                        }
+                                      );
                                 }
                                 else if(result && result.index == 6){
                                     WidgetWall.sharePost(post);
@@ -1275,7 +1292,7 @@
                     "placeholder": "Enter a caption to repost",
                     "defaultValue": "",
                     "attachments": {
-                        "images": { enable: false },
+                        "images": { enable: true },
                         "gifs": { enable: false }
                     },
                     defaultAttachments: {

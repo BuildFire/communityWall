@@ -25,17 +25,22 @@
 
   <div class="inputContainer">
     <label class="full-flex">Location</label>    
-    <input ng-model="NewPost.choosenLocationName" googleplace/>
+    <div class="flex">
+      <input class="location-input" ng-model="NewPost.choosenLocationName" googleplace/>
+      <span class="material-icons" ng-click="getCurrentLocation()">
+        near_me
+      </span>
+    </div>
   </div>
   
   <div class="inputContainer">
     <label class="full-flex">#Hashtags</label>    
-    <input placeholder="#" ng-value="selectedHashtags" type="text" id="hashtagsInput">
+    <input placeholder="#"  type="text" id="hashtagsInput">
   </div>
   
   <div class="inputContainer" >
     <label  class="full-flex">Tag People</label>    
-    <input placeholder="@"  ng-value="selectedUsers" type="text" id="peopleInput">
+    <input placeholder="@"  type="text" id="peopleInput">
   </div>
   
 

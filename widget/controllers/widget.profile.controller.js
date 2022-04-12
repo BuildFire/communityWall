@@ -76,11 +76,11 @@
                             SocialUserProfile.get(t.user.userId,(err, socialProfile) =>{
                                 t.user.socialProfile = socialProfile;
                                 let shouldUpdate = false;
-                                if(t.user.socialProfile.data.badgesWithData){
+                                if(t.user.socialProfile && t.user.socialProfile.data.badgesWithData){
                                     let badgesClone =  t.user.socialProfile.data.badgesWithData.filter(badge =>{
                                         if(badge.badgeData.expires && badge.badgeData.expires.isTurnedOn){
-                                            badge.badgeData.expires.inDays = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'days' ? 1 : badge.badgeData.expires.frame === 'weeks' ? 7 : 30 );
-                                            let checkIfExpired = moment(new Date()).diff(moment(badge.receivedOn), "days") > badge.badgeData.expires.inDays;
+                                            badge.badgeData.expires.inHours = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'hours'? 1 : badge.badgeData.expires.frame === 'days' ? 24 : badge.badgeData.expires.frame === 'weeks' ? 168 : 720 );
+                                            let checkIfExpired = moment(new Date()).diff(moment(badge.receivedOn), "hours") > badge.badgeData.expires.inHours;
                                             if(!checkIfExpired){
                                                 return badge
                                             }
@@ -148,6 +148,9 @@
 
             t.getUserSocialProfile = (callback) =>{
                 SocialUserProfile.get(t.user.userId, (err, profile) =>{
+                    if (err || !profile) {
+                        return callback(false)
+                    }
                     t.user.socialProfile = profile;
                     t.user.isPublicProfile = t.user.socialProfile.data.isPublicProfile;
                     t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;

@@ -25,11 +25,13 @@
                 })
             }
             t.getExpiryDate = (badge) =>{
-                let inDays = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'days' ? 1 : badge.badgeData.expires.frame === 'weeks' ? 7 : 30 );
-                let expiryDate = moment(badge.receivedOn).add(inDays, "days");
-                let diff = expiryDate.diff(moment(new Date), "days");
+                let inHours = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'hours'? 1 : badge.badgeData.expires.frame === 'days' ? 24 : badge.badgeData.expires.frame === 'weeks' ? 168 : 720 );
+                let expiryDate = moment(badge.receivedOn).add(inHours, "hours");
+                let diff = expiryDate.diff(moment(new Date), "hours");
+                // convert hours to days
+                diff = diff / 24;
                 if(diff < 1 && diff > 0) return 1;
-                else return diff
+                else return diff 
             }
             t.init();
         }]);

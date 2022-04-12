@@ -141,6 +141,10 @@
                 });
             }
 
+            t.cropImage = (image, width, height) => {
+                return Buildfire.imageLib.cropImage(image, {width: width? width : 50, height: height? height : 50});
+            }
+
             t.respondToFollowRequest = (resp, activity, $event) =>{
                 if(resp === 'accept'){
                     t.acceptFollowRequest(activity, $event);

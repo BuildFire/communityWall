@@ -12,8 +12,8 @@
         <div ng-repeat="item in results">
             <div class="search-item" ng-if="item.type === 'user'" ng-click="navigateToUserProfile(item.data.data.userId)">
                 <div class="result-imageContainer">
-                    <img style="width: 45px;height: 45px;border-radius: 45px;" src="{{cropImage(item.data.data.userDetails.imageUrl)}}" ng-if="item.data.data.userDetails.imageUrl"/>
-                    <img style="width: 45px;height: 45px;border-radius: 45px;" src="../../../../styles/media/avatar-placeholder.png" ng-if="!item.data.data.userDetails.imageUrl"/>
+                    <img src="{{cropImage(item.data.data.userDetails.imageUrl)}}" ng-if="item.data.data.userDetails.imageUrl"/>
+                    <img src="../../../../styles/media/avatar-placeholder.png" ng-if="!item.data.data.userDetails.imageUrl"/>
 
                 </div>
                 <div class="result-content">

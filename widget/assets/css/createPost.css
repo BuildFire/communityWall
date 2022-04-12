@@ -46,6 +46,11 @@
     align-items: center;
 }
 
+.location-input {
+    width: 100%;
+    background: transparent;
+}
+
 .errorModal{
     margin: 0px;
     padding: 0px;

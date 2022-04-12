@@ -19,7 +19,7 @@
                     <div class="social-copy">
                         <div style="display: flex;">
                             <p class="text-primary ellipsis" style="margin-right: 5px;">
-                                <a class="ng-cloak" ng-click="SinglePost.openChat(post)">{{SinglePost.SocialItems.getUserName(post.userDetails)}} </a>
+                                <a class="ng-cloak" ng-click="SinglePost.navigateToProfile(post.userId)">{{SinglePost.SocialItems.getUserName(post.userDetails)}} </a>
                             </p>
                             <span ng-if="post.createdOn" class="time-ago opacity-seventy ng-cloak">
                                 {{SinglePost.getDuration(post.createdOn) | convertTimeFormat}}
@@ -77,17 +77,18 @@
         </div>
         <div ng-if="post.taggedPeople.length > 0">
             <span style="    display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            margin-top: 5px;
-            margin-left: 12px;">
+                justify-content: flex-start;
+                align-items: center;
+                margin-top: 5px;
+                flex-wrap: wrap;
+                margin-left: 12px;">
                 <span class="material-icons">person</span>
                 <span style="margin-left: 5px;color: var(--bf-theme-primary);" ng-repeat="user in taggedUsers track by $index">
                     <span style="color: var(--bf-theme-body-text);" ng-if="$index == post.taggedPeople.length - 1 && post.taggedPeople.length > 1">
                          and 
                     </span>
                     <span ng-click="SinglePost.goToUserProfile(user.userId)">
-                        {{user.displayName}}
+                        {{user.displayName || (user)}}
                     </span> 
                 </span>
             </span>
