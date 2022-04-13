@@ -78,7 +78,7 @@
                                 let shouldUpdate = false;
                                 if(t.user.socialProfile && t.user.socialProfile.data.badgesWithData){
                                     let badgesClone =  t.user.socialProfile.data.badgesWithData.filter(badge =>{
-                                        if(badge.badgeData.expires && badge.badgeData.expires.isTurnedOn){
+                                        if(badge && badge.badgeData.expires && badge.badgeData.expires.isTurnedOn){
                                             badge.badgeData.expires.inHours = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'hours'? 1 : badge.badgeData.expires.frame === 'days' ? 24 : badge.badgeData.expires.frame === 'weeks' ? 168 : 720 );
                                             let checkIfExpired = moment(new Date()).diff(moment(badge.receivedOn), "hours") > badge.badgeData.expires.inHours;
                                             if(!checkIfExpired){
@@ -91,7 +91,7 @@
                                     });
                                     let clone = JSON.parse(JSON.stringify(socialProfile));
                                     clone.data.badges.forEach((badge, index) =>{
-                                        if(badgesClone.findIndex(e => e.badgeData.id === badge.badgeData) < 0){
+                                        if(badgesClone.findIndex(e => e && badge && e.badgeData.id === badge.badgeData) < 0){
                                             clone.data.badges.splice(index, 1);
                                         }
                                     });
