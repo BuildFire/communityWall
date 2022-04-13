@@ -68,13 +68,20 @@
                     .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
                     let length = Object.entries(sortable).length;
                     for(let i = 0 ; i < length ; i++){
-                        Buildfire.publicData.search({filter:{"$json.hashtags":Object.keys(sortable)[i]},skip:0, limit: 10, sort:{createdOn: -1}} , "wall_posts",(err, data) =>{
-                            if(data){
-                                sortable[Object.keys(sortable)[i]] = data;
-                            }
-                            if(i === length - 1){
-                                return callback(null, sortable)
-                            }
+                        Buildfire.publicData.search(
+                            { 
+                                filter:{
+                                    "$json.hashtags":Object.keys(sortable)[i]},
+                                    skip:0,
+                                    limit: 10,
+                                    sort:{createdOn: -1}
+                            } , "wall_posts",(err, data) => {
+                                if(data){
+                                    sortable[Object.keys(sortable)[i]] = data;
+                                }
+                                if(i === length - 1){
+                                    return callback(null, sortable)
+                                }
                         })
                     }
                 })

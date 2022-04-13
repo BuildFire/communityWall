@@ -58,7 +58,7 @@
                 <!-- post text goes here -->
                 </span>
                 <span>
-                    <span ng-click="SinglePost.goToDiscover()" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
+                    <span ng-click="SinglePost.goToFilteredPosts('hashtag', hashtag)" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
                         #{{hashtag}} 
                     </span>
                 </span>
@@ -87,7 +87,7 @@
                     <span style="color: var(--bf-theme-body-text);" ng-if="$index == post.taggedPeople.length - 1 && post.taggedPeople.length > 1">
                          and 
                     </span>
-                    <span ng-click="SinglePost.goToUserProfile(user.userId)">
+                    <span ng-click="SinglePost.navigateToProfile(user.userId)">
                         {{user.displayName || (user)}}
                     </span> 
                 </span>

@@ -730,6 +730,10 @@
                 Location.go("#/singlePostView/" + postId);
             }
 
+            WidgetWall.goToFilteredPosts = (type, title) =>{
+                Location.go(`#/filteredResults/${type}/${title}`)
+            }
+
             WidgetWall.checkForPrivateChat = function () {
                 if (WidgetWall.SocialItems.isPrivateChat) {  
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {

@@ -299,8 +299,8 @@
                             }
                         })
                     }
-                    SinglePost.goToUserProfile = function(userId){
-                        Location.go("#/profile/"+userId);
+                    SinglePost.goToFilteredPosts = (type, title) =>{
+                        Location.go(`#/filteredResults/${type}/${title}`)
                     }
                     SinglePost.deletePost = function (postId) {
                         var success = function (response) {
@@ -381,6 +381,18 @@
                     });
                 })
             }
+
+            SinglePost.openImageInFullScreen = (src) =>{
+                buildfire.imagePreviewer.show(
+                    {
+                      images: [src],
+                    },
+                    () => {
+                      console.log("Image previewer closed");
+                    }
+                  );
+            }
+
             SinglePost.getDuration = function (timestamp) {
                 if (timestamp)
                     return moment(timestamp.toString()).fromNow();
