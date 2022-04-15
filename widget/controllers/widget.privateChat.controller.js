@@ -156,6 +156,17 @@
                 }
                 SocialDataStore.createPrivatePost(postData).then((response) =>{
                     t.SocialItems.items.push(response.data);
+
+                    const lastMessage = {
+                        text: postData.text,
+                        createdAt: new Date(),
+                        sender: t.SocialItems.userDetails.userId,
+                        isRead: false
+                    }
+                    SubscribedUsersData.searchAndUpdate(
+                        {"_buildfire.index.string1": t.SocialItems.wid},
+                        {$set: { lastMessage } }
+                    )
                 })
             }
 

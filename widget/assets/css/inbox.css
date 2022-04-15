@@ -1,0 +1,21 @@
+.inbox-item {
+    margin-bottom: .1rem;
+}
+.inbox-item-info {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.inbox-item .inbox-item-info {
+    margin-left: 12px;
+}
+.inbox-item .inbox-item-info  p{
+    margin: 0;
+}
+
+.time-ago{
+    font-size: 12px;
+}
+

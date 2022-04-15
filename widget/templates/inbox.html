@@ -1,0 +1,50 @@
+<div class="padding-zero" style="height:100%;">
+    <div class="social-plugin social-thread" style="height: 100%;">
+      <div>
+        <form class="search-form form search-holder" ng-submit="onSearchSubmit(this)">
+          <div class="inner-addon left-addon">
+            <i class="glyphicon glyphicon-search" style="font-size: 1.3em; line-height: 15px;"></i>
+            <input type="text"ng-model="searchInput" ng-change="onSearchChange()" class="form-control" placeholder="Search"/>
+            <button ng-click="clear()" class="btn-icon icon icon-cross2 search-clear" alt="Clear" /></button>
+        </div>
+        </form>
+      </div>
+  
+      <div class="wallMembers">
+        <div  ng-repeat="user in Inbox.users" ng-click="Inbox.navigateToPrivateChat(user)">
+          <div class="inbox-item">
+            <div class="head flex">
+                <div class="media-holder">
+                    <img ng-if="user.userId && user.userDetails.imageUrl" load-image="1x1"
+                    data-final-src="{{user.userDetails.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
+                  <img ng-if="!(user.userId && user.userDetails.imageUrl)" load-image="1x1"
+                    data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
+                    crop-height="40" crop-type="default">
+                </div>
+                <div class="inbox-item-info">
+                    <div>
+                        <p class="text-primary ellipsis">
+                            {{Inbox.SocialItems.getUserName(user.userDetails)}}
+                        </p>
+                        <p class="time-ago">
+                            {{ user.lastMessage? user.lastMessage.text : '' }}
+                        </p>
+                    </div>
+                    <div class="social-copy">
+                        <span class="time-ago">{{Inbox.getLocalTime(user.lastMessage)}}</span>
+                    </div>
+                </div>
+                
+            </div>
+          </div>
+  
+        </div>
+        <div class="loadMorePosts" ng-show="Inbox.showMore" ng-click="Inbox.searchInboxUsers()">
+          <button><a>Show More</a></button>
+        </div>
+        <div ng-show="Inbox.users.length<=0">
+            <h5 class="text-center" style="padding-top: 40px;">{{Inbox.SocialItems.languages.membersBlankState}}</h5>
+        </div>
+      </div>
+    </div>
+  </div>

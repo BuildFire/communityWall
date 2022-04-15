@@ -123,6 +123,7 @@
                         elements[i].style.setProperty("fill", obj.colors.icons, "important");
                     }
                     WidgetWall.appTheme = obj.colors;
+                    // debugger
                     WidgetWall.loadedPlugin = true;
                 });
             }
@@ -794,10 +795,14 @@
                         wallId: wid,
                         posts: [],
                         _buildfire: {
-                            index: { text: userId + '-' + wid, string1: wid,
-                            array1:[
-                                {string1: "userId_"+userId}
-                            ]}
+                            index: { 
+                                text: userId + '-' + wid, 
+                                string1: wid,
+                                array1:[
+                                    { string1: "userId_" + userId },
+                                    { string1: "userId_" + WidgetWall.SocialItems.userDetails.userId  },
+                                ]
+                            }
                         }
 
                     };

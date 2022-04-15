@@ -100,7 +100,7 @@
                                         Buildfire.publicData.update(clone.id, clone.data, "SocialUserProfile", () =>{})                                
                                     }
                                 }
-                                t.borderColor = t.user.socialProfile.data.badgesWithData && t.user.socialProfile.data.badgesWithData.length > 0 &&  t.user.socialProfile.data.badgesWithData[0].badgeData.color ? t.user.socialProfile.data.badgesWithData[0].badgeData.color.solidColor : 'transparent'
+                                t.borderColor = t.user.socialProfile.data.badgesWithData && t.user.socialProfile.data.badgesWithData.length > 0 && t.user.socialProfile.data.badgesWithData[0].badgeData &&  t.user.socialProfile.data.badgesWithData[0].badgeData.color ? t.user.socialProfile.data.badgesWithData[0].badgeData.color.solidColor : 'transparent'
                                 return callback(true)
                             })
                         }
@@ -141,8 +141,9 @@
             }
 
             t.goToInbox = () =>{
-                Buildfire.navigation.navigateTo(
-                    {pluginId: "135d1549-efd2-4a70-a476-99ac45e1d1d4"});
+                Location.go("#/inbox/");
+                // Buildfire.navigation.navigateTo(
+                //     {pluginId: "135d1549-efd2-4a70-a476-99ac45e1d1d4"});
             }
 
 
@@ -391,12 +392,17 @@
                         if(data){
                             t.user.socialProfile = data;
                             t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+                            t.user.amIPending = t.user.socialProfile.data.pendingFollowers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+
                             if(t.user.amIFollowing){
                                 Buildfire.dialog.toast({
                                     message: "Started Following " + t.SocialItems.getUserName(t.user.userDetails) ,
                                 });
-                            }
-                            else{
+                            } else if (t.user.amIPending) {
+                                Buildfire.dialog.toast({
+                                    message: "Requested to follow " + t.SocialItems.getUserName(t.user.userDetails) ,
+                                });
+                            } else{
                                 Buildfire.dialog.toast({
                                     message: "Unfollowed " + t.SocialItems.getUserName(t.user.userDetails) ,
                                 });

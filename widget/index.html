@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="assets/css/activity.css">
     <link rel="stylesheet" href="assets/css/privatechat.css">
     <link rel="stylesheet" href="assets/css/autoComplete.css">
+    <link rel="stylesheet" href="assets/css/inbox.css">
     <!-- endbuild -->
 
     <!-- JS -->
@@ -69,6 +70,7 @@
     <script src="controllers/widget.thread.controller.js"></script>
     <script src="controllers/widget.blockedUsers.controller.js"></script>
     <script src="controllers/widget.badge.controller.js"></script>
+    <script src="controllers/widget.inbox.controller.js"></script>
     <script src="./assets/js/shared/stringsConfig.js"></script>
     <!-- endbuild -->
     <script>
@@ -378,24 +380,24 @@
     <div ng-controller="BottomNavBarCtrl as BottomNavBar">
         <div class="bottomNavBar" ng-if="!isPrivateChat">
             <div>
-                <span style="font-size:24px" ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
+                <span class="nav-icon" style="font-size:24px"  ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
                     
                 </span>              
             </div>
             <div>
-                <span style="font-size:24px" ng-class="BottomNavBar.discover" ng-click="BottomNavBar.goToDiscover()">
+                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.discover" ng-click="BottomNavBar.goToDiscover()">
                 </span>            
             </div>
             <div>
-                <span style="font-size:24px" ng-class="BottomNavBar.addContent" ng-click="BottomNavBar.openPostSection()" on-touchend="BottomNavBar.openPostSection()">
+                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.addContent" ng-click="BottomNavBar.openPostSection()" on-touchend="BottomNavBar.openPostSection()">
                 </span>                   
             </div>
             <div>
-                <span style="font-size:24px" ng-class="BottomNavBar.notifications" ng-click="BottomNavBar.goToActivity()">
+                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.notifications" ng-click="BottomNavBar.goToActivity()">
                 </span>                
             </div>
             <div>
-                <span style="font-size:24px" ng-class="BottomNavBar.myProfile" ng-click="BottomNavBar.goToMyProfile();">
+                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.myProfile" ng-click="BottomNavBar.goToMyProfile();">
                 </span>
                                 
             </div>

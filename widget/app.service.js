@@ -524,6 +524,15 @@
                         }
                     });
                 },
+                searchAndUpdate: function (search, obj) {
+                    return new Promise( (resolve, reject) => {
+                        window.buildfire.publicData.searchAndUpdate(search, obj, 'subscribedUsersData', function (err, data) {
+                            if (err) return reject(err);
+                            
+                            resolve(data);
+                        });
+                    })
+                },
                 unfollowWall: function (userId, wallId, banUser, callback) {
                     window.buildfire.publicData.search(
                         { filter: { '_buildfire.index.text': userId + '-' + wallId } },
@@ -1194,9 +1203,15 @@
                 else buildfire.auth.getCurrentUser((err, user) => {
                     if (err) return callback(err, null);
                     if (user) {
+                        user.userProfile = user.userProfile? user.userProfile : {};
+                        if (user.userProfile.bio) {
+                            prepareData(user);
+                            return callback(null, user);
+                        }
+
                         buildfire.auth.getUserProfile({ userId: user._id }, function (err, userProfile) {
-                            if (err) return console.error("Getting user profile failed.", err);
-                            user.userProfile = userProfile;
+                            if (err) return callback(err, null);
+                            user.userProfile.bio = userProfile.bio;
                             prepareData(user);
                             return callback(null, user);
                         });
@@ -1493,6 +1508,23 @@
                         callback(null, []);
                         privatePostsBackgroundService(options)
                     }
+                })
+            }
+
+            SocialItems.prototype.getLastPrivatePosts = function(wid){
+                
+                let options = {
+                    filter: { "_buildfire.index.string1": wid },
+                    sort: { "createdOn": -1 },
+                    limit: 1,
+                    skip: 1,
+                }
+                
+                return new Promise((resolve, reject) => {
+                    buildfire.publicData.search(options, "wall_posts",(err, posts) =>{
+                        if (err) return reject(err);
+                        resolve(posts)
+                    })
                 })
             }
 
