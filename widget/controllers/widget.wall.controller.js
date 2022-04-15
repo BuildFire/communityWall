@@ -119,9 +119,16 @@
             WidgetWall.setAppTheme = function () {
                 buildfire.appearance.getAppTheme((err, obj) => {
                     let elements = document.getElementsByTagName('svg');
-                    for (var i = 0; i < elements.length; i++) {
+                    for (let i = 0; i < elements.length; i++) {
                         elements[i].style.setProperty("fill", obj.colors.icons, "important");
                     }
+
+                    let navIcons = document.querySelectorAll('.nav-icon');
+
+                    for (let i = 0; i < navIcons.length; i++) {
+                        navIcons[i].style.setProperty("color", obj.colors.titleBar, "important");
+                    }
+
                     WidgetWall.appTheme = obj.colors;
                     // debugger
                     WidgetWall.loadedPlugin = true;

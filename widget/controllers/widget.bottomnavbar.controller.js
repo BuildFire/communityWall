@@ -19,21 +19,9 @@
                 })
     
                 t.isLoggedIn = t.SocialItems.userDetails.userId ? true : false;
-                t.setAppTheme();
             }
             
 
-
-            t.setAppTheme = function () {
-                buildfire.appearance.getAppTheme((err, obj) => {
-                    let elements = document.getElementsByClassName('nav-icon');
-                    debugger
-                    for (let i = 0; i < elements.length; i++) {
-                        elements[i].style.setProperty("color", obj.colors.icons, "important");
-                    }
-                    t.appTheme = obj.colors;
-                });
-            }
 
             t.navigateToProfile = function(userId){
                 t.SocialItems = SocialItems.getInstance();

@@ -179,9 +179,16 @@
                                 let sp = clone.data.badges;
                                 let originalLength = data[0].data.badges.length;
                                 sp.forEach((badge,index) =>{
+                                    if (!badge) {
+                                        return;
+                                    }
+
                                     buildfire.publicData.getById(badge.badgeData, "SocialBadges", (err, res) =>{
                                         if(res && res.data && Object.keys(res.data).length > 0){
-                                            clone.data.badges[index].badgeData = {id:clone.data.badges[index].badgeData, ...res.data }; 
+                                            clone.data.badges[index].badgeData = {
+                                                id: clone.data.badges[index].badgeData,
+                                                ...res.data 
+                                            }; 
                                         }
                                         else{
                                             shouldUpdate = true;
