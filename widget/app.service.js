@@ -883,7 +883,7 @@
                                                         let wonBadge = true;
                                                         console.log(myBadges);
                                                         console.log(badge);
-                                                        let index = myBadges.findIndex(e => e.badgeData === badge.id);
+                                                        let index = myBadges.findIndex(e => e && e.badgeData === badge.id);
                                                         console.log(index);
                                                         if(index < 0){
                                                             if(badge.data.conditions.posts.isTurnedOn){
