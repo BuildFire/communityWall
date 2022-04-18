@@ -374,7 +374,7 @@
             </div>
          </div>
         <div ng-controller="BottomNavBarCtrl as BottomNavBar">
-            <div class="bottomNavBar" ng-if="!isPrivateChat">
+            <div class="bottomNavBar" ng-if="!isPrivateChat" ng-style="{background:  BottomNavBar.appTheme.titleBar}">
                 <div>
                     <span class="nav-icon" style="font-size:24px"  ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
                         

@@ -19,8 +19,17 @@
                 })
     
                 t.isLoggedIn = t.SocialItems.userDetails.userId ? true : false;
+                t.setAppTheme()
             }
             
+
+            t.setAppTheme = function () {
+                buildfire.appearance.getAppTheme((err, obj) => {
+            
+                    t.appTheme = obj.colors;
+                    // debugger
+                });
+            }
 
 
             t.navigateToProfile = function(userId){
