@@ -22,6 +22,10 @@
                     occupiedHeight+= 10;
                     
                 }
+                if (t.user.userDetails && t.user.userDetails.bio) {
+                    // bio
+                   occupiedHeight+= 8;
+                }
                 // buttons
                 occupiedHeight+= 6;
                 // switch
@@ -72,11 +76,11 @@
                             SocialUserProfile.get(t.user.userId,(err, socialProfile) =>{
                                 t.user.socialProfile = socialProfile;
                                 let shouldUpdate = false;
-                                if(t.user.socialProfile.data.badgesWithData){
+                                if(t.user.socialProfile && t.user.socialProfile.data.badgesWithData){
                                     let badgesClone =  t.user.socialProfile.data.badgesWithData.filter(badge =>{
-                                        if(badge.badgeData.expires && badge.badgeData.expires.isTurnedOn){
-                                            badge.badgeData.expires.inDays = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'days' ? 1 : badge.badgeData.expires.frame === 'weeks' ? 7 : 30 );
-                                            let checkIfExpired = moment(new Date()).diff(moment(badge.receivedOn), "days") > badge.badgeData.expires.inDays;
+                                        if(badge && badge.badgeData && badge.badgeData.expires && badge.badgeData.expires.isTurnedOn){
+                                            badge.badgeData.expires.inHours = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'hours'? 1 : badge.badgeData.expires.frame === 'days' ? 24 : badge.badgeData.expires.frame === 'weeks' ? 168 : 720 );
+                                            let checkIfExpired = moment(new Date()).diff(moment(badge.receivedOn), "hours") > badge.badgeData.expires.inHours;
                                             if(!checkIfExpired){
                                                 return badge
                                             }
@@ -87,7 +91,7 @@
                                     });
                                     let clone = JSON.parse(JSON.stringify(socialProfile));
                                     clone.data.badges.forEach((badge, index) =>{
-                                        if(badgesClone.findIndex(e => e.badgeData.id === badge.badgeData) < 0){
+                                        if(badgesClone.findIndex(e => e && badge && e.badgeData.id === badge.badgeData) < 0){
                                             clone.data.badges.splice(index, 1);
                                         }
                                     });
@@ -96,7 +100,7 @@
                                         Buildfire.publicData.update(clone.id, clone.data, "SocialUserProfile", () =>{})                                
                                     }
                                 }
-                                t.borderColor = t.user.socialProfile.data.badgesWithData && t.user.socialProfile.data.badgesWithData.length > 0 &&  t.user.socialProfile.data.badgesWithData[0].badgeData.color ? t.user.socialProfile.data.badgesWithData[0].badgeData.color.solidColor : 'transparent'
+                                t.borderColor = t.user.socialProfile.data.badgesWithData && t.user.socialProfile.data.badgesWithData.length > 0 && t.user.socialProfile.data.badgesWithData[0].badgeData &&  t.user.socialProfile.data.badgesWithData[0].badgeData.color ? t.user.socialProfile.data.badgesWithData[0].badgeData.color.solidColor : 'transparent'
                                 return callback(true)
                             })
                         }
@@ -131,19 +135,23 @@
 
             t.getUserDetails = (callback) =>{
                 SubscribedUsersData.get($routeParams.userId, (err, userDetails) =>{
-                    t.user.userDetails = userDetails.data.userDetails;
+                    t.user.userDetails = userDetails? userDetails.data.userDetails : null;
                     return callback(true)
                 })
             }
 
             t.goToInbox = () =>{
-                Buildfire.navigation.navigateTo(
-                    {pluginId: "135d1549-efd2-4a70-a476-99ac45e1d1d4"});
+                Location.go("#/inbox/");
+                // Buildfire.navigation.navigateTo(
+                //     {pluginId: "135d1549-efd2-4a70-a476-99ac45e1d1d4"});
             }
 
 
             t.getUserSocialProfile = (callback) =>{
                 SocialUserProfile.get(t.user.userId, (err, profile) =>{
+                    if (err || !profile) {
+                        return callback(false)
+                    }
                     t.user.socialProfile = profile;
                     t.user.isPublicProfile = t.user.socialProfile.data.isPublicProfile;
                     t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
@@ -334,7 +342,7 @@
                                                 userId: t.SocialItems.userDetails.userId
                                             }
                                             let toUser = {
-                                                displayName: t.user.userDetails.displayName,
+                                                displayName: t.user.userDetails? t.user.userDetails.displayName : '',
                                                 userId: t.user.userId
                                             }
                                             t.createActivity(type, {toUser, fromUser});
@@ -347,7 +355,7 @@
                                                 userId: t.SocialItems.userDetails.userId
                                             }
                                             let toUser = {
-                                                displayName: t.user.userDetails.displayName,
+                                                displayName: t.user.userDetails? t.user.userDetails.displayName : '',
                                                 userId: t.user.userId
                                             }
                                             t.createActivity(type, {toUser, fromUser});
@@ -384,12 +392,17 @@
                         if(data){
                             t.user.socialProfile = data;
                             t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+                            t.user.amIPending = t.user.socialProfile.data.pendingFollowers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+
                             if(t.user.amIFollowing){
                                 Buildfire.dialog.toast({
                                     message: "Started Following " + t.SocialItems.getUserName(t.user.userDetails) ,
                                 });
-                            }
-                            else{
+                            } else if (t.user.amIPending) {
+                                Buildfire.dialog.toast({
+                                    message: "Requested to follow " + t.SocialItems.getUserName(t.user.userDetails) ,
+                                });
+                            } else{
                                 Buildfire.dialog.toast({
                                     message: "Unfollowed " + t.SocialItems.getUserName(t.user.userDetails) ,
                                 });
@@ -672,6 +685,9 @@
                 return e;
             }
             
+            $scope.cropImage = (image, width, height) => {
+                return Buildfire.imageLib.cropImage(image, {width: width? width : 50, height: height? height : 50});
+            }
 
             t.createVideo = (src, postId, parent) =>{
                 parent.style.position = "relative";

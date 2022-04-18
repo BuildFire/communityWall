@@ -119,10 +119,20 @@
             WidgetWall.setAppTheme = function () {
                 buildfire.appearance.getAppTheme((err, obj) => {
                     let elements = document.getElementsByTagName('svg');
-                    for (var i = 0; i < elements.length; i++) {
+                    for (let i = 0; i < elements.length; i++) {
                         elements[i].style.setProperty("fill", obj.colors.icons, "important");
                     }
+
+                    let navIcons = document.querySelectorAll('.nav-icon');
+
+                    for (let i = 0; i < navIcons.length; i++) {
+                        navIcons[i].style.setProperty("color", obj.colors.titleBarTextAndIcons, "important");
+                    }
+
+                    let postIcons = document.querySelectorAll('.material-icons-outlined');
+
                     WidgetWall.appTheme = obj.colors;
+                    // debugger
                     WidgetWall.loadedPlugin = true;
                 });
             }
@@ -315,7 +325,24 @@
                                     Location.go("#/post/createPost/"+post.id);
                                 }
                                 else if(result && result.index == 5){
-                                    WidgetWall.deletePost(post.id)
+                                    buildfire.dialog.confirm(
+                                        {
+                                            title: 'Delete Post?',
+                                            message: 'Are you sure you want to delete this post?',
+                                            confirmButton:{ 
+                                                type: "primary", 
+                                                text: 'DELETE'
+                                            }
+                                            
+                                        },
+                                        (err, isConfirmed) => {
+                                          if (err) console.error(err);
+                                      
+                                          if (isConfirmed) {
+                                            WidgetWall.deletePost(post.id)
+                                          } 
+                                        }
+                                      );
                                 }
                                 else if(result && result.index == 6){
                                     WidgetWall.sharePost(post);
@@ -713,6 +740,10 @@
                 Location.go("#/singlePostView/" + postId);
             }
 
+            WidgetWall.goToFilteredPosts = (type, title) =>{
+                Location.go(`#/filteredResults/${type}/${title}`)
+            }
+
             WidgetWall.checkForPrivateChat = function () {
                 if (WidgetWall.SocialItems.isPrivateChat) {  
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
@@ -773,10 +804,14 @@
                         wallId: wid,
                         posts: [],
                         _buildfire: {
-                            index: { text: userId + '-' + wid, string1: wid,
-                            array1:[
-                                {string1: "userId_"+userId}
-                            ]}
+                            index: { 
+                                text: userId + '-' + wid, 
+                                string1: wid,
+                                array1:[
+                                    { string1: "userId_" + userId },
+                                    { string1: "userId_" + WidgetWall.SocialItems.userDetails.userId  },
+                                ]
+                            }
                         }
 
                     };
@@ -1183,7 +1218,7 @@
                     wid: WidgetWall.SocialItems.wid
                 });
                 Buildfire.dialog.toast({
-                    message: "Post created successfully",
+                    message: "Post has been reported",
                 });
             }
 
@@ -1275,8 +1310,11 @@
                     "placeholder": "Enter a caption to repost",
                     "defaultValue": "",
                     "attachments": {
-                        "images": { enable: false },
+                        "images": { enable: true },
                         "gifs": { enable: false }
+                    },
+                    defaultAttachments: {
+                        images: post.images
                     }
                 }, (err, data) => {
                     if(err || !data || !data.results || !data.results.length > 0) return;
@@ -1516,6 +1554,7 @@
                                     item.data.userDetails = status[0].data.userDetails;
                                     needsUpdate = true;
                                 }
+                                item.data.comments = item.data.comments ? item.data.comments : [];
                                 item.data.comments.map(comment => {
                                     if (comment.userId === user._id) {
                                         comment.userDetails = status[0].data.userDetails;

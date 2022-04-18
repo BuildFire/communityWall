@@ -114,7 +114,7 @@
     min-height: 70vh;
     display: grid;
     margin-left: 5%;
-    margin-bottom: 11px;
+    margin-bottom: 1rem;
     grid-template-areas:
     "image1 image1 image1 image1 image2 image2 image2 image2 image2 image2"
     "image1 image1 image1 image1 image2 image2 image2 image2 image2 image2"
@@ -139,6 +139,7 @@
     height: 100%;
     width: 100%;
     border-radius: 10px;
+    object-fit: cover;
 }
 
 
@@ -155,6 +156,7 @@
     height: 100%;
     width: 100%;
     border-radius: 10px;
+    object-fit: cover;
 }
 .row-grid> *:nth-child(1){
     grid-area: el1;
@@ -219,10 +221,16 @@
     align-items: center;
     margin: 10px;
 }
-.discover-people-profile-picture, .discover-people-profile-picture > img{
+.discover-people-profile-picture {
     width: 45px;
     height: 45px;
-    border-radius: 45px;
+    border-radius: 100%;
+    overflow: hidden;
+}
+ .discover-people-profile-picture > img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 .profileName{
     flex: 5;
@@ -239,7 +247,7 @@
     flex-direction: column;
 }
 .profileUsername > *:nth-child(1){
-    line-height: 0px;
+    /* line-height: 0px; */
 }
 .profileUsername > *:nth-child(2){
     line-height: 17px;
@@ -251,13 +259,34 @@
     align-items: center;
     padding-right: 15px;
 }
-.discover-h-title{
+
+.discover-h-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
     margin-left: 15px;
-                font-size: 17px;
-                font-weight: bold;
-                color: var(--bf-theme-success);
-                margin-bottom: 5px;
 }
+
+.discover-h-title {
+    font-size: 17px;
+    font-weight: bold;
+    color: var(--bf-theme-success);
+    margin: 0 .5rem;
+}
+
+.discover-h-num {
+    background: var(--bf-theme-success);
+    border-radius: 100%;
+    /* font-size: 17px; */
+    font-weight: bold;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+}
+
 .discover-h-images-container{
     white-space: nowrap;
     overflow-x: auto;
@@ -267,7 +296,9 @@
     margin-left: 5px;margin-right: 5px;width:30vw; height: 30vw;display: inline-block;
 }
 .discover-h-single-image{
-    width: 100%;height: 100%;border-radius: 10px;
+    width: 100%;height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
 }
 .discover-h-repeated{
     margin-top: 10px;

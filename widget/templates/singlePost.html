@@ -19,7 +19,7 @@
                     <div class="social-copy">
                         <div style="display: flex;">
                             <p class="text-primary ellipsis" style="margin-right: 5px;">
-                                <a class="ng-cloak" ng-click="SinglePost.openChat(post)">{{SinglePost.SocialItems.getUserName(post.userDetails)}} </a>
+                                <a class="ng-cloak" ng-click="SinglePost.navigateToProfile(post.userId)">{{SinglePost.SocialItems.getUserName(post.userDetails)}} </a>
                             </p>
                             <span ng-if="post.createdOn" class="time-ago opacity-seventy ng-cloak">
                                 {{SinglePost.getDuration(post.createdOn) | convertTimeFormat}}
@@ -58,7 +58,7 @@
                 <!-- post text goes here -->
                 </span>
                 <span>
-                    <span ng-click="SinglePost.goToDiscover()" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
+                    <span ng-click="SinglePost.goToFilteredPosts('hashtag', hashtag)" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
                         #{{hashtag}} 
                     </span>
                 </span>
@@ -77,17 +77,18 @@
         </div>
         <div ng-if="post.taggedPeople.length > 0">
             <span style="    display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            margin-top: 5px;
-            margin-left: 12px;">
+                justify-content: flex-start;
+                align-items: center;
+                margin-top: 5px;
+                flex-wrap: wrap;
+                margin-left: 12px;">
                 <span class="material-icons">person</span>
                 <span style="margin-left: 5px;color: var(--bf-theme-primary);" ng-repeat="user in taggedUsers track by $index">
                     <span style="color: var(--bf-theme-body-text);" ng-if="$index == post.taggedPeople.length - 1 && post.taggedPeople.length > 1">
                          and 
                     </span>
-                    <span ng-click="SinglePost.goToUserProfile(user.userId)">
-                        {{user.displayName}}
+                    <span ng-click="SinglePost.navigateToProfile(user.userId)">
+                        {{user.displayName || (user)}}
                     </span> 
                 </span>
             </span>
@@ -100,7 +101,7 @@
                         <div class="footer-item">
                             <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" ng-click="SinglePost.toggleReaction(post)" data-id="{{post.id}}">
                                 <span class="{{SinglePost.reaction.icon}} fa-gradient" 
-                                ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)'}" 
+                                ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? SinglePost.reaction.color : SinglePost.appTheme.icons}" 
                                 ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
 
                                 </span>
@@ -109,14 +110,14 @@
                         
                         <div class="footer-item" ng-click="SinglePost.repostPost(post)">
                             <a class="social-icon ng-cloak">
-                                <span class="material-icons-outlined">
+                                <span class="material-icons material-icons-outlined">
                                     repeat
                                 </span>
                             </a>
                         </div>
                         <div class="footer-item" ng-click="SinglePost.openChat(post)">
                             <a class="social-icon ng-cloak">
-                                <span class="material-icons-outlined">
+                                <span class="material-icons material-icons-outlined">
                                     chat_bubble_outline
                                 </span>
                             </a>
@@ -127,7 +128,7 @@
 
                         <div class="footer-item" ng-click="SinglePost.sharePost(post)">
                             <a class="social-icon ng-cloak">
-                                <span class="material-icons-outlined">
+                                <span class="material-icons material-icons-outlined">
                                     share
                                 </span>
                             </a>
@@ -144,29 +145,29 @@
                         <div class="footer-item">
                             <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" data-id="{{post.id}}">
                                 <span class="{{SinglePost.reaction.icon}} fa-gradient" 
-                                ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)'}" 
+                                ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? SinglePost.reaction.color : SinglePost.appTheme.icons}" 
                                 ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
 
                                 </span>
                             </a>
-                            <span>{{post.likesCount}}</span>
+                            <span ng-style="{'color': SinglePost.appTheme.icons}">{{post.likesCount}}</span>
                         </div>
                         
                         <div class="footer-item">
                             <a class="social-icon ng-cloak">
-                                <span class="material-icons-outlined">
+                                <span class="material-icons material-icons-outlined">
                                     repeat
                                 </span>
                             </a>
-                            <span>{{post.repostsCount}}</span>
+                            <span ng-style="{'color': SinglePost.appTheme.icons}">{{post.repostsCount}}</span>
                         </div>
                         <div class="footer-item">
                             <a class="social-icon ng-cloak">
-                                <span class="material-icons-outlined">
+                                <span class="material-icons material-icons-outlined">
                                     chat_bubble_outline
                                 </span>
                             </a>
-                            <span>{{post.repliesCount}}</span>
+                            <span ng-style="{'color': SinglePost.appTheme.icons}">{{post.repliesCount}}</span>
                             
                         </div>
                         
@@ -175,11 +176,11 @@
                         
                         <div class="footer-item" ng-click="SinglePost.sharePost(post)">
                             <a class="social-icon ng-cloak">
-                                <span class="material-icons-outlined">
+                                <span class="material-icons material-icons-outlined">
                                     share
                                 </span>
                             </a>
-                            <span>{{post.sharesCount}}</span>                                                                    
+                            <span ng-style="{'color': SinglePost.appTheme.icons}">{{post.sharesCount}}</span>                                                                    
                         </div>
                     </div>
                 </div>

@@ -79,6 +79,11 @@
                     controllerAs: 'Activity',
                     controller: 'ActivityCtrl'
                 })
+                .when('/inbox',{
+                    templateUrl: 'templates/inbox.html',
+                    controllerAs: 'Inbox',
+                    controller: 'InboxCtrl'
+                })
                 .otherwise('/');
 
             var interceptor = ['$q', function ($q) {

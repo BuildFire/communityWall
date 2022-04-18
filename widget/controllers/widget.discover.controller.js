@@ -68,13 +68,20 @@
                     .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
                     let length = Object.entries(sortable).length;
                     for(let i = 0 ; i < length ; i++){
-                        Buildfire.publicData.search({filter:{"$json.hashtags":Object.keys(sortable)[i]},skip:0, limit: 10, sort:{createdOn: -1}} , "wall_posts",(err, data) =>{
-                            if(data){
-                                sortable[Object.keys(sortable)[i]] = data;
-                            }
-                            if(i === length - 1){
-                                return callback(null, sortable)
-                            }
+                        Buildfire.publicData.search(
+                            { 
+                                filter:{
+                                    "$json.hashtags":Object.keys(sortable)[i]},
+                                    skip:0,
+                                    limit: 10,
+                                    sort:{createdOn: -1}
+                            } , "wall_posts",(err, data) => {
+                                if(data){
+                                    sortable[Object.keys(sortable)[i]] = data;
+                                }
+                                if(i === length - 1){
+                                    return callback(null, sortable)
+                                }
                         })
                     }
                 })
@@ -299,6 +306,10 @@
 
             $scope.crop = function(url, dimensions){
                 return Buildfire.imageLib.cropImage(url,{ size: "half_width", aspect: "9:16" });
+            }
+
+            $scope.cropImage = (image, width, height) => {
+                return Buildfire.imageLib.cropImage(image, {width: width? width : 50, height: height? height : 50});
             }
             Discover.init();
         }]);

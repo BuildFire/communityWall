@@ -5,17 +5,24 @@
         .controller('BottomNavBarCtrl', ['$scope', '$rootScope', '$routeParams','$location','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', function ($scope, $rootScope, $routeParams,$location, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout) {
             let t = this;
             t.SocialItems = SocialItems.getInstance();
-            Buildfire.datastore.get("SocialIcons", (err, res) =>{
-                if(res && res.data && Object.keys(res.data).length > 0){
-                    t.home = res.data.bottomNavBar.home;
-                    t.discover = res.data.bottomNavBar.discover;
-                    t.addContent = res.data.bottomNavBar.addContent;
-                    t.myProfile = res.data.bottomNavBar.myProfile;
-                    t.notifications = res.data.bottomNavBar.notifications;
-                }
-            })
 
-            t.isLoggedIn = t.SocialItems.userDetails.userId ? true : false;
+
+            t.init = function() {
+                Buildfire.datastore.get("SocialIcons", (err, res) =>{
+                    if(res && res.data && Object.keys(res.data).length > 0){
+                        t.home = res.data.bottomNavBar.home;
+                        t.discover = res.data.bottomNavBar.discover;
+                        t.addContent = res.data.bottomNavBar.addContent;
+                        t.myProfile = res.data.bottomNavBar.myProfile;
+                        t.notifications = res.data.bottomNavBar.notifications;
+                    }
+                })
+    
+                t.isLoggedIn = t.SocialItems.userDetails.userId ? true : false;
+            }
+            
+
+
             t.navigateToProfile = function(userId){
                 t.SocialItems = SocialItems.getInstance();
                 let shouldNavigate = $location.absUrl().split('#')[1].includes('profile/'+userId) ? false : true;  
@@ -109,5 +116,8 @@
                     return;
                 }
             }
+
+            t.init();
+
         }]);
 })(window.angular);

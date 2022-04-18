@@ -16,98 +16,49 @@
                 $scope.googlePlace;
                 $scope.googlePlaceDetails;
                 NewPost.loadedHashtags = [];
-                Buildfire.publicData.search({},"$$hashtag$$",(err, r) =>{
-                    if(err) return;
-                    else {
-                        NewPost.handleLoadedHashtagsUpdate(r);
-                    }
-                });
+                $scope.selectedHashtags = [];
+                $scope.newHashtagsAdded = [];
+
+                configureHashtagsAutocomplete();
+                configurePeopleAutoComplete();
                 if(postId != 0){
                     NewPost.SocialItems.getPost(postId,(err, res) =>{
                         $scope.text = res.text  ? res.text.replace(/[#&%+!@^*()-]/g, function (match) {
                             return encodeURIComponent(match)
                         }) : '',
-                        $timeout(function(){
-                            NewPost.text = res.text;
-                            NewPost.choosenLocationName = res.location && res.location.address ? res.location.address : "";
-                            $scope.selectedHashtags = res.hashtags;
-                            console.log($scope.selectedHashtags);
-                            $scope.$digest();
-                        });
+
                         $scope.post = res;
-                        $scope.HsuggestionItemTemplate = function(tagData){
-                            return `
-                                <div ${this.getAttributes(tagData)}
-                                    class='tagify__dropdown__item'
-                                    tabindex="0"
-                                    role="option">
-                                        <span style="bold font-size-18"># ${tagData.data.name}</span>                            
-                                </div>
-                            `
-                        }
-                        $scope.suggestionItemTemplate = function(tagData){
-                            return `
-                                <div ${this.getAttributes(tagData)}
-                                    class='tagify__dropdown__item'
-                                    tabindex="0"
-                                    role="option">
-                                    ${ tagData.data.userDetails.imageUrl ? `
-                                    <div class='tagify__dropdown__item__avatar-wrap'>
-                                        <img  src="${buildfire.imageLib.cropImage(tagData.data.userDetails.imageUrl, {width: 40, height: 40})}">
-                                    </div>` : 
-                                    `<div class='tagify__dropdown__item__avatar-wrap'>
-                                        <img  src="../../../../styles/media/avatar-placeholder.png">
-                                    </div>` 
-                                    }
-                                    <p>${tagData.data.userDetails.displayName || "Someone"}</p>
-                                </div>
-                            `
-                        }
-                        let autoCompleteHashtagsConfig = {
-                            delimiters: ",| ",
-                            editTags: false,
-                            dropdown:{
-                                enabled: 0,
-                                maxItems:3
-                            },
-                            templates:{
-                                dropdownItem: $scope.HsuggestionItemTemplate 
+
+                        NewPost.text = res.text;
+                        NewPost.choosenLocationName = res.location && res.location.address ? res.location.address : "";
+                        $scope.selectedHashtags = res.hashtags;
+                        if (res.hashtags && res.hashtags.length) {
+                            const options = {
+                                filter: {
+                                    "_buildfire.index.array1.string1": {$in: res.hashtags.map(elem => `name_${elem.toLowerCase()}`)}
+                                }
                             }
+                            searchHashtags(options).then((hashtags) => {
+                                console.log(hashtags);
+                                hashtags = hashtags.map(item => ({key: item.id, value: item.data.name , data: item.data}));
+                                $scope.hashtagsAutoComplete.input.value = JSON.stringify(hashtags)
+                            })
                         }
-        
                         
-                        $scope.hashtagsAutoComplete = new buildfire.components.autoComplete("hashtagsInput", autoCompleteHashtagsConfig);
-                        $scope.hashtagsAutoComplete.onItemAdded = (e) =>{
-                            $scope.selectedHashtags.push(e.detail.data.value);
-                        }
-                        $scope.hashtagsAutoComplete.onItemRemoved = (e) =>{
-                            $scope.selectedHashtags.splice($scope.selectedHashtags.findIndex(x => x === e.detail.data.value), 1);
-                        }
+                      
                         $scope.selectedUsers = [];
                         if(res.taggedPeople && res.taggedPeople.length){
                             SubscribedUsersData.getUsersByIds(res.taggedPeople, (err, data) =>{
-                                var updateWhitelist = (list) =>{
+                                const updateWhitelist = (list) =>{
                                     let whitelist = list.map(item => {
                                         return {key: item.id, value: item.data.name || item.data.title || item.data.userDetails.displayName || "", data:item.data};
                                     });
-                                    console.log(whitelist);
-                                    return whitelist;
+                                   return whitelist;
                                 };
-                                let updatedList = updateWhitelist(data); 
-                                let autoCompletePeopleConfig = {
-                                    whitelist: updatedList,
-                                    enforceWhitelist:true,
-                                    editTags: false,
-                                    dropdown:{
-                                        enabled: 2,
-                                    },
-                                    templates:{
-                                        dropdownItem: $scope.suggestionItemTemplate
-                                    }
-                                }
 
-                                $scope.peopleAutoComplete = new buildfire.components.autoComplete("peopleInput", autoCompletePeopleConfig);
-                                $scope.configurePeopleAutoComplete($scope.peopleAutoComplete);
+                                let updatedList = updateWhitelist(data); 
+                                $scope.peopleAutoComplete.updateWhitelist(updatedList);
+                                $scope.peopleAutoComplete.input.value = JSON.stringify(updatedList);
                                 $scope.selectedUsers = updatedList;
                                 $timeout(function(){
                                     $scope.$digest();
@@ -124,38 +75,21 @@
                                 // }
                 
                             })
-                        }
-                        else{
+                        } else {
                             $scope.selectedUserNames = [];
-                            let autoCompletePeopleConfig = {
-                                enforceWhitelist:true,
-                                whitelist:[],
-                                editTags: false,
-                                dropdown:{
-                                    enabled: 2,
-                                },
-                                templates:{
-                                    dropdownItem: $scope.suggestionItemTemplate
-                                }
-                            }
-                            $scope.peopleAutoComplete = new buildfire.components.autoComplete("peopleInput", autoCompletePeopleConfig);
-                            $scope.configurePeopleAutoComplete($scope.peopleAutoComplete)    ;
                             $timeout(function(){
                                 $scope.$digest();
                             });  
                         }
-                        let getCroppedImage = (url) =>{
-                            return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "9:16" });
-                        }
+                        
                         $scope.selectedMedia = {
                             type: res.images.length > 0 ? "image" : res.videos.length > 0 ? "video" : "image",
                             src: res.images.length > 0 ? res.images[0] : res.videos.length > 0 ? res.videos[0] : "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
-                            shown:  res.images.length > 0 ? getCroppedImage(res.images[0]) : res.videos.length > 0 ? res.videos[0] : "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
+                            shown:  res.images.length > 0 ? croppedImage(res.images[0]) : res.videos.length > 0 ? res.videos[0] : "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
                         }
                         $rootScope.showThread = false;
                     })
-                }
-                else{
+                } else {
                     NewPost.text = "";
                     NewPost.loadedHashtags = [];
                     $scope.selectedHashtags = [];
@@ -166,117 +100,187 @@
                         src: "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
                         shown: "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
                     }
-                    $scope.HsuggestionItemTemplate = function(tagData){
-                        return `
-                            <div ${this.getAttributes(tagData)}
-                                class='tagify__dropdown__item'
-                                tabindex="0"
-                                role="option">
-                                    <span style="bold font-size-18"># ${tagData.data.name}</span>                            
-                            </div>
-                        `
-                    }
-                    $scope.suggestionItemTemplate = function(tagData){
-                        return `
-                            <div ${this.getAttributes(tagData)}
-                                class='tagify__dropdown__item'
-                                tabindex="0"
-                                role="option">
-                                ${ tagData.data.userDetails.imageUrl ? `
-                                <div class='tagify__dropdown__item__avatar-wrap'>
-                                    <img  src="${buildfire.imageLib.cropImage(tagData.data.userDetails.imageUrl, {width: 40, height: 40})}">
-                                </div>` : 
-                                `<div class='tagify__dropdown__item__avatar-wrap'>
-                                    <img  src="../../../../styles/media/avatar-placeholder.png">
-                                </div>` 
-                                }
-                                <p>${tagData.data.userDetails.displayName || "Someone"}</p>
-                            </div>
-                        `
-                    }
-                    let autoCompleteHashtagsConfig = {
-                        delimiters: ",| ",
-                        editTags: false,
-                        dropdown:{
-                            enabled: 0,
-                            maxItems:3
-                        },
-                        templates:{
-                            dropdownItem: $scope.HsuggestionItemTemplate 
-                        }
-                    }
-    
-                    let autoCompletePeopleConfig = {
-                        enforceWhitelist:true,
-                        whitelist:this.people,
-                        editTags: false,
-                        dropdown:{
-                            enabled: 2,
-                        },
-                        templates:{
-                            dropdownItem: $scope.suggestionItemTemplate
-                        }
-                    }
-                    $scope.hashtagsAutoComplete = new buildfire.components.autoComplete("hashtagsInput", autoCompleteHashtagsConfig);
-                    $scope.hashtagsAutoComplete.onItemAdded = (e) =>{
-                        $scope.selectedHashtags.push(e.detail.data.value);
-                    }
-                    $scope.hashtagsAutoComplete.onItemRemoved = (e) =>{
-                        $scope.selectedHashtags.splice($scope.selectedHashtags.findIndex(x => x === e.detail.data.value), 1);
-                    }
-                    $scope.peopleAutoComplete = new buildfire.components.autoComplete("peopleInput", autoCompletePeopleConfig);
-                    $scope.configurePeopleAutoComplete($scope.peopleAutoComplete)
     
                     $rootScope.showThread = false;
                 }
             }
 
+            const croppedImage = (url) =>{
+                return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "9:16" });
+            }
+
+            const configureHashtagsAutocomplete = () => {
+                const itemTemplate = function(tagData) {
+                    return `
+                        <div ${this.getAttributes(tagData)}
+                            class='tagify__dropdown__item'
+                            tabindex="0"
+                            role="option">
+                                <span style="bold font-size-18"># ${tagData.data.name}</span>                            
+                        </div>
+                    `
+                }
+
+                let config = {
+                    delimiters: ",| ",
+                    editTags: false,
+                    dropdown:{
+                        enabled: 0,
+                        maxItems:3
+                    },
+                    templates:{
+                        dropdownItem: itemTemplate
+                    }
+                }
+
+                $scope.hashtagsAutoComplete = new buildfire.components.autoComplete("hashtagsInput", config);
+                $scope.hashtagsAutoComplete.onItemAdded = (e) => {
+                    const isAdded = $scope.selectedHashtags.includes(e.detail.data.value);
+                    if (isAdded) return;
+                    
+                    $scope.selectedHashtags.push(e.detail.data.value);
+                    if (!e.detail.data.key) {
+                        $scope.newHashtagsAdded.push(e.detail.data.value);
+                    }
+                }
+                $scope.hashtagsAutoComplete.onItemRemoved = (e) => {
+                    console.log("Remove HASHTAG", e.detail.data);
+                    //$scope.selectedHashtags.splice($scope.selectedHashtags.findIndex(x => x === e.detail.data.value), 1);
+                    $scope.selectedHashtags = $scope.selectedHashtags.filter(hashtag => hashtag !== e.detail.data.value);
+                    if (!e.detail.data.key) {
+                        $scope.newHashtagsAdded = $scope.newHashtagsAdded.filter(hashtag => hashtag !== e.detail.data.value )
+                    }
+                }
 
 
-            $scope.configurePeopleAutoComplete = function(p){
-                p.onInput = (e) =>{
-                    p.tagify.loading(true);
-                    if(e.detail.value.length >= 2){
-                        let regexToSearch = e.detail.value;
-                        Buildfire.publicData.search({filter:{
-                            $and:[
-                                {
-                                    "$json.userDetails.displayName":{"$regex":regexToSearch,"$options":"i"}
-                                },
-                                {
-                                    "$json.userDetails.email":{$ne:NewPost.SocialItems.userDetails.email}
-                                },
-                                {
-                                    "$json.wallId":""
-                                }
-                            ]
-                            
-                        }},"subscribedUsersData", (err, users) =>{
-                            if(users){
-                                p.updateWhitelist(users)
-                                p.tagify.loading(false).dropdown.show(e.detail.value)
+                let TIMEOUT_ID;
+                $scope.hashtagsAutoComplete.onInput = (e) => {
+                    $scope.hashtagsAutoComplete.tagify.loading(true);
+                    const searchValue = e.detail.value;
+                    const options = { 
+                        limit: 20
+                    }
+                    if (searchValue) {
+                        options.filter =  {
+                            "$json.name": { "$regex": searchValue, "$options": "i" }
+                        }
+                    }
+                    clearTimeout(TIMEOUT_ID);
+                    TIMEOUT_ID = setTimeout(() => {
+                        searchHashtags(options).then((hashtags) => {
+                            $scope.NewPost.loadedHashtags = [...hashtags];
+                            $scope.hashtagsAutoComplete.updateWhitelist(hashtags);
+                            $scope.hashtagsAutoComplete.tagify.loading(false);
+                        }).catch(err => {
+                            $scope.hashtagsAutoComplete.tagify.loading(false);
+                            console.error(err)
+                        });
+                    }, 300)
+
+                }
+
+                searchHashtags().then((hashtags) => {
+                    $scope.NewPost.loadedHashtags = [...$scope.NewPost.loadedHashtags, ...hashtags];
+                    if(!$scope.hashtagsAutoComplete) return;
+                    $scope.hashtagsAutoComplete.updateWhitelist(hashtags);
+                }).catch(console.error)
+
+            }
+
+            const searchHashtags = (options = {}) => {
+                return new Promise((resolve, reject) => {
+                    Hashtags.search(options, (err, result) => {
+                        if (err) return reject(err);
+                        resolve(result);
+                    })
+                })
+            }
+
+            const saveNewHashtags = () => {
+                console.log("New Hashtags", $scope.newHashtagsAdded);
+                if ($scope.newHashtagsAdded && $scope.newHashtagsAdded.length) {
+                    for (const hashtag of $scope.newHashtagsAdded) {
+                        Hashtags.use(hashtag, (err, result) => {
+                            if (err) {
+                                console.log(err);
                             }
-                        })
+                         })
                     }
-                    else{
-                        console.log(e.detail.value);
-                    }
-                }
-                p.onItemAdded = (e) =>{
-                    console.log(e);
-                    $scope.selectedUsers.push(e.detail.data.data.userId);
-                }
-                p.onItemRemoved = (e) =>{
-                    console.log(e);
-                    $scope.selectedUsers.splice($scope.selectedUsers.findIndex(x => x === e.detail.data.data.userId), 1);
                 }
             }
 
-            NewPost.handleLoadedHashtagsUpdate = function(arr){
-                $scope.NewPost.loadedHashtags = [...$scope.NewPost.loadedHashtags, ...arr];
-                if(!$scope.hashtagsAutoComplete) return;
-                else {
-                    $scope.hashtagsAutoComplete.updateWhitelist(arr);
+            const configurePeopleAutoComplete = () => {
+                const itemTemplate = function (user) {
+                    return `
+                        <div ${this.getAttributes(user)}
+                            class='tagify__dropdown__item'
+                            tabindex="0"
+                            role="option">
+                            ${ user.data.userDetails.imageUrl ? `
+                            <div class='tagify__dropdown__item__avatar-wrap'>
+                                <img  src="${buildfire.imageLib.cropImage(user.data.userDetails.imageUrl, {width: 40, height: 40})}">
+                            </div>` : 
+                            `<div class='tagify__dropdown__item__avatar-wrap'>
+                                <img  src="../../../../styles/media/avatar-placeholder.png">
+                            </div>` 
+                            }
+                            <p>${user.data.userDetails.displayName || "Someone"}</p>
+                        </div>
+                    `
+                }
+                let autoCompletePeopleConfig = {
+                    enforceWhitelist: true,
+                    whitelist:this.people,
+                    editTags: false,
+                    dropdown:{
+                        enabled: 2,
+                    },
+                    templates:{
+                        dropdownItem: itemTemplate
+                    }
+                }
+                $scope.peopleAutoComplete = new buildfire.components.autoComplete("peopleInput", autoCompletePeopleConfig);
+                
+                let TIMEOUT_ID;
+                $scope.peopleAutoComplete.onInput = (e) =>{
+                    $scope.peopleAutoComplete.tagify.loading(true);
+                    let searchValue = e.detail.value;
+                    const options = {
+                        filter: {
+                            $and: [
+                                { "$json.userDetails.email": { $ne: NewPost.SocialItems.userDetails.email } },
+                                { "$json.wallId": "" }
+                            ]
+                        },
+                        limit: 20
+                    };
+
+                    if (searchValue) {
+                        options.filter.$and.push( { "$json.userDetails.displayName": { "$regex": searchValue, "$options": "i" } })
+                    }
+
+                    clearTimeout(TIMEOUT_ID);
+
+                    setTimeout(() => {
+                        Buildfire.publicData.search(options, "subscribedUsersData", (err, users) =>{
+                            if (err || !users) {
+                                $scope.peopleAutoComplete.tagify.loading(false)
+                            }
+                            if(users){
+                                $scope.peopleAutoComplete.updateWhitelist(users)
+                                $scope.peopleAutoComplete.tagify.loading(false).dropdown.show(searchValue)
+                            }
+                        });
+                    }, 300);
+                }
+
+                $scope.peopleAutoComplete.onItemAdded = (e) =>{
+                    const isAdded = $scope.selectedUsers.includes(e.detail.data.data.userId);
+                    if (isAdded) return;
+                    $scope.selectedUsers.push(e.detail.data.data.userId);
+                }
+                $scope.peopleAutoComplete.onItemRemoved = (e) =>{
+                    $scope.selectedUsers.splice($scope.selectedUsers.findIndex(x => x === e.detail.data.data.userId), 1);
                 }
             }
 
@@ -308,8 +312,7 @@
                         };
                         $scope.createPost(postData);
                     }
-                }
-                else{
+                } else {
                     if($scope.selectedMedia.shown === "https://pluginserver.buildfire.com/styles/media/holder-16x9.png"){
                         Buildfire.dialog.alert({
                             message: "Post must have an image or a video.",
@@ -336,6 +339,8 @@
                     Buildfire.dialog.toast({
                         message: "Post updated successfully",
                     });
+
+                    saveNewHashtags();
 
                     setTimeout(() => {                        
                         if(!$rootScope.wonBadge){
@@ -421,7 +426,7 @@
                             }
                             else{
                                 Buildfire.spinner.show();
-                                Buildfire.services.camera.getVideo({upload: true, quality: 0,duration: 30}, (err, videoData) => {
+                                Buildfire.services.camera.getVideo({upload: true, quality: 0,duration: 15}, (err, videoData) => {
                                     Buildfire.spinner.hide();
                                     if (err || !videoData) return Buildfire.spinner.hide();
                                     else{
@@ -519,6 +524,7 @@
                             NewPost.createReactionActivity(user, response.data);
                         })
                     }
+                    saveNewHashtags();
                     setTimeout(() => {                        
                         if(!$rootScope.wonBadge){
                             Location.go("#/singlePostView/"+response.data.id);
@@ -543,16 +549,61 @@
             }
 
 
+            $scope.getCurrentLocation = () => {
+                getCurrentUserPosition().then(coords => {
+                    console.log(coords);
+                    const latLng = { lat: coords.latitude, lng: coords.longitude }
+                    getAddress(latLng).then(location => {
+                        console.log(location);
+                        $scope.googlePlaceDetails = {
+                            ...latLng,
+                            address: location.formatted_address
+                        }
+                        NewPost.choosenLocationName = location.formatted_address;
+                        $scope.$digest();
+                    }).catch(error => {
+                        console.warn(error);
+                    });
+                }).catch(err => {
+                    console.warn(`failed to get current user position ${JSON.stringify(err)}`);
+                })
+            }
 
+            const getCurrentUserPosition = () => new Promise((resolve, reject) => {
+                let retries = 5;
+                const attempt = () => {
+                  console.info(`attempting to get user position ${retries}`);
+                  buildfire.geo.getCurrentPosition({ enableHighAccuracy: true, timeout: 1000 }, (err, position) => {
+                    if (!err) {
+                      resolve(position.coords);
+                    } else if (retries > 0) {
+                      retries -= 1;
+                      attempt();
+                    } else {
+                      reject(err);
+                    }
+                  });
+                };
+                attempt();
+            });
 
-
-
-
-
-
-
-
-
+            const getAddress = (coords, cb) => {
+                const geoCoder = new google.maps.Geocoder();
+                return new Promise((resolve, reject) => {
+                    geoCoder.geocode( { location: coords }, (results, status) => {
+                          if (status === 'OK') {
+                            if (results[0]) {
+                                resolve(results[0])
+                            } else {
+                                reject(new Error("No results found"))
+                            }
+                          } else {
+                            reject(new Error("Geocoder failed due to: " + status))
+                          }
+                        }
+                      );
+                })
+              };
 
             NewPost.init();
         }]);

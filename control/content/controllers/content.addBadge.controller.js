@@ -42,7 +42,7 @@
                         description: "",
                         expires:{
                             number: 0,
-                            frame: "days",
+                            frame: "hours",
                             isTurnedOn: false,
                         },
                         conditions:{

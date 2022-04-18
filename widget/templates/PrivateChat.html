@@ -58,7 +58,7 @@
                  
      
                 </div>
-                <div id="{{post.id}}" class="flex-right" ng-if="post.userId !== PrivateChat.SocialItems.userDetails.userId">
+                <div id="{{post.id}}" class="flex-left" ng-if="post.userId !== PrivateChat.SocialItems.userDetails.userId">
                   
 
                   <div style="    display: flex;
@@ -117,7 +117,7 @@
           </div>
         </div>
         <div id="ta-frame">
-            <div>
+            <div class=ta-frame-img-holder>
               <img ng-if="PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl" load-image="1x1"
               data-final-src="{{PrivateChat.SocialItems.userDetails.imageUrl}}" crop-width="40" style="border-radius: 100%;"
               crop-height="40" crop-type="crop">

@@ -178,10 +178,18 @@
                                 let clone = JSON.parse(JSON.stringify(data[0]))
                                 let sp = clone.data.badges;
                                 let originalLength = data[0].data.badges.length;
+                                
                                 sp.forEach((badge,index) =>{
+                                    if (!badge) {
+                                        return;
+                                    }
+
                                     buildfire.publicData.getById(badge.badgeData, "SocialBadges", (err, res) =>{
                                         if(res && res.data && Object.keys(res.data).length > 0){
-                                            clone.data.badges[index].badgeData = {id:clone.data.badges[index].badgeData, ...res.data }; 
+                                            clone.data.badges[index].badgeData = {
+                                                id: clone.data.badges[index].badgeData,
+                                                ...res.data 
+                                            }; 
                                         }
                                         else{
                                             shouldUpdate = true;
@@ -191,9 +199,9 @@
                                         if(index === originalLength - 1){
                                             data[0].data.badgesWithData = clone.data.badges;
                                             callback(null, data[0]);
-                                            if(shouldUpdate){
+                                            // if(shouldUpdate){
                                                 buildfire.publicData.update(data[0].id, data[0].data, "SocialUserProfile", () =>{})
-                                            }
+                                            // }
                                         }                                        
                                     })
                                     
@@ -346,7 +354,7 @@
                 followUnfollowUser: function(params, callback, callbackForCurrentUser = null){
                     window.buildfire.publicData.search({filter:{"_buildfire.index.string1":params.userId}}, "SocialUserProfile", function(err, socialProfile){
                         socialProfile = socialProfile[0];
-                        if(socialProfile.data){
+                        if(socialProfile && socialProfile.data){
                             let followers;
                             let updatedObj = {...socialProfile.data};
                             if(socialProfile.data.isPublicProfile){
@@ -524,6 +532,15 @@
                         }
                     });
                 },
+                searchAndUpdate: function (search, obj) {
+                    return new Promise( (resolve, reject) => {
+                        window.buildfire.publicData.searchAndUpdate(search, obj, 'subscribedUsersData', function (err, data) {
+                            if (err) return reject(err);
+                            
+                            resolve(data);
+                        });
+                    })
+                },
                 unfollowWall: function (userId, wallId, banUser, callback) {
                     window.buildfire.publicData.search(
                         { filter: { '_buildfire.index.text': userId + '-' + wallId } },
@@ -618,7 +635,7 @@
                                 let results = [];
                                 users.map(e => {
                                     if(userId){
-                                        if(e.data._buildfire.index.array1.findIndex(e=> e.string1 === `blocked_${userId}`) < 0){
+                                        if(e.data._buildfire.index.array1 && e.data._buildfire.index.array1.findIndex(e=> e.string1 === `blocked_${userId}`) < 0){
                                             results.push(e);
                                         }
                                     }
@@ -867,7 +884,7 @@
                                                         let wonBadge = true;
                                                         console.log(myBadges);
                                                         console.log(badge);
-                                                        let index = myBadges.findIndex(e => e.badgeData === badge.id);
+                                                        let index = myBadges.findIndex(e => e && e.badgeData === badge.id);
                                                         console.log(index);
                                                         if(index < 0){
                                                             if(badge.data.conditions.posts.isTurnedOn){
@@ -1165,6 +1182,7 @@
                 return name;
             }
             SocialItems.prototype.authenticateUser = function (loggedUser, callback) {
+                
                 function prepareData(user) {
                     let location = {
                         address: user.userProfile.address && user.userProfile.address.fullAddress ?  user.userProfile.address.fullAddress :  null,
@@ -1180,7 +1198,8 @@
                         displayName: user.displayName ? user.displayName : "",
                         location:  location,
                         imageUrl: user.imageUrl,
-                        userTags: user.tags ? user.tags : {}
+                        userTags: user.tags ? user.tags : {},
+                        bio: user.userProfile && user.userProfile.bio? user.userProfile.bio : "",
                     }
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (re.test(String(user.firstName).toLowerCase()))
@@ -1192,8 +1211,19 @@
                 else buildfire.auth.getCurrentUser((err, user) => {
                     if (err) return callback(err, null);
                     if (user) {
-                        prepareData(user);
-                        return callback(null, user);
+                        user.userProfile = user.userProfile? user.userProfile : {};
+                        if (user.userProfile.bio) {
+                            prepareData(user);
+                            return callback(null, user);
+                        }
+
+                        buildfire.auth.getUserProfile({ userId: user._id }, function (err, userProfile) {
+                            if (err) return callback(err, null);
+                            user.userProfile.bio = userProfile.bio;
+                            prepareData(user);
+                            return callback(null, user);
+                        });
+                        
                     } else {
                         _this.forcedToLogin = false;
                         callback(null, null);
@@ -1486,6 +1516,23 @@
                         callback(null, []);
                         privatePostsBackgroundService(options)
                     }
+                })
+            }
+
+            SocialItems.prototype.getLastPrivatePosts = function(wid){
+                
+                let options = {
+                    filter: { "_buildfire.index.string1": wid },
+                    sort: { "createdOn": -1 },
+                    limit: 1,
+                    skip: 1,
+                }
+                
+                return new Promise((resolve, reject) => {
+                    buildfire.publicData.search(options, "wall_posts",(err, posts) =>{
+                        if (err) return reject(err);
+                        resolve(posts)
+                    })
                 })
             }
 
