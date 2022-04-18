@@ -126,7 +126,7 @@
                     let navIcons = document.querySelectorAll('.nav-icon');
 
                     for (let i = 0; i < navIcons.length; i++) {
-                        navIcons[i].style.setProperty("color", obj.colors.titleBar, "important");
+                        navIcons[i].style.setProperty("color", obj.colors.titleBarTextAndIcons, "important");
                     }
 
                     let postIcons = document.querySelectorAll('.material-icons-outlined');
