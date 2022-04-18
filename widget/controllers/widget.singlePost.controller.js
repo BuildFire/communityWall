@@ -8,6 +8,7 @@
             
             SinglePost.SocialItems = SocialItems.getInstance();
             SinglePost.isLoading = true;
+            SinglePost.strings = SinglePost.SocialItems.languages;
 
 
             $scope.trustSrc = function(src) {
@@ -212,6 +213,7 @@
                 SocialUserProfile.get(post.userDetails.userId, (err, socialProfile) =>{
                     if(socialProfile){
                         console.log(socialProfile);
+                        SinglePost.socialProfile = socialProfile;
                         let listItems = [];
                         if(post.userId !== SinglePost.SocialItems.userDetails.userId){
                             listItems.push({text:"Report post", index: 0});
@@ -284,8 +286,27 @@
                                       );
                                 }
                                 else if(result && result.index == 1){
+                                    const amIPending = SinglePost.socialProfile.data.pendingFollowers.findIndex(e => e === SinglePost.SocialItems.userDetails.userId) >= 0;
+                                    const amIFollowing  = SinglePost.socialProfile.data.followers.findIndex(e => e === SinglePost.SocialItems.userDetails.userId) >= 0
                                     let params = {userId: post.userDetails.userId, currentUser: SinglePost.SocialItems.userDetails.userId};
-                                    SocialUserProfile.followUnfollowUser(params,() => {},(err, data) =>{});
+
+                                    if(amIPending || amIFollowing){ 
+                                        Buildfire.dialog.confirm(
+                                            {
+                                                title: SinglePost.strings.unfollowtitle,
+                                                message: SinglePost.strings.unfollowbody,
+                                                confirmButton: {
+                                                    text: SinglePost.strings.unfollowconfirm,
+                                                },
+                                            },(err, isConfirmed) => {
+                                                if (err) console.error(err);
+                                                if (isConfirmed) {
+                                                    SocialUserProfile.followUnfollowUser(params,() => {},(err, data) =>{});
+                                                }
+                                        });
+                                    } else {
+                                        SocialUserProfile.followUnfollowUser(params,() => {},(err, data) =>{});
+                                    }
                                 }
                                 else if(result && result.index == 2){
                                     SinglePost.reloadPosts(true);
@@ -534,6 +555,18 @@
                 
                 
             }
+
+
+            Buildfire.datastore.onUpdate((event) =>{
+               if(event.tag === 'languages'){
+                    SinglePost.SocialItems.getSettings((err, settings) =>{
+                        SinglePost.strings = SinglePost.SocialItems.languages;
+                    })
+                    $scope.$digest();
+                } else {
+                    t.SocialItems.getSettings(() =>{});
+                }
+            });
 
             SinglePost.init();
         }]);

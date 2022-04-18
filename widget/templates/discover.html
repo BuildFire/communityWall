@@ -45,7 +45,7 @@
             <div ng-if="users && users.length > 0" ng-repeat="user in users">
                 <div  ng-click="navigateToProfile(user.data.userId)">
                     <div class="discover-people-profile-picture">
-                        <img ng-src="{{crop(user.data.userDetails.imageUrl, {width: 50,height: 50})}}" ng-if="user.data.userDetails.imageUrl" />
+                        <img ng-src="{{crop(user.data.userDetails.imageUrl, {width: 60,height: 60})}}" ng-if="user.data.userDetails.imageUrl" />
                         <img src="../../../../styles/media/avatar-placeholder.png" ng-if="!user.data.userDetails.imageUrl" />
                     </div>
                     <div class="profileName">

@@ -263,7 +263,7 @@
 .discover-h-info {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     margin-left: 15px;
 }
 
@@ -277,11 +277,12 @@
 .discover-h-num {
     background: var(--bf-theme-success);
     border-radius: 100%;
-    font-size: 17px;
+    /* font-size: 17px; */
     font-weight: bold;
     color: #fff;
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 24px;
     height: 24px;
 }
