@@ -91,8 +91,12 @@
             }
             $scope.createImage = function(src){
                 let e = document.createElement('img');
-                e.src = src;
+                e.src = $scope.crop(src, {width: 100, height: 100});
                 return e;
+            }
+
+            $scope.crop = function(url, dimensions){
+                return Buildfire.imageLib.cropImage(url,{ size: "half_width", aspect: "9:16" });
             }
             Filtered.init();
         }]);

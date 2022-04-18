@@ -357,10 +357,6 @@
         </div>
         <div ng-show="isLoading">
             <div id="authSkeleton">
-
-
-
-
                 <div class="skeletonPost">
                   <div class="skeletonInfoContainer">
                     <div  class="skeletonProfileImageContainer"></div>
@@ -375,31 +371,32 @@
                   </div>
                 </div>
 
-        </div>
-    </div>
-    <div ng-controller="BottomNavBarCtrl as BottomNavBar">
-        <div class="bottomNavBar" ng-if="!isPrivateChat">
-            <div>
-                <span class="nav-icon" style="font-size:24px"  ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
-                    
-                </span>              
             </div>
-            <div>
-                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.discover" ng-click="BottomNavBar.goToDiscover()">
-                </span>            
-            </div>
-            <div>
-                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.addContent" ng-click="BottomNavBar.openPostSection()" on-touchend="BottomNavBar.openPostSection()">
-                </span>                   
-            </div>
-            <div>
-                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.notifications" ng-click="BottomNavBar.goToActivity()">
-                </span>                
-            </div>
-            <div>
-                <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.myProfile" ng-click="BottomNavBar.goToMyProfile();">
-                </span>
-                                
+         </div>
+        <div ng-controller="BottomNavBarCtrl as BottomNavBar">
+            <div class="bottomNavBar" ng-if="!isPrivateChat">
+                <div>
+                    <span class="nav-icon" style="font-size:24px"  ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
+                        
+                    </span>              
+                </div>
+                <div>
+                    <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.discover" ng-click="BottomNavBar.goToDiscover()">
+                    </span>            
+                </div>
+                <div>
+                    <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.addContent" ng-click="BottomNavBar.openPostSection()" on-touchend="BottomNavBar.openPostSection()">
+                    </span>                   
+                </div>
+                <div>
+                    <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.notifications" ng-click="BottomNavBar.goToActivity()">
+                    </span>                
+                </div>
+                <div>
+                    <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.myProfile" ng-click="BottomNavBar.goToMyProfile();">
+                    </span>
+                                    
+                </div>
             </div>
         </div>
     </div>

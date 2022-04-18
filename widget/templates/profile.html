@@ -5,7 +5,7 @@ ng-show="!Profile.isLoading">
     <div class="profile-header">
         <div class="profile-picture-container" ng-click="Profile.GoToBadgeView()" ng-style="{'border':'2px solid ' + Profile.borderColor }" ng-if="Profile.user.socialProfile.data">
             <img ng-show="Profile.user.userDetails.imageUrl" load-image="1x1"
-                data-final-src="{{Profile.user.userDetails.imageUrl}}" crop-width="50" crop-height="50" crop-type="crop">
+                 data-final-src="{{Profile.user.userDetails.imageUrl}}" crop-width="70" crop-height="70" crop-type="crop">
             <img ng-show="!Profile.user.userDetails.imageUrl" load-image="1x1"
                   data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="50"
                   crop-height="50" crop-type="default">

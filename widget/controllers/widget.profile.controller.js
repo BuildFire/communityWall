@@ -685,6 +685,9 @@
                 return e;
             }
             
+            $scope.cropImage = (image, width, height) => {
+                return Buildfire.imageLib.cropImage(image, {width: width? width : 50, height: height? height : 50});
+            }
 
             t.createVideo = (src, postId, parent) =>{
                 parent.style.position = "relative";

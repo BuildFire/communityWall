@@ -307,6 +307,10 @@
             $scope.crop = function(url, dimensions){
                 return Buildfire.imageLib.cropImage(url,{ size: "half_width", aspect: "9:16" });
             }
+
+            $scope.cropImage = (image, width, height) => {
+                return Buildfire.imageLib.cropImage(image, {width: width? width : 50, height: height? height : 50});
+            }
             Discover.init();
         }]);
 })(window.angular);
