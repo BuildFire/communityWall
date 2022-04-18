@@ -14,7 +14,7 @@
             <div class="list-text">
                 <h2>{{badge.badgeData.title}}</h2>
                 <h5>{{badge.badgeData.description}}</h5>
-                <h5 ng-if="badge.badgeData.expires.isTurnedOn">Expires in <strong>{{ViewBadges.getExpiryDate(badge)}}</strong> days </h5>
+                <h5 ng-if="badge.badgeData.expires.isTurnedOn">Expires in <strong>{{ViewBadges.getExpiryDate(badge)}}</strong> {{ViewBadges.timeUnit || 'days'}} </h5>
             </div>
         </div>
     </div>

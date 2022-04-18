@@ -426,7 +426,7 @@
                             }
                             else{
                                 Buildfire.spinner.show();
-                                Buildfire.services.camera.getVideo({upload: true, quality: 0,duration: 30}, (err, videoData) => {
+                                Buildfire.services.camera.getVideo({upload: true, quality: 0,duration: 15}, (err, videoData) => {
                                     Buildfire.spinner.hide();
                                     if (err || !videoData) return Buildfire.spinner.hide();
                                     else{

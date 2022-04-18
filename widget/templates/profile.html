@@ -3,12 +3,12 @@
 style="width: 100%;height: 100%;padding-top:10px;overflow-y: auto;overflow-x: hidden;"  
 ng-show="!Profile.isLoading">
     <div class="profile-header">
-        <div class="profile-picture-container" ng-click="Profile.GoToBadgeView()" ng-if="Profile.user.socialProfile.data">
-            <img ng-style="{'border':'1px solid ' + Profile.borderColor }"  ng-show="Profile.user.userDetails.imageUrl" load-image="1x1"
-                data-final-src="{{Profile.user.userDetails.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
-            <img ng-style="{'border':'1px solid ' + Profile.borderColor }" ng-show="!Profile.user.userDetails.imageUrl" load-image="1x1"
-                  data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
-                  crop-height="40" crop-type="default">
+        <div class="profile-picture-container" ng-click="Profile.GoToBadgeView()" ng-style="{'border':'2px solid ' + Profile.borderColor }" ng-if="Profile.user.socialProfile.data">
+            <img ng-show="Profile.user.userDetails.imageUrl" load-image="1x1"
+                data-final-src="{{Profile.user.userDetails.imageUrl}}" crop-width="50" crop-height="50" crop-type="crop">
+            <img ng-show="!Profile.user.userDetails.imageUrl" load-image="1x1"
+                  data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="50"
+                  crop-height="50" crop-type="default">
         </div>
         <div class="profile-info-container">
             <h5>{{Profile.SocialItems.getUserName(Profile.user.userDetails)}}</h5>

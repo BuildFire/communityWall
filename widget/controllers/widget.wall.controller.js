@@ -129,6 +129,8 @@
                         navIcons[i].style.setProperty("color", obj.colors.titleBar, "important");
                     }
 
+                    let postIcons = document.querySelectorAll('.material-icons-outlined');
+
                     WidgetWall.appTheme = obj.colors;
                     // debugger
                     WidgetWall.loadedPlugin = true;

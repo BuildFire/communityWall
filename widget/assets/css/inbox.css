@@ -5,7 +5,7 @@
     display: flex;
     align-items: start;
     justify-content: space-between;
-    flex: 1;
+    width: 100%;
 }
 
 .inbox-item .inbox-item-info {
@@ -17,5 +17,12 @@
 
 .time-ago{
     font-size: 12px;
+    max-width: 34ch;
 }
 
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    /* max-width: 50% */
+  }

@@ -9,6 +9,7 @@
             t.SocialItems = SocialItems.getInstance();
             $scope.isScrollbarLoading = true;
             t.isFetchingPosts = false;
+            t.timeIntervalId;
             t.init = () =>{
                 $rootScope.showThread = false;
                 $timeout(function(){
@@ -24,7 +25,9 @@
                             $rootScope.$digest();
                             $scope.$digest();
                             t.isLoading = false;
-                        })
+                        });
+
+                        t.startPollingMessages();
                     }
                     else{
                         console.log("no posts");
@@ -144,6 +147,24 @@
 
             t.sendImage = function(image){
                 t.createPost({image});
+            }
+
+            t.startPollingMessages = function () {
+                clearInterval(t.timeIntervalId);
+
+                t.timeIntervalId = setInterval(() => {
+                    t.SocialItems.getPrivatePosts(t.SocialItems.wid, (err, posts) =>{
+                        if(posts){
+                            // $timeout(function(){
+                            //     $rootScope.$digest();
+                            //     $scope.$digest();
+                            // });
+                        }
+                        else{
+                            console.log("no posts");
+                        }
+                    })
+                }, 10000)
             }
 
 

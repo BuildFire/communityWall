@@ -28,10 +28,20 @@
                 let inHours = badge.badgeData.expires.number * (badge.badgeData.expires.frame === 'hours'? 1 : badge.badgeData.expires.frame === 'days' ? 24 : badge.badgeData.expires.frame === 'weeks' ? 168 : 720 );
                 let expiryDate = moment(badge.receivedOn).add(inHours, "hours");
                 let diff = expiryDate.diff(moment(new Date), "hours");
+                if (diff < 24) {
+                    t.timeUnit = "hours";
+                    if (diff < 1) {
+                        return 1;
+                    }
+                    return diff;
+                }
+
                 // convert hours to days
-                diff = diff / 24;
-                if(diff < 1 && diff > 0) return 1;
-                else return diff 
+                diff = Math.round((diff / 24));
+                t.timeUnit = 'days';
+                return diff;
+                // if(diff < 1 && diff > 0) return 1;
+                // else return diff 
             }
             t.init();
         }]);

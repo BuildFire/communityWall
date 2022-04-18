@@ -14,23 +14,25 @@
         <div  ng-repeat="user in Inbox.users" ng-click="Inbox.navigateToPrivateChat(user)">
           <div class="inbox-item">
             <div class="head flex">
-                <div class="media-holder">
+                <div>
+                  <div class="media-holder">
                     <img ng-if="user.userId && user.userDetails.imageUrl" load-image="1x1"
-                    data-final-src="{{user.userDetails.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
-                  <img ng-if="!(user.userId && user.userDetails.imageUrl)" load-image="1x1"
-                    data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
-                    crop-height="40" crop-type="default">
-                </div>
+                      data-final-src="{{user.userDetails.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
+                    <img ng-if="!(user.userId && user.userDetails.imageUrl)" load-image="1x1"
+                      data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
+                      crop-height="40" crop-type="default">
+                  </div>      
+                </div>     
                 <div class="inbox-item-info">
                     <div>
-                        <p class="text-primary ellipsis">
+                        <p class="text-primary">
                             {{Inbox.SocialItems.getUserName(user.userDetails)}}
                         </p>
-                        <p class="time-ago">
+                        <p class="time-ago ellipsis">
                             {{ user.lastMessage? user.lastMessage.text : '' }}
                         </p>
                     </div>
-                    <div class="social-copy">
+                    <div>
                         <span class="time-ago">{{Inbox.getLocalTime(user.lastMessage)}}</span>
                     </div>
                 </div>

@@ -178,6 +178,7 @@
                                 let clone = JSON.parse(JSON.stringify(data[0]))
                                 let sp = clone.data.badges;
                                 let originalLength = data[0].data.badges.length;
+                                
                                 sp.forEach((badge,index) =>{
                                     if (!badge) {
                                         return;
@@ -198,9 +199,9 @@
                                         if(index === originalLength - 1){
                                             data[0].data.badgesWithData = clone.data.badges;
                                             callback(null, data[0]);
-                                            if(shouldUpdate){
+                                            // if(shouldUpdate){
                                                 buildfire.publicData.update(data[0].id, data[0].data, "SocialUserProfile", () =>{})
-                                            }
+                                            // }
                                         }                                        
                                     })
                                     
