@@ -99,6 +99,7 @@
   border: 1px solid #d5d5d5;
   margin: 0px 10px;
   border-radius: 8px;
+  word-break: break-all !important;
 }
 .chatPlaceholder {
   flex: 9;

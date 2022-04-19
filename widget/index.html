@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <div class="main_view" ng-style="{'height': isPrivateChat ? '100vh' : '90vh'}" ng-cloak>
+    <div class="main_view" ng-style="{'height': (isPrivateChat || hideFooter) ? '100vh' : '90vh'}" ng-cloak>
         <div ng-show="!isLoading">
             <div class="slide-right main-thread-section" style="height: 100%;" ng-show="!isLoading && showThread" ng-controller="WidgetWallCtrl as WidgetWall"
             ng-cloak>
@@ -374,7 +374,7 @@
             </div>
          </div>
         <div ng-controller="BottomNavBarCtrl as BottomNavBar">
-            <div class="bottomNavBar" ng-if="!isPrivateChat" ng-style="{background:  BottomNavBar.appTheme.titleBar}">
+            <div class="bottomNavBar" ng-if="!isPrivateChat && !hideFooter" ng-style="{background:  BottomNavBar.appTheme.footerMenuBackgroundColor}">
                 <div>
                     <span class="nav-icon" style="font-size:24px"  ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
                         

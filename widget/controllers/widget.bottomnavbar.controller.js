@@ -105,7 +105,9 @@
                 var userId = t.SocialItems.userDetails.userId;
                 if(userId){
                     let shouldNavigate = $location.absUrl().split('#')[1].includes('createPost') ? false : true;  
-                    if(shouldNavigate) Location.go('#/post/createPost/0');
+                    if(shouldNavigate) {
+                        Location.go('#/post/createPost/0');
+                    };
 
                 }
                 else{

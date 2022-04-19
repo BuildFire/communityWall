@@ -27,7 +27,10 @@
                 .when('/post/createPost/:postId',{
                     templateUrl: 'templates/createPost.html',
                     controllerAs: 'NewPost',
-                    controller: 'NewPostCtrl'
+                    controller: 'NewPostCtrl',
+                    params: {
+                        hideFooter: true
+                    }
                 })
                 .when('/singlePostView/:postId',{
                     templateUrl: 'templates/singlePost.html',
@@ -112,6 +115,15 @@
         }])
         .run(['$location', '$rootScope', 'Location', 'Buildfire', function ($location, $rootScope, Location, Buildfire) {
              var goBack = buildfire.navigation.onBackButtonClick;
+
+
+             $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {  
+                if (current && current.$$route && current.$$route.params) {
+                    $rootScope.hideFooter = current.$$route.params.hideFooter? true : false;
+                } else {
+                    $rootScope.hideFooter = false;
+                }
+             });
 
             buildfire.navigation.onBackButtonClick = function () {
                 buildfire.history.get({

@@ -47,7 +47,7 @@
 
             Inbox.searchInboxUsers =  () => {
                 Inbox.searchOptions.filter = Inbox.searchOptions.filter? Inbox.searchOptions.filter : {}
-                Inbox.searchOptions.filter['_buildfire.index.text'] = { $regex: Inbox.SocialItems.userDetails.userId, $options: 'i' }
+                Inbox.searchOptions.filter['_buildfire.index.string1'] = { $regex: Inbox.SocialItems.userDetails.userId, $options: 'i' }
                 
                 Buildfire.spinner.show();
                 SubscribedUsersData.searchForUsers(Inbox.searchOptions, function (err, users) {
@@ -61,7 +61,16 @@
                     else {
                         Inbox.showMore = false;
                     }
-                    Inbox.users = Inbox.users.concat(users.filter(el => el.userId !== Inbox.SocialItems.userDetails.userId));
+                    for (const user of users) {
+                        if (user.userId === Inbox.SocialItems.userDetails.userId) {
+                            user.userDetails = {
+                                firstName: '',
+                                lastName: '',
+                                displayName: '',
+                            }
+                        }
+                    }
+                    Inbox.users = Inbox.users.concat(users);
                     Buildfire.spinner.hide();
                     $scope.$digest();
                 })

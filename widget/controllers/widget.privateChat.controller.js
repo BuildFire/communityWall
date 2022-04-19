@@ -26,8 +26,6 @@
                             $scope.$digest();
                             t.isLoading = false;
                         });
-
-                        t.startPollingMessages();
                     }
                     else{
                         console.log("no posts");
@@ -153,6 +151,7 @@
                 clearInterval(t.timeIntervalId);
 
                 t.timeIntervalId = setInterval(() => {
+                    t.SocialItems.items = [];
                     t.SocialItems.getPrivatePosts(t.SocialItems.wid, (err, posts) =>{
                         if(posts){
                             // $timeout(function(){
@@ -190,6 +189,11 @@
                     )
                 })
             }
+
+            $scope.$on("$destroy", function () {
+                console.log('Destory subscription')
+                clearInterval(t.timeIntervalId);//we always has to do it
+             });
 
             t.init();
         }])
