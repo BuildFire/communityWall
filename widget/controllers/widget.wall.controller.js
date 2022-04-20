@@ -1253,7 +1253,7 @@
             }
 
             $scope.getCroppedImage = (url) =>{
-                return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "9:16" });
+                return Buildfire.imageLib.cropImage(url, { size: "full_width", aspect: "9:16" });
             }
 
             WidgetWall.showMoreOptions = function (post) {
@@ -1362,7 +1362,7 @@
                         wid: WidgetWall.SocialItems.wid,
                         originalPost:{
                             displayName: WidgetWall.SocialItems.getUserName(post.userDetails),
-                            userId: post.userDetails.userId,
+                            userId: post.userId ,
                             postId: post.id, 
                         } ,
                     }
@@ -1374,6 +1374,9 @@
                         SocialBuddies.interact(WidgetWall.SocialItems.userDetails.userId, post.userDetails.userId, (err, resp) =>{
                         });
                         WidgetWall.SocialItems.items.unshift(postData);
+                        Buildfire.dialog.toast({
+                            message: "Reposted successfully",
+                        });
                             Buildfire.messaging.sendMessageToControl({
                                 name: EVENTS.POST_CREATED,
                                 status: 'Success',
@@ -1381,9 +1384,10 @@
                             });
                             postData.id = response.data.id;
                             postData.uniqueLink = response.data.uniqueLink;
-                            let newData = {...post.data}
+                            let newData = {...post}
                             newData.repostsCount++;
                             SocialDataStore.updatePost(newData).then((response) =>{
+                                Location.go("");
                             },(err) => {})
     
                         }, (err) => {
@@ -1672,6 +1676,7 @@
             }
             
             WidgetWall.openImageInFullScreen = (src) =>{
+                src = buildfire.imageLib.cropImage(src, { size: 'xxl', aspect: '1:1' })
                 buildfire.imagePreviewer.show(
                     {
                       images: [src],

@@ -197,8 +197,9 @@
 
                                     buildfire.publicData.getById(badge.badgeData, "SocialBadges", (err, res) =>{
                                         if(res && res.data && Object.keys(res.data).length > 0){
+                                            const badgeDataId = clone.data.badges[index].badgeData;
                                             clone.data.badges[index].badgeData = {
-                                                id: clone.data.badges[index].badgeData,
+                                                id: badgeDataId,
                                                 ...res.data 
                                             }; 
                                         }
@@ -1118,7 +1119,7 @@
                     buildfire.publicData.search({filter:{"_buildfire.index.string1":currentUser}}, "SocialBuddies",(err, data) =>{
                         if(err) return callback(err);
                         else if(data && data.length > 0){
-                            var curr = data[0].data;
+                            let curr = data[0].data;
                             if(curr[targetUser]){
                                 curr[targetUser] += 1;
                             }
