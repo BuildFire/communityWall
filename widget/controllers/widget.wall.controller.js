@@ -997,6 +997,12 @@
                 if (!$scope.$$phase) $scope.$digest();
             };
 
+            WidgetWall.seeLess = function (post) {
+              post.seeMore = false;
+              post.limit = 150;
+              if (!$scope.$$phase) $scope.$digest();
+            };
+
             WidgetWall.getDuration = function (timestamp) {
                 if (timestamp)
                     return moment(timestamp.toString()).fromNow();

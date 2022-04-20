@@ -183,6 +183,9 @@
                                     $scope.$digest();
                             };
 
+                            var postToDelete = ContentHome.posts.find(element => element.id === postId);
+                            if (postToDelete) Posts.deletePost({userId:postToDelete.userId,postText:postToDelete.text,postImages: postToDelete.imageUrl || [],},(err, r) =>{return});
+
                             // Deleting post having id as postId
                             SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
                         }
@@ -337,6 +340,12 @@
                 post.seeMore = true;
                 post.limit = 10000000;
                 if (!$scope.$$phase) $scope.$digest();
+            };
+
+            ContentHome.seeLess = function (post) {
+              post.seeMore = false;
+              post.limit = 150;
+              if (!$scope.$$phase) $scope.$digest();
             };
 
             // Method for getting Post's and Comment's creation time in User Readable Time Format
