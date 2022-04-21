@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <div class="main_view" ng-style="{'height': isPrivateChat ? '100vh' : '90vh'}" ng-cloak>
+    <div class="main_view" ng-style="{'height': (isPrivateChat || hideFooter) ? '100vh' : '90vh'}" ng-cloak>
         <div ng-show="!isLoading">
             <div class="slide-right main-thread-section" style="height: 100%;" ng-show="!isLoading && showThread" ng-controller="WidgetWallCtrl as WidgetWall"
             ng-cloak>
@@ -157,12 +157,12 @@
  
                                                         <div class="media-holder ng-cloak" ng-click="WidgetWall.navigateToProfile(post.userId)">
                                                             <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
-                                                                data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
-                                                                crop-height="40" crop-type="crop">
+                                                                data-final-src="{{post.userDetails.imageUrl}}" crop-width="50"
+                                                                crop-height="50" crop-type="crop">
                                                             <img ng-if="!(post.userId && post.userDetails.imageUrl)"
                                                                 load-image="1x1"
                                                                 data-final-src="../../../styles/media/avatar-placeholder.png"
-                                                                data-img-type="local" crop-width="40" crop-height="40"
+                                                                data-img-type="local" crop-width="50" crop-height="50"
                                                                 crop-type="default">
                                                         </div>
                                                         <div class="social-profile-photo">
@@ -253,7 +253,7 @@
                                                                     <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" ng-click="WidgetWall.toggleReaction(post)" data-id="{{post.id}}">
                                                                         <span class="{{WidgetWall.reaction.icon}} fa-gradient" 
                                                                             ng-style="{'background': 'linear-gradient(to top, '+WidgetWall.reaction.color+' 0%, '+WidgetWall.reaction.color+' '+  WidgetWall.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  WidgetWall.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? WidgetWall.reaction.color : WidgetWall.appTheme.icons }" 
-                                                                            ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
+                                                                            ng-class="{notActive : !post.liked,'fa-border': post.liked, 'fa-gradient-fill-color': post.liked}" aria-hidden="true">
 
                                                                         </span>
                                                                     </a>
@@ -297,7 +297,7 @@
                                                                     <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" data-id="{{post.id}}">
                                                                         <span class="{{WidgetWall.reaction.icon}} fa-gradient" 
                                                                         ng-style="{'background': 'linear-gradient(to top, '+WidgetWall.reaction.color+' 0%, '+WidgetWall.reaction.color+' '+  WidgetWall.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  WidgetWall.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? WidgetWall.reaction.color : WidgetWall.appTheme.icons }" 
-                                                                        ng-class="{notActive : !post.liked, 'fa-border': post.liked}" aria-hidden="true">
+                                                                        ng-class="{notActive : !post.liked, 'fa-border': post.liked, 'fa-gradient-fill-color': post.liked}" aria-hidden="true">
 
                                                                         </span>
                                                                     </a>
@@ -374,7 +374,7 @@
             </div>
          </div>
         <div ng-controller="BottomNavBarCtrl as BottomNavBar">
-            <div class="bottomNavBar" ng-if="!isPrivateChat">
+            <div class="bottomNavBar" ng-if="!isPrivateChat && !hideFooter" ng-style="{background:  BottomNavBar.appTheme.footerMenuBackgroundColor}">
                 <div>
                     <span class="nav-icon" style="font-size:24px"  ng-class="BottomNavBar.home" ng-click="BottomNavBar.showMainWall()">
                         

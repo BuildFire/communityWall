@@ -135,20 +135,21 @@
 
                 $scope.hashtagsAutoComplete = new buildfire.components.autoComplete("hashtagsInput", config);
                 $scope.hashtagsAutoComplete.onItemAdded = (e) => {
-                    const isAdded = $scope.selectedHashtags.includes(e.detail.data.value);
+                    const value = e.detail.data.value.replace('#', '')
+                    const isAdded = $scope.selectedHashtags.includes(value);
                     if (isAdded) return;
-                    
-                    $scope.selectedHashtags.push(e.detail.data.value);
+                    $scope.selectedHashtags.push(value);
                     if (!e.detail.data.key) {
-                        $scope.newHashtagsAdded.push(e.detail.data.value);
+                        $scope.newHashtagsAdded.push(value);
                     }
                 }
                 $scope.hashtagsAutoComplete.onItemRemoved = (e) => {
                     console.log("Remove HASHTAG", e.detail.data);
+                    const value = e.detail.data.value.replace('#', '')
                     //$scope.selectedHashtags.splice($scope.selectedHashtags.findIndex(x => x === e.detail.data.value), 1);
-                    $scope.selectedHashtags = $scope.selectedHashtags.filter(hashtag => hashtag !== e.detail.data.value);
+                    $scope.selectedHashtags = $scope.selectedHashtags.filter(hashtag => hashtag !== value);
                     if (!e.detail.data.key) {
-                        $scope.newHashtagsAdded = $scope.newHashtagsAdded.filter(hashtag => hashtag !== e.detail.data.value )
+                        $scope.newHashtagsAdded = $scope.newHashtagsAdded.filter(hashtag => hashtag !== value )
                     }
                 }
 
@@ -426,7 +427,7 @@
                             }
                             else{
                                 Buildfire.spinner.show();
-                                Buildfire.services.camera.getVideo({upload: true, quality: 0,duration: 15}, (err, videoData) => {
+                                Buildfire.services.camera.getVideo({upload: true, quality: 1, duration: 15}, (err, videoData) => {
                                     Buildfire.spinner.hide();
                                     if (err || !videoData) return Buildfire.spinner.hide();
                                     else{

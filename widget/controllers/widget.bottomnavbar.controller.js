@@ -19,8 +19,17 @@
                 })
     
                 t.isLoggedIn = t.SocialItems.userDetails.userId ? true : false;
+                t.setAppTheme()
             }
             
+
+            t.setAppTheme = function () {
+                buildfire.appearance.getAppTheme((err, obj) => {
+            
+                    t.appTheme = obj.colors;
+                    // debugger
+                });
+            }
 
 
             t.navigateToProfile = function(userId){
@@ -96,7 +105,9 @@
                 var userId = t.SocialItems.userDetails.userId;
                 if(userId){
                     let shouldNavigate = $location.absUrl().split('#')[1].includes('createPost') ? false : true;  
-                    if(shouldNavigate) Location.go('#/post/createPost/0');
+                    if(shouldNavigate) {
+                        Location.go('#/post/createPost/0');
+                    };
 
                 }
                 else{

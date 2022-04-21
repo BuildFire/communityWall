@@ -3,7 +3,7 @@
         <div id="chat">
           <div id="message">
               <div  ng-show="!isScrollbarLoading" ng-repeat="post in PrivateChat.SocialItems.items | orderBy: 'createdOn' : false" ng-init="$last && isFinishedRendering()" >
-                <div id="{{post.id}}" class="flex-right" ng-if="post.userId === PrivateChat.SocialItems.userDetails.userId">
+                <div id="{{post.id}}" class="flex-right" ng-show="post.userId === PrivateChat.SocialItems.userDetails.userId">
                   
 
                   <div style="    display: flex;
@@ -58,7 +58,7 @@
                  
      
                 </div>
-                <div id="{{post.id}}" class="flex-left" ng-if="post.userId !== PrivateChat.SocialItems.userDetails.userId">
+                <div id="{{post.id}}" class="flex-left" ng-show="post.userId !== PrivateChat.SocialItems.userDetails.userId">
                   
 
                   <div style="    display: flex;

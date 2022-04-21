@@ -319,6 +319,7 @@
                             if (isConfirmed) {                    
                                 let params = {userId: t.user.userId, currentUser: t.SocialItems.userDetails.userId};
                                 SocialUserProfile.followUnfollowUser(params, (err, data) =>{
+                                    
                                     if(data){
                                         t.user.socialProfile = data;
                                         t.user.amIFollowing = t.user.socialProfile.data.followers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
@@ -388,6 +389,7 @@
                 }
                 else{
                     let params = {userId: t.user.userId, currentUser: t.SocialItems.userDetails.userId};
+                    const previousAmIPending = t.user.amIPending;
                     SocialUserProfile.followUnfollowUser(params, (err, data) =>{
                         if(data){
                             t.user.socialProfile = data;
@@ -402,12 +404,16 @@
                                 Buildfire.dialog.toast({
                                     message: "Requested to follow " + t.SocialItems.getUserName(t.user.userDetails) ,
                                 });
+                            } else if (previousAmIPending && !t.user.amIPending) {
+                                Buildfire.dialog.toast({
+                                    message: "Following Request to " + t.SocialItems.getUserName(t.user.userDetails) + " is canceled" ,
+                                });
                             } else{
                                 Buildfire.dialog.toast({
                                     message: "Unfollowed " + t.SocialItems.getUserName(t.user.userDetails) ,
                                 });
                             }
-                            t.user.amIPending = t.user.socialProfile.data.pendingFollowers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
+                            // t.user.amIPending = t.user.socialProfile.data.pendingFollowers.findIndex(e => e === t.SocialItems.userDetails.userId) < 0 ? false : true;
                                 $scope.$digest();
                             if(t.user.amIFollowing){
                                 let type = "follow"
@@ -508,6 +514,7 @@
                         delete curr._buildfire;
                         delete curr.createdOn;
                         delete curr.createdBy;
+                        delete curr.undefined;
                         t.user.buddies = [];
                         if(Object.keys(curr).length == 0) return callback(true)
                         let firstBuddy = Object.keys(curr).reduce((a, b) => curr[a] > curr[b] ? a : b);

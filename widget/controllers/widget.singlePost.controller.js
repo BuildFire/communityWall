@@ -394,6 +394,7 @@
 
 
             SinglePost.openImageInFullScreen = (src) =>{
+                src = buildfire.imageLib.cropImage(src, { size: 'xxl', aspect: '1:1' })
                 buildfire.imagePreviewer.show(
                     {
                       images: [src],
@@ -429,7 +430,7 @@
                 });
             }
             $scope.getCroppedImage = (url) =>{
-                return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "9:16" });
+                return Buildfire.imageLib.cropImage(url, { size: "full_width", aspect: "9:16" });
             }
 
 
@@ -523,7 +524,7 @@
                         wid: SinglePost.SocialItems.wid,
                         originalPost:{
                             displayName: SinglePost.SocialItems.getUserName(post.userDetails),
-                            userId: post.userDetails.userId,
+                            userId: post.userId,
                             postId: post.id, 
                         } ,
                     }
@@ -535,22 +536,26 @@
                         SocialBuddies.interact(SinglePost.SocialItems.userDetails.userId, post.userDetails.userId, (err, resp) =>{
                         });
                         SinglePost.SocialItems.items.unshift(postData);
-                            Buildfire.messaging.sendMessageToControl({
-                                name: EVENTS.POST_CREATED,
-                                status: 'Success',
-                                post: response.data
-                            });
-                            postData.id = response.data.id;
-                            postData.uniqueLink = response.data.uniqueLink;
-                            let newData = {...post.data}
-                            newData.repostsCount++;
-                            SocialDataStore.updatePost(newData).then((response) =>{
-                            },(err) => {})
+                        Buildfire.dialog.toast({
+                            message: "Reposted successfully",
+                        });
+                        Buildfire.messaging.sendMessageToControl({
+                            name: EVENTS.POST_CREATED,
+                            status: 'Success',
+                            post: response.data
+                        });
+                        postData.id = response.data.id;
+                        postData.uniqueLink = response.data.uniqueLink;
+                        let newData = {...post}
+                        newData.repostsCount++;
+                        SocialDataStore.updatePost(newData).then((response) =>{
+                            Location.go("");
+                        },(err) => {})
     
-                        }, (err) => {
-                            console.error("Something went wrong.", err)
-                            $scope.text = '';
-                        })
+                    }, (err) => {
+                        console.error("Something went wrong.", err)
+                        $scope.text = '';
+                    })
                 });
                 
                 
@@ -567,6 +572,10 @@
                     t.SocialItems.getSettings(() =>{});
                 }
             });
+
+            buildfire.navigation.onBackButtonClick = () => {
+                Location.go("");
+              };
 
             SinglePost.init();
         }]);

@@ -196,12 +196,15 @@ html{
 .fa-gradient {
     background-clip: text;
 	-webkit-background-clip: text !important;
-	-webkit-text-fill-color: rgba(150,150,150, 0);
     font-size: 25px;
     padding: 5px;
     border-radius: 100%;
     margin-top: -4px;
 }
+.fa-gradient-fill-color {
+	-webkit-text-fill-color: rgba(150,150,150, 0);
+}
+
 .fa-border{
     border-width:  1px;
     border-style: solid;

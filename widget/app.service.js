@@ -133,17 +133,29 @@
                 },
             }
         }])
-        .factory("SocialUserProfile",['$rootScope', function($rootScope){
+        .factory("SocialUserProfile", ['$rootScope', 'Location', function($rootScope, Location){
             return{
-                init: function(params){
+                init: function(params, callback = () => {}){
                     window.buildfire.publicData.search({filter:{
                         "_buildfire.index.string1" : params.userId,
                     }}, "SocialUserProfile", function(err, data){
                         if(err || data.length == 0){
-                            window.buildfire.publicData.insert(params, "SocialUserProfile", () =>{});
+                            window.buildfire.publicData.insert(params, "SocialUserProfile", () =>{
+
+                            });
                         }
                         else{
                         }
+                    })
+                },
+                insert: function(params) {
+                    return new Promise((resolve, reject) => {
+                        window.buildfire.publicData.insert(params, "SocialUserProfile", ((err, data) =>{
+                            if (err) {
+                                return reject(err);
+                            }
+                            resolve(data);
+                        }));
                     })
                 },
                 update: function(params, callback){
@@ -154,12 +166,11 @@
                 },
                 search: function(options, callback){
                     window.buildfire.publicData.search(options, "SocialUserProfile", function(err, data){
-                        if(err || data.length == 0){
+                        if(err) {
                             return callback(err, null)
-                        }
-                        else{
-                            return callback(null, data);
-                        }
+                        } 
+                        return callback(null, data);
+                        
                     })
                 },
                 get: function(userId, callback){                    
@@ -186,8 +197,9 @@
 
                                     buildfire.publicData.getById(badge.badgeData, "SocialBadges", (err, res) =>{
                                         if(res && res.data && Object.keys(res.data).length > 0){
+                                            const badgeDataId = clone.data.badges[index].badgeData;
                                             clone.data.badges[index].badgeData = {
-                                                id: clone.data.badges[index].badgeData,
+                                                id: badgeDataId,
                                                 ...res.data 
                                             }; 
                                         }
@@ -1107,7 +1119,7 @@
                     buildfire.publicData.search({filter:{"_buildfire.index.string1":currentUser}}, "SocialBuddies",(err, data) =>{
                         if(err) return callback(err);
                         else if(data && data.length > 0){
-                            var curr = data[0].data;
+                            let curr = data[0].data;
                             if(curr[targetUser]){
                                 curr[targetUser] += 1;
                             }
@@ -1186,8 +1198,8 @@
                 function prepareData(user) {
                     let location = {
                         address: user.userProfile.address && user.userProfile.address.fullAddress ?  user.userProfile.address.fullAddress :  null,
-                        lat: user.userProfile.address && user.userProfile.address.geoLocation.lat ?  user.userProfile.address.geoLocation.lat :  null,
-                        lng: user.userProfile.address && user.userProfile.address.geoLocation.lng ?  user.userProfile.address.geoLocation.lng :  null,
+                        lat: user.userProfile.address && user.userProfile.address.geoLocation && user.userProfile.address.geoLocation.lat ?  user.userProfile.address.geoLocation.lat :  null,
+                        lng: user.userProfile.address && user.userProfile.address.geoLocation && user.userProfile.address.geoLocation.lng ?  user.userProfile.address.geoLocation.lng :  null,
                     }
                     _this.userDetails = {
                         userToken: user.userToken,
@@ -1488,9 +1500,9 @@
             SocialItems.prototype.getPrivatePosts = function(wid, callback){
                 clearInterval(_this.newPrivatePostTimerChecker);
                 _this.items = [];
-                $timeout(function(){
-                    $rootScope.$digest();
-                })
+                // $timeout(function(){
+                //     $rootScope.$digest();
+                // })
                 let options = {
                     filter:{"_buildfire.index.string1":wid},
                     sort:{"createdOn": -1},
@@ -1554,7 +1566,7 @@
                             
                             $rootScope.$digest();
                         });
-                    }, 10000);
+                    }, 5000);
 
                 }
             }

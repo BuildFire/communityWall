@@ -15,6 +15,7 @@
             WidgetWall.threadTag = "thread";
             WidgetWall.appTheme = null;
             $rootScope.isLoading = true;
+            $rootScope.hideFooter = false;
             WidgetWall.loadedPlugin = false;
             WidgetWall.SocialItems = SocialItems.getInstance();
             WidgetWall.socialLanguages = WidgetWall.SocialItems.socialLanguages;
@@ -126,13 +127,10 @@
                     let navIcons = document.querySelectorAll('.nav-icon');
 
                     for (let i = 0; i < navIcons.length; i++) {
-                        navIcons[i].style.setProperty("color", obj.colors.titleBarTextAndIcons, "important");
+                        navIcons[i].style.setProperty("color", obj.colors.footerMenuIconColor, "important");
                     }
 
-                    let postIcons = document.querySelectorAll('.material-icons-outlined');
-
                     WidgetWall.appTheme = obj.colors;
-                    // debugger
                     WidgetWall.loadedPlugin = true;
                 });
             }
@@ -405,6 +403,7 @@
                             }, () => { });
                         buildfire.spinner.hide();
                         WidgetWall.loading = false;
+                        // Location.go('#/interests')
                         $scope.$digest();
                     }
                 });
@@ -626,84 +625,32 @@
                         WidgetWall.showHidePrivateChat();
                         WidgetWall.followLeaveGroupPermission();
                         WidgetWall.setAppTheme();
-                        WidgetWall.getPosts((err, posts) =>{
-                            if(posts){
-                                $timeout(function(){
-                                    WidgetWall.SocialItems = SocialItems.getInstance();
-                                    $rootScope.$digest();
-                                    $scope.$digest();
-                                    $rootScope.isLoading = false;
-                                }, 300)
-                            }
-                        });
 
-                        WidgetWall.saveActivity = function(type, data){
-                            let activity = {
-                                type: type,
-                                fromUser: data.fromUser,
-                                toUser: data.toUser,
-                                post: data.post,
-                                createdOn: new Date(),
-                                createdBy: data.fromUser.userId,
-                            }
-                            ProfileActivity.add(activity, (err, res) =>{
-                                if(err) console.error(err);
-                                else console.log(res);
-                            })
-                        }
+                       
 
-                        WidgetWall.createReactionActivity = (post) =>{
-                            let type = "reactedToYourpost";
-                            let fromUser = {
-                                displayName: WidgetWall.SocialItems.userDetails.displayName,
-                                imageUrl: WidgetWall.SocialItems.userDetails.imageUrl,
-                                userId: WidgetWall.SocialItems.userDetails.userId
-                            }
-                            let toUser = {
-                                displayName: post.userDetails.displayName,
-                                userId: post.userId
-                            }
-                            WidgetWall.saveActivity(type, {fromUser, toUser, post: {image: post.images[0],id: post.id}})
-                        }
-
-                        WidgetWall.toggleReaction = (post) =>{
-                            if(!WidgetWall.SocialItems.userDetails.userId){
-                                Buildfire.auth.login({},() => {});
-                            }
-                            if(!post.liked){
-                                let ids = {
-                                    uniqueID: post.id,
-                                    currentUserId: WidgetWall.SocialItems.userDetails.userId
+                        const initPosts = () => {
+                            WidgetWall.getPosts((err, posts) =>{
+                                if(posts){
+                                    $timeout(function(){
+                                        WidgetWall.SocialItems = SocialItems.getInstance();
+                                        $rootScope.$digest();
+                                        $scope.$digest();
+                                        $rootScope.isLoading = false;
+                                    }, 300)
                                 }
-                                SocialBuddies.interact(WidgetWall.SocialItems.userDetails.userId, post.userDetails.userId, (err, resp) =>{
-                                });
-                                ReactionsUI.toggle(ids, WidgetWall.SocialItems.getUserName(post.userDetails) , false);
-                            }
-                            else{
-                                ReactionsUI.delete(`${post.id}-${WidgetWall.SocialItems.userDetails.userId}`, console.log)
-                            }
-                            post.liked = !post.liked;
-                            let index = WidgetWall.SocialItems.items.findIndex(e => e.id === post.id);
-                            WidgetWall.SocialItems.items[index].liked = post.liked;
-                            if(post.liked){
-                                WidgetWall.SocialItems.items[index].likesCount++;
-                                WidgetWall.createReactionActivity(WidgetWall.SocialItems.items[index]);
-                                SocialDataStore.checkForBadges(WidgetWall.SocialItems.userDetails.userId, () => {
-                                    console.log("checked");
-                                })
-                            } 
-                            else WidgetWall.SocialItems.items[index].likesCount--;
+                            });
                         }
+                  
 
                         buildfire.auth.getCurrentUser((err, user) => {
                             if (err) return;
                             else if(user){                                
-                                WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                                WidgetWall.SocialItems.authenticateUser(user, (err, user) => {
                                     if (err) return console.error("Getting user failed.", err);
                                     if (user) {
                                         WidgetWall.checkFollowingStatus(user);
                                         WidgetWall.checkForPrivateChat();
-                                        var params = {
+                                        const params = {
                                             userId: user._id,
                                             interests: [],
                                             isPublicProfile: true,
@@ -721,11 +668,36 @@
                                                 }
                                             }
                                         }
-                                        SocialUserProfile.init(params)
+                                        SocialUserProfile.search({
+                                            filter : {
+                                                "_buildfire.index.string1" : params.userId
+                                            }
+                                        }, (err, data) => {
+                                            
+                                            if (err || !data || data.length === 0) {
+                                                SocialUserProfile.insert(params).then( function () {
+                                                    $rootScope.isLoading = false;
+                                                    $rootScope.$digest();
+                                                    $scope.$digest();
+                                                    $timeout(function(){
+                                                        Location.go('#/interests');
+                                                       
+                                                    }, 50)
+
+                                                }).catch(err => console.error(err))
+                                            } else {
+                                                initPosts();
+                                            }
+
+                                        })
+                                        
+                                        // SocialUserProfile.init(params)
                                     } else {
                                         WidgetWall.groupFollowingStatus = false;
                                     }
                                 });
+                            } else {
+                                initPosts();
                             }
                           
                           });
@@ -735,6 +707,63 @@
             };
             WidgetWall.init();
 
+            WidgetWall.saveActivity = function(type, data){
+                let activity = {
+                    type: type,
+                    fromUser: data.fromUser,
+                    toUser: data.toUser,
+                    post: data.post,
+                    createdOn: new Date(),
+                    createdBy: data.fromUser.userId,
+                }
+                ProfileActivity.add(activity, (err, res) =>{
+                    if(err) console.error(err);
+                    else console.log(res);
+                })
+            }
+
+            WidgetWall.createReactionActivity = (post) =>{
+                let type = "reactedToYourpost";
+                let fromUser = {
+                    displayName: WidgetWall.SocialItems.userDetails.displayName,
+                    imageUrl: WidgetWall.SocialItems.userDetails.imageUrl,
+                    userId: WidgetWall.SocialItems.userDetails.userId
+                }
+                let toUser = {
+                    displayName: post.userDetails.displayName,
+                    userId: post.userId
+                }
+                WidgetWall.saveActivity(type, {fromUser, toUser, post: {image: post.images[0],id: post.id}})
+            }
+
+            WidgetWall.toggleReaction = (post) =>{
+                if(!WidgetWall.SocialItems.userDetails.userId){
+                    Buildfire.auth.login({},() => {});
+                }
+                if(!post.liked){
+                    let ids = {
+                        uniqueID: post.id,
+                        currentUserId: WidgetWall.SocialItems.userDetails.userId
+                    }
+                    SocialBuddies.interact(WidgetWall.SocialItems.userDetails.userId, post.userDetails.userId, (err, resp) =>{
+                    });
+                    ReactionsUI.toggle(ids, WidgetWall.SocialItems.getUserName(post.userDetails) , false);
+                }
+                else{
+                    ReactionsUI.delete(`${post.id}-${WidgetWall.SocialItems.userDetails.userId}`, console.log)
+                }
+                post.liked = !post.liked;
+                let index = WidgetWall.SocialItems.items.findIndex(e => e.id === post.id);
+                WidgetWall.SocialItems.items[index].liked = post.liked;
+                if(post.liked){
+                    WidgetWall.SocialItems.items[index].likesCount++;
+                    WidgetWall.createReactionActivity(WidgetWall.SocialItems.items[index]);
+                    SocialDataStore.checkForBadges(WidgetWall.SocialItems.userDetails.userId, () => {
+                        console.log("checked");
+                    })
+                } 
+                else WidgetWall.SocialItems.items[index].likesCount--;
+            }
 
             WidgetWall.goToSinglePostView = (postId) =>{
                 Location.go("#/singlePostView/" + postId);
@@ -787,6 +816,7 @@
 
                     var params = {
                         userId: userId,
+                        senderId: WidgetWall.SocialItems.userDetails.userId,
                         userDetails: {
                             displayName: user.displayName,
                             firstName: user.firstName,
@@ -809,7 +839,7 @@
                                 string1: wid,
                                 array1:[
                                     { string1: "userId_" + userId },
-                                    { string1: "userId_" + WidgetWall.SocialItems.userDetails.userId  },
+                                    { string1: "senderId_" + WidgetWall.SocialItems.userDetails.userId  },
                                 ]
                             }
                         }
@@ -1223,7 +1253,7 @@
             }
 
             $scope.getCroppedImage = (url) =>{
-                return Buildfire.imageLib.cropImage(url, { size: "half_width", aspect: "9:16" });
+                return Buildfire.imageLib.cropImage(url, { size: "full_width", aspect: "9:16" });
             }
 
             WidgetWall.showMoreOptions = function (post) {
@@ -1332,7 +1362,7 @@
                         wid: WidgetWall.SocialItems.wid,
                         originalPost:{
                             displayName: WidgetWall.SocialItems.getUserName(post.userDetails),
-                            userId: post.userDetails.userId,
+                            userId: post.userId ,
                             postId: post.id, 
                         } ,
                     }
@@ -1344,6 +1374,9 @@
                         SocialBuddies.interact(WidgetWall.SocialItems.userDetails.userId, post.userDetails.userId, (err, resp) =>{
                         });
                         WidgetWall.SocialItems.items.unshift(postData);
+                        Buildfire.dialog.toast({
+                            message: "Reposted successfully",
+                        });
                             Buildfire.messaging.sendMessageToControl({
                                 name: EVENTS.POST_CREATED,
                                 status: 'Success',
@@ -1351,9 +1384,10 @@
                             });
                             postData.id = response.data.id;
                             postData.uniqueLink = response.data.uniqueLink;
-                            let newData = {...post.data}
+                            let newData = {...post}
                             newData.repostsCount++;
                             SocialDataStore.updatePost(newData).then((response) =>{
+                                Location.go("");
                             },(err) => {})
     
                         }, (err) => {
@@ -1642,6 +1676,7 @@
             }
             
             WidgetWall.openImageInFullScreen = (src) =>{
+                src = buildfire.imageLib.cropImage(src, { size: 'xxl', aspect: '1:1' })
                 buildfire.imagePreviewer.show(
                     {
                       images: [src],
@@ -1655,20 +1690,24 @@
             Buildfire.auth.onLogin(function (user) {
                 console.log("NEW USER LOGGED IN", WidgetWall.SocialItems.forcedToLogin)
                 if (!WidgetWall.SocialItems.forcedToLogin) {
-                    WidgetWall.SocialItems.authenticateUser(user, (err, userData) => {
-                        if (err) return console.error("Getting user failed.", err);
-                        if (userData) {
-                            WidgetWall.checkFollowingStatus();
-                            WidgetWall.reloadPosts(true);
-                            WidgetWall.SocialItems.items = [];
-                            WidgetWall.SocialItems.page = 0;
+                    WidgetWall.reloadPosts(true);
+                    WidgetWall.SocialItems.items = [];
+                    WidgetWall.SocialItems.page = 0;
+                    WidgetWall.init();
+                    // WidgetWall.SocialItems.authenticateUser(user, (err, userData) => {
+                    //     if (err) return console.error("Getting user failed.", err);
+                    //     if (userData) {
+                    //         WidgetWall.checkFollowingStatus();
+                    //         WidgetWall.reloadPosts(true);
+                    //         WidgetWall.SocialItems.items = [];
+                    //         WidgetWall.SocialItems.page = 0;
 
-                            WidgetWall.getPosts((err, posts) =>{
-                                console.log(posts);
-                                WidgetWall.reloadPosts(false);
-                            });
-                        }
-                    });
+                    //         WidgetWall.getPosts((err, posts) =>{
+                    //             console.log(posts);
+                    //             WidgetWall.reloadPosts(false);
+                    //         });
+                    //     }
+                    // });
                 } else WidgetWall.SocialItems.forcedToLogin = false;
                 // WidgetWall.showUserLikes();
                 if ($scope.$$phase) $scope.$digest();

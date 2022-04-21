@@ -7,12 +7,12 @@
 
                 <div class="media-holder ng-cloak" ng-click="SinglePost.navigateToProfile(post.userId)">
                     <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
-                        data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
-                        crop-height="40" crop-type="crop">
+                        data-final-src="{{post.userDetails.imageUrl}}" crop-width="50"
+                        crop-height="50" crop-type="crop">
                     <img ng-if="!(post.userId && post.userDetails.imageUrl)"
                         load-image="1x1"
                         data-final-src="../../../styles/media/avatar-placeholder.png"
-                        data-img-type="local" crop-width="40" crop-height="40"
+                        data-img-type="local" crop-width="50" crop-height="50"
                         crop-type="default">
                 </div>
                 <div class="social-profile-photo">
@@ -102,7 +102,7 @@
                             <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" ng-click="SinglePost.toggleReaction(post)" data-id="{{post.id}}">
                                 <span class="{{SinglePost.reaction.icon}} fa-gradient" 
                                 ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? SinglePost.reaction.color : SinglePost.appTheme.icons}" 
-                                ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
+                                ng-class="{notActive : !post.liked,'fa-border': post.liked, 'fa-gradient-fill-color': post.liked}" aria-hidden="true">
 
                                 </span>
                             </a>
@@ -146,7 +146,7 @@
                             <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" data-id="{{post.id}}">
                                 <span class="{{SinglePost.reaction.icon}} fa-gradient" 
                                 ng-style="{'background': 'linear-gradient(to top, '+SinglePost.reaction.color+' 0%, '+SinglePost.reaction.color+' '+  SinglePost.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  SinglePost.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? SinglePost.reaction.color : SinglePost.appTheme.icons}" 
-                                ng-class="{notActive : !post.liked,'fa-border': post.liked}" aria-hidden="true">
+                                ng-class="{notActive : !post.liked,'fa-border': post.liked, 'fa-gradient-fill-color': post.liked}" aria-hidden="true">
 
                                 </span>
                             </a>
