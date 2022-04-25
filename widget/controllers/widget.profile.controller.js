@@ -135,8 +135,21 @@
 
             t.getUserDetails = (callback) =>{
                 SubscribedUsersData.get($routeParams.userId, (err, userDetails) =>{
-                    t.user.userDetails = userDetails? userDetails.data.userDetails : null;
-                    return callback(true)
+                    buildfire.auth.getUserProfile({ userId: $routeParams.userId}, (err, user) => {
+                        if (err) return callback(false)
+                        t.user.userDetails = userDetails? userDetails.data.userDetails : {};
+                        if (user) {
+                            t.user.userDetails.bio = user.userProfile.bio || user.bio;
+                            let location = {
+                                address: user.userProfile.address && user.userProfile.address.fullAddress ?  user.userProfile.address.fullAddress :  null,
+                                lat: user.userProfile.address && user.userProfile.address.geoLocation && user.userProfile.address.geoLocation.lat ?  user.userProfile.address.geoLocation.lat :  null,
+                                lng: user.userProfile.address && user.userProfile.address.geoLocation && user.userProfile.address.geoLocation.lng ?  user.userProfile.address.geoLocation.lng :  null,
+                            }
+                            t.user.userDetails.location = location; 
+                        }
+                        return callback(true)
+                      });
+                    
                 })
             }
 

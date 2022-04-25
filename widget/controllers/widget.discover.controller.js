@@ -110,6 +110,7 @@
                     Discover.isLoading = false;
                     let container = document.getElementById("discover-posts-container");
                     container.addEventListener('scroll',() =>{
+                        console.log('Get more posts');
                         if( $scope.shouldFetchMorePosts && ( container.scrollTop - (container.scrollHeight - container.offsetHeight) > - 30) && !$scope.isBusy ){
                             Buildfire.spinner.show();
                             $scope.isBusy = true;

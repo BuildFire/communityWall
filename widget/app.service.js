@@ -1687,4 +1687,9 @@
                 }
             };
         }])
+        .factory("PushNotification",['$rootScope', 'SocialItems', function($rootScope, SocialItems){
+            return{
+                
+            }
+        }])
 })(window.angular, window.buildfire, window.location);

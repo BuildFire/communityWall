@@ -65,7 +65,10 @@
                 .when('/search',{
                     templateUrl: 'templates/search.html',
                     controllerAs: 'Search',
-                    controller: 'SearchCtrl'
+                    controller: 'SearchCtrl',
+                    params: {
+                        hideFooter: true
+                    }
                 })
                 .when('/PrivateChat',{
                     templateUrl: 'templates/PrivateChat.html',

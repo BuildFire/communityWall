@@ -19,7 +19,7 @@
             People
         </div>
     </div>
-    <div style="height: 73vh;padding-bottom: 1vh;" ng-style="{'overflow-y':!Discover.isLoading ? 'auto' : 'none'}">
+    <div ng-style="{'overflow-y':!Discover.isLoading ? 'auto' : 'none'}">
         <div  ng-show="Discover.isLoading" style="overflow-y:none">
             <div class="gridSkeleton">
                 <div class="gridSkeletonItem item1"></div>
@@ -37,11 +37,11 @@
             </div>
         </div>
         <div  ng-show="!Discover.isLoading">
-            <div id="discover-posts-container" ng-show="activePageIndex == 1" style="height: 100%;overflow-y: auto;"  >
+            <div id="discover-posts-container" ng-show="activePageIndex == 1" class="discover-scrollable-container">
         
             </div>
         </div>
-        <div id="discover-people-container"  ng-show="activePageIndex == 2" style="height: 100%;overflow-y: auto;" >
+        <div id="discover-people-container"  ng-show="activePageIndex == 2" class="discover-scrollable-container">
             <div ng-if="users && users.length > 0" ng-repeat="user in users">
                 <div  ng-click="navigateToProfile(user.data.userId)">
                     <div class="discover-people-profile-picture">
@@ -70,7 +70,7 @@
                 <div class="empty_state"></div>
             </div>
         </div>
-        <div id="discover-hashtags-container" style="height: 100%;overflow-y: auto;" ng-if="!isBusy" ng-show="activePageIndex == 0">
+        <div id="discover-hashtags-container" class="discover-scrollable-container" ng-if="!isBusy" ng-show="activePageIndex == 0">
             <div  ng-show="Discover.isLoading">
 
             </div>

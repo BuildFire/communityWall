@@ -1,7 +1,6 @@
 .interests-buttonContainer{
-    display: block;
-    position: absolute;
-    bottom: 1%;
+    position: fixed;
+    bottom: 11vh;
     left: 5%;
     width: 90%;
     height: 40px;
