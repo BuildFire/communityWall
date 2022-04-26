@@ -6,8 +6,11 @@
     
 
     <div class="imageContainer" id="imageContainer" ng-click = "selectImage(this)">
-      <img ng-src="{{selectedMedia.shown}}" ng-if="selectedMedia.type === 'image' " alt="" />
-      <video ng-src="{{trustSrc(selectedMedia.shown)}}" ng-if="selectedMedia.type === 'video'" controls></video>
+      <span class="material-icons select-media-btn"  ng-if="!selectedMedia ||!selectedMedia.shown">
+        add
+      </span>
+      <img ng-src="{{selectedMedia.shown}}" ng-if="selectedMedia.shown && selectedMedia.type === 'image' " alt="" />
+      <video ng-src="{{trustSrc(selectedMedia.shown)}}" ng-if="selectedMedia.shown && selectedMedia.type === 'video'" controls></video>
     </div>
 
   </div>

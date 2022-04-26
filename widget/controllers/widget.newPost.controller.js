@@ -83,9 +83,9 @@
                         }
                         
                         $scope.selectedMedia = {
-                            type: res.images.length > 0 ? "image" : res.videos.length > 0 ? "video" : "image",
-                            src: res.images.length > 0 ? res.images[0] : res.videos.length > 0 ? res.videos[0] : "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
-                            shown:  res.images.length > 0 ? croppedImage(res.images[0]) : res.videos.length > 0 ? res.videos[0] : "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
+                            type: res.images.length > 0 ? "image" : res.videos.length > 0 ? "video" : "",
+                            src: res.images.length > 0 ? res.images[0] : res.videos.length > 0 ? res.videos[0] : "",
+                            shown:  res.images.length > 0 ? croppedImage(res.images[0]) : res.videos.length > 0 ? res.videos[0] : "",
                         }
                         $rootScope.showThread = false;
                     })
@@ -96,9 +96,9 @@
                     $scope.selectedUsers = [];
     
                     $scope.selectedMedia = {
-                        type: "image",
-                        src: "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
-                        shown: "https://pluginserver.buildfire.com/styles/media/holder-16x9.png",
+                        type: "",
+                        src: "",
+                        shown: "",
                     }
     
                     $rootScope.showThread = false;
@@ -291,7 +291,7 @@
 
             $scope.checkIfCanSubmit = function(){
                 if($routeParams.postId == 0){
-                    if($scope.selectedMedia.shown === "https://pluginserver.buildfire.com/styles/media/holder-16x9.png"){
+                    if(!$scope.selectedMedia.shown){
                         Buildfire.dialog.alert({
                             message: "Post must have an image or a video.",
                         });
@@ -302,8 +302,8 @@
                             text: $scope.text ? $scope.text.replace(/[#&%+!@^*()-]/g, function (match) {
                                 return encodeURIComponent(match)
                             }) : '',
-                            images : type === 'image' && src != "https://pluginserver.buildfire.com/styles/media/holder-16x9.png" ? [src] : [],
-                            videos : type === 'video'  ? [src] : [],
+                            images : type === 'image' && src? [src] : [],
+                            videos : type === 'video' && src ? [src] : [],
                             location: $scope.googlePlaceDetails,
                             taggedPeople: $scope.selectedUsers,
                             hashtags: $scope.selectedHashtags,
@@ -314,7 +314,7 @@
                         $scope.createPost(postData);
                     }
                 } else {
-                    if($scope.selectedMedia.shown === "https://pluginserver.buildfire.com/styles/media/holder-16x9.png"){
+                    if(!$scope.selectedMedia.shown){
                         Buildfire.dialog.alert({
                             message: "Post must have an image or a video.",
                         });
@@ -325,8 +325,8 @@
                         postData.text = $scope.text ? $scope.text.replace(/[#&%+!@^*()-]/g, function (match) {
                                 return encodeURIComponent(match)
                             }) : '',
-                        postData.images = type === 'image' && src != "https://pluginserver.buildfire.com/styles/media/holder-16x9.png" ? [src] : [],
-                        postData.videos = type === 'video'  ? [src] : [],
+                        postData.images = type === 'image' && src ? [src] : [],
+                        postData.videos = type === 'video' && src ? [src] : [],
                         postData.location =  $scope.googlePlaceDetails,
                         postData.taggedPeople =  $scope.selectedUsers,
                         postData.hashtags =  $scope.selectedHashtags,
@@ -368,10 +368,10 @@
 
             $scope.clear = function(){
                 $scope.text = "";
-                $scope.selectedMedia.src = "https://pluginserver.buildfire.com/styles/media/holder-16x9.png";
-                $scope.selectedMedia.shown = "https://pluginserver.buildfire.com/styles/media/holder-16x9.png";
+                $scope.selectedMedia.src = "";
+                $scope.selectedMedia.shown = "";
 
-                $scope.selectedMedia.type = "image";
+                $scope.selectedMedia.type = "";
                 $scope.images = [];
                 $scope.videos = [];
                 $scope.taggedPeople = [];
@@ -460,7 +460,14 @@
                                 console.log(err);
                                 return Buildfire.spinner.hide();
                             }
+                        
                             file = file[0];
+                            if (!file || file.status === 'failed') {
+                                Buildfire.dialog.toast({
+                                    message: "Unable to upload",
+                                });
+                                return
+                            }
                             let isImage = file.type.split('/')[0] === 'image'; 
                             $scope.selectedMedia.src = file.url;
                             $scope.selectedMedia.type = isImage ? "image" : "video";
