@@ -862,11 +862,11 @@
             }
 
             WidgetWall.navigateToPrivateChat = function (user) {
-                buildfire.history.get({
-                    pluginBreadcrumbsOnly: true
-                }, function (err, result) {
-                    result.forEach(e=> buildfire.history.pop());
-                });
+                // buildfire.history.get({
+                //     pluginBreadcrumbsOnly: true
+                // }, function (err, result) {
+                //     result.forEach(e=> buildfire.history.pop());
+                // });
                 
                 WidgetWall.SocialItems.isPrivateChat = true;
                 WidgetWall.SocialItems.wid = user.wid;

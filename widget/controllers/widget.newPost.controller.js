@@ -540,6 +540,7 @@
                     saveNewHashtags();
                     setTimeout(() => {
                         $scope.inProgress = false;
+                        buildfire.history.pop();
                         if(!$rootScope.wonBadge){
                             Location.go("#/singlePostView/"+response.data.id);
                         }else{

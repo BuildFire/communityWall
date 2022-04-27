@@ -800,11 +800,11 @@
 
 
             t.navigateToPrivateChat = function (user) {
-                Buildfire.history.get({
-                    pluginBreadcrumbsOnly: true
-                }, function (err, result) {
-                    result.forEach(e=> buildfire.history.pop());
-                });
+                // Buildfire.history.get({
+                //     pluginBreadcrumbsOnly: true
+                // }, function (err, result) {
+                //     result.forEach(e=> buildfire.history.pop());
+                // });
                 
                 t.SocialItems.isPrivateChat = true;
                 t.SocialItems.wid = user.wid;

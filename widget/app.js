@@ -130,42 +130,16 @@
 
             buildfire.navigation.onBackButtonClick = function () {
                 buildfire.history.get({
-                    pluginBreadcrumbsOnly: true
+                    pluginBreadcrumbsOnly: true,
                 }, function (err, result) {
                     console.log(result);
                     console.log("BACK BUTTON CLICK", result)
-                    if(!result.length) return goBack();
-                    if(result[result.length-1].options.isPrivateChat) {
-                        console.log("PRIVATE CHAT BACK BUTTON")
-                        result.map(item => buildfire.history.pop());
-                        $rootScope.showThread = true;
-                        $location.path('/');
-                        $rootScope.$broadcast("navigatedBack");
-                        //location.reload();
-                    }
-                    else {
-                         if(result[0].label === 'thread' || result[0].label === 'members') {
-                            $rootScope.showThread = true;
-                            $location.path('/');
-                            $rootScope.$digest();
-                            buildfire.history.pop();
-                        } 
-                        else{
-                            if(result.length == 1){
-                                result.map(item => buildfire.history.pop());
-                                $rootScope.showThread = true;
-                                $location.path('/');
-                                $rootScope.$broadcast("navigatedBack");
-                            }
-                            else{
-                                buildfire.history.pop();
-                                result.pop();
-                                let pathToGo = result[result.length - 1].label;
-                                window.location.href = pathToGo;
-                            }
 
-                        }
-                    }
+                    buildfire.history.pop();
+                    result.pop();
+                    if(!result.length) return goBack();
+                    let pathToGo = result[result.length - 1].label;
+                    window.location.href = pathToGo;
                 });
             }
         }])

@@ -118,11 +118,11 @@
             }
 
             SinglePost.navigateToPrivateChat = function (user) {
-                buildfire.history.get({
-                    pluginBreadcrumbsOnly: true
-                }, function (err, result) {
-                    result.forEach(e=> buildfire.history.pop());
-                });
+                // buildfire.history.get({
+                //     pluginBreadcrumbsOnly: true
+                // }, function (err, result) {
+                //     result.forEach(e=> buildfire.history.pop());
+                // });
                 
                 SinglePost.SocialItems.isPrivateChat = true;
                 SinglePost.SocialItems.wid = user.wid;
@@ -582,9 +582,11 @@
                 }
             });
 
+            const goBack = buildfire.navigation.onBackButtonClick;
             buildfire.navigation.onBackButtonClick = () => {
                 Location.go("");
-              };
+                // goBack();
+            };
 
             SinglePost.init();
         }]);
