@@ -32,7 +32,7 @@
                         hideFooter: true
                     }
                 })
-                .when('/singlePostView/:postId',{
+                .when('/singlePostView/:postId/:context?',{
                     templateUrl: 'templates/singlePost.html',
                     controllerAs: 'SinglePost',
                     controller: 'SinglePostCtrl'

@@ -348,9 +348,9 @@
                     setTimeout(() => {     
                         $scope.inProgress = false;
                         if(!$rootScope.wonBadge){
-                            Location.go("#/singlePostView/"+response.data.id);
+                            Location.go("#/singlePostView/" + response.data.id + "/newPost");
                         }else{
-                            $rootScope.wonBadge.goToPath = "#/singlePostView/"+response.data.id;
+                            $rootScope.wonBadge.goToPath = "#/singlePostView/"+response.data.id + "/newPost";
                         }
                     }, 200);
                     NewPost.SocialItems.items.unshift(postData);
@@ -542,9 +542,9 @@
                         $scope.inProgress = false;
                         buildfire.history.pop();
                         if(!$rootScope.wonBadge){
-                            Location.go("#/singlePostView/"+response.data.id);
+                            Location.go("#/singlePostView/" + response.data.id + "/newPost");
                         }else{
-                            $rootScope.wonBadge.goToPath = "#/singlePostView/"+response.data.id;
+                            $rootScope.wonBadge.goToPath = "#/singlePostView/" + response.data.id + "/newPost";
                         }
                     }, 200);
                     NewPost.SocialItems.items.unshift(postData);

@@ -584,8 +584,11 @@
 
             const goBack = buildfire.navigation.onBackButtonClick;
             buildfire.navigation.onBackButtonClick = () => {
-                Location.go("");
-                // goBack();
+                if ($routeParams.context === 'newPost') {
+                    Location.go("");
+                    return;
+                }
+                goBack();
             };
 
             SinglePost.init();
