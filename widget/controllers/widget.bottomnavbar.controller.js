@@ -41,6 +41,14 @@
                 t.SocialItems = SocialItems.getInstance();
                 let shouldNavigate = $location.absUrl().split('#')[1] == "/" ? false : true;  
                 if(shouldNavigate) Location.go("");
+                // scroll to top
+                const container = document.querySelector('#posts_main_wall');
+                if (container) {
+                    container.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
                 Buildfire.history.get({
                     pluginBreadcrumbsOnly: true
                 }, function (err, result) {
@@ -74,6 +82,13 @@
             t.goToDiscover = function(){
                 let shouldNavigate = $location.absUrl().split('#')[1].includes('discover') ? false : true;  
                 if(shouldNavigate) Location.go("#/discover/");
+                const container = document.querySelector('#discover-posts-container');
+                if (container) {
+                    container.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
             }
             t.goToActivity = function(){
                 t.SocialItems = SocialItems.getInstance();
