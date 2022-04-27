@@ -74,6 +74,7 @@
 
                     var params = {
                         userId: userId,
+                        user2Id: SinglePost.SocialItems.userDetails.userId,
                         userDetails: {
                             displayName: user.displayName,
                             firstName: user.firstName,
@@ -88,12 +89,20 @@
 
                             }
                         },
+                        user2Details: {
+                            userId: SinglePost.SocialItems.userDetails.userId,
+                            displayName: SinglePost.SocialItems.userDetails.displayName,
+                            firstName: SinglePost.SocialItems.userDetails.firstName,
+                            lastName: SinglePost.SocialItems.userDetails.lastName,
+                            imageUrl: SinglePost.SocialItems.userDetails.imageUrl,
+                        },
                         wallId: wid,
                         posts: [],
                         _buildfire: {
                             index: { text: userId + '-' + wid, string1: wid,
                             array1:[
-                                {string1: "userId_"+userId}
+                                {string1: "userId_" + userId},
+                                {string1: "userId_" + SinglePost.SocialItems.userDetails.userId}
                             ]}
                         }
 

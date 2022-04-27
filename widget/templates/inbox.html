@@ -11,7 +11,7 @@
       </div>
   
       <div class="inboxMembers">
-        <div  class="inbox-item" ng-repeat="user in Inbox.users | orderBy: 'lastMessage.createdAt' : false" ng-click="Inbox.navigateToPrivateChat(user)">
+        <div  class="inbox-item" ng-repeat="user in Inbox.users" ng-click="Inbox.navigateToPrivateChat(user)">
           <div class="flex">
               <div>
                 <div class="media-holder">

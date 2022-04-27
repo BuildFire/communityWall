@@ -816,13 +816,12 @@
 
                     var params = {
                         userId: userId,
-                        senderId: WidgetWall.SocialItems.userDetails.userId,
+                        user2Id: WidgetWall.SocialItems.userDetails.userId,
                         userDetails: {
                             displayName: user.displayName,
                             firstName: user.firstName,
                             lastName: user.lastName,
                             imageUrl: user.imageUrl,
-                            email: user.email,
                             lastUpdated: new Date().getTime(),
                             location:{
                                 address: user?.userProfile?.address?.fullAddress || null,
@@ -830,6 +829,13 @@
                                 lng: user?.userProfile?.address?.geoLocation?.lng || null,
 
                             }
+                        },
+                        user2Details: {
+                            userId: WidgetWall.SocialItems.userDetails.userId,
+                            displayName: WidgetWall.SocialItems.userDetails.displayName,
+                            firstName: WidgetWall.SocialItems.userDetails.firstName,
+                            lastName: WidgetWall.SocialItems.userDetails.lastName,
+                            imageUrl: WidgetWall.SocialItems.userDetails.imageUrl,
                         },
                         wallId: wid,
                         posts: [],
@@ -839,7 +845,7 @@
                                 string1: wid,
                                 array1:[
                                     { string1: "userId_" + userId },
-                                    { string1: "senderId_" + WidgetWall.SocialItems.userDetails.userId  },
+                                    { string1: "userId_" + WidgetWall.SocialItems.userDetails.userId  },
                                 ]
                             }
                         }

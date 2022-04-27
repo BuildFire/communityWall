@@ -853,6 +853,7 @@
 
                     var params = {
                         userId: userId,
+                        user2Id: t.SocialItems.userDetails.userId,
                         userDetails: {
                             displayName: user.displayName,
                             firstName: user.firstName,
@@ -867,12 +868,20 @@
 
                             }
                         },
+                        user2Details: {
+                            userId: t.SocialItems.userDetails.userId,
+                            displayName: t.SocialItems.userDetails.displayName,
+                            firstName: t.SocialItems.userDetails.firstName,
+                            lastName: t.SocialItems.userDetails.lastName,
+                            imageUrl: t.SocialItems.userDetails.imageUrl,
+                        },
                         wallId: wid,
                         posts: [],
                         _buildfire: {
                             index: { text: userId + '-' + wid, string1: wid,
                             array1:[
-                                {string1: "userId_"+userId}
+                                { string1: "userId_" + userId },
+                                { string1: "userId_" + t.SocialItems.userDetails.userId }
                             ]}
                         }
 

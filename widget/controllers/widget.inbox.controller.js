@@ -47,8 +47,10 @@
 
             Inbox.searchInboxUsers =  () => {
                 Inbox.searchOptions.filter = Inbox.searchOptions.filter? Inbox.searchOptions.filter : {}
-                Inbox.searchOptions.filter['_buildfire.index.string1'] = { $regex: Inbox.SocialItems.userDetails.userId, $options: 'i' }
-                
+                Inbox.searchOptions.filter['_buildfire.index.array1.string1'] = `userId_${Inbox.SocialItems.userDetails.userId}`
+                Inbox.searchOptions.sort = {
+                    "lastMessage.createdAt": -1
+                }
                 Buildfire.spinner.show();
                 SubscribedUsersData.searchForUsers(Inbox.searchOptions, function (err, users) {
                     if (err) return console.log(err);
@@ -63,7 +65,7 @@
                     }
                     for (const user of users) {
                         if (user.userId === Inbox.SocialItems.userDetails.userId) {
-                            user.userDetails = {
+                            user.userDetails = user.user2Details? {...user.user2Details} : {
                                 firstName: '',
                                 lastName: '',
                                 displayName: '',
