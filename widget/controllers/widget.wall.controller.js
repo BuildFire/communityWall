@@ -1313,9 +1313,16 @@
 
 
             WidgetWall.sharePost = function(post){
+                if ($scope.shareLoading) {
+                    return;
+                }
+                $scope.shareLoading = true;
+                Buildfire.spinner.show();
                 Buildfire.deeplink.generateUrl({
                     data: {postId: post.id}
                 }, function (err, result) {
+                    Buildfire.spinner.hide();
+                    $scope.shareLoading = false;
                     if (err) {
                         console.error(err)
                     } else {

@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('DiscoverCtrl', ['$scope', '$rootScope','SocialUserProfile', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', function ($scope, $rootScope, SocialUserProfile, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout) {
+        .controller('DiscoverCtrl', ['$scope', '$rootScope','SocialUserProfile', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', '$location', function ($scope, $rootScope, SocialUserProfile, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout, $location) {
             var Discover = this;
             Discover.SocialItems = SocialItems.getInstance();
             $scope.finishRender = false;
@@ -11,13 +11,17 @@
             $scope.shouldFetchMorePosts = true;
             Discover.isLoading = true;
             $scope.setActivePage = function(pageIndex){
+                if ($scope.activePageIndex !== pageIndex) {
+                    Location.go(`#/discover/${pageIndex}`);
+                    return;
+                }
                 let pages = document.getElementById("navBar").children;
                 let page = pages.item(pageIndex);
                 pages.item(0).style.borderBottomWidth = "0px";
                 pages.item(1).style.borderBottomWidth = "0px";
                 pages.item(2).style.borderBottomWidth = "0px";
                 page.style.borderBottomWidth = "2px";
-                $scope.activePageIndex = pageIndex;
+                // $scope.activePageIndex = pageIndex;
                 $scope.sendToCp([]);;
                 if(pageIndex === 0) $scope.sendToCp();
                 else if(pageIndex === 1) $scope.sendToCp();
@@ -87,6 +91,10 @@
                 })
             }
             Discover.init = function(){
+                console.log('Router Params', $location.search()); 
+                if ($routeParams.tab) {
+                    $scope.activePageIndex = parseInt($routeParams.tab);
+                }
                 Buildfire.spinner.show();
                 $scope.isBusy = true;
                 $scope.trendingHashtags = {};
@@ -94,7 +102,6 @@
                     console.log(result);
                     $rootScope.showThread = false;
                     $rootScope.$digest();
-                    $scope.setActivePage($scope.activePageIndex);
                     $scope.posts = result;
                     $scope.injectElements(result);
                     Discover.getUsersWhoIDontFollow();
@@ -102,12 +109,13 @@
                         $scope.trendingHashtags = trendingHashtagsPosts;
                         console.log($scope.trendingHashtags);
                         $scope.isBusy = false;
+                        $scope.setActivePage($scope.activePageIndex);
+                        Discover.isLoading = false;
                         Buildfire.spinner.hide();
                         console.log(Discover.isLoading);
                         $scope.$digest();
                     })
                     
-                    Discover.isLoading = false;
                     let container = document.getElementById("discover-posts-container");
                     container.addEventListener('scroll',() =>{
                         console.log('Get more posts');
@@ -213,6 +221,7 @@
                     if(i === posts.length - 1){
                         Buildfire.spinner.hide();
                         $scope.finishRender = true;
+                        $scope.$digest();
                     }
                 }
             }

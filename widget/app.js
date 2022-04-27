@@ -57,7 +57,7 @@
                     controllerAs: 'Interests',
                     controller: 'InterestsCtrl'
                 })
-                .when('/discover',{
+                .when('/discover/:tab?',{
                     templateUrl: 'templates/discover.html',
                     controllerAs: 'Discover',
                     controller: 'DiscoverCtrl'

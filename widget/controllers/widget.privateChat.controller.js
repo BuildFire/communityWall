@@ -192,6 +192,7 @@
 
             $scope.$on("$destroy", function () {
                 console.log('Destory subscription')
+                t.SocialItems.isPrivateChat = false;
                 clearInterval(t.timeIntervalId);//we always has to do it
              });
 
