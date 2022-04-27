@@ -7,8 +7,8 @@
             var NewPost = this;
             NewPost.SocialItems = SocialItems.getInstance();
             let postId = $routeParams.postId;
-            console.log(postId);
             $scope.errorMessage = "Test";
+            $scope.inProgress = false;
             NewPost.init = function () {
                 NewPost.people = [];
                 $scope.sendToCp([]);
@@ -336,6 +336,8 @@
             }
             $scope.updatePost = function(postData){
                 console.log(postData);
+                $scope.inProgress = true;
+
                 SocialDataStore.updatePost(postData).then(response => {
                     Buildfire.dialog.toast({
                         message: "Post updated successfully",
@@ -343,7 +345,8 @@
 
                     saveNewHashtags();
 
-                    setTimeout(() => {                        
+                    setTimeout(() => {     
+                        $scope.inProgress = false;
                         if(!$rootScope.wonBadge){
                             Location.go("#/singlePostView/"+response.data.id);
                         }else{
@@ -363,6 +366,7 @@
                     }, (err) => {
                         console.error("Something went wrong.", err);
                         $scope.text = '';
+                        $scope.inProgress = false;
                     })
             }
 
@@ -522,6 +526,7 @@
 
             $scope.createPost = function(postData){      
                 console.log(postData);
+                $scope.inProgress = true;
                 SocialDataStore.createPost(postData).then((response) => {
                     console.log(response);
                     Buildfire.dialog.toast({
@@ -533,7 +538,8 @@
                         })
                     }
                     saveNewHashtags();
-                    setTimeout(() => {                        
+                    setTimeout(() => {
+                        $scope.inProgress = false;
                         if(!$rootScope.wonBadge){
                             Location.go("#/singlePostView/"+response.data.id);
                         }else{
@@ -553,6 +559,7 @@
                     }, (err) => {
                         console.error("Something went wrong.", err);
                         $scope.text = '';
+                        $scope.inProgress = false;
                     })
             }
 
