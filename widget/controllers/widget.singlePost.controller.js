@@ -74,6 +74,7 @@
 
                     var params = {
                         userId: userId,
+                        user2Id: SinglePost.SocialItems.userDetails.userId,
                         userDetails: {
                             displayName: user.displayName,
                             firstName: user.firstName,
@@ -88,12 +89,20 @@
 
                             }
                         },
+                        user2Details: {
+                            userId: SinglePost.SocialItems.userDetails.userId,
+                            displayName: SinglePost.SocialItems.userDetails.displayName,
+                            firstName: SinglePost.SocialItems.userDetails.firstName,
+                            lastName: SinglePost.SocialItems.userDetails.lastName,
+                            imageUrl: SinglePost.SocialItems.userDetails.imageUrl,
+                        },
                         wallId: wid,
                         posts: [],
                         _buildfire: {
                             index: { text: userId + '-' + wid, string1: wid,
                             array1:[
-                                {string1: "userId_"+userId}
+                                {string1: "userId_" + userId},
+                                {string1: "userId_" + SinglePost.SocialItems.userDetails.userId}
                             ]}
                         }
 
@@ -109,11 +118,11 @@
             }
 
             SinglePost.navigateToPrivateChat = function (user) {
-                buildfire.history.get({
-                    pluginBreadcrumbsOnly: true
-                }, function (err, result) {
-                    result.forEach(e=> buildfire.history.pop());
-                });
+                // buildfire.history.get({
+                //     pluginBreadcrumbsOnly: true
+                // }, function (err, result) {
+                //     result.forEach(e=> buildfire.history.pop());
+                // });
                 
                 SinglePost.SocialItems.isPrivateChat = true;
                 SinglePost.SocialItems.wid = user.wid;
@@ -573,9 +582,14 @@
                 }
             });
 
+            const goBack = buildfire.navigation.onBackButtonClick;
             buildfire.navigation.onBackButtonClick = () => {
-                Location.go("");
-              };
+                if ($routeParams.context === 'newPost') {
+                    Location.go("");
+                    return;
+                }
+                goBack();
+            };
 
             SinglePost.init();
         }]);

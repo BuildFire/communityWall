@@ -1682,9 +1682,9 @@ html[buildfire][safe-area="true"] body {
 	background-color: rgba(255, 255, 255, 0.1);
 	margin: .75em;
 	align-items: center;
-	position: absolute;
-	top: 0;
-    left: 0;
+	/* position: absolute; */
+	/* top: 0;
+    left: 0; */
     height: 2.5em;
 	width: calc(100% - 1.5rem);
 	box-shadow: 0 0.05rem 0.25rem rgba(135, 135, 135, 0.2);

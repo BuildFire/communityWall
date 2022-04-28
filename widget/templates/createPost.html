@@ -6,8 +6,11 @@
     
 
     <div class="imageContainer" id="imageContainer" ng-click = "selectImage(this)">
-      <img ng-src="{{selectedMedia.shown}}" ng-if="selectedMedia.type === 'image' " alt="" />
-      <video ng-src="{{trustSrc(selectedMedia.shown)}}" ng-if="selectedMedia.type === 'video'" controls></video>
+      <span class="material-icons select-media-btn"  ng-if="!selectedMedia ||!selectedMedia.shown">
+        add
+      </span>
+      <img ng-src="{{selectedMedia.shown}}" ng-if="selectedMedia.shown && selectedMedia.type === 'image' " alt="" />
+      <video ng-src="{{trustSrc(selectedMedia.shown)}}" ng-if="selectedMedia.shown && selectedMedia.type === 'video'" controls></video>
     </div>
 
   </div>
@@ -45,6 +48,6 @@
   
 
   
-  <button ng-click="checkIfCanSubmit()" style="margin-bottom: 2vh;background-color: var(--bf-theme-success);color: var(--bf-theme-background)">Post</button>
+  <button class="btn btn-success" ng-click="checkIfCanSubmit()" ng-disabled="inProgress" style="margin-bottom: 2vh;">Post</button>
 
 </div>

@@ -1,8 +1,16 @@
+.profile-container {
+    width: 100%;
+    height: calc(100vh - 75px);
+    /* padding-top:10px; */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .profile-header{
-    height: 10vh;
+    /* height: 10vh; */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     /* width: 90%; */
     align-content: center;
     margin: 1rem;
@@ -33,7 +41,7 @@
 .profile-picture-container > img{
     height: 100%;
     width: 100%;
-    /* border-radius: 100%; */
+    border-radius: 100%;
     object-fit: cover;
 }
 
@@ -51,6 +59,7 @@
     justify-content: center;
     align-items: flex-start;
     margin-left: 10px;
+    min-height: 4rem;
 }
 .options{
     flex: 1;
@@ -93,10 +102,10 @@
     justify-content: center;
     align-items: center;
     display: flex;
-    height: 5.5%;
+    /* height: 5.5%; */
     border-radius: 5px;  
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: .5rem;
+    margin-bottom: .5rem;
 
 }
 .button-container > button{
@@ -117,12 +126,18 @@
 
 .switch{
     width: 100%;
-    height: 3vh;
+    /* height: 3vh; */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background: var(--bf-theme-background);
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+    padding: .7rem 0;
+    z-index: 9999;
+
+    /* margin-bottom: 1rem; */
 }
 .has-bottom-border{
     border-bottom: 3px solid rgb(96 184 71);
@@ -176,3 +191,9 @@
 .solid-btn-success >  span{
     color: white !important;
 }
+
+.profile-posts-container {
+    max-height: 90vh;
+    /* min-height: 90vh; */
+    /* overflow-y: auto; */
+}   

@@ -32,7 +32,7 @@
                         hideFooter: true
                     }
                 })
-                .when('/singlePostView/:postId',{
+                .when('/singlePostView/:postId/:context?',{
                     templateUrl: 'templates/singlePost.html',
                     controllerAs: 'SinglePost',
                     controller: 'SinglePostCtrl'
@@ -57,7 +57,7 @@
                     controllerAs: 'Interests',
                     controller: 'InterestsCtrl'
                 })
-                .when('/discover',{
+                .when('/discover/:tab?',{
                     templateUrl: 'templates/discover.html',
                     controllerAs: 'Discover',
                     controller: 'DiscoverCtrl'
@@ -65,7 +65,10 @@
                 .when('/search',{
                     templateUrl: 'templates/search.html',
                     controllerAs: 'Search',
-                    controller: 'SearchCtrl'
+                    controller: 'SearchCtrl',
+                    params: {
+                        hideFooter: true
+                    }
                 })
                 .when('/PrivateChat',{
                     templateUrl: 'templates/PrivateChat.html',
@@ -127,42 +130,16 @@
 
             buildfire.navigation.onBackButtonClick = function () {
                 buildfire.history.get({
-                    pluginBreadcrumbsOnly: true
+                    pluginBreadcrumbsOnly: true,
                 }, function (err, result) {
                     console.log(result);
                     console.log("BACK BUTTON CLICK", result)
-                    if(!result.length) return goBack();
-                    if(result[result.length-1].options.isPrivateChat) {
-                        console.log("PRIVATE CHAT BACK BUTTON")
-                        result.map(item => buildfire.history.pop());
-                        $rootScope.showThread = true;
-                        $location.path('/');
-                        $rootScope.$broadcast("navigatedBack");
-                        //location.reload();
-                    }
-                    else {
-                         if(result[0].label === 'thread' || result[0].label === 'members') {
-                            $rootScope.showThread = true;
-                            $location.path('/');
-                            $rootScope.$digest();
-                            buildfire.history.pop();
-                        } 
-                        else{
-                            if(result.length == 1){
-                                result.map(item => buildfire.history.pop());
-                                $rootScope.showThread = true;
-                                $location.path('/');
-                                $rootScope.$broadcast("navigatedBack");
-                            }
-                            else{
-                                buildfire.history.pop();
-                                result.pop();
-                                let pathToGo = result[result.length - 1].label;
-                                window.location.href = pathToGo;
-                            }
 
-                        }
-                    }
+                    buildfire.history.pop();
+                    result.pop();
+                    if(!result.length) return Location.go("");
+                    let pathToGo = result[result.length - 1].label;
+                    window.location.href = pathToGo;
                 });
             }
         }])

@@ -147,26 +147,6 @@
                 t.createPost({image});
             }
 
-            t.startPollingMessages = function () {
-                clearInterval(t.timeIntervalId);
-
-                t.timeIntervalId = setInterval(() => {
-                    t.SocialItems.items = [];
-                    t.SocialItems.getPrivatePosts(t.SocialItems.wid, (err, posts) =>{
-                        if(posts){
-                            // $timeout(function(){
-                            //     $rootScope.$digest();
-                            //     $scope.$digest();
-                            // });
-                        }
-                        else{
-                            console.log("no posts");
-                        }
-                    })
-                }, 10000)
-            }
-
-
             t.createPost = function(obj){
                 let postData = {
                     text: obj.text || "",
@@ -191,9 +171,18 @@
             }
 
             $scope.$on("$destroy", function () {
+                $rootScope.isPrivateChat = false;
                 console.log('Destory subscription')
-                clearInterval(t.timeIntervalId);//we always has to do it
+                t.SocialItems.isPrivateChat = false;
              });
+
+            //  const goBack = buildfire.navigation.onBackButtonClick;
+            //  buildfire.navigation.onBackButtonClick = () => {
+            //     $rootScope.isPrivateChat = true;
+            //     console.log('Destory subscription')
+            //     t.SocialItems.isPrivateChat = false;
+            //     goBack();
+            // };
 
             t.init();
         }])

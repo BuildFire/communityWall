@@ -1,5 +1,26 @@
+.inboxMembers {
+    padding: 10px;
+    overflow: scroll;
+    max-height: calc(100vh - 100px);
+}
+
 .inbox-item {
-    margin-bottom: .1rem;
+    margin-bottom: 1rem;
+}
+
+.media-holder {
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    border-radius: 100%;
+}
+
+
+.media-holder img {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    object-fit: cover;
 }
 .inbox-item-info {
     display: flex;

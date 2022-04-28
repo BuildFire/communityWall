@@ -135,8 +135,21 @@
 
             t.getUserDetails = (callback) =>{
                 SubscribedUsersData.get($routeParams.userId, (err, userDetails) =>{
-                    t.user.userDetails = userDetails? userDetails.data.userDetails : null;
-                    return callback(true)
+                    buildfire.auth.getUserProfile({ userId: $routeParams.userId}, (err, user) => {
+                        if (err) return callback(false)
+                        t.user.userDetails = userDetails? userDetails.data.userDetails : {};
+                        if (user) {
+                            t.user.userDetails.bio = user.userProfile.bio || user.bio;
+                            let location = {
+                                address: user.userProfile.address && user.userProfile.address.fullAddress ?  user.userProfile.address.fullAddress :  null,
+                                lat: user.userProfile.address && user.userProfile.address.geoLocation && user.userProfile.address.geoLocation.lat ?  user.userProfile.address.geoLocation.lat :  null,
+                                lng: user.userProfile.address && user.userProfile.address.geoLocation && user.userProfile.address.geoLocation.lng ?  user.userProfile.address.geoLocation.lng :  null,
+                            }
+                            t.user.userDetails.location = location; 
+                        }
+                        return callback(true)
+                      });
+                    
                 })
             }
 
@@ -575,6 +588,9 @@
                                                 $timeout(function(){
                                                     t.isLoading = false;
                                                     Buildfire.spinner.hide();
+                                                    t.hanldeStickScroll(t.posts.ownPosts.container)
+                                                    t.hanldeStickScroll(t.posts.taggedPosts.container)
+                                    
                                                     $scope.$digest();
                                                 })
                                             }
@@ -588,6 +604,28 @@
             }
 
 
+            t.hanldeStickScroll = (container) => {
+                const el = document.querySelector(".sticky")
+                const observer = new IntersectionObserver( 
+                ([e]) => {
+                    if (e.intersectionRatio > 0.75) {
+                        console.log('Sticky on top', e.intersectionRatio);
+                        container.style.overflowY = 'auto'
+
+                    } else {
+                        container.style.overflowY = 'hidden'
+                        console.log('Sticky on test', e.intersectionRatio);
+                    }
+                },
+                  {
+                    root: document.querySelector(".profile-container"),
+                    threshold: [0, 0.25, 0.5, 0.75, 1] 
+                  }
+                );
+
+                observer.observe(container);
+
+            }
 
             t.initPosts = (callback) =>{
                 t.attachListener(t.posts.ownPosts.container,"ownPosts");
@@ -787,11 +825,11 @@
 
 
             t.navigateToPrivateChat = function (user) {
-                Buildfire.history.get({
-                    pluginBreadcrumbsOnly: true
-                }, function (err, result) {
-                    result.forEach(e=> buildfire.history.pop());
-                });
+                // Buildfire.history.get({
+                //     pluginBreadcrumbsOnly: true
+                // }, function (err, result) {
+                //     result.forEach(e=> buildfire.history.pop());
+                // });
                 
                 t.SocialItems.isPrivateChat = true;
                 t.SocialItems.wid = user.wid;
@@ -840,6 +878,7 @@
 
                     var params = {
                         userId: userId,
+                        user2Id: t.SocialItems.userDetails.userId,
                         userDetails: {
                             displayName: user.displayName,
                             firstName: user.firstName,
@@ -854,12 +893,20 @@
 
                             }
                         },
+                        user2Details: {
+                            userId: t.SocialItems.userDetails.userId,
+                            displayName: t.SocialItems.userDetails.displayName,
+                            firstName: t.SocialItems.userDetails.firstName,
+                            lastName: t.SocialItems.userDetails.lastName,
+                            imageUrl: t.SocialItems.userDetails.imageUrl,
+                        },
                         wallId: wid,
                         posts: [],
                         _buildfire: {
                             index: { text: userId + '-' + wid, string1: wid,
                             array1:[
-                                {string1: "userId_"+userId}
+                                { string1: "userId_" + userId },
+                                { string1: "userId_" + t.SocialItems.userDetails.userId }
                             ]}
                         }
 
@@ -874,7 +921,7 @@
                 })
             }
 
-
+           
 
 
 

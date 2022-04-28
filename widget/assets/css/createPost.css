@@ -11,16 +11,24 @@
     background-color: #F1F1F1;
     border-radius: 5px;
 }
+
 .imageContainer{
     border-radius: 15px !important;
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content:center;
+    align-items:center;
 }
-.imageContainer > *{
+.imageContainer > img, .imageContainer > video{
     border-radius: 15px !important;
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.imageContainer > .select-media-btn {
+    font-size: 64px
 }
 
 

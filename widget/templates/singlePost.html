@@ -30,11 +30,11 @@
                                 {{post.location.address.length > 25 ? post.location.address.substring(0,25) + '...' : post.location.address}}
                             </p>
                         </div>
-                        <div ng-if="post.originalAuthorName">
-                            <p class="time-ago opacity-seventy ng-cloak">
-                                <span class="material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
+                        <div ng-if="post.originalPost.userId">
+                            <p class="time-ago text-primary ng-cloak" ng-click="SinglePost.navigateToProfile(post.originalPost.userId)">
+                                <span class="material-icons material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
                                     repeat
-                                </span> {{post.originalAuthorName}}
+                                </span> {{post.originalPost.displayName}}
                             </p>
                         </div>
 

@@ -1,7 +1,5 @@
 
-<div 
-style="width: 100%;height: 100%;padding-top:10px;overflow-y: auto;overflow-x: hidden;"  
-ng-show="!Profile.isLoading">
+<div class="profile-container" ng-show="!Profile.isLoading">
     <div class="profile-header">
         <div class="profile-picture-container" ng-click="Profile.GoToBadgeView()" ng-style="{'border':'2px solid ' + Profile.borderColor }" ng-if="Profile.user.socialProfile.data">
             <img ng-show="Profile.user.userDetails.imageUrl" load-image="1x1"
@@ -92,23 +90,24 @@ ng-show="!Profile.isLoading">
         </button>
     </div>
     
-    
-    <!--  ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
-    <div ng-show="Profile.shouldShowSwitch()" class="switch">
-        <div id="profile-posts" class="has-bottom-border" ng-click="Profile.loadPage('posts')"> {{Profile.strings.userposts}}</div>
-        <div id="profile-tagged" ng-click="Profile.loadPage('tagged')"> {{Profile.strings.usertagged}}</div>
-    </div>
+    <div class="sticky">
+        <!--  ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
+        <div ng-show="Profile.shouldShowSwitch()" class="switch">
+            <div id="profile-posts" class="has-bottom-border" ng-click="Profile.loadPage('posts')"> {{Profile.strings.userposts}}</div>
+            <div id="profile-tagged" ng-click="Profile.loadPage('tagged')"> {{Profile.strings.usertagged}}</div>
+        </div>
 
-    <div ng-show="Profile.shouldShowPosts()">
-        <div ng-if="(Profile.posts.ownPosts.items.length == 0 && Profile.currentPage === 'posts') || (Profile.posts.taggedPosts.items.length == 0 && Profile.currentPage === 'tagged')">
-            <div class="empty_state"></div>
-        </div>
-        <div ng-cloak id="{{'profile-posts-container-'+Profile.user.userId}}" ng-style="{height: Profile.getPostsContainerHeight() + 'vh' }" ng-bind-html="postsList"  style="overflow: auto;" ng-show="Profile.currentPage === 'posts'">
+        <div ng-show="Profile.shouldShowPosts()">
+            <div ng-if="(Profile.posts.ownPosts.items.length == 0 && Profile.currentPage === 'posts') || (Profile.posts.taggedPosts.items.length == 0 && Profile.currentPage === 'tagged')">
+                <div class="empty_state"></div>
+            </div>
+            <div ng-cloak id="{{'profile-posts-container-'+Profile.user.userId}}" class="profile-posts-container" ng-bind-html="postsList" ng-show="Profile.currentPage === 'posts'">
+                
+            </div>
             
-        </div>
-        
-        <div ng-cloak id="{{'profile-tagged-posts-container-'+Profile.user.userId}}"  ng-style="{height: Profile.getPostsContainerHeight() + 'vh' }"  style="overflow: auto;" ng-show="Profile.currentPage === 'tagged'">
-            
+            <div ng-cloak id="{{'profile-tagged-posts-container-'+Profile.user.userId}}"  class="profile-posts-container" ng-show="Profile.currentPage === 'tagged'">
+                
+            </div>
         </div>
     </div>
     <div ng-show="!Profile.shouldShowPosts()">

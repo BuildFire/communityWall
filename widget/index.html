@@ -181,8 +181,8 @@
                                                                     </p>
                                                                 </div>
                                                                 <div ng-if="post.originalPost.userId">
-                                                                    <p class="time-ago opacity-seventy ng-cloak" style="display: flex;">
-                                                                        <span class="material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
+                                                                    <p class="time-ago text-primary ng-cloak" style="display: flex;" ng-click="WidgetWall.navigateToProfile(post.originalPost.userId)">
+                                                                        <span class="material-icons material-icons-outlined" style="font-size: 15px;margin-right: 3px;">
                                                                             repeat
                                                                         </span> {{post.originalPost.displayName}}
                                                                     </p>
