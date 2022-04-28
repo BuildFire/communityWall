@@ -644,8 +644,8 @@
 
                         buildfire.auth.getCurrentUser((err, user) => {
                             if (err) return;
-                            else if(user){                                
-                                WidgetWall.SocialItems.authenticateUser(user, (err, user) => {
+                            else if(user){      
+                                WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                                     if (err) return console.error("Getting user failed.", err);
                                     if (user) {
                                         WidgetWall.checkFollowingStatus(user);

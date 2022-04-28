@@ -137,7 +137,7 @@
 
                     buildfire.history.pop();
                     result.pop();
-                    if(!result.length) return goBack();
+                    if(!result.length) return Location.go("");
                     let pathToGo = result[result.length - 1].label;
                     window.location.href = pathToGo;
                 });

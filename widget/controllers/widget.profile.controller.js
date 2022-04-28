@@ -588,6 +588,9 @@
                                                 $timeout(function(){
                                                     t.isLoading = false;
                                                     Buildfire.spinner.hide();
+                                                    t.hanldeStickScroll(t.posts.ownPosts.container)
+                                                    t.hanldeStickScroll(t.posts.taggedPosts.container)
+                                    
                                                     $scope.$digest();
                                                 })
                                             }
@@ -601,6 +604,28 @@
             }
 
 
+            t.hanldeStickScroll = (container) => {
+                const el = document.querySelector(".sticky")
+                const observer = new IntersectionObserver( 
+                ([e]) => {
+                    if (e.intersectionRatio > 0.75) {
+                        console.log('Sticky on top', e.intersectionRatio);
+                        container.style.overflowY = 'auto'
+
+                    } else {
+                        container.style.overflowY = 'hidden'
+                        console.log('Sticky on test', e.intersectionRatio);
+                    }
+                },
+                  {
+                    root: document.querySelector(".profile-container"),
+                    threshold: [0, 0.25, 0.5, 0.75, 1] 
+                  }
+                );
+
+                observer.observe(container);
+
+            }
 
             t.initPosts = (callback) =>{
                 t.attachListener(t.posts.ownPosts.container,"ownPosts");
@@ -896,7 +921,7 @@
                 })
             }
 
-
+           
 
 
 

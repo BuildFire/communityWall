@@ -90,23 +90,24 @@
         </button>
     </div>
     
-    
-    <!--  ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
-    <div ng-show="Profile.shouldShowSwitch()" class="switch">
-        <div id="profile-posts" class="has-bottom-border" ng-click="Profile.loadPage('posts')"> {{Profile.strings.userposts}}</div>
-        <div id="profile-tagged" ng-click="Profile.loadPage('tagged')"> {{Profile.strings.usertagged}}</div>
-    </div>
+    <div class="sticky">
+        <!--  ADD BUTTON CONTAINER FOR OTHER USERS HERE -->
+        <div ng-show="Profile.shouldShowSwitch()" class="switch">
+            <div id="profile-posts" class="has-bottom-border" ng-click="Profile.loadPage('posts')"> {{Profile.strings.userposts}}</div>
+            <div id="profile-tagged" ng-click="Profile.loadPage('tagged')"> {{Profile.strings.usertagged}}</div>
+        </div>
 
-    <div ng-show="Profile.shouldShowPosts()">
-        <div ng-if="(Profile.posts.ownPosts.items.length == 0 && Profile.currentPage === 'posts') || (Profile.posts.taggedPosts.items.length == 0 && Profile.currentPage === 'tagged')">
-            <div class="empty_state"></div>
-        </div>
-        <div ng-cloak id="{{'profile-posts-container-'+Profile.user.userId}}" class="profile-posts-container" ng-bind-html="postsList"  style="overflow: auto;" ng-show="Profile.currentPage === 'posts'">
+        <div ng-show="Profile.shouldShowPosts()">
+            <div ng-if="(Profile.posts.ownPosts.items.length == 0 && Profile.currentPage === 'posts') || (Profile.posts.taggedPosts.items.length == 0 && Profile.currentPage === 'tagged')">
+                <div class="empty_state"></div>
+            </div>
+            <div ng-cloak id="{{'profile-posts-container-'+Profile.user.userId}}" class="profile-posts-container" ng-bind-html="postsList" ng-show="Profile.currentPage === 'posts'">
+                
+            </div>
             
-        </div>
-        
-        <div ng-cloak id="{{'profile-tagged-posts-container-'+Profile.user.userId}}"  class="profile-posts-container" ng-show="Profile.currentPage === 'tagged'">
-            
+            <div ng-cloak id="{{'profile-tagged-posts-container-'+Profile.user.userId}}"  class="profile-posts-container" ng-show="Profile.currentPage === 'tagged'">
+                
+            </div>
         </div>
     </div>
     <div ng-show="!Profile.shouldShowPosts()">
