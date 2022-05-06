@@ -58,7 +58,7 @@
             }
             Discover.getTrendingHashtags = (callback) =>{
                 let date = new Date();
-                let tag = "$$$hashtags_count$$$";
+                let tag = "$$$hashtags_count$$$$";
                 Buildfire.publicData.get(tag, (err, result) => {
                     result = result ? result : {};
                     const { data } = result;
@@ -112,6 +112,7 @@
                     $scope.injectElements(result);
                     Discover.getUsersWhoIDontFollow();
                     Discover.getTrendingHashtags((err, trendingHashtagsPosts) => {
+                        trendingHashtagsPosts = trendingHashtagsPosts? trendingHashtagsPosts : {};
                         trendingHashtagsPosts = Object.values(trendingHashtagsPosts);
                         trendingHashtagsPosts.sort((a , b) => b.count - a.count);
                         $scope.trendingHashtags = trendingHashtagsPosts.slice(0, 101);
