@@ -58,7 +58,7 @@
             }
             Discover.getTrendingHashtags = (callback) =>{
                 let date = new Date();
-                let tag = "$$$hashtags_count$$$$";
+                let tag = "$$$hashtags_count$$$";
                 Buildfire.publicData.get(tag, (err, result) => {
                     result = result ? result : {};
                     const { data } = result;
