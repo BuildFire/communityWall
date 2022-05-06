@@ -233,11 +233,10 @@
 
                                                 </div>
                                                 <div ng-if="post.taggedPeople.length > 0">
-                                                    <span style="    display: flex;
-                                                    justify-content: flex-start;
-                                                    align-items: center;
-                                                    margin-top: 5px;
-                                                    margin-left: 12px;">
+                                                    <span ng-click="WidgetWall.goToSinglePostView(post.id)" style="display: flex; justify-content: flex-start;
+                                                        align-items: center;
+                                                        margin-top: 5px;
+                                                        margin-left: 12px;">
                                                         <span class="material-icons">person</span>
                                                         <span style="margin-left: 5px;color: var(--bf-theme-primary);"> 
                                                         {{post.taggedPeople.length == 1 ? '1 Person Tagged' : post.taggedPeople.length + ' People Tagged'}}
