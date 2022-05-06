@@ -200,9 +200,10 @@ html{
     padding: 5px;
     border-radius: 100%;
     margin-top: -4px;
+    /* -webkit-text-fill-color: rgba(150,150,150, 0); */
 }
 .fa-gradient-fill-color {
-	-webkit-text-fill-color: rgba(150,150,150, 0);
+    -webkit-text-fill-color: rgba(150,150,150, 0);
 }
 
 .fa-border{
@@ -851,7 +852,8 @@ button.btn--lg,
  }
  .post-image-container{
     margin-left: 10px;
-    width: calc(100% - 20px);
+    margin-right: 10px;
+    /* width: calc(100% - 20px); */
     border-radius: 15px;     
     height: 60vh !important;
 

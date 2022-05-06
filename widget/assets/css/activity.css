@@ -50,16 +50,39 @@
 }
 
 .act-right-section .act-right-section-img {
- 
-  /* overflow: hidden; */
-  /* border-radius: 8px; */
-}
-
-.act-right-section .act-right-section-img img {
+  overflow: hidden;
   border-radius: 8px;
   width: 40px;
   height: 40px;
+}
+
+.act-right-section .act-right-section-img img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+.act-right-section .act-right-section-video {
+  background: #E5E5E5;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.act-right-section .act-right-section-video .play-icon {
+  position: absolute;
+  /* font-size: 2.5rem; */
+}
+
+.act-right-section .act-right-section-video video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 
 .act-confirm {

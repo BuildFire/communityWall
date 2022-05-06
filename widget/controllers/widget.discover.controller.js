@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('DiscoverCtrl', ['$scope', '$rootScope','SocialUserProfile', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', '$location', function ($scope, $rootScope, SocialUserProfile, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout, $location) {
+        .controller('DiscoverCtrl', ['$scope', '$rootScope','SocialUserProfile', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', '$location', '$sce', function ($scope, $rootScope, SocialUserProfile, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout, $location, $sce) {
             var Discover = this;
             Discover.SocialItems = SocialItems.getInstance();
             $scope.finishRender = false;
@@ -33,10 +33,7 @@
                 let params = {userId, currentUser: Discover.SocialItems.userDetails.userId};
                 SocialUserProfile.followUnfollowUser(params, (err, data) =>{
                     if(data){
-                        console.log(data);
-                        console.log($scope.users);
                         let index = $scope.users.findIndex(e => e.data.userId === data.data.userId);
-                        console.log($scope.users[index]);
                         Buildfire.dialog.toast({
                             message: "Started Following " + Discover.SocialItems.getUserName($scope.users[index].data.userDetails) ,
                         });
@@ -61,30 +58,40 @@
             }
             Discover.getTrendingHashtags = (callback) =>{
                 let date = new Date();
-                let tag = "$$$hashtags_count$$$_"+date.getDay() + "$" + date.getMonth() + "$" + date.getYear();
-                console.log(tag);
-                Buildfire.publicData.search({},tag, (err, results) =>{
-                    if(err || (results && results.length == 0)) return callback(null, null);
-                    console.log(results);
-                    let data = {...results[0].data};
-                    const sortable = Object.entries(data)
-                    .sort(([,a],[,b]) => b-a)
-                    .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
-                    let length = Object.entries(sortable).length;
+                let tag = "$$$hashtags_count$$$";
+                Buildfire.publicData.get(tag, (err, result) => {
+                    result = result ? result : {};
+                    const { data } = result;
+                    if(err || !data || !Object.keys(data).length) return callback(null, null);
+                    let hashtags = Object.entries(data).sort((a, b) => b[1] - a[1]);
+                    hashtags = hashtags.slice(0, 101);
+                    hashtags = hashtags.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+                    for (const hashtag in hashtags) {
+                        if (hashtags[hashtag]) {
+                            hashtags[hashtag] =  {
+                                key: hashtag,
+                                count: hashtags[hashtag],
+                                posts: []
+                            }
+                        }
+                    }
+                    let length = Object.keys(hashtags).length;
                     for(let i = 0 ; i < length ; i++){
                         Buildfire.publicData.search(
                             { 
-                                filter:{
-                                    "$json.hashtags":Object.keys(sortable)[i]},
-                                    skip:0,
-                                    limit: 10,
-                                    sort:{createdOn: -1}
+                                filter: {
+                                    "$json.hashtags": Object.keys(hashtags)[i] 
+                                },
+                                skip:0,
+                                limit: 10,
+                                sort: { createdOn: -1 }
                             } , "wall_posts",(err, data) => {
-                                if(data){
-                                    sortable[Object.keys(sortable)[i]] = data;
+                                if(data) {
+                                    hashtags[Object.keys(hashtags)[i]].posts = data;
                                 }
-                                if(i === length - 1){
-                                    return callback(null, sortable)
+
+                                if(i === length - 1) {
+                                    return callback(null, hashtags)
                                 }
                         })
                     }
@@ -99,20 +106,19 @@
                 $scope.isBusy = true;
                 $scope.trendingHashtags = {};
                 Discover.getPosts({filter:{"_buildfire.index.string1":""},skip:0, limit:8, sort: {createdOn: -1}},function(err, result){
-                    console.log(result);
                     $rootScope.showThread = false;
                     $rootScope.$digest();
                     $scope.posts = result;
                     $scope.injectElements(result);
                     Discover.getUsersWhoIDontFollow();
-                    Discover.getTrendingHashtags((err, trendingHashtagsPosts) =>{
-                        $scope.trendingHashtags = trendingHashtagsPosts;
-                        console.log($scope.trendingHashtags);
+                    Discover.getTrendingHashtags((err, trendingHashtagsPosts) => {
+                        trendingHashtagsPosts = Object.values(trendingHashtagsPosts);
+                        trendingHashtagsPosts.sort((a , b) => b.count - a.count);
+                        $scope.trendingHashtags = trendingHashtagsPosts.slice(0, 101);
                         $scope.isBusy = false;
                         $scope.setActivePage($scope.activePageIndex);
                         Discover.isLoading = false;
                         Buildfire.spinner.hide();
-                        console.log(Discover.isLoading);
                         $scope.$digest();
                     })
                     
@@ -123,7 +129,6 @@
                             Buildfire.spinner.show();
                             $scope.isBusy = true;
                             Discover.getPosts({filter:{"_buildfire.index.string1":""},skip:$scope.posts.length, limit:8, sort: {createdOn: -1} }, function(err, result){
-                                console.log(result);
                                 if(result && result.length == 8){ 
                                     $scope.posts.push(...result);
                                     $scope.injectElements(result);
@@ -264,7 +269,6 @@
                         options.skip = 0;
                         options.limit = 50;
                         SubscribedUsersData.getUsers(options, (err, data) =>{
-                            console.log(data);
                             $scope.users = data;
                             $timeout(function(){
                                 $scope.$digest();
@@ -309,9 +313,9 @@
                 })
             }
 
-            $scope.isObjectEmpty = function(obj){
-                if(!obj) return true;
-                return Object.keys(obj).length === 0;
+            $scope.isObjectEmpty = function(arr){
+                if(!arr) return true;
+                return arr.length === 0;
              }
 
             $scope.crop = function(url, dimensions){
@@ -321,6 +325,13 @@
             $scope.cropImage = (image, width, height) => {
                 return Buildfire.imageLib.cropImage(image, {width: width? width : 50, height: height? height : 50});
             }
+
+          
+
+            $scope.trustSrc = function(src) {
+                return $sce.trustAsResourceUrl(src);
+            };
+
             Discover.init();
         }]);
 })(window.angular);

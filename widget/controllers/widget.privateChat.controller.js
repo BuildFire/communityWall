@@ -69,7 +69,11 @@
 
             t.sendMessage = function(){
                 if(t.text.length > 0){
-                    t.createPost({text: t.text});
+                    const post  = { text: t.text }
+                    t.SocialItems.postMeta && t.SocialItems.postMeta.image ? post.image = t.SocialItems.postMeta.image  : ''
+                    t.SocialItems.postMeta && t.SocialItems.postMeta.video ? post.video = t.SocialItems.postMeta.video : '',
+                    t.SocialItems.postMeta && t.SocialItems.postMeta.postId ? post.postId = t.SocialItems.postMeta.postId : '',
+                    t.createPost(post);
                     t.text = "";
                 }
             }
@@ -151,8 +155,10 @@
                 let postData = {
                     text: obj.text || "",
                     images: obj.image ? [obj.image] : [],
+                    videos: obj.video ? [obj.video] : [],
                     wid: t.SocialItems.wid,
                     userDetails: t.SocialItems.userDetails,
+                    postId: obj.postId? obj.postId : '',
                 }
                 SocialDataStore.createPrivatePost(postData).then((response) =>{
                     t.SocialItems.items.push(response.data);
@@ -170,10 +176,19 @@
                 })
             }
 
+            $scope.trustSrc = function(src) {
+                return $sce.trustAsResourceUrl(src);
+            };
+
+            $scope.openSinglePost = (postId) =>{
+                Location.go("#/singlePostView/" + postId);
+            }
+
             $scope.$on("$destroy", function () {
                 $rootScope.isPrivateChat = false;
                 console.log('Destory subscription')
                 t.SocialItems.isPrivateChat = false;
+                t.SocialItems.postMedia = null;
              });
 
             //  const goBack = buildfire.navigation.onBackButtonClick;

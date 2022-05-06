@@ -31,8 +31,16 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img  src="{{Activity.cropImage(activity.post.image, 40, 40)}}"  load-image="1x1" crop-width="40" crop-height="40" crop-type="crop"/>
+                        <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && (activity.post.image || activity.post.video)">
+                            <div class="act-right-section-video" ng-if="activity.post.video">
+                                <span class="material-icons play-icon">play_arrow</span>
+                                <video >
+                                    <source ng-src="{{trustSrc(activity.post.video + '#t=0.1')}}" >
+                                </video>
+                            </div>
+                            <div class="act-right-section-img" ng-if="activity.post.image">
+                                <img  src="{{Activity.cropImage(activity.post.image, 40, 40)}}"  load-image="1x1" crop-width="40" crop-height="40" crop-type="crop"/>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -69,9 +77,17 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div  class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img ng-src="{{Activity.cropImage(activity.post.image, 40, 40)}}" crop-width="40" crop-height="40" crop-type="crop"/>
-                        </div>                   
+                        <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && (activity.post.image || activity.post.video)">
+                            <div class="act-right-section-video" ng-if="activity.post.video">
+                                <span class="material-icons play-icon">play_arrow</span>
+                                <video >
+                                    <source ng-src="{{trustSrc(activity.post.video + '#t=0.1')}}" >
+                                </video>
+                            </div>
+                            <div class="act-right-section-img" ng-if="activity.post.image">
+                                <img  src="{{Activity.cropImage(activity.post.image, 40, 40)}}"  load-image="1x1" crop-width="40" crop-height="40" crop-type="crop"/>
+                            </div>
+                        </div>                 
                      </div>
                     </div>
                 </div>
@@ -107,9 +123,17 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img ng-src="{{Activity.cropImage(activity.post.image, 40, 40)}}" crop-width="40" crop-height="40" crop-type="crop"/>
-                        </div>                   
+                        <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && (activity.post.image || activity.post.video)">
+                            <div class="act-right-section-video" ng-if="activity.post.video">
+                                <span class="material-icons play-icon">play_arrow</span>
+                                <video >
+                                    <source ng-src="{{trustSrc(activity.post.video + '#t=0.1')}}" >
+                                </video>
+                            </div>
+                            <div class="act-right-section-img" ng-if="activity.post.image">
+                                <img  src="{{Activity.cropImage(activity.post.image, 40, 40)}}"  load-image="1x1" crop-width="40" crop-height="40" crop-type="crop"/>
+                            </div>
+                        </div>               
                     </div>
                 </div>
             </div>
@@ -146,9 +170,17 @@
                                 {{Activity.strings.activityfollowRequestRejectButton}}
                             </button>
                         </div>
-                        <div class="act-right-section-img" ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && activity.post.image">
-                            <img  ng-src="{{Activity.cropImage(activity.post.image, 40, 40)}}" crop-width="40" crop-height="40" crop-type="crop"/>
-                        </div>                    
+                        <div ng-if="(activity.type === 'reactedToYourpost' || activity.type === 'taggedYouInAPost') && (activity.post.image || activity.post.video)">
+                            <div class="act-right-section-video" ng-if="activity.post.video">
+                                <span class="material-icons play-icon">play_arrow</span>
+                                <video >
+                                    <source ng-src="{{trustSrc(activity.post.video + '#t=0.1')}}" >
+                                </video>
+                            </div>
+                            <div class="act-right-section-img" ng-if="activity.post.image">
+                                <img  src="{{Activity.cropImage(activity.post.image, 40, 40)}}"  load-image="1x1" crop-width="40" crop-height="40" crop-type="crop"/>
+                            </div>
+                        </div>                   
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ActivityCtrl', ['$scope', '$rootScope','$timeout', '$routeParams','SocialDataStore', 'Buildfire','Location', 'EVENTS', 'SubscribedUsersData','SocialUserProfile', 'SocialItems', 'ProfileActivity', function ($scope, $rootScope,$timeout, $routeParams, SocialDataStore, Buildfire, Location, EVENTS, SubscribedUsersData, SocialUserProfile, SocialItems, ProfileActivity) {
+        .controller('ActivityCtrl', ['$scope', '$rootScope','$timeout', '$routeParams','SocialDataStore', 'Buildfire','Location', 'EVENTS', 'SubscribedUsersData','SocialUserProfile', 'SocialItems', 'ProfileActivity', '$sce', function ($scope, $rootScope,$timeout, $routeParams, SocialDataStore, Buildfire, Location, EVENTS, SubscribedUsersData, SocialUserProfile, SocialItems, ProfileActivity, $sce) {
             let t = this;
             t.SocialItems = SocialItems.getInstance();
             t.strings = t.SocialItems.languages;
@@ -167,6 +167,10 @@
                 }
                 t.SocialItems.getSettings(console.log);
             });
+
+            $scope.trustSrc = function(src) {
+                return $sce.trustAsResourceUrl(src);
+            };
             t.init();
         }]);
 })(window.angular);

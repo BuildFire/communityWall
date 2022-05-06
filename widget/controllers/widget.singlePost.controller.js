@@ -27,6 +27,13 @@
                 let userId = post.userId;
                 let newData = {...post};
                 newData.repliesCount++;
+                const postMeta = {postId: post.id};
+                if (post.images[0]) {
+                    postMeta.image = post.images[0];
+                }
+                if (post.videos[0]) {
+                    postMeta.video = post.videos[0];
+                }
                 SocialDataStore.updatePost(newData).then((response) =>{
 
                 },(err) => {})
@@ -38,13 +45,14 @@
                             buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
                                 if (err) return console.error("Getting user profile failed.", err);
                                 if (userId === SinglePost.SocialItems.userDetails.userId) return;
-                                SinglePost.openPrivateChat(userId, SinglePost.SocialItems.getUserName(user));
+                                SinglePost.openPrivateChat(userId, SinglePost.SocialItems.getUserName(user), postMeta);
                             });
                         }
                     });
                 }
             };
-            SinglePost.openPrivateChat = function (userId, userName) {
+
+            SinglePost.openPrivateChat = function (userId, userName, postMeta) {
                 let wid = null;
                 if (SinglePost.SocialItems.userDetails.userId && SinglePost.SocialItems.userDetails.userId != userId) {
                     if (SinglePost.SocialItems.userDetails.userId > userId) {
@@ -56,14 +64,14 @@
                 SubscribedUsersData.getGroupFollowingStatus(userId, wid, SinglePost.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.error('Error while getting initial group following status.', err);
                     if (!status.length) {
-                        SinglePost.followPrivateWall(userId, wid, userName);
+                        SinglePost.followPrivateWall(userId, wid, userName, postMeta);
                     } else {
-                        SinglePost.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                        SinglePost.navigateToPrivateChat({ id: userId, name: userName, wid: wid }, postMeta);
                     }
                 });
             }
 
-            SinglePost.followPrivateWall = function (userId, wid, userName = null) {
+            SinglePost.followPrivateWall = function (userId, wid, userName = null, postMeta) {
                 Buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
                     if (err) console.log('Error while saving subscribed user data.');
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -112,12 +120,12 @@
                     SubscribedUsersData.save(params, function (err) {
                         if (err) console.log('Error while saving subscribed user data.');
                         if (userName)
-                            SinglePost.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                            SinglePost.navigateToPrivateChat({ id: userId, name: userName, wid: wid }, postMeta);
                     });
                 })
             }
 
-            SinglePost.navigateToPrivateChat = function (user) {
+            SinglePost.navigateToPrivateChat = function (user, postMeta) {
                 // buildfire.history.get({
                 //     pluginBreadcrumbsOnly: true
                 // }, function (err, result) {
@@ -129,6 +137,7 @@
                 SinglePost.SocialItems.showMorePosts = true;
                 SinglePost.SocialItems.pageSize = 20;
                 SinglePost.SocialItems.page = 0;
+                SinglePost.SocialItems.postMeta = postMeta;
                 SinglePost.SocialItems.pluginTitle = SinglePost.SocialItems.getUserName(SinglePost.SocialItems.userDetails) + ' | ' + user.name;
 
                 $timeout(function(){
@@ -374,6 +383,11 @@
             SinglePost.goToFilteredPosts = (type, title) =>{
                 Location.go(`#/filteredResults/${type}/${title}`)
             }
+            
+            SinglePost.gotToInbox = (repliesCount) => {
+                if (!repliesCount) return;
+                Location.go("#/inbox/");
+            }
             SinglePost.deletePost = function (postId) {
                 var success = function (response) {
                     if (response) {
@@ -454,7 +468,17 @@
                     displayName: post.userDetails.displayName,
                     userId: post.userId
                 }
-                SinglePost.saveActivity(type, {fromUser, toUser, post: {image: post.images[0],id: post.id}})
+
+                let postData = {
+                    id: post.id
+                }
+                if (post.images[0]) {
+                    postData.image = post.images[0];
+                }
+                if (post.videos[0]) {
+                    postData.video = post.videos[0];
+                }
+                SinglePost.saveActivity(type, {fromUser, toUser, post: postData})
             }
             
 

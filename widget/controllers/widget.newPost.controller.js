@@ -505,7 +505,17 @@
                     userId: user
                 }
 
-                NewPost.saveActivity(type, {fromUser, toUser, post: {image: post.images.length > 0 ?  post.images[0] : null, id: post.id}})
+                let postData = {
+                    id: post.id
+                }
+                if (post.images[0]) {
+                    postData.image = post.images[0];
+                }
+                if (post.videos[0]) {
+                    postData.video = post.videos[0];
+                }
+
+                NewPost.saveActivity(type, {fromUser, toUser, post: postData})
             }
 
             NewPost.saveActivity = function(type, data){

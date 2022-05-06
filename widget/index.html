@@ -251,9 +251,9 @@
             
                                                                 <div class="footer-item">
                                                                     <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" ng-click="WidgetWall.toggleReaction(post)" data-id="{{post.id}}">
-                                                                        <span class="{{WidgetWall.reaction.icon}} fa-gradient" 
+                                                                        <span class="{{WidgetWall.reaction.icon}} fa-gradient fa-gradient-fill-color" 
                                                                             ng-style="{'background': 'linear-gradient(to top, '+WidgetWall.reaction.color+' 0%, '+WidgetWall.reaction.color+' '+  WidgetWall.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  WidgetWall.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? WidgetWall.reaction.color : WidgetWall.appTheme.icons }" 
-                                                                            ng-class="{notActive : !post.liked,'fa-border': post.liked, 'fa-gradient-fill-color': post.liked}" aria-hidden="true">
+                                                                            ng-class="{notActive : !post.liked, 'fa-border': post.liked}" aria-hidden="true">
 
                                                                         </span>
                                                                     </a>
@@ -295,9 +295,9 @@
             
                                                                 <div class="footer-item">
                                                                     <a class="social-icon ng-cloak" data-src="reaction" data-isInjected = "false" data-id="{{post.id}}">
-                                                                        <span class="{{WidgetWall.reaction.icon}} fa-gradient" 
+                                                                        <span class="{{WidgetWall.reaction.icon}} fa-gradient fa-gradient-fill-color" 
                                                                         ng-style="{'background': 'linear-gradient(to top, '+WidgetWall.reaction.color+' 0%, '+WidgetWall.reaction.color+' '+  WidgetWall.getGradientValue(post.likesCount) +'%,rgba(150,150,150,.8) '+  WidgetWall.getGradientValue(post.likesCount, 1) +'%,rgba(150,150,150,.8) 100%)', 'border-color': post.liked? WidgetWall.reaction.color : WidgetWall.appTheme.icons }" 
-                                                                        ng-class="{notActive : !post.liked, 'fa-border': post.liked, 'fa-gradient-fill-color': post.liked}" aria-hidden="true">
+                                                                        ng-class="{notActive : !post.liked, 'fa-border': post.liked}" aria-hidden="true">
 
                                                                         </span>
                                                                     </a>
@@ -312,7 +312,7 @@
                                                                     </a>
                                                                     <span ng-style="{'color': WidgetWall.appTheme.icons}">{{post.repostsCount}}</span>
                                                                 </div>
-                                                                <div class="footer-item">
+                                                                <div class="footer-item" ng-click="WidgetWall.gotToInbox(post.repliesCount)">
                                                                     <a class="social-icon ng-cloak" >
                                                                         <span class="material-icons material-icons-outlined">
                                                                             chat_bubble_outline

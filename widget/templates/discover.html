@@ -75,20 +75,28 @@
 
             </div>
             <div ng-show="!Discover.isLoading">
-                <div class="discover-h-repeated" style="height: 100%;overflow-y: auto;" ng-if="!isObjectEmpty(trendingHashtags)" ng-repeat="(key, props) in trendingHashtags track by $index">
-                    <div ng-if="props.length > 0">
+                <div class="discover-h-repeated" style="height: 100%;overflow-y: auto;" ng-if="!isObjectEmpty(trendingHashtags)" ng-repeat="hashtag in trendingHashtags track by $index">
+                    <div ng-if="hashtag.posts.length > 0">
                         <div class="discover-h-info">
                             <div class="discover-h-num">
                                 {{$index + 1}}
                             </div>
-                            <div class="discover-h-title" ng-click="Discover.goToFilteredPosts('hashtag',key)">
-                                #{{key}}
+                            <div class="discover-h-title" ng-click="Discover.goToFilteredPosts('hashtag', hashtag.key)">
+                                #{{hashtag.key}}
                             </div>
                         </div>
                         
                         <div class="discover-h-images-container">
-                            <div ng-repeat="post in props" class="discover-h-item-div">
-                                <img ng-click="openSinglePost(post.id)" ng-if="post.data.images.length > 0" ng-src="{{crop(post.data.images[0], {width: 100, height: 100})}}" alt="" class="discover-h-single-image">
+                            <div ng-repeat="post in hashtag.posts" class="discover-h-item-div">
+                                <div class="discover-h-video-container" ng-click="openSinglePost(post.id)"  ng-if="post.data && post.data.videos.length > 0">
+                                    <span class="material-icons play-icon">play_arrow</span>
+                                    <video >
+                                        <source ng-src="{{trustSrc(post.data.videos[0] + '#t=0.1')}}">
+                                    </video>
+                                </div>
+                                <div ng-click="openSinglePost(post.id)" class="discover-h-single-image" ng-if="post.data && post.data.images.length > 0">
+                                    <img  ng-src="{{crop(post.data.images[0], {width: 150, height: 150})}}" alt="" >
+                                </div>
                             </div>
         
                         </div>

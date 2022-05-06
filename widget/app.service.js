@@ -991,32 +991,9 @@
         
                                     buildfire.publicData.update(result.id, result.data, 'wall_posts', (err, posts) => {
                                         if (error) return deferred.reject(error);
-                                        if(postData.hashtags && postData.hashtags.length > 0){
-                                            let newDate = new Date();
-                                            let tag = "$$$hashtags_count$$$_"+newDate.getDay() + "$" + newDate.getMonth() + "$" + newDate.getYear();
-                                            buildfire.publicData.search({},tag, (err, results) =>{
-                                                if(results && results.length > 0){
-                                                    let clone = {...results[0].data};
-                                                    for(let i = 0 ; i < postData.hashtags.length; i++){
-                                                        if(clone[postData.hashtags[i]]){
-                                                            clone[postData.hashtags[i]]+= 1;
-                                                        }
-                                                        else{
-                                                            clone[postData.hashtags[i]] = 1;
-                                                        }
-                                                        if(i === postData.hashtags.length - 1) buildfire.publicData.update(results[0].id, clone, tag, (err, res) => deferred.resolve(posts));
-                                                    }
-                                                }
-                                                else{
-                                                    let hashtagsCountObj = {};
-                                                    for (let i = 0; i < postData.hashtags.length; i++) {
-                                                        hashtagsCountObj[postData.hashtags[i]] = 1;
-                                                    }
-                                                    buildfire.publicData.insert(hashtagsCountObj, tag, (err, res) => deferred.resolve(posts))
-                                                }
-                                                
-                                            })
-                                        }else{
+                                        if(postData.hashtags && postData.hashtags.length > 0) {
+                                            this.saveTrendingHashtags(postData.hashtags).finally(() => deferred.resolve(posts));
+                                        } else {
                                             return deferred.resolve(posts);
                                         }
                                     });
@@ -1025,6 +1002,41 @@
                         });
                     });
                     return deferred.promise;
+                },
+                saveTrendingHashtags: function(hashtags) {
+                    let newDate = new Date();
+                    let tag = "$$$hashtags_count$$$";
+                    return new Promise((resolve, reject) => {
+                        buildfire.publicData.get(tag, (err, result) => {
+                            if (err) return reject(err);
+                            result = result? result : {};
+                            const { data } = result;
+                            if(data && Object.keys(data).length) {
+                                let clone = { ...data };
+                                for (const hashtag of hashtags) {
+                                    if(clone[hashtag]) {
+                                        clone[hashtag] += 1;
+                                    } else {
+                                        clone[hashtag] = 1;
+                                    }  
+                                }
+                                buildfire.publicData.save(clone, tag, (err, res) => {
+                                    if (err) return reject(err);
+                                    resolve(res);
+                                });
+                            } else {
+                                let hashtagsCountObj = {};
+                                for (let i = 0; i < hashtags.length; i++) {
+                                    hashtagsCountObj[hashtags[i]] = 1;
+                                }
+                                buildfire.publicData.save(hashtagsCountObj, tag, (err, res) => {
+                                    if (err) return reject(err);
+                                    resolve(res);
+                                })
+                            }
+                            
+                        })
+                    })
                 },
                 reportPost: function (data) {
                     buildfire.publicData.get('reports_' + data.wid, (err, result) => {
@@ -1168,6 +1180,7 @@
                 _this.showMorePosts = false;
                 _this.pageSize = 5;
                 _this.page = 0;
+                _this.postMeta = null;
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {

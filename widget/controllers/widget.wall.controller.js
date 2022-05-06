@@ -533,9 +533,14 @@
                 let userId = post.userId;
                 let newData = {...post};
                 newData.repliesCount++;
-                SocialDataStore.updatePost(newData).then((response) =>{
-
-                },(err) => {})
+                const postMeta = {postId: post.id};
+                if (post.images[0]) {
+                    postMeta.image = post.images[0];
+                }
+                if (post.videos[0]) {
+                    postMeta.video = post.videos[0];
+                }
+                SocialDataStore.updatePost(newData).then((response) =>{},(err) => {})
 
                 if (WidgetWall.allowPrivateChat) {
                     WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
@@ -544,13 +549,13 @@
                             buildfire.auth.getUserProfile({ userId: userId }, function (err, user) {
                                 if (err) return console.error("Getting user profile failed.", err);
                                 if (userId === WidgetWall.SocialItems.userDetails.userId) return;
-                                WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
+                                WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user), postMeta);
                             });
                         }
                     });
                 }
             };
-            WidgetWall.openPrivateChat = function (userId, userName) {
+            WidgetWall.openPrivateChat = function (userId, userName, postMeta) {
                 let wid = null;
                 if (WidgetWall.SocialItems.userDetails.userId && WidgetWall.SocialItems.userDetails.userId != userId) {
                     if (WidgetWall.SocialItems.userDetails.userId > userId) {
@@ -562,9 +567,9 @@
                 SubscribedUsersData.getGroupFollowingStatus(userId, wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.error('Error while getting initial group following status.', err);
                     if (!status.length) {
-                        WidgetWall.followPrivateWall(userId, wid, userName);
+                        WidgetWall.followPrivateWall(userId, wid, userName, postMeta);
                     } else {
-                        WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                        WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid }, postMeta);
                     }
                 });
             }
@@ -733,7 +738,16 @@
                     displayName: post.userDetails.displayName,
                     userId: post.userId
                 }
-                WidgetWall.saveActivity(type, {fromUser, toUser, post: {image: post.images[0],id: post.id}})
+                let postData = {
+                    id: post.id
+                }
+                if (post.images[0]) {
+                    postData.image = post.images[0];
+                }
+                if (post.videos[0]) {
+                    postData.video = post.videos[0];
+                }
+                WidgetWall.saveActivity(type, {fromUser, toUser, post: postData})
             }
 
             WidgetWall.toggleReaction = (post) =>{
@@ -773,6 +787,11 @@
                 Location.go(`#/filteredResults/${type}/${title}`)
             }
 
+            WidgetWall.gotToInbox = (repliesCount) => {
+                if (!repliesCount) return;
+                Location.go("#/inbox/");
+            }
+
             WidgetWall.checkForPrivateChat = function () {
                 if (WidgetWall.SocialItems.isPrivateChat) {  
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
@@ -805,7 +824,7 @@
                     });
             }
 
-            WidgetWall.followPrivateWall = function (userId, wid, userName = null) {
+            WidgetWall.followPrivateWall = function (userId, wid, userName = null, postMeta) {
                 Buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
                     if (err) console.log('Error while saving subscribed user data.');
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -856,12 +875,12 @@
                     SubscribedUsersData.save(params, function (err) {
                         if (err) console.log('Error while saving subscribed user data.');
                         if (userName)
-                            WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                            WidgetWall.navigateToPrivateChat({ id: userId, name: userName, wid: wid }, postMeta);
                     });
                 })
             }
 
-            WidgetWall.navigateToPrivateChat = function (user) {
+            WidgetWall.navigateToPrivateChat = function (user, postMeta) {
                 // buildfire.history.get({
                 //     pluginBreadcrumbsOnly: true
                 // }, function (err, result) {
@@ -873,6 +892,7 @@
                 WidgetWall.SocialItems.showMorePosts = true;
                 WidgetWall.SocialItems.pageSize = 20;
                 WidgetWall.SocialItems.page = 0;
+                WidgetWall.SocialItems.postMeta = postMeta;
                 WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name;
 
                 $timeout(function(){

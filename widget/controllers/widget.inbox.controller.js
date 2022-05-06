@@ -9,6 +9,7 @@
             Inbox.userDetails = {};
             Inbox.users = [];
             Inbox.showMore = false;
+            Inbox.loading = true;
             Inbox.noResultsText = null;
             Inbox.searchOptions = {
                 pageSize: 50,
@@ -39,26 +40,29 @@
             }
 
             $scope.clear = function () {
-                $scope.searchInput = "";
-                Inbox.noResultsText = Inbox.languages.membersBlankState;
+                // $scope.searchInput = "";
+                Inbox.noResultsText = 'No messages yet!';
                 Inbox.searchOptions.page = 0;
+                Inbox.users = [];
             }
 
 
             Inbox.searchInboxUsers =  () => {
-                Inbox.searchOptions.filter = Inbox.searchOptions.filter? Inbox.searchOptions.filter : {}
-                Inbox.searchOptions.filter['_buildfire.index.array1.string1'] = `userId_${Inbox.SocialItems.userDetails.userId}`
+                Inbox.searchOptions.filter = Inbox.searchOptions.filter? Inbox.searchOptions.filter : {};
+                Inbox.searchOptions.filter['_buildfire.index.array1.string1'] = `userId_${Inbox.SocialItems.userDetails.userId}`;
+                Inbox.searchOptions.filter['_buildfire.index.string1'] = { $ne: "" };
                 Inbox.searchOptions.sort = {
                     "lastMessage.createdAt": -1
-                }
+                };
                 Buildfire.spinner.show();
+                Inbox.loading = true;
                 SubscribedUsersData.searchForUsers(Inbox.searchOptions, function (err, users) {
                     if (err) return console.log(err);
                     if (users.length === Inbox.searchOptions.pageSize) {
                         Inbox.searchOptions.page++;
                         Inbox.showMore = true;
                     } else if (users.length === 0) {
-                        Inbox.noResultsText = Inbox.languages.membersNoResults;
+                        Inbox.noResultsText = 'No messages yet!';
                     }
                     else {
                         Inbox.showMore = false;
@@ -74,6 +78,7 @@
                     }
                     Inbox.users = Inbox.users.concat(users);
                     Buildfire.spinner.hide();
+                    Inbox.loading = false;
                     $scope.$digest();
                 })
 
@@ -81,9 +86,9 @@
 
             let TIMEOUT_ID;
             $scope.onSearchChange = function () {
-                let isEmptySearch = ($scope.searchInput.length === 0);
-                let minSearchLength = 1;
-                if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
+                // let isEmptySearch = ($scope.searchInput.length === 0);
+                // let minSearchLength = 1;
+                // if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
                 Inbox.searchOptions.filter = {
                     $or: [
@@ -92,12 +97,17 @@
                         { "$json.userDetails.firstName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.lastName": { $regex: $scope.searchInput, $options: 'i' } },
                         { "$json.userDetails.email": { $regex: $scope.searchInput, $options: 'i' } },
+                        { "$json.user2Details.displayName": { $regex: $scope.searchInput, $options: 'i' } },
+                        { "$json.user2Details.firstName": { $regex: $scope.searchInput, $options: 'i' } },
+                        { "$json.user2Details.lastName": { $regex: $scope.searchInput, $options: 'i' } },
+                        { "$json.user2Details.email": { $regex: $scope.searchInput, $options: 'i' } },
                     ]
                 }
-                Inbox.searchOptions.page = 0;
                 clearTimeout(TIMEOUT_ID);
-                setTimeout(() => {
-                    $scope.searchInboxUsers(Inbox.searchOptions);
+                TIMEOUT_ID = setTimeout(() => {
+                    Inbox.loading = true;
+                    $scope.clear();
+                    Inbox.searchInboxUsers(Inbox.searchOptions);
                 }, 300)
             };
 
