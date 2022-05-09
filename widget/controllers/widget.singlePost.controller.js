@@ -367,7 +367,6 @@
                                       
                                           if (isConfirmed) {
                                             SinglePost.deletePost(post.id);
-                                             Location.go("");
                                           } 
                                         }
                                       );
@@ -398,7 +397,16 @@
                         let postToDelete = SinglePost.SocialItems.items.find(element => element.id === postId)
                         let index = SinglePost.SocialItems.items.indexOf(postToDelete);
                         SinglePost.SocialItems.items.splice(index, 1);
-                        Location.go("");
+                        if (postToDelete.hashtags && postToDelete.hashtags.length > 0) {
+                            const isDeleted = true;
+                            SocialDataStore.updateTrendingHashtags(postToDelete.hashtags, isDeleted).then(() => {
+                                Location.go("")
+                            }).catch(() => {
+                                Location.go("")
+                            })
+                        } else {
+                            Location.go("");
+                        }
                         if (!$scope.$$phase)
                             $scope.$digest();
                     }

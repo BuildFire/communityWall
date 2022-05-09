@@ -64,11 +64,14 @@
                         container.appendChild(lastParent)
                     }
                     lastElement = $scope.createElement("div","",[],"",posts[i]);
-                    if(posts[i].data.images){
+                    if(posts[i].data.images && posts[i].data.images.length > 0){
                         console.log(posts[i]);
                         img = $scope.createImage(posts[i].data.images[0]);
                         lastElement.appendChild(img);
+                    }  else if(posts[i].data.videos && posts[i].data.videos.length > 0){
+                        let vid = $scope.createVideo(posts[i].data.videos, posts[i].id , lastElement);
                     }
+                    
                     
                     lastParent.appendChild(lastElement);
                     if(i === posts.length - 1){
@@ -93,6 +96,27 @@
                 let e = document.createElement('img');
                 e.src = $scope.crop(src, {width: 100, height: 100});
                 return e;
+            }
+
+            $scope.createVideo = (src, postId, parent) =>{
+                parent.style.position = "relative";
+                parent.style.backgroundColor = "#E5E5E5"
+                let span = document.createElement("span");
+                span.classList.add("material-icons");
+                span.innerHTML = "play_arrow";
+                span.style.fontSize = "70px";
+                span.style.position = "absolute"
+                let e = document.createElement('video');
+                e.style.width = "100%";
+                e.style.height = "100%";
+                e.style.objectFit = "cover"
+                e.style.borderRadius = "15px";
+                let vidSrc = document.createElement("source");
+                vidSrc.src = src+"#t=0.1";
+                vidSrc.type = "video/mp4";
+                e.appendChild(vidSrc)
+                parent.appendChild(span);
+                parent.appendChild(e);
             }
 
             $scope.crop = function(url, dimensions){

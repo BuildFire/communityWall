@@ -1498,10 +1498,13 @@
                         });
                         Buildfire.messaging.sendMessageToControl({ 'name': EVENTS.POST_DELETED, 'id': postId });
                         let postToDelete = WidgetWall.SocialItems.items.find(element => element.id === postId)
-                        console.log(postToDelete);
                         Posts.deletePost({userId:postToDelete.userId,postText:postToDelete.text,postImages: postToDelete.imageUrl || [],},(err, r) =>{return});
                         let index = WidgetWall.SocialItems.items.indexOf(postToDelete);
                         WidgetWall.SocialItems.items.splice(index, 1);
+                        if (postToDelete.hashtags && postToDelete.hashtags.length > 0) {
+                            const isDeleted = true;
+                            SocialDataStore.updateTrendingHashtags(postToDelete.hashtags,  isDeleted)
+                        }
                         if (!$scope.$$phase)
                             $scope.$digest();
                     }

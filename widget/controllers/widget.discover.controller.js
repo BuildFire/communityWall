@@ -10,22 +10,26 @@
             $scope.users = [];
             $scope.shouldFetchMorePosts = true;
             Discover.isLoading = true;
+            $scope.usersLoading = false;
             $scope.setActivePage = function(pageIndex){
-                if ($scope.activePageIndex !== pageIndex) {
-                    Location.go(`#/discover/${pageIndex}`);
-                    return;
-                }
+                // if ($scope.activePageIndex !== pageIndex) {
+                //     Location.go(`#/discover/${pageIndex}`); 
+                //     return;
+                // } else {
+                //      $scope.activePageIndex = pageIndex;
+                // }
                 let pages = document.getElementById("navBar").children;
                 let page = pages.item(pageIndex);
                 pages.item(0).style.borderBottomWidth = "0px";
                 pages.item(1).style.borderBottomWidth = "0px";
                 pages.item(2).style.borderBottomWidth = "0px";
                 page.style.borderBottomWidth = "2px";
-                // $scope.activePageIndex = pageIndex;
+                $scope.activePageIndex = pageIndex;
                 $scope.sendToCp([]);;
                 if(pageIndex === 0) $scope.sendToCp();
                 else if(pageIndex === 1) $scope.sendToCp();
-                else if(pageIndex === 2) $scope.sendToCp();
+                else if (pageIndex === 2) $scope.sendToCp();
+                buildfire.history.push(`#/discover/${pageIndex}`);
                 
             }
 
@@ -63,11 +67,12 @@
                     result = result ? result : {};
                     const { data } = result;
                     if(err || !data || !Object.keys(data).length) return callback(null, null);
-                    let hashtags = Object.entries(data).sort((a, b) => b[1] - a[1]);
+                    let hashtags = Object.entries(data).filter(elem => elem[1] > 0);
+                    hashtags.sort((a, b) => b[1] - a[1]);
                     hashtags = hashtags.slice(0, 101);
                     hashtags = hashtags.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
                     for (const hashtag in hashtags) {
-                        if (hashtags[hashtag]) {
+                        if (hashtags.hasOwnProperty(hashtag)) {
                             hashtags[hashtag] =  {
                                 key: hashtag,
                                 count: hashtags[hashtag],
@@ -113,7 +118,7 @@
                     Discover.getUsersWhoIDontFollow();
                     Discover.getTrendingHashtags((err, trendingHashtagsPosts) => {
                         trendingHashtagsPosts = trendingHashtagsPosts? trendingHashtagsPosts : {};
-                        trendingHashtagsPosts = Object.values(trendingHashtagsPosts);
+                        trendingHashtagsPosts = Object.values(trendingHashtagsPosts).filter(hashtag => hashtag.posts.length > 0)
                         trendingHashtagsPosts.sort((a , b) => b.count - a.count);
                         $scope.trendingHashtags = trendingHashtagsPosts.slice(0, 101);
                         $scope.isBusy = false;
@@ -227,6 +232,7 @@
                     if(i === posts.length - 1){
                         Buildfire.spinner.hide();
                         $scope.finishRender = true;
+                        $rootScope.$digest();
                         $scope.$digest();
                     }
                 }
@@ -246,7 +252,8 @@
             Discover.getUsersWhoIDontFollow = () =>{
                 let isUserLoggedIn = Discover.SocialItems.userDetails.userId ? true : false;
                 let options = {};
-                if(isUserLoggedIn){
+                if (isUserLoggedIn) {
+                    $scope.usersLoading = true;
                     SocialUserProfile.get(Discover.SocialItems.userDetails.userId, (err, socialProfile) =>{
                         if(err){
                             options.filter = {};
@@ -269,8 +276,10 @@
                         options.filter['$and'].push({"_buildfire.index.array1.string1":{$ne:`userId_${Discover.SocialItems.userDetails.userId}`}})
                         options.skip = 0;
                         options.limit = 50;
+                        
                         SubscribedUsersData.getUsers(options, (err, data) =>{
                             $scope.users = data;
+                            $scope.usersLoading = false;
                             $timeout(function(){
                                 $scope.$digest();
                             })
@@ -278,9 +287,11 @@
                         }, Discover.SocialItems.userDetails.userId)
                     })
                 }
-                else{
+                else {
+                    $scope.usersLoading = false;
                     SubscribedUsersData.getUsers({skip:0,limit: 50}, (err, data) =>{
                         $scope.users = data;
+                        $scope.usersLoading = true;
                         $timeout(function(){
                             $scope.$digest();
                         })

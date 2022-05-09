@@ -83,12 +83,12 @@
                 flex-wrap: wrap;
                 margin-left: 12px;">
                 <span class="material-icons">person</span>
-                <span style="margin-left: 5px;color: var(--bf-theme-primary);" ng-repeat="user in taggedUsers track by $index">
+                <span class="text-primary" style="margin-left: 5px;" ng-repeat="user in taggedUsers track by $index">
                     <span style="color: var(--bf-theme-body-text);" ng-if="$index == post.taggedPeople.length - 1 && post.taggedPeople.length > 1">
                          and 
                     </span>
-                    <span ng-click="SinglePost.navigateToProfile(user.userId)">
-                        {{user.displayName || (user)}}
+                    <span class="text-primary" ng-click="SinglePost.navigateToProfile(user.userId)">
+                        {{user.displayName || (user)}} {{$index !== post.taggedPeople.length - 1? ', ' : ''}} 
                     </span> 
                 </span>
             </span>

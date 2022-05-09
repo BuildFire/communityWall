@@ -6,8 +6,7 @@
         function ($scope, $rootScope, $routeParams, Buildfire, SubscribedUsersData, SocialItems, $timeout, Location) {
 
             const Inbox = this;
-            Inbox.userDetails = {};
-            Inbox.users = [];
+            Inbox.threads = [];
             Inbox.showMore = false;
             Inbox.loading = true;
             Inbox.noResultsText = null;
@@ -43,7 +42,7 @@
                 // $scope.searchInput = "";
                 Inbox.noResultsText = 'No messages yet!';
                 Inbox.searchOptions.page = 0;
-                Inbox.users = [];
+                Inbox.threads = [];
             }
 
 
@@ -56,30 +55,49 @@
                 };
                 Buildfire.spinner.show();
                 Inbox.loading = true;
-                SubscribedUsersData.searchForUsers(Inbox.searchOptions, function (err, users) {
+                SubscribedUsersData.searchForUsers(Inbox.searchOptions, function (err, threads) {
                     if (err) return console.log(err);
-                    if (users.length === Inbox.searchOptions.pageSize) {
+                    if (threads.length === Inbox.searchOptions.pageSize) {
                         Inbox.searchOptions.page++;
                         Inbox.showMore = true;
-                    } else if (users.length === 0) {
+                    } else if (threads.length === 0) {
                         Inbox.noResultsText = 'No messages yet!';
                     }
                     else {
                         Inbox.showMore = false;
                     }
-                    for (const user of users) {
-                        if (user.userId === Inbox.SocialItems.userDetails.userId) {
-                            user.userDetails = user.user2Details? {...user.user2Details} : {
-                                firstName: '',
-                                lastName: '',
-                                displayName: '',
+                    const newData = []
+                    for (let i = 0; i < threads.length; i++) {
+                        const thread = threads[i];
+                        let otherUserId = thread.userId === Inbox.SocialItems.userDetails.userId && thread.user2Id? thread.user2Id : thread.userId;
+
+                        buildfire.auth.getUserProfile({ userId: otherUserId }, (err, loadUser) => { 
+                            if (err) return console.error('User not found.');
+                            
+                            if (otherUserId !== Inbox.SocialItems.userDetails.userId) {
+                                thread.userDetails = {
+                                    firstName: loadUser ? loadUser.firstName : '',
+                                    lastName: loadUser ? loadUser.lastName : '',
+                                    displayName: loadUser ? loadUser.displayName : '',
+                                    imageUrl: loadUser ? loadUser.imageUrl : '',
+                                };
+                            } else {
+                                thread.userDetails = {
+                                    firstName: '',
+                                    lastName: '',
+                                    displayName: '',
+                                }
                             }
-                        }
+
+                            if (i === threads.length - 1) {
+                                Inbox.threads = Inbox.threads.concat(threads);
+                                Buildfire.spinner.hide();
+                                Inbox.loading = false;
+                                $scope.$digest();
+                            }
+                        })
                     }
-                    Inbox.users = Inbox.users.concat(users);
-                    Buildfire.spinner.hide();
-                    Inbox.loading = false;
-                    $scope.$digest();
+                    
                 })
 
             }

@@ -60,7 +60,8 @@
                 .when('/discover/:tab?',{
                     templateUrl: 'templates/discover.html',
                     controllerAs: 'Discover',
-                    controller: 'DiscoverCtrl'
+                    controller: 'DiscoverCtrl',
+                    reloadOnSearch: false
                 })
                 .when('/search',{
                     templateUrl: 'templates/search.html',

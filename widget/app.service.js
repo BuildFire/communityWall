@@ -992,7 +992,7 @@
                                     buildfire.publicData.update(result.id, result.data, 'wall_posts', (err, posts) => {
                                         if (error) return deferred.reject(error);
                                         if(postData.hashtags && postData.hashtags.length > 0) {
-                                            this.saveTrendingHashtags(postData.hashtags).finally(() => deferred.resolve(posts));
+                                            this.updateTrendingHashtags(postData.hashtags).finally(() => deferred.resolve(posts));
                                         } else {
                                             return deferred.resolve(posts);
                                         }
@@ -1003,22 +1003,30 @@
                     });
                     return deferred.promise;
                 },
-                saveTrendingHashtags: function(hashtags) {
-                    let newDate = new Date();
+                updateTrendingHashtags: function(hashtags, deleted) {
                     let tag = "$$$hashtags_count$$$";
                     return new Promise((resolve, reject) => {
                         buildfire.publicData.get(tag, (err, result) => {
                             if (err) return reject(err);
                             result = result? result : {};
                             const { data } = result;
+                            debugger
                             if(data && Object.keys(data).length) {
                                 let clone = { ...data };
-                                for (const hashtag of hashtags) {
-                                    if(clone[hashtag]) {
-                                        clone[hashtag] += 1;
-                                    } else {
-                                        clone[hashtag] = 1;
-                                    }  
+                                if (!deleted) {
+                                    for (const hashtag of hashtags) {
+                                        if(clone[hashtag]) {
+                                            clone[hashtag] += 1;
+                                        } else {
+                                            clone[hashtag] = 1;
+                                        }  
+                                    }
+                                } else {
+                                    for (const hashtag of hashtags) {
+                                        if(clone[hashtag]) {
+                                            clone[hashtag] -= 1;
+                                        } 
+                                    }
                                 }
                                 buildfire.publicData.save(clone, tag, (err, res) => {
                                     if (err) return reject(err);

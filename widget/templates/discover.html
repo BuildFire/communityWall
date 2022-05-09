@@ -1,4 +1,4 @@
-<div ng-cloak ng-style='{display: finishRender ? block : none}' style="height: 100%;" id="discover-container" >
+<div ng-cloak  style="height: 100%;" id="discover-container" >
     <div class="header" style="height: 6%;">
         <div class="searchContainer" ng-click="navigateToSearch()">
             <span class="material-icons">
@@ -36,13 +36,11 @@
                 <div class="gridSkeletonItem item5"></div>
             </div>
         </div>
-        <div  ng-show="!Discover.isLoading">
-            <div id="discover-posts-container" ng-show="activePageIndex == 1" class="discover-scrollable-container">
+        <div id="discover-posts-container" ng-show="activePageIndex === 1 && !Discover.isLoading" class="discover-scrollable-container">
         
-            </div>
         </div>
-        <div id="discover-people-container"  ng-show="activePageIndex == 2" class="discover-scrollable-container">
-            <div ng-if="users && users.length > 0" ng-repeat="user in users">
+        <div id="discover-people-container"  ng-show="activePageIndex === 2 && !Discover.isLoading" class="discover-scrollable-container">
+            <div ng-if="!usersLoading && users && users.length > 0" ng-repeat="user in users">
                 <div  ng-click="navigateToProfile(user.data.userId)">
                     <div class="discover-people-profile-picture">
                         <img ng-src="{{cropImage(user.data.userDetails.imageUrl, {width: 50,height: 50})}}" ng-if="user.data.userDetails.imageUrl" />
@@ -66,17 +64,17 @@
                     </div>
                 </div>
             </div>
-            <div ng-if="!users || (users && users.length == 0)">
+            <div ng-if="!usersLoading && (!users || (users && users.length == 0))">
                 <div class="empty_state"></div>
             </div>
         </div>
-        <div id="discover-hashtags-container" class="discover-scrollable-container" ng-if="!isBusy" ng-show="activePageIndex == 0">
+        <div id="discover-hashtags-container"  ng-show="activePageIndex === 0 && !Discover.isLoading" class="discover-scrollable-container" ng-if="!isBusy">
             <div  ng-show="Discover.isLoading">
 
             </div>
             <div ng-show="!Discover.isLoading">
                 <div class="discover-h-repeated" style="height: 100%;overflow-y: auto;" ng-if="!isObjectEmpty(trendingHashtags)" ng-repeat="hashtag in trendingHashtags track by $index">
-                    <div ng-if="hashtag.posts.length > 0">
+                    <div>
                         <div class="discover-h-info">
                             <div class="discover-h-num">
                                 {{$index + 1}}

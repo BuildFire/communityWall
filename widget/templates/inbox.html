@@ -11,7 +11,7 @@
     </div>
 
     <div class="inboxMembers">
-      <div class="inbox-item" ng-show="!Inbox.loading" ng-repeat="user in Inbox.users" ng-click="Inbox.navigateToPrivateChat(user)">
+      <div class="inbox-item" ng-show="!Inbox.loading" ng-repeat="user in Inbox.threads" ng-click="Inbox.navigateToPrivateChat(user)">
         <div class="flex">
           <div>
             <div class="media-holder">
@@ -41,7 +41,7 @@
       <div class="loadMorePosts" ng-show="Inbox.showMore && !Inbox.loading" ng-click="Inbox.searchInboxUsers()">
         <button><a>Show More</a></button>
       </div>
-      <div ng-show="Inbox.users.length === 0 && !Inbox.loading">
+      <div ng-show="Inbox.threads.length === 0 && !Inbox.loading">
         <h5 class="text-center" style="padding-top: 40px;"> No Messages yet! </h5>
       </div>
     </div>
