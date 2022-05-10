@@ -79,10 +79,10 @@
                         const thread = threads[i];
                         let otherUserId = thread.userId === Inbox.SocialItems.userDetails.userId && thread.user2Id? thread.user2Id : thread.userId;
 
-                        if (thread.lastMessage.sender !== Inbox.SocialItems.userDetails.userId && !thread.lastMessage.isRead) {
-                            thread.messageIsRead = true;
+                        if (thread.lastMessage && thread.lastMessage.sender !== Inbox.SocialItems.userDetails.userId && !thread.lastMessage.isRead) {
+                            thread.messageNotRead = true;
                         } else {
-                            thread.messageIsRead = false;
+                            thread.messageNotRead = false;
                         }
 
                         buildfire.auth.getUserProfile({ userId: otherUserId }, (err, loadUser) => { 
