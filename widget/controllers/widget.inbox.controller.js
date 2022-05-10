@@ -169,11 +169,11 @@
 
 
             Inbox.getLocalTime = function (lastMessage) {
-                if (!lastMessage) return ''
+                if (!lastMessage || !lastMessage.createdAt) return ''
 
                 const date = new Date(lastMessage.createdAt);
-                let hours = date.getHours().toString();
-                let minutes = date.getMinutes().toString();
+                let hours = date.getHours();
+                let minutes = date.getMinutes();
 
                 if (hours < 10) {
                     hours = '0' + hours
@@ -181,7 +181,6 @@
                 if (minutes < 10) {
                     minutes = '0' + minutes
                 }
-
 
                 return hours + ':' + minutes;
             }
