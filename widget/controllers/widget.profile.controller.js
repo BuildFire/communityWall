@@ -655,22 +655,22 @@
                 let options = {
                     skip: t.posts[type].items.length, 
                     limit: 8, 
-                    sort:{createdOn: -1}
+                    sort:{createdOn: -1},
+                    filter: {}
                 }
-                if(type === 'ownPosts'){
+                if(type === 'ownPosts') {
                     options.filter = {"_buildfire.index.array1.string1":`userId_${t.user.userId}`}
-                }
-                else{
+                } else {
                     options.filter = {"_buildfire.index.array1.string1":`tagged_${t.user.userId}`};
                 }
-                options.filter = {"_buildfire.index.string1": ''};
-                Buildfire.publicData.search(options,"wall_posts",(err, data) =>{
+                options.filter["_buildfire.index.string1"] = '';
+                Buildfire.publicData.search(options,"wall_posts",(err, data) => {
                     if(err) return callback(err);
                     else{
                         if(data && data.length != 8) t.posts[type].shouldFetchMore = false;
                         return callback(null, data)
                     } 
-                })
+                });
             }
 
             t.attachListener = (container, type) =>{
