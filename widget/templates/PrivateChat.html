@@ -10,9 +10,15 @@
               <div ng-show="post.text.length > 0" class="chatText">
                 {{post.text}}
               </div>
-              <div ng-if="post.images.length > 0 && post.text.length == 0" class="chatPlaceholder">
-                <div>
-                  <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="100" crop-height="100"
+              <div ng-if="post.text.length == 0" class="chatPlaceholder">
+                <div class="p-video-container" ng-click="openSinglePost(post.id)" ng-if="post.videos.length > 0">
+                    <span class="material-icons play-icon">play_arrow</span>
+                    <video >
+                        <source ng-src="{{trustSrc(post.videos[0] + '#t=0.1')}}">
+                    </video>
+                </div>
+                <div ng-if="post.images.length > 0" class="chatImage">
+                  <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="300" crop-height="300"
                     crop-type="crop">
                 </div>
               </div>
@@ -53,8 +59,14 @@
               <div ng-show="post.text.length > 0" class="chatText">
                 {{post.text}}
               </div>
-              <div ng-if="post.images.length > 0 && post.text.length == 0" style="justify-content: flex-start !important;" class="chatPlaceholder">
-                <div>
+              <div ng-if="post.text.length == 0" style="justify-content: flex-start !important;" class="chatPlaceholder">
+                <div class="p-video-container" ng-click="openSinglePost(post.id)" ng-if="post.videos.length > 0">
+                    <span class="material-icons play-icon">play_arrow</span>
+                    <video >
+                        <source ng-src="{{trustSrc(post.videos[0] + '#t=0.1')}}">
+                    </video>
+                </div>
+                <div ng-if="post.images.length > 0" class="chatImage" >
                   <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="100" crop-height="100"
                     crop-type="crop">
                 </div>

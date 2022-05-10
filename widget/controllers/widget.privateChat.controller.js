@@ -94,10 +94,8 @@
                                     Buildfire.spinner.hide();
                                     if (err || !imageData) return Buildfire.spinner.hide();
                                     else{
-                                        $scope.selectedMedia.src = imageData;
-                                        $scope.selectedMedia.type = "image";
-                                        $scope.selectedMedia.shown  = Buildfire.imageLib.cropImage($scope.selectedMedia.src, { size: "half_width", aspect: "9:16" });
                                         Buildfire.spinner.hide();
+                                        t.sendImage(imageData);
                                         $scope.$digest();
                                     }
                                     
@@ -109,11 +107,8 @@
                                     Buildfire.spinner.hide();
                                     if (err || !videoData) return Buildfire.spinner.hide();
                                     else{
-                                        $scope.selectedMedia.src = videoData.url;
-                                        $scope.selectedMedia.type = "video";
-                                        $scope.selectedMedia.shown  = videoData.localURI
-
                                         Buildfire.spinner.hide();
+                                        t.sendVideo(videoData.url);
                                         $scope.$digest();
                                     }
 
@@ -126,7 +121,7 @@
                 else{
                     Buildfire.spinner.show();
                     Buildfire.services.publicFiles.showDialog(
-                        { filter: ["image/jpeg", "image/png",], allowMultipleFilesUpload: false },
+                        { filter: ["image/jpeg", "image/png", "video/mp4"], allowMultipleFilesUpload: false },
                         (onProgress) => {
                             console.log(onProgress);
                         },
@@ -139,7 +134,18 @@
                                 return Buildfire.spinner.hide();
                             }
                             file = file[0];
-                            t.sendImage(file.url);
+                            if (!file || file.status === 'failed') {
+                                Buildfire.dialog.toast({
+                                    message: "Unable to upload",
+                                });
+                                return
+                            }
+                            let isImage = file.type.split('/')[0] === 'image'; 
+                            if (isImage) {
+                                t.sendImage(file.url);
+                            } else {
+                                t.sendVideo(file.url);
+                            }
 
                             $scope.$digest();
                         }
@@ -149,6 +155,10 @@
 
             t.sendImage = function(image){
                 t.createPost({image});
+            }
+
+            t.sendVideo = function (video) {
+                t.createPost({ video });
             }
 
             t.createPost = function(obj){
