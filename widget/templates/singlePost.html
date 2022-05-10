@@ -78,17 +78,22 @@
         <div ng-if="post.taggedPeople.length > 0">
             <div style="display: flex;
                 justify-content: flex-start;
+                align-items: center;
                 margin-top: 5px;
+                flex-wrap: wrap;
                 margin-left: 12px;">
                 <span class="material-icons">person</span>
-                <span style="flex:auto;" class="text-primary">
-                    {{SinglePost.getTaggedUserNames(taggedUsers)}}
-                    <!-- <span style="color: var(--bf-theme-body-text);" ng-show="$index == (post.taggedPeople.length - 1) && post.taggedPeople.length > 1">
+                <span class="text-primary" ng-repeat="user in taggedUsers track by $index">
+                    <!-- {{getTaggedUserNames(post.taggedPeople)}} -->
+                    <span  ng-class="{'margin-left-7': taggedUsers.length === 2}" style="color: var(--bf-theme-body-text);" ng-show="$index === (taggedUsers.length - 1) && taggedUsers.length > 1">
                         and 
                     </span>
                     <span class="text-primary" ng-click="SinglePost.navigateToProfile(user.userId)">
-                        {{user.displayName || (user)}}{{$index !== post.taggedPeople.length - 1? ', ' : ''}} 
-                    </span>  -->
+                        {{SinglePost.SocialItems.getUserName(user)}} 
+                    </span> 
+                    <span class="text-primary" style="margin-right: 7px;" ng-if="$index !== (taggedUsers.length - 1) && taggedUsers.length > 2">
+                        ,
+                    </span>
 
                 </span>
             </div>
