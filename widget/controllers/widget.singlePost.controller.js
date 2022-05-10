@@ -436,6 +436,14 @@
                   );
             }
 
+            SinglePost.getTaggedUserNames = (users)  => {
+                if (!users.length)
+                    return '';
+                let text = users.slice(0, users.length - 1).map((user) => SinglePost.SocialItems.getUserName(user)).join(', ');
+                text += ' and ' + SinglePost.SocialItems.getUserName(users[users.length - 1]);
+                return text;
+            }
+
             SinglePost.getDuration = function (timestamp) {
                 if (timestamp)
                     return moment(timestamp.toString()).fromNow();

@@ -17,17 +17,17 @@
                         <source ng-src="{{trustSrc(post.videos[0] + '#t=0.1')}}">
                     </video>
                 </div>
-                <div ng-if="post.images.length > 0" class="chatImage">
+                <div ng-if="post.images.length > 0" class="chatImage" ng-click="openImage(post)">
                   <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="300" crop-height="300"
                     crop-type="crop">
                 </div>
               </div>
               <div  class="forImage">
-                <img ng-if="PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl"
+                <img ng-if="PrivateChat.SocialItems.userDetails.imageUrl"
                   load-image="1x1" data-final-src="{{PrivateChat.SocialItems.userDetails.imageUrl}}" crop-width="75"
                   style="border-radius: 100%;" crop-height="75" crop-type="crop" />
                 <img
-                  ng-if="!(PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl)"
+                  ng-if="!PrivateChat.SocialItems.userDetails.imageUrl"
                   load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local"
                   crop-width="75" crop-height="75" crop-type="default" />
               </div>
@@ -40,8 +40,8 @@
                         <source ng-src="{{trustSrc(post.videos[0] + '#t=0.1')}}">
                     </video>
                 </div>
-                <div ng-if="post.images.length > 0 && post.text.length != 0" ng-click="openSinglePost(post.postId)" class="chatImage">
-                    <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="65" crop-height="65"  crop-type="crop">
+                <div ng-if="post.images.length > 0 && post.text.length != 0" ng-click="openImage(post)" class="chatImage">
+                    <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="300" crop-height="300"  crop-type="crop">
                 </div>
             </div>
 
@@ -49,10 +49,10 @@
           <div id="{{post.id}}" class="flex-left" ng-show="post.userId !== PrivateChat.SocialItems.userDetails.userId">
             <div style="display: flex; justify-content: flex-end; align-items: flex-start;">
               <div class="forImage">
-                <img ng-if="post.userDetails.userId && post.userDetails.imageUrl" load-image="1x1"
+                <img ng-if="post.userDetails.imageUrl" load-image="1x1"
                   data-final-src="{{post.userDetails.imageUrl}}" crop-width="75" style="border-radius: 100%;"
                   crop-height="75" crop-type="crop" />
-                <img ng-if="!(post.userDetails.userId && post.userDetails.imageUrl)" load-image="1x1"
+                <img ng-if="!post.userDetails.imageUrl" load-image="1x1"
                   data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="75"
                   crop-height="75" crop-type="default" />
               </div>
@@ -66,8 +66,8 @@
                         <source ng-src="{{trustSrc(post.videos[0] + '#t=0.1')}}">
                     </video>
                 </div>
-                <div ng-if="post.images.length > 0" class="chatImage" >
-                  <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="100" crop-height="100"
+                <div ng-if="post.images.length > 0" class="chatImage" ng-click="openImage(post)">
+                  <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="300" crop-height="300"
                     crop-type="crop">
                 </div>
               </div>
@@ -80,8 +80,8 @@
                         <source ng-src="{{trustSrc(post.videos[0] + '#t=0.1')}}">
                     </video>
                 </div>
-                <div ng-click="openSinglePost(post.postId)"  ng-if="post.images.length > 0 && post.text.length != 0" class="chatImage">
-                    <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="65" crop-height="65"
+                <div ng-click="openImage(post)"  ng-if="post.images.length > 0 && post.text.length != 0" class="chatImage">
+                    <img load-image="1x1" data-final-src="{{post.images[0]}}" crop-width="300" crop-height="300"
                     crop-type="crop">
                 </div>
             </div>

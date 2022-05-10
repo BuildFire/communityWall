@@ -1,50 +1,61 @@
 .inboxMembers {
-    margin-top: 1rem;
-    padding: 10px;
-    overflow: scroll;
-    max-height: calc(100vh - 100px);
+  margin-top: 1rem;
+  padding: 10px;
+  overflow: scroll;
+  max-height: calc(100vh - 100px);
 }
 
 .inbox-item {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .media-holder {
-    width: 45px;
-    height: 45px;
-    overflow: hidden;
-    border-radius: 100%;
+  width: 45px;
+  height: 45px;
+  overflow: hidden;
+  border-radius: 100%;
 }
-
 
 .media-holder img {
-    width: 100%;
-    height: 100%;
-    border-radius: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  object-fit: cover;
 }
 .inbox-item-info {
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .inbox-item .inbox-item-info {
-    margin-left: 12px;
+  margin-left: 12px;
 }
-.inbox-item .inbox-item-info  p{
-    margin: 0;
-}
-
-.time-ago{
-    font-size: 12px;
-    max-width: 34ch;
+.inbox-item .inbox-item-info p {
+  margin: 0;
 }
 
-.ellipsis {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    /* max-width: 50% */
-  }
+.time-ago {
+  font-size: 12px;
+  max-width: 34ch;
+}
+
+.inboxMembers .ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 20ch; 
+}
+
+.message-indicator {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.message-indicator span {
+  font-size: 16px;
+  color: var(--bf-theme-danger) !important
+}

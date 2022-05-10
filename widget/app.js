@@ -74,7 +74,10 @@
                 .when('/PrivateChat',{
                     templateUrl: 'templates/PrivateChat.html',
                     controllerAs: 'PrivateChat',
-                    controller: 'PrivateChatCtrl'
+                    controller: 'PrivateChatCtrl',
+                    params: {
+                        hideFooter: true
+                    }
                 })
                 .when('/blockedUsers',{
                     templateUrl: 'templates/blockedUsers.html',

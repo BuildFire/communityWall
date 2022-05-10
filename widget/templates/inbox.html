@@ -27,12 +27,17 @@
               <p class="text-primary">
                 {{Inbox.SocialItems.getUserName(user.userDetails)}}
               </p>
-              <p class="time-ago ellipsis">
-                {{ user.lastMessage? user.lastMessage.text : '' }}
-              </p>
+              <div class="ellipsis">
+                <p class="time-ago ellipsis">
+                  {{ user.lastMessage? user.lastMessage.text : '' }}
+                </p>
+              </div>
             </div>
             <div>
               <span class="time-ago">{{Inbox.getLocalTime(user.lastMessage)}}</span>
+              <div class="message-indicator" ng-if="user.messageIsRead">
+                <span class="material-icons text-danger">circle</span>
+              </div>
             </div>
           </div>
 

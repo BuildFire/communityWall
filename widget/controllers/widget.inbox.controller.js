@@ -45,6 +45,14 @@
                 Inbox.threads = [];
             }
 
+            const removeDuplicates = (threads) => {
+                const data = {}
+                for (const thread of threads) {
+                    data[thread.wallId] = thread;
+                }
+
+                return Object.values(data);
+            }
 
             Inbox.searchInboxUsers =  () => {
                 Inbox.searchOptions.filter = Inbox.searchOptions.filter? Inbox.searchOptions.filter : {};
@@ -66,10 +74,16 @@
                     else {
                         Inbox.showMore = false;
                     }
-                    const newData = []
+                    threads = removeDuplicates(threads);
                     for (let i = 0; i < threads.length; i++) {
                         const thread = threads[i];
                         let otherUserId = thread.userId === Inbox.SocialItems.userDetails.userId && thread.user2Id? thread.user2Id : thread.userId;
+
+                        if (thread.lastMessage.sender !== Inbox.SocialItems.userDetails.userId && !thread.lastMessage.isRead) {
+                            thread.messageIsRead = true;
+                        } else {
+                            thread.messageIsRead = false;
+                        }
 
                         buildfire.auth.getUserProfile({ userId: otherUserId }, (err, loadUser) => { 
                             if (err) return console.error('User not found.');
@@ -81,6 +95,7 @@
                                     displayName: loadUser ? loadUser.displayName : '',
                                     imageUrl: loadUser ? loadUser.imageUrl : '',
                                 };
+
                             } else {
                                 thread.userDetails = {
                                     firstName: '',
@@ -89,6 +104,7 @@
                                 }
                             }
 
+                            
                             if (i === threads.length - 1) {
                                 Inbox.threads = Inbox.threads.concat(threads);
                                 Buildfire.spinner.hide();
@@ -101,6 +117,8 @@
                 })
 
             }
+
+            
 
             let TIMEOUT_ID;
             $scope.onSearchChange = function () {
@@ -154,7 +172,18 @@
                 if (!lastMessage) return ''
 
                 const date = new Date(lastMessage.createdAt);
-                return date.getHours() + ':' + date.getMinutes();
+                let hours = date.getHours().toString();
+                let minutes = date.getMinutes().toString();
+
+                if (hours < 10) {
+                    hours = '0' + hours
+                }
+                if (minutes < 10) {
+                    minutes = '0' + minutes
+                }
+
+
+                return hours + ':' + minutes;
             }
 
             Buildfire.datastore.onUpdate(function (response) {

@@ -17,6 +17,7 @@
                     $scope.$digest();
                 })
                 t.isFetchingPosts = true;
+                markMessageAsRead(t.SocialItems.wid);
                 t.SocialItems.getPrivatePosts(t.SocialItems.wid, (err, posts) =>{
                     if(posts){
                         t.isFetchingPosts = false;
@@ -31,6 +32,14 @@
                         console.log("no posts");
                     }
                 })
+            }
+
+
+            const markMessageAsRead = (wallId) => {
+                SubscribedUsersData.searchAndUpdate(
+                    {"_buildfire.index.string1": t.SocialItems.wid},
+                    {$set: { "lastMessage.isRead": true } }
+                )
             }
             
 
@@ -192,6 +201,24 @@
 
             $scope.openSinglePost = (postId) =>{
                 Location.go("#/singlePostView/" + postId);
+            }
+
+            $scope.openImage = (post) =>{
+
+                if (post.postId) {
+                    $scope.openSinglePost(post.postId);
+                    return;
+                }
+
+                const src = buildfire.imageLib.cropImage(post.images[0], { size: 'xl', aspect: '1:1' })
+                buildfire.imagePreviewer.show(
+                    {
+                      images: [src],
+                    },
+                    () => {
+                      console.log("Image previewer closed");
+                    }
+                  );
             }
 
             $scope.$on("$destroy", function () {
