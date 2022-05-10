@@ -16,7 +16,7 @@
                     crop-type="crop">
                 </div>
               </div>
-              <div style="flex: 1.5;" class="forImage">
+              <div  class="forImage">
                 <img ng-if="PrivateChat.SocialItems.userDetails.userId && PrivateChat.SocialItems.userDetails.imageUrl"
                   load-image="1x1" data-final-src="{{PrivateChat.SocialItems.userDetails.imageUrl}}" crop-width="75"
                   style="border-radius: 100%;" crop-height="75" crop-type="crop" />
@@ -28,7 +28,7 @@
             </div>
 
             <div class="chatImageContainer">
-                <div class="p-video-container" ng-click="openSinglePost(post.postId)"  ng-if="post.videos.length > 0">
+                <div class="p-video-container" ng-click="openSinglePost(post.postId)"  ng-if="post.videos.length > 0 && post.text.length != 0">
                     <span class="material-icons play-icon">play_arrow</span>
                     <video >
                         <source ng-src="{{trustSrc(post.videos[0] + '#t=0.1')}}">
@@ -42,7 +42,7 @@
           </div>
           <div id="{{post.id}}" class="flex-left" ng-show="post.userId !== PrivateChat.SocialItems.userDetails.userId">
             <div style="display: flex; justify-content: flex-end; align-items: flex-start;">
-              <div style="flex: 1.5;" class="forImage">
+              <div class="forImage">
                 <img ng-if="post.userDetails.userId && post.userDetails.imageUrl" load-image="1x1"
                   data-final-src="{{post.userDetails.imageUrl}}" crop-width="75" style="border-radius: 100%;"
                   crop-height="75" crop-type="crop" />

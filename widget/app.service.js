@@ -1010,22 +1010,21 @@
                             if (err) return reject(err);
                             result = result? result : {};
                             const { data } = result;
-                            debugger
                             if(data && Object.keys(data).length) {
                                 let clone = { ...data };
-                                if (!deleted) {
+                                if (deleted) {
+                                    for (const hashtag of hashtags) {
+                                        if(clone[hashtag]) {
+                                            clone[hashtag] -= 1;
+                                        } 
+                                    }
+                                } else {
                                     for (const hashtag of hashtags) {
                                         if(clone[hashtag]) {
                                             clone[hashtag] += 1;
                                         } else {
                                             clone[hashtag] = 1;
                                         }  
-                                    }
-                                } else {
-                                    for (const hashtag of hashtags) {
-                                        if(clone[hashtag]) {
-                                            clone[hashtag] -= 1;
-                                        } 
                                     }
                                 }
                                 buildfire.publicData.save(clone, tag, (err, res) => {

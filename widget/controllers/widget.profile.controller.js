@@ -663,6 +663,7 @@
                 else{
                     options.filter = {"_buildfire.index.array1.string1":`tagged_${t.user.userId}`};
                 }
+                options.filter = {"_buildfire.index.string1": ''};
                 Buildfire.publicData.search(options,"wall_posts",(err, data) =>{
                     if(err) return callback(err);
                     else{
@@ -803,11 +804,6 @@
                 t.SocialItems.getSettings(() =>{});
             });
         
-
-
-
-
-            
             t.openChat = function () {
                 let userId = t.user.userId;
                 t.SocialItems.authenticateUser(null, (err, user) => {
@@ -822,7 +818,6 @@
                 });
                 
             };
-
 
             t.navigateToPrivateChat = function (user) {
                 // Buildfire.history.get({

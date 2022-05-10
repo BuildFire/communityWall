@@ -308,7 +308,7 @@
                             taggedPeople: $scope.selectedUsers,
                             hashtags: $scope.selectedHashtags,
                             userDetails: NewPost.SocialItems.userDetails,
-                            wid: NewPost.SocialItems.wid,
+                            wid: '',
                             originalPost: {},
                         };
                         $scope.createPost(postData);
