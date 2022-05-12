@@ -1801,3 +1801,22 @@ html[buildfire][safe-area="true"] body {
 .margin-left-7 {
     margin-left: 7px;
 }
+
+.activity-nav-icon {
+    position: relative;
+}
+
+.activity-indicator {
+    position: absolute;
+    top: 1px;
+    right: 25px;
+    display: flex;
+}
+
+.activity-indicator span{
+    width: 10px;
+    height: 10px;
+    background: var(--bf-theme-danger);
+    border: 1px solid white;
+    border-radius: 100%;
+}

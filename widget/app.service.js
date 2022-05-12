@@ -87,17 +87,23 @@
         .factory("ProfileActivity",['$rootScope', function($rootScope){
             return{
                 add: function(params, callback){
-                    params._buildfire = {index:{
-                        array1:[{
-                            string1:`fromUser_${params.fromUser.userId}`
-                        },{                            
-                            string1:`toUser_${params.toUser.userId}`
-                        },
-                        {
-                            string1:`type_${params.type}`
-                        }
-                    ]
-                    }}
+                    params.isRead = 0;
+                    params._buildfire = {
+                      index: {
+                        array1: [
+                          {
+                            string1: `fromUser_${params.fromUser.userId}`,
+                          },
+                          {
+                            string1: `toUser_${params.toUser.userId}`,
+                          },
+                          {
+                            string1: `type_${params.type}`,
+                          },
+                        ],
+                        number1: params.isRead
+                      },
+                    };
                     buildfire.publicData.insert(params, "ProfileActivity", function(err, res){
                         err ? callback(err) : callback(null, res)
                     })
@@ -112,6 +118,15 @@
                         err ? callback(err) : callback(null, res)
                     })
                 },
+                searchAndUpdate: function(search, obj){
+                    return new Promise((resolve, reject) => {
+                        buildfire.publicData.searchAndUpdate(search,obj,"ProfileActivity", (err, result) => {
+                              if (err) return reject(err);
+                             resolve(result)
+                            }
+                        );
+                    });
+                }
             }
         }])
         .factory("ProfileSocialBadges",['$rootScope', function($rootScope){
@@ -366,6 +381,7 @@
                 followUnfollowUser: function(params, callback, callbackForCurrentUser = null){
                     window.buildfire.publicData.search({filter:{"_buildfire.index.string1":params.userId}}, "SocialUserProfile", function(err, socialProfile){
                         socialProfile = socialProfile[0];
+                        debugger
                         if(socialProfile && socialProfile.data){
                             let followers;
                             let updatedObj = {...socialProfile.data};
@@ -374,17 +390,29 @@
                                 let index = followers.findIndex(e => e === params.currentUser);
                                 if(index == -1){
                                     updatedObj.followers.push(params.currentUser);
-                                }
-                                else{
-                                    updatedObj.followers.splice(index, 1);
+                                } else{
+                                    updatedObj.followers = updatedObj.followers.filter(userId => userId !== params.userId);
                                 }
                                 window.buildfire.publicData.update(socialProfile.id, updatedObj, "SocialUserProfile", (err, data) =>{
-                                    err ? callback(err) : callback(null, data);
+                                    if (err) return callback(err, null);
                                     window.buildfire.publicData.search({filter:{"_buildfire.index.string1":params.currentUser}} , "SocialUserProfile", (err, results) =>{
+                                        if (err) return callback(err, null)
+
                                         let p = results[0];
-                                        if(index == -1) p.data.following.push(params.userId);
-                                        else p.data.following.splice(index,1);
+                                        if (!p) {
+                                            callback(null, null)
+                                            return;
+                                        }
+
+                                        if (!p.data.following.includes(params.userId)) {
+                                            p.data.following.push(params.userId);
+                                        } else {
+                                            p.data.following = p.data.following.filter(userId => userId !== params.userId)
+                                        }
+                                       
                                         window.buildfire.publicData.update(p.id, p.data, "SocialUserProfile", (err, results) =>{
+                                            if (err)  callback(err, null);
+                                            callback(null, data)
                                             if(callbackForCurrentUser) callbackForCurrentUser(err, results);
                                         })
                                     })
@@ -1709,7 +1737,39 @@
         }])
         .factory("PushNotification",['$rootScope', 'SocialItems', function($rootScope, SocialItems){
             return{
-                
+                socialItems: SocialItems.getInstance(),
+                sendNotification: function(type, users = [], meta = {}) {
+                    let options = {
+                        title: 'Notification',
+                        text: '',
+                        users: [],
+                        sendToSelf: false
+                    };
+                    const from = this.socialItems.getUserName(this.socialItems.userDetails);
+                    const pluginTitle = decodeURI(this.socialItems.context.title);
+                    console.log(from, pluginTitle)
+                    if (type === 'tagging') {
+                        options.text =  `${from} tagged you in a post on ${pluginTitle}`;
+                        options.queryString = `postId=${meta.postId}`
+                    } else if (type === 'newMessage') {
+                        options.text =  `${from} sent you a new message on ${pluginTitle}`
+                        options.queryString = `privateWallId=${meta.wallId}`
+                    }
+
+                    options.inAppMessage = options.text;
+
+                    if (!users.length) {
+                        return;
+                    }
+
+                    options.users = users;
+
+                    buildfire.notifications.pushNotification.schedule(options, function (err) {
+                        if (err) return console.error('Error while setting PN schedule.', err);
+                        console.log("SENT NOTIFICATION", options);
+                    });
+    
+                }
             }
         }])
 })(window.angular, window.buildfire, window.location);

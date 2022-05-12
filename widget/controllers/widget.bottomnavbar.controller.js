@@ -2,10 +2,9 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('BottomNavBarCtrl', ['$scope', '$rootScope', '$routeParams','$location','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', function ($scope, $rootScope, $routeParams,$location, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout) {
+        .controller('BottomNavBarCtrl', ['$scope', '$rootScope', '$routeParams','$location','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location','$timeout', 'ProfileActivity', function ($scope, $rootScope, $routeParams,$location, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, $timeout, ProfileActivity) {
             let t = this;
             t.SocialItems = SocialItems.getInstance();
-
 
             t.init = function() {
                 Buildfire.datastore.get("SocialIcons", (err, res) =>{
@@ -27,7 +26,6 @@
                 buildfire.appearance.getAppTheme((err, obj) => {
             
                     t.appTheme = obj.colors;
-                    // debugger
                 });
             }
 
@@ -142,6 +140,8 @@
                     return;
                 }
             }
+
+
 
             t.init();
 

@@ -261,12 +261,12 @@
 	order:5;
 	display:inline-flex;
 	align-items:center;
-	padding: 11px !important;
+    padding: 9px 11px 14px 11px !important;
 	justify-content:center;
-	border-radius:50px;
+	border-radius: 100%;
 	cursor:pointer;
 	font:14px/1 Arial;
-	font-size: 26px !important;
+	font-size: 24px !important;
 	background-color: #afdba3;
 	color:white !important;
 	width:14px;

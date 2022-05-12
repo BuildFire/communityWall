@@ -204,17 +204,17 @@
                                                     <p class="cursor-pointer">
                                                         <span
                                                             ng-click="WidgetWall.goToSinglePostView(post.id)"
-                                                            ng-bind-html="(WidgetWall.decodeText(post.text) | limitTo : (post.limit || 27) :0) | newLine">
+                                                            ng-bind-html="(WidgetWall.decodeText(post.text) | limitTo : (post.limit || 50) :0) | newLine">
                                                         <!-- post text goes here -->
                                                         </span>
-                                                        <span ng-if="(post.text.trim().length>150 && !post.seeMore) || post.hashtags.length > 8"
+                                                        <span ng-if="(post.text.trim().length>50 && !post.seeMore) || post.hashtags.length > 8"
                                                             class="ng-cloak">...</span>
                                                         
-                                                        <a ng-if="(post.text.trim().length>150 && !post.seeMore) || post.hashtags.length > 8"
+                                                        <a ng-if="(post.text.trim().length>50 && !post.seeMore) || post.hashtags.length > 8"
                                                             ng-click="WidgetWall.seeMore(post)" class="text-info ng-cloak">Read
                                                             More</a>
         
-                                                        <span ng-if="((post.text.trim().length>150 && post.seeMore) || post.text.trim().length < 150) && post.hashtags.length <= 8">
+                                                        <span ng-if="((post.text.trim().length>50 && post.seeMore) || post.text.trim().length < 50) && post.hashtags.length <= 8">
                                                             <span ng-click="WidgetWall.goToFilteredPosts('hashtag', hashtag)" ng-repeat="hashtag in post.hashtags" style="color: var(--bf-theme-primary);">
                                                                 #{{hashtag}} 
                                                             </span>
@@ -386,9 +386,12 @@
                     <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.addContent" ng-click="BottomNavBar.openPostSection()" on-touchend="BottomNavBar.openPostSection()">
                     </span>                   
                 </div>
-                <div>
+                <div class="activity-nav-icon">
                     <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.notifications" ng-click="BottomNavBar.goToActivity()">
-                    </span>                
+                    </span>
+                    <div class="activity-indicator" ng-show="showActivityIndicator">
+                        <span class="text-danger"></span>
+                    </div>                
                 </div>
                 <div>
                     <span class="nav-icon" style="font-size:24px" ng-class="BottomNavBar.myProfile" ng-click="BottomNavBar.goToMyProfile();">

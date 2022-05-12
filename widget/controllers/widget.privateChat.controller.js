@@ -2,7 +2,8 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('PrivateChatCtrl', ['$scope','$sce', 'SocialDataStore', 'Modals', 'Buildfire', "SocialUserProfile", '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', '$modal', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', 'Util', 'SubscribedUsersData', function ($scope, $sce, SocialDataStore, Modals, Buildfire, SocialUserProfile, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, $modal, SocialItems, $q, $anchorScroll, $location, $timeout, util, SubscribedUsersData) {
+        .controller('PrivateChatCtrl', ['$scope','$sce', 'SocialDataStore', 'Buildfire', '$rootScope', 'Location', 'SocialItems', '$timeout','SubscribedUsersData', 'PushNotification',
+        function ($scope, $sce, SocialDataStore, Buildfire, $rootScope, Location,  SocialItems, $timeout, SubscribedUsersData, PushNotification) {
             var t = this;
             t.text = "";
             t.isLoading = true;
@@ -181,7 +182,7 @@
                 }
                 SocialDataStore.createPrivatePost(postData).then((response) =>{
                     t.SocialItems.items.push(response.data);
-
+                    sendNotification();
                     const lastMessage = {
                         text: postData.text,
                         createdAt: new Date(),
@@ -195,6 +196,13 @@
                 })
             }
 
+            const sendNotification = () => {
+                const user1Id = t.SocialItems.wid.slice(0, 24);
+                const user2Id = t.SocialItems.wid.slice(24, 48);
+                let userToSend = user1Id === t.SocialItems.userDetails.userId
+                    ? user2Id : user1Id;
+                PushNotification.sendNotification('newMessage', [userToSend], {wallId: t.SocialItems.wid});
+            }
             $scope.trustSrc = function(src) {
                 return $sce.trustAsResourceUrl(src);
             };

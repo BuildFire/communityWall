@@ -574,6 +574,22 @@
                 });
             }
 
+            const checkDeepLinkData = () => {
+                buildfire.deeplink.getData((deeplinkData) => {
+                    if (deeplinkData){
+                        if(deeplinkData.postId){
+                            
+                            Location.go("#/singlePostView/"+deeplinkData.postId);
+                        } else if(deeplinkData.profileId){
+                            Location.go("#/profile/"+deeplinkData.profileId);
+
+                        } else if (deeplinkData.privateWallId) {
+                            WidgetWall.checkForPrivateChat(deeplinkData.privateWallId);
+                        }
+                    }
+                });
+            }
+
 
             WidgetWall.init = function () {
                 WidgetWall.SocialItems.getSettings((err, result) => {
@@ -591,18 +607,6 @@
                                 $scope.$digest();
                             })
                         })
-                        buildfire.deeplink.getData((deeplinkData) => {
-                            if (deeplinkData){
-                                if(deeplinkData.postId){
-                                    
-                                    Location.go("#/singlePostView/"+deeplinkData.postId);
-                                }
-                                else if(deeplinkData.profileId){
-                                    Location.go("#/profile/"+deeplinkData.profileId);
-
-                                }
-                            }
-                        });
                         WidgetWall.loginModal = {
                             message: WidgetWall.SocialItems.languages.logInbannerText,
                             dismiss: WidgetWall.SocialItems.languages.logIndismiss,
@@ -629,9 +633,7 @@
                         WidgetWall.setSettings(result);
                         WidgetWall.showHidePrivateChat();
                         WidgetWall.followLeaveGroupPermission();
-                        WidgetWall.setAppTheme();
-
-                       
+                        WidgetWall.setAppTheme();    
 
                         const initPosts = () => {
                             WidgetWall.getPosts((err, posts) =>{
@@ -646,7 +648,6 @@
                             });
                         }
                   
-
                         buildfire.auth.getCurrentUser((err, user) => {
                             if (err) return;
                             else if(user){      
@@ -654,7 +655,8 @@
                                     if (err) return console.error("Getting user failed.", err);
                                     if (user) {
                                         WidgetWall.checkFollowingStatus(user);
-                                        WidgetWall.checkForPrivateChat();
+                                        WidgetWall.checkNotReadActivity();
+                                        checkDeepLinkData();
                                         const params = {
                                             userId: user._id,
                                             interests: [],
@@ -711,6 +713,24 @@
                 });
             };
             WidgetWall.init();
+
+
+            WidgetWall.checkNotReadActivity = () =>{
+                let options = {
+                    filter:{
+                        "_buildfire.index.array1.string1":`toUser_${WidgetWall.SocialItems.userDetails.userId}`,
+                        "_buildfire.index.number1": 0
+                    },
+                    skip: 0,
+                    limit: 50,
+                    sort: {createdOn: -1}
+                }
+                ProfileActivity.search(options, (err, data) =>{
+                    if (err) return console.error(err);
+                    console.log('activity', data);
+                    $rootScope.showActivityIndicator = data && data.length > 0? true: false;
+                } )
+            }
 
             WidgetWall.saveActivity = function(type, data){
                 let activity = {
@@ -792,19 +812,16 @@
                 Location.go("#/inbox/");
             }
 
-            WidgetWall.checkForPrivateChat = function () {
-                if (WidgetWall.SocialItems.isPrivateChat) {  
-                        SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
-                            if (err) return console.log(err);
-                            const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
-                            const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
-                            if (!users.length) {
-                                var otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
-                                    ? user2Id : user1Id;
-                                WidgetWall.followPrivateWall(otherUser, WidgetWall.SocialItems.wid);
-                            }
-                        });
-                }
+            WidgetWall.checkForPrivateChat = function (wallId) {
+                const user1Id = wallId.slice(0, 24);
+                const user2Id = wallId.slice(24, 48);
+                var otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0)
+                ? user2Id : user1Id;
+                   
+                Buildfire.auth.getUserProfile({ userId: otherUser }, (err, user) => {
+                    const username = WidgetWall.SocialItems.getUserName(user);
+                    WidgetWall.navigateToPrivateChat({ id: otherUser, name: username, wid: wallId });
+                });
             }
 
             WidgetWall.sanitizeWall = function (callback) {
@@ -901,9 +918,9 @@
                 })
             }
 
-            $rootScope.$on('loadPrivateChat', function (event, error) {
-                WidgetWall.init();
-            });
+            // $rootScope.$on('loadPrivateChat', function (event, error) {
+            //     WidgetWall.init();
+            // });
 
             $rootScope.$on('navigatedBack', function (event, error) {
                 $rootScope.isLoading = true;

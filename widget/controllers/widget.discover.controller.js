@@ -252,6 +252,7 @@
             Discover.getUsersWhoIDontFollow = () =>{
                 let isUserLoggedIn = Discover.SocialItems.userDetails.userId ? true : false;
                 let options = {};
+                // debugger
                 if (isUserLoggedIn) {
                     $scope.usersLoading = true;
                     SocialUserProfile.get(Discover.SocialItems.userDetails.userId, (err, socialProfile) =>{

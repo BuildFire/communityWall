@@ -16,6 +16,7 @@
             t.init = () =>{
                 $rootScope.showThread = false;
                 Buildfire.spinner.show();
+                t.markActivitiesAsRead();
                 t.getUserActivity(finished =>{
                     if(finished){
                         t.show = true;   
@@ -76,6 +77,21 @@
                 } )
             }
 
+            t.markActivitiesAsRead = () => {
+                const search = {
+                    "_buildfire.index.array1.string1":`toUser_${t.SocialItems.userDetails.userId}`,
+                    "_buildfire.index.number1": 0
+                }
+
+                const update = {$set: {
+                    isRead: 1,
+                    "_buildfire.index.number1": 1
+                }}
+                ProfileActivity.searchAndUpdate(search, update).then(() => {
+                    $rootScope.showActivityIndicator = false;
+                    $rootScope.$digest();
+                })
+            }
 
             t.placeInArray = (item) =>{
                 let now = parseInt(new Date().getTime() / 1000);

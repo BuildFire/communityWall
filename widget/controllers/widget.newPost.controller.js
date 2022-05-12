@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('NewPostCtrl', ['$scope', '$rootScope','ProfileActivity','$timeout', '$sce', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location', function ($scope, $rootScope, ProfileActivity , $timeout, $sce, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location) {
+        .controller('NewPostCtrl', ['$scope', '$rootScope','ProfileActivity','$timeout', '$sce', '$routeParams','SocialDataStore', 'Buildfire', 'EVENTS', 'SubscribedUsersData', 'SocialItems', 'Location', 'PushNotification', function ($scope, $rootScope, ProfileActivity , $timeout, $sce, $routeParams, SocialDataStore, Buildfire, EVENTS, SubscribedUsersData, SocialItems, Location, PushNotification) {
 
             var NewPost = this;
             NewPost.SocialItems = SocialItems.getInstance();
@@ -18,7 +18,7 @@
                 NewPost.loadedHashtags = [];
                 $scope.selectedHashtags = [];
                 $scope.newHashtagsAdded = [];
-
+                $scope.newPeopleTagged = [];
                 configureHashtagsAutocomplete();
                 configurePeopleAutoComplete();
                 if(postId != 0){
@@ -59,7 +59,7 @@
                                 let updatedList = updateWhitelist(data); 
                                 $scope.peopleAutoComplete.updateWhitelist(updatedList);
                                 $scope.peopleAutoComplete.input.value = JSON.stringify(updatedList);
-                                $scope.selectedUsers = updatedList;
+                                $scope.selectedUsers = res.taggedPeople;
                                 $timeout(function(){
                                     $scope.$digest();
                                 });   
@@ -279,9 +279,11 @@
                     const isAdded = $scope.selectedUsers.includes(e.detail.data.data.userId);
                     if (isAdded) return;
                     $scope.selectedUsers.push(e.detail.data.data.userId);
+                    $scope.newPeopleTagged.push(e.detail.data.data.userId);
                 }
                 $scope.peopleAutoComplete.onItemRemoved = (e) =>{
-                    $scope.selectedUsers.splice($scope.selectedUsers.findIndex(x => x === e.detail.data.data.userId), 1);
+                    $scope.selectedUsers = $scope.selectedUsers.filter(userId => e.detail.data.data.userId !== userId);
+                    $scope.newPeopleTagged = $scope.newPeopleTagged.filter(userId => e.detail.data.data.userId !== userId);
                 }
             }
 
@@ -344,6 +346,7 @@
                     });
 
                     saveNewHashtags();
+                    sendNotification(postData.id, $scope.newPeopleTagged)
 
                     setTimeout(() => {     
                         $scope.inProgress = false;
@@ -379,6 +382,8 @@
                 $scope.images = [];
                 $scope.videos = [];
                 $scope.taggedPeople = [];
+                $scope.newPeopleTagged = [];
+                $scope.newHashtagsAdded = [];
                 $scope.hashtags = [];
                 $scope.location = {};
                 document.getElementById("text").innerHTML = $scope.text;
@@ -545,7 +550,8 @@
                     if(response.data.taggedPeople.length > 0){
                         response.data.taggedPeople.forEach(user =>{
                             NewPost.createReactionActivity(user, response.data);
-                        })
+                        });
+                        sendNotification(response.data.id, response.data.taggedPeople);
                     }
                     saveNewHashtags();
                     setTimeout(() => {
@@ -572,6 +578,11 @@
                         $scope.text = '';
                         $scope.inProgress = false;
                     })
+            }
+
+            const sendNotification = (postId, taggedPeople = []) => {
+                if (!taggedPeople.length) return;
+                PushNotification.sendNotification('tagging', taggedPeople, {postId});
             }
 
 
