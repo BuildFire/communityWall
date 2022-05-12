@@ -381,7 +381,6 @@
                 followUnfollowUser: function(params, callback, callbackForCurrentUser = null){
                     window.buildfire.publicData.search({filter:{"_buildfire.index.string1":params.userId}}, "SocialUserProfile", function(err, socialProfile){
                         socialProfile = socialProfile[0];
-                        debugger
                         if(socialProfile && socialProfile.data){
                             let followers;
                             let updatedObj = {...socialProfile.data};
