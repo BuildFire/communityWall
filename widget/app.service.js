@@ -387,10 +387,10 @@
                             if(socialProfile.data.isPublicProfile){
                                 followers = socialProfile.data.followers;
                                 let index = followers.findIndex(e => e === params.currentUser);
-                                if(index == -1){
+                                if(index == -1) {
                                     updatedObj.followers.push(params.currentUser);
-                                } else{
-                                    updatedObj.followers = updatedObj.followers.filter(userId => userId !== params.userId);
+                                } else {
+                                    updatedObj.followers = updatedObj.followers.filter(userId => userId !== params.currentUser);
                                 }
                                 window.buildfire.publicData.update(socialProfile.id, updatedObj, "SocialUserProfile", (err, data) =>{
                                     if (err) return callback(err, null);
