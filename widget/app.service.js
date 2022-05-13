@@ -1212,7 +1212,7 @@
                 _this.SocialIcons = {};
                 _this.languages = {};
                 _this.showMorePosts = false;
-                _this.pageSize = 5;
+                _this.pageSize = 15;
                 _this.page = 0;
                 _this.postMeta = null;
             };

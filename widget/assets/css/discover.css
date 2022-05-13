@@ -274,6 +274,13 @@
     margin: 0 .5rem;
 }
 
+.discover-h-title.ellipsis{
+    text-overflow: ellipsis;
+    max-width: 20ch;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .discover-h-num {
     background: var(--bf-theme-success);
     border-radius: 100%;

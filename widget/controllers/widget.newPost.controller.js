@@ -122,7 +122,7 @@
                 }
 
                 let config = {
-                    delimiters: ",| ",
+                    delimiters: ",|#",
                     editTags: false,
                     dropdown:{
                         enabled: 0,

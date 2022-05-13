@@ -10,7 +10,7 @@
                 $scope.title = $routeParams.title;
                 let options = {
                     skip: 0,
-                    limit: 8,
+                    limit: 50,
                     sort: {createdOn: -1}
                 }
                 if($scope.type === 'hashtag'){
