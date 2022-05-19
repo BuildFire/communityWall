@@ -9,7 +9,7 @@
                 </p>
             </a>
         </div>
-        <div ng-class="{'has-comment-box':Thread.userDetails.userId == null || Thread.allowCreateThread,'has-group-header' : Thread.allowFollowLeaveGroup}"
+        <div ng-class="{'has-comment-box':Thread.SocialItems.userDetails.userId == null || Thread.allowCreateThread,'has-group-header' : Thread.allowFollowLeaveGroup}"
             class="post-section backgroundColorTheme">
             <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
                 <div class="head">
@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                             <div ng-show="comment.threadId" class="status-footer">
-                                <a class="more-info social-icon" ng-if="Thread.userDetails.userId == comment.userId"
+                                <a class="more-info social-icon" ng-if="Thread.SocialItems.userDetails.userId == comment.userId"
                                     ng-click="Thread.showMoreOptionsComment(comment.threadId)">
                                     <span class="material-icons-outlined">more_horiz</span>
                                 </a>
