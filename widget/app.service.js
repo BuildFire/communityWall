@@ -532,10 +532,13 @@
                         if(err) return console.error(err);
                         let lastInHistory = history[history.length - 1];
                         let wallId = '';
+                        let userIds = '';
                         if (lastInHistory && lastInHistory.options.pluginData 
                             && lastInHistory.options.pluginData.queryString) {
                                 wallId = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('wid');
+                                userIds = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('userIds');
                                 wallId = wallId ? wallId : '';
+                                userIds = userIds ? userIds : '';
                             }
 
                         if (!_this.wid) {
@@ -544,7 +547,14 @@
                             _this.mainWallID = _this.wid;
                         }
 
-                        if (_this.wid.length === 48) {
+                        if (!this.userIds) {
+                            _this.userIds =  Util.getParameterByName("userIds") ? 
+                            Util.getParameterByName("userIds") : userIds;
+                        }
+                        console.log('WallId', _this.wid);
+                        console.log('UserIds',_this.userIds);
+
+                        if (_this.wid.length === 48 || _this.userIds) {
                             _this.isPrivateChat = true;
                         }
 
