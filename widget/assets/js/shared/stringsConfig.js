@@ -97,7 +97,7 @@ const stringsConfig = {
 				title: "Report Post"
 				, placeholder: "Report Post"
 				, maxLength: 30
-				, defaultValue: "Report Post"
+				, defaultValue: "Report Post and Block User"
 			},
 			deletePost: {
 				title: "Delete Post"
