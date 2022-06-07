@@ -939,7 +939,10 @@
                         SocialDataStore.updatePost(post).then(() => {
                             SubscribedUsersData.getGroupFollowingStatus(post.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                                 if (status.length &&
-                                    status[0].data && !status[0].data.leftWall && !liked) WidgetWall.scheduleNotification(post, 'like');
+                                    status[0].data && !status[0].data.leftWall && !liked) {
+                                        Analytics.trackAction("post-liked");
+                                        WidgetWall.scheduleNotification(post, 'like')
+                                    };
                             });
                         }, (err) => console.log(err));
                     }

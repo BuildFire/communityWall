@@ -280,6 +280,7 @@
                             let alreadyReported = result.data.find(el =>
                                 el.reporter === data.reporter && el.postId === data.postId)
                             if (!alreadyReported) {
+                                Analytics.trackAction("post-reported");
                                 result.data.push(data);
                                 buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
                                     buildfire.messaging.sendMessageToControl({ 'name': "POST_REPORTED", wid: data.wid });
@@ -295,13 +296,15 @@
                         delete data.userDetails.userTags
                         delete data.userDetails.userToken
                     }
-
                     buildfire.publicData.getById(data.threadId, 'posts', function (err, post) {
                         if (err) return deferred.reject(err);
                         post.data.comments.push(data);
                         buildfire.publicData.update(post.id, post.data, 'posts', function (err, status) {
                             if (err) return deferred.reject(err);
-                            else return deferred.resolve(status);
+                            else{
+                                Analytics.trackAction("post-commented");
+                                return deferred.resolve(status)
+                            };
                         });
                     });
                     return deferred.promise;
@@ -318,7 +321,10 @@
                     var deferred = $q.defer();
                     buildfire.publicData.delete(postId, 'posts', function (error, result) {
                         if (error) return deferred.reject(error);
-                        if (result) return deferred.resolve(result);
+                        if (result) {
+                            Analytics.trackAction("post-deleted");
+                            return deferred.resolve(result)
+                        };
                     })
                     return deferred.promise;
                 },
