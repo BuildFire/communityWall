@@ -125,12 +125,14 @@
                                             <div class="media-holder ng-cloak">
                                                 <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
                                                     data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
-                                                    crop-height="40" crop-type="crop">
+                                                    crop-height="40" crop-type="crop"
+                                                    alt={{WidgetWall.SocialItems.getUserName(post.userDetails)}}>
                                                 <img ng-if="!(post.userId && post.userDetails.imageUrl)"
                                                     load-image="1x1"
                                                     data-final-src="../../../styles/media/avatar-placeholder.png"
                                                     data-img-type="local" crop-width="40" crop-height="40"
-                                                    crop-type="default">
+                                                    crop-type="default"
+                                                    alt="Anonymous">
                                             </div>
                                             <div ng-if="WidgetWall.SocialItems.userDetails.userId != post.userId"
                                                 class="social-profile-photo">
