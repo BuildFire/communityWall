@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', '$location', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', 'SocialItems', 'Util', function ($scope, $location, SocialDataStore, Modals, Buildfire, EVENTS, $timeout, SocialItems, Util) {
+        .controller('ContentHomeCtrl', ['$scope', '$location', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', 'SocialItems', 'Util', 'PerfomanceIndexingService', function ($scope, $location, SocialDataStore, Modals, Buildfire, EVENTS, $timeout, SocialItems, Util, PerfomanceIndexingService) {
             var ContentHome = this;
             ContentHome.usersData = [];
             var userIds = [];
@@ -19,7 +19,7 @@
             ContentHome.util = Util;
             var counter = 0;
             ContentHome.loading = true;
-            
+
             $scope.setupImageList = function (post) {
                 if (post.imageUrl) {
                     post.imageListId = "imageList_" + (counter++);
@@ -72,6 +72,8 @@
                         } else {
 
                         }
+                        if(!data.data.indexingUpdateDone && Object.keys(data.data).length > 0) 
+                            PerfomanceIndexingService.showIndexingDialog();
                         setTimeout(() => {
                             if(!ContentHome.posts.length) 
                                 buildfire.messaging.sendMessageToWidget({ name: 'ASK_FOR_POSTS' });
