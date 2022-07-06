@@ -416,7 +416,6 @@
             WidgetWall.checkForPrivateChat = function () {
                 if (WidgetWall.SocialItems.isPrivateChat) {  
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
-                            console.log('=============================', err, users)
                             if (err) return console.log(err);
                             
                             const otherUserIds = [];
@@ -433,7 +432,6 @@
                                     otherUserIds.push(uid.trim());
                                 }
                             }
-                            console.log(otherUserIds)
                             if (!users.length) {
                                 for (const userId of otherUserIds) {
                                     WidgetWall.followPrivateWall(userId, WidgetWall.SocialItems.wid);
@@ -780,8 +778,8 @@
                 Buildfire.pluginInstance.get(WidgetWall.SocialItems.context.instanceId, function (err, plugin) {
                     return callback({
                         pluginId: WidgetWall.SocialItems.context.pluginId,
-                        instanceId: 'ee', 
-                        folderName: 'aa'
+                        instanceId: plugin.instanceId,
+                        folderName: plugin._buildfire.pluginType.result[0].folderName,
                     })
                 });
             }
