@@ -303,12 +303,17 @@
                     } else {
                         buildfire.datastore.get('Social', (err, result) => {
                             console.log(result.data);
-                            result.data.indexingUpdateDone = true;
+                            if(!result.data.appSettings) {
+                                result.data.appSettings = {
+                                   indexingUpdateDone: true
+                                }
+                            }
+                            else result.data.appSettings.indexingUpdateDone = true;
                             buildfire.datastore.save(result.data, 'Social', (err, saved) => {
                                 buildfire.dialog.alert(
                                     {
                                         title: 'Database perfomance',
-                                        message: "Database has been successfully updated. Thank you for your patience!",
+                                        message: "Database has been successfully updated. Thank you for your patience, you can now publish the app!",
                                     }, (err, isConfirmed) => {
                                         if (err) return console.error(err);
                                         if (isConfirmed) {

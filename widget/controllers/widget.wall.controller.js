@@ -83,8 +83,9 @@
 
             WidgetWall.setSettings = function (settings) {
                 WidgetWall.SocialItems.appSettings = settings.data && settings.data.appSettings ? settings.data.appSettings : {};
-                SubscribedUsersData.indexingUpdateDone = settings.data.indexingUpdateDone ? settings.data.indexingUpdateDone : false;
-                WidgetWall.SocialItems.indexingUpdateDone = settings.data.indexingUpdateDone ? settings.data.indexingUpdateDone : false;
+                SubscribedUsersData.indexingUpdateDone = WidgetWall.SocialItems.appSettings.indexingUpdateDone ? WidgetWall.SocialItems.appSettings.indexingUpdateDone: false;
+                WidgetWall.SocialItems.indexingUpdateDone = WidgetWall.SocialItems.appSettings.indexingUpdateDone ? WidgetWall.SocialItems.appSettings.indexingUpdateDone : false;
+                console.log(WidgetWall.SocialItems.indexingUpdateDone)
                 WidgetWall.showHidePrivateChat();
                 WidgetWall.followLeaveGroupPermission();
                 WidgetWall.showHideCommentBox();
