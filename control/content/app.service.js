@@ -292,7 +292,6 @@
                     buildfire.publicData.update(record.id, record.data, 'posts', function (err, result) {
                         if (err) return console.error(err);
                         if (result && result.id) {
-                            console.log(result.id)
                             callback();
                         }
                     });
@@ -302,7 +301,6 @@
                         this.proccessPost(records[index], () => this.iteratePosts(records, index + 1));
                     } else {
                         buildfire.datastore.get('Social', (err, result) => {
-                            console.log(result.data);
                             if(!result.data.appSettings) {
                                 result.data.appSettings = {
                                    indexingUpdateDone: true
