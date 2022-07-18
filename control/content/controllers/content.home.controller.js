@@ -3,7 +3,7 @@
 (function (angular) {
     angular
         .module('socialPluginContent')
-        .controller('ContentHomeCtrl', ['$scope', '$location', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', 'SocialItems', 'Util', function ($scope, $location, SocialDataStore, Modals, Buildfire, EVENTS, $timeout, SocialItems, Util) {
+        .controller('ContentHomeCtrl', ['$scope', '$location', 'SocialDataStore', 'Modals', 'Buildfire', 'EVENTS', '$timeout', 'SocialItems', 'Util', 'PerfomanceIndexingService', function ($scope, $location, SocialDataStore, Modals, Buildfire, EVENTS, $timeout, SocialItems, Util, PerfomanceIndexingService) {
             var ContentHome = this;
             ContentHome.usersData = [];
             var userIds = [];
@@ -19,7 +19,7 @@
             ContentHome.util = Util;
             var counter = 0;
             ContentHome.loading = true;
-            
+
             $scope.setupImageList = function (post) {
                 if (post.imageUrl) {
                     post.imageListId = "imageList_" + (counter++);
@@ -44,9 +44,9 @@
                 buildfire.datastore.get("languages", (err, result) => {
                     if (result.data && result.data.screenOne) {
                         let data = result.data;
-                        if(Object.keys(data.screenOne).length <= 6) {
+                        if (Object.keys(data.screenOne).length <= 6) {
                             Object.keys(data.screenOne).forEach((key) => {
-                                if(data.screenOne[key].value) {
+                                if (data.screenOne[key].value) {
                                     stringsConfig.screenOne.labels[key].value = data.screenOne[key].value;
                                 }
                             });
@@ -72,8 +72,28 @@
                         } else {
 
                         }
+                        buildfire.publicData.search({
+                            recordCount: true,
+                            filter: {
+                                '_buildfire.index.array1.string1': { $exists: false }
+                            }
+                        }, 'subscribedUsersData', (err, result1) => {
+                            if (err) return console.error(err);
+                            buildfire.publicData.search({
+                                recordCount: true,
+                                filter: {
+                                    '_buildfire.index.date1': { $exists: false }
+                                }
+                            }, 'posts', (err, result2) => {
+                                if (err) return console.error(err);
+                                if (result1.totalRecord > 0 || result2.totalRecord > 0) {
+                                    PerfomanceIndexingService.showIndexingDialog();
+                                }
+                            });
+                        });
+
                         setTimeout(() => {
-                            if(!ContentHome.posts.length) 
+                            if (!ContentHome.posts.length)
                                 buildfire.messaging.sendMessageToWidget({ name: 'ASK_FOR_POSTS' });
                         }, 500);
                     });
@@ -96,18 +116,20 @@
                 };
 
                 ContentHome.setWYSIWYG = function () {
-                    if (ContentHome.appSettings) {
-                        ContentHome.appSettings.appSettings.pinnedPost = ContentHome.descriptionWYSIWYG
-                    } else {
-                        ContentHome.appSettings = {
-                            appSettings: {
+                    if (!ContentHome.appSettings.appSettings) ContentHome.appSettings.appSettings = {};
+                    ContentHome.appSettings.appSettings.pinnedPost = ContentHome.descriptionWYSIWYG;
+                    Buildfire.datastore.get( 'Social', function (err, result) {
+                        if (err) return console.log(err)
+                        if(!result.data.appSettings) {
+                            result.data.appSettings.appSettings = {
                                 pinnedPost: ContentHome.descriptionWYSIWYG
                             }
-                        }
-                    }
-                    Buildfire.datastore.save(ContentHome.appSettings, 'Social', function (err, result) {
-                        if (err) return console.log(err)
-                    })
+                        } else result.data.appSettings.pinnedPost = ContentHome.descriptionWYSIWYG;
+                        ContentHome.appSettings = result.data.appSettings;
+                        Buildfire.datastore.save(result.data, 'Social', function (err, result) {
+                            if (err) return console.log(err)
+                        });
+                    });
                 }
                 ContentHome.height = window.innerHeight;
                 ContentHome.noMore = false;
@@ -184,7 +206,7 @@
                             };
 
                             var postToDelete = ContentHome.posts.find(element => element.id === postId);
-                            if (postToDelete) Posts.deletePost({userId:postToDelete.userId,postText:postToDelete.text,postImages: postToDelete.imageUrl || [],},(err, r) =>{return});
+                            if (postToDelete) Posts.deletePost({ userId: postToDelete.userId, postText: postToDelete.text, postImages: postToDelete.imageUrl || [], }, (err, r) => { return });
 
                             // Deleting post having id as postId
                             SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
@@ -193,7 +215,7 @@
                 );
 
                 console.log('delete post method called', postId);
-                
+
             };
 
             // Method for deleting comments of a post
@@ -247,7 +269,7 @@
             ContentHome.banUser = function (userId, threadId, username) {
                 ContentHome.modalPopupThreadId = threadId;
                 console.log('inside ban user controller method>>>>>>>>>>');
-                
+
                 buildfire.dialog.confirm(
                     {
                         title: "Ban User",
@@ -343,9 +365,9 @@
             };
 
             ContentHome.seeLess = function (post) {
-              post.seeMore = false;
-              post.limit = 150;
-              if (!$scope.$$phase) $scope.$digest();
+                post.seeMore = false;
+                post.limit = 150;
+                if (!$scope.$$phase) $scope.$digest();
             };
 
             // Method for getting Post's and Comment's creation time in User Readable Time Format
@@ -417,21 +439,21 @@
                         searchOptions.filter = { "_buildfire.index.string1": "" }
                     else
                         searchOptions.filter = { "_buildfire.index.string1": { "$regex": wid, "$options": "i" } }
-                        buildfire.publicData.search(searchOptions, 'posts', function(err, data) {
-                            if(data && data.result.length) {
-                                data.result.map(item => allPosts.push(item));
-                                if(data.totalRecord > allPosts.length) {
-                                    page++; loadPage();
-                                } else {
-                                    parseToCSV();
-                                }
+                    buildfire.publicData.search(searchOptions, 'posts', function (err, data) {
+                        if (data && data.result.length) {
+                            data.result.map(item => allPosts.push(item));
+                            if (data.totalRecord > allPosts.length) {
+                                page++; loadPage();
+                            } else {
+                                parseToCSV();
                             }
-                        });
+                        }
+                    });
                 }
                 loadPage();
 
             }
-            
+
             ContentHome.decodeText = function (text) {
                 return decodeURIComponent(text);
             };
@@ -441,41 +463,41 @@
                     HesGallery.init({
                         // disable scrolling when the popup is activated
                         disableScrolling: true,
-                        
+
                         // self-hosted styles
                         hostedStyles: true,
-                        
+
                         // enable/disable animation
                         animations: false,
-                        
+
                         // enable/disable keyboard navigation
                         keyboardControl: true,
-                        
+
                         // disable the plugin when the screen size is smaller than this value
                         minResolution: 0,
-                        
+
                         // enable/disable infinite loop
                         wrapAround: false,
-                        
+
                         // show/hide image count
                         showImageCount: true
                     });
                 }, 0);
             }
 
-            $scope.getUserName = function(userDetails) {
+            $scope.getUserName = function (userDetails) {
                 let name = null;
                 if (userDetails.displayName !== 'Someone'
-                && userDetails.displayName) {
+                    && userDetails.displayName) {
                     name = userDetails.displayName;
                 }
                 else if (userDetails.firstName !== 'Someone' &&
                     userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
-                else if(userDetails.firstName !== 'Someone' &&
-                userDetails.firstName)
+                else if (userDetails.firstName !== 'Someone' &&
+                    userDetails.firstName)
                     name = userDetails.firstName;
-                else if(userDetails.lastName)
+                else if (userDetails.lastName)
                     name = userDetails.lastName;
                 else name = 'Someone';
                 return name;
@@ -583,6 +605,8 @@
                     ed.on('KeyUp', (e) => {
                         clearTimeout(updateDelay);
                         updateDelay = setTimeout(() => {
+                            appSettings = ContentHome.appSettings.appSettings ? ContentHome.appSettings.appSettings : {};
+                            
                             appSettings.pinnedPost = ed.getContent();
                             buildfire.datastore.save({ appSettings: appSettings }, "Social", console.log)
                         }, 700);
@@ -600,7 +624,7 @@
                 setTimeout(() => {
                     ContentHome.loading = false;
                     if (!$scope.$$phase)
-                    $scope.$digest();
+                        $scope.$digest();
                 }, 1500)
             }
 

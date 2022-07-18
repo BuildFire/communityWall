@@ -272,4 +272,145 @@
                 }
             }
         }])
+        .factory("PerfomanceIndexingService", ['Buildfire', '$q', 'SERVER_URL', 'Util', '$http', function (Buildfire, $q, SERVER_URL, Util, $http) {
+            return {
+                getPostsWithIndex: function (item) {
+                    item.data._buildfire = {
+                        index: this.buildPostsIndex(item.data)
+                    }
+                    return item;
+                },
+                buildPostsIndex: function (data) {
+                    var index = {
+                        'string1': data.wid,
+                        'date1': new Date(data.createdOn).getTime(),
+                    }
+                    return index;
+                },
+                proccessPost: function (record, callback) {
+                    record = this.getPostsWithIndex(record);
+                    buildfire.publicData.update(record.id, record.data, 'posts', function (err, result) {
+                        if (err) return console.error(err);
+                        if (result && result.id) {
+                            callback();
+                        }
+                    });
+                },
+                iteratePosts: function (records, index) {
+                    if (index !== records.length) {
+                        this.proccessPost(records[index], () => this.iteratePosts(records, index + 1));
+                    } else {
+                        buildfire.datastore.get('Social', (err, result) => {
+                            if(!result.data.appSettings) {
+                                result.data.appSettings = {
+                                   indexingUpdateDone: true
+                                }
+                            }
+                            else result.data.appSettings.indexingUpdateDone = true;
+                            buildfire.datastore.save(result.data, 'Social', (err, saved) => {
+                                buildfire.dialog.alert(
+                                    {
+                                        title: 'Database perfomance',
+                                        message: "Database has been successfully updated. Thank you for your patience, you can now publish the app!",
+                                    }, (err, isConfirmed) => {
+                                        if (err) return console.error(err);
+                                        if (isConfirmed) {
+        
+                                        }
+                                    }
+                                );
+                            });
+                        });
+
+                    }
+                },
+                startPostsIndexingUpdate: function () {
+                    let searchOptions = {
+                        limit: 50,
+                        skip: 0
+                    }, records = [];
+
+                    const getPosts = () => {
+                        buildfire.publicData.search(searchOptions, "posts", (err, result) => {
+                            if (err) console.error(err);
+                            if (result.length < searchOptions.limit) {
+                                records = records.concat(result);
+                                this.iteratePosts(records, 0);
+                            } else {
+                                searchOptions.skip = searchOptions.skip + searchOptions.limit;
+                                records = records.concat(result);
+                                return getPosts();
+                            }
+                        });
+                    }
+                    getPosts();
+                },
+                getSubscribedUsersDataWithIndex: function (item) {
+                    item.data._buildfire = {
+                        index: this.buildSubscribedUsersDataIndex(item.data)
+                    }
+                    return item;
+                },
+                buildSubscribedUsersDataIndex: function (data) {
+                    var index = {
+                        'string1': data.wallId,
+                        'text': data.userId + '-' + data.wallId,
+                        'number1': data.leftWall ? 1 : 0,
+                        array1: [
+                            { string1: data.userId + '-' + data.wallId }
+                        ]
+                    }
+                    return index;
+                },
+                processSubscribedUsersData: function (record, callback) {
+                    record = this.getSubscribedUsersDataWithIndex(record);
+                    buildfire.publicData.update(record.id, record.data, 'subscribedUsersData', function (err, result) {
+                        if (err) return console.error(err);
+                        if (result && result.id) {
+                            callback();
+                        }
+                    });
+                },
+                iterateSubscribedUsersData: function (records, index) {
+                    if (index !== records.length) {
+                        this.processSubscribedUsersData(records[index], () => this.iterateSubscribedUsersData(records, index + 1));
+                    } else {
+                        this.startPostsIndexingUpdate();
+                    }
+                },
+                startSubscribedUsersDataIndexingUpdate: function () {
+                    let searchOptions = {
+                        limit: 50,
+                        skip: 0
+                    }, records = [];
+
+                    const getSubscribedUsersData = () => {
+                        buildfire.publicData.search(searchOptions, "subscribedUsersData", (err, result) => {
+                            if (err) console.error(err);
+                            if (result.length < searchOptions.limit) {
+                                records = records.concat(result);
+                                this.iterateSubscribedUsersData(records, 0);
+                            } else {
+                                searchOptions.skip = searchOptions.skip + searchOptions.limit;
+                                records = records.concat(result);
+                                return getSubscribedUsersData();
+                            }
+                        });
+                    }
+                    getSubscribedUsersData();
+                },
+                showIndexingDialog: function () {
+                    buildfire.dialog.confirm(
+                        {
+                            title: 'Database perfomance',
+                            message: "We are improving your database perfomance, please do not close your browser or leave the plugin until you see success dialog. This may take a while...",
+                            confirmButton: { text: "Yes", type: "danger" },
+                        }, (err, isConfirmed) => {
+                            if (err) return console.error(err);
+                            if (isConfirmed) return this.startSubscribedUsersDataIndexingUpdate();
+                        }
+                    );
+                }
+            }
+        }])
 })(window.angular, window.buildfire);

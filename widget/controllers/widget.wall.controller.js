@@ -83,6 +83,8 @@
 
             WidgetWall.setSettings = function (settings) {
                 WidgetWall.SocialItems.appSettings = settings.data && settings.data.appSettings ? settings.data.appSettings : {};
+                SubscribedUsersData.indexingUpdateDone = WidgetWall.SocialItems.appSettings.indexingUpdateDone ? WidgetWall.SocialItems.appSettings.indexingUpdateDone: false;
+                WidgetWall.SocialItems.indexingUpdateDone = WidgetWall.SocialItems.appSettings.indexingUpdateDone ? WidgetWall.SocialItems.appSettings.indexingUpdateDone : false;
                 WidgetWall.showHidePrivateChat();
                 WidgetWall.followLeaveGroupPermission();
                 WidgetWall.showHideCommentBox();
@@ -386,6 +388,7 @@
             };
 
             WidgetWall.init = function () {
+                
                 WidgetWall.SocialItems.getSettings((err, result) => {
                     if (err) return console.error("Fetching settings failed.", err);
                     if (result) {
@@ -414,8 +417,9 @@
                 if (WidgetWall.SocialItems.isPrivateChat) {  
                         SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
                             if (err) return console.log(err);
-
+                            
                             const otherUserIds = [];
+                            
                             if (!WidgetWall.SocialItems.userIds) {
                                 const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
                                 const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
@@ -428,7 +432,6 @@
                                     otherUserIds.push(uid.trim());
                                 }
                             }
-                            
                             if (!users.length) {
                                 for (const userId of otherUserIds) {
                                     WidgetWall.followPrivateWall(userId, WidgetWall.SocialItems.wid);
@@ -514,12 +517,14 @@
                 WidgetWall.SocialItems.pageSize = 5;
                 WidgetWall.SocialItems.page = 0;
                 WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name;
-
+                WidgetWall.SocialItems.items = [];
+                
                 buildfire.history.push(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name, {
                     isPrivateChat: true,
                     showLabelInTitlebar: true
                 });
-                WidgetWall.init();
+
+                WidgetWall.getPosts();
             }
 
             $rootScope.$on('loadPrivateChat', function (event, error) {
