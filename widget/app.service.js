@@ -127,7 +127,6 @@
                     var allUsers = [];
                     let page = 0;
                     let filter = {};
-                    console.log(this.indexingUpdateDone)
                     if (this.indexingUpdateDone) {
                         filter = {
                             '_buildfire.index.string1': wallId,
@@ -245,7 +244,6 @@
                     return item;
                 },
                 buildIndex: function (data) {
-                    console.log(data);
                     var index = {
                         'string1': data.wallId,
                         'text': data.userId + '-' + data.wallId,
@@ -449,7 +447,6 @@
 
             SocialItems.prototype.getPosts = function (callback) {
                 let pageSize = _this.pageSize, page = _this.page;
-                console.log('wallid', _this.wid)
                 let searchOptions = { pageSize, page, filter: getFilter(), sort: getSort(), recordCount: true }
 
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
@@ -594,8 +591,6 @@
                             _this.userIds = Util.getParameterByName("userIds") ?
                                 Util.getParameterByName("userIds") : userIds;
                         }
-                        console.log('WallId', _this.wid);
-                        console.log('UserIds', _this.userIds);
 
                         if (_this.wid.length === 48 || _this.userIds) {
                             _this.isPrivateChat = true;

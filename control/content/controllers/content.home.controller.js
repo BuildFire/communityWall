@@ -86,7 +86,6 @@
                                 }
                             }, 'posts', (err, result2) => {
                                 if (err) return console.error(err);
-                                console.log('aa', result1, result2)
                                 if (result1.totalRecord > 0 || result2.totalRecord > 0) {
                                     PerfomanceIndexingService.showIndexingDialog();
                                 }
