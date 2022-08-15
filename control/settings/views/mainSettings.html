@@ -2,6 +2,16 @@
     <form class="padded-sm" name="mainSettingsForm">
         <h1>Post Permissions</h1>
         <div class="input-control side-label">
+            <label for="preLogin">Pre-login preview</label>
+            <div>
+                <div class="checkbox checkbox-primary no-label">
+                    <input id="preLogin" type="checkbox" ng-model="data.preLoginPreview" ng-change="save()">
+                    <label for="preLogin"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-control side-label">
             <label for="autoSub">Allow autosubscribe</label>
             <div>
                 <div class="checkbox checkbox-primary no-label">
