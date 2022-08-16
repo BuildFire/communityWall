@@ -605,8 +605,11 @@
                     ed.on('KeyUp', (e) => {
                         clearTimeout(updateDelay);
                         updateDelay = setTimeout(() => {
-                            appSettings = ContentHome.appSettings.appSettings ? ContentHome.appSettings.appSettings : {};
-                            
+                            if(ContentHome.appSettings){
+                                appSettings = ContentHome.appSettings.appSettings ? ContentHome.appSettings.appSettings : {};
+                            }else{
+                                appSettings = {};
+                            }
                             appSettings.pinnedPost = ed.getContent();
                             buildfire.datastore.save({ appSettings: appSettings }, "Social", console.log)
                         }, 700);
