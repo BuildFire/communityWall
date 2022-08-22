@@ -1,130 +1,163 @@
 <div ng-controller="MainSettingsCtrl" ng-init="init()">
-    <form class="padded-sm" name="mainSettingsForm">
+    <form name="mainSettingsForm" style="padding: 0px 12px !important;">
         <h1>Post Permissions</h1>
-        <div class="input-control side-label">
-            <label for="preLogin">Pre-login preview</label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
+        <div class="row">
+            <div class="col-md-8">
+                <label for="preLogin">Pre-login preview</label>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
                     <input id="preLogin" type="checkbox" ng-model="data.preLoginPreview" ng-change="save()">
-                    <label for="preLogin"></label>
+                    <label for="preLogin" class="label-success"></label>
                 </div>
             </div>
         </div>
 
-        <div class="input-control side-label">
-            <label for="autoSub">Allow autosubscribe</label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
+        <div class="row">
+            <div class="col-md-8">
+                <label for="autoSub">Allow autosubscribe</label>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
                     <input id="autoSub" type="checkbox" ng-model="data.allowAutoSubscribe" ng-change="save()">
-                    <label for="autoSub"></label>
+                    <label for="autoSub" class="label-success"></label>
                 </div>
             </div>
         </div>
 
-        <div class="input-control side-label">
-            <label for="mainWallTag">Allow posts on main wall only by users with tags</label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
-                    <input id="mainWallTag" type="checkbox" ng-model="data.allowMainThreadTags" ng-change="save()" >
-                    <label for="mainWallTag"></label>
+        <div class="row">
+            <div class="col-md-8">
+                <label for="mainWallTag">Allow posts on main wall only by users with tags</label>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
+                    <input id="mainWallTag" type="checkbox" ng-model="data.allowMainThreadTags" ng-change="save()">
+                    <label for="mainWallTag" class="label-success"></label>
                 </div>
             </div>
         </div>
 
-        <div class="input-control side-label">
-            <label>Tags</label>
-            <div class="flex-auto">
-                <div class="margin-bottom-ten"></div>
-                <tags-input class="margin-bottom-ten" ng-model="data.mainThreadUserTags" min-tags="{{data.allowMainThreadTags ? 1 : 0}}"
-                on-tag-added="save()" on-tag-removed="save()"></tags-input>
-                <p class="info-note">You may have to reload the page if you have been applying these tags to yourself.</p>
+        <div class="row">
+            <div class="col-md-3">
+                <label>Tags</label>
+                <span class="customTooltipBox btn-primary">
+                    <div style="bottom: -5px; left: 5px; position: absolute;">i</div>
+                    <span class="customTooltipText">You may have to reload the page if you have been applying these
+                        tags to
+                        yourself.</span>
+                </span>
+            </div>
+            <div class="col-md-9">
+                <tags-input class="margin-bottom-ten" ng-model="data.mainThreadUserTags"
+                    min-tags="{{data.allowMainThreadTags ? 1 : 0}}" on-tag-added="save()" on-tag-removed="save()">
+                </tags-input>
             </div>
         </div>
-        
 
-        <div class="input-control side-label">
-            <label for="sideThreadTag">Allow posts on side threads only by users with tags</label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
-                    <input id="sideThreadTag" type="checkbox" ng-model="data.allowSideThreadTags" ng-change="save()" >
-                    <label for="sideThreadTag"></label>
+
+        <div class="row">
+            <div class="col-md-8">
+                <label for="sideThreadTag">Allow posts on side threads only by users with tags</label>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
+                    <input id="sideThreadTag" type="checkbox" ng-model="data.allowSideThreadTags" ng-change="save()">
+                    <label for="sideThreadTag" class="label-success"></label>
                 </div>
             </div>
         </div>
 
-        <!-- <div class="form-group">
-            <div>
-                <input id="sideThreadTag" type="checkbox" ng-model="data.allowSideThreadTags" ng-change="save()" />
-                <label for="sideThreadTag">
-                    Allow posts on side threads only by users with tags
+        <div class="row">
+            <div class="col-md-3">
+                <label>Tags</label>
+                <span class="customTooltipBox btn-primary">
+                    <div style="bottom: -5px; left: 5px; position: absolute;">i</div>
+                    <span class="customTooltipText">You may have to reload the page if you have been applying these
+                        tags to
+                        yourself.</span>
+                </span>
+            </div>
+            <div class="col-md-9">
+                <tags-input class="margin-bottom-ten" ng-model="data.sideThreadUserTags"
+                    min-tags="{{data.allowSideThreadTags ? 1 : 0}}" on-tag-added="save()" on-tag-removed="save()">
+                </tags-input>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <label for="privateChat">Disable private chat</label>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
+                    <input id="privateChat" type="checkbox" ng-model="data.disablePrivateChat" ng-change="save()">
+                    <label for="privateChat" class="label-success"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <label for="followLeave">Disable Follow/Leave Group</label>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
+                    <input id="followLeave" type="checkbox" ng-model="data.disableFollowLeaveGroup" ng-change="save()">
+                    <label for="followLeave" class="label-success"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <label for="showMembers">Show Members</label>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
+                    <input id="showMembers" type="checkbox" ng-model="data.showMembers" ng-change="save()">
+                    <label for="showMembers" class="label-success"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <label for="allowCommunityFeedFollow">Enable Users to Follow others
                 </label>
+                <span class="customTooltipBox btn-primary">
+                    <div style="bottom: -5px; left: 5px; position: absolute;">i</div>
+                    <span class="customTooltipText">Requires Community Feed</span>
+                </span>
             </div>
-        </div> -->
-
-        <div class="input-control side-label">
-            <label>Tags</label>
-            <div class="flex-auto">
-                <tags-input class="margin-bottom-ten" ng-model="data.sideThreadUserTags" min-tags="{{data.allowSideThreadTags ? 1 : 0}}"
-                    on-tag-added="save()" on-tag-removed="save()"></tags-input>
-                <p class="info-note">You may have to reload the page if you have been applying these tags to yourself.</p>
-            </div>
-        </div>
-        
-        
-        <div class="input-control side-label">
-            <label for="privateChat">Disable private chat</label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
-                    <input id="privateChat" type="checkbox" ng-model="data.disablePrivateChat" ng-change="save()" >
-                    <label for="privateChat"></label>
+            <div class="col-md-4">
+                <div class="button-switch">
+                    <input id="allowCommunityFeedFollow" type="checkbox" ng-model="data.allowCommunityFeedFollow"
+                        ng-change="save()">
+                    <label for="allowCommunityFeedFollow" class="label-success"></label>
                 </div>
             </div>
         </div>
 
-        <div class="input-control side-label">
-            <label for="followLeave">Disable Follow/Leave Group</label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
-                    <input id="followLeave" type="checkbox" ng-model="data.disableFollowLeaveGroup" ng-change="save()" >
-                    <label for="followLeave"></label>
+        <div class="row">
+            <div class="col-md-8">
+                <label for="seeProfile">Enable See Profile Option
+                </label>
+                <span class="customTooltipBox btn-primary">
+                    <div style="bottom: -5px; left: 5px; position: absolute;">i</div>
+                    <span class="customTooltipText">This will expose user emails</span>
+                </span>
+            </div>
+            <div class="col-md-4">
+                <div class="button-switch">
+                    <input id="seeProfile" type="checkbox" ng-model="data.seeProfile" ng-click="warn()">
+                    <label for="seeProfile" class="label-success"></label>
                 </div>
             </div>
         </div>
-
-        <div class="input-control side-label">
-            <label for="showMembers">Show Members</label>
-            <div>
-                <div class="checkbox checkbox-primary no-label">
-                    <input id="showMembers" type="checkbox" ng-model="data.showMembers" ng-change="save()" >
-                    <label for="showMembers"></label>
-                </div>
-            </div>
-        </div>
-        <div class="input-control side-label">
-            <label for="allowCommunityFeedFollow">Enable Users to Follow others<br>
-                <p style="opacity: 0.7;font-size: .75rem;">
-                    (Requires Community Feed)               
-                </p></label>
-                <div>
-                    <div class="checkbox checkbox-primary no-label">
-                        <input id="allowCommunityFeedFollow" type="checkbox" ng-model="data.allowCommunityFeedFollow" ng-change="save()" >
-                        <label for="allowCommunityFeedFollow"></label>
-                    </div>
-                </div>
-            </div>
-            <div class="input-control side-label">
-                <label for="seeProfile">Enable See Profile Option<br>
-                    <p style="opacity: 0.7;font-size: .75rem;">
-                        (This will expose user emails)             
-                    </p></label>
-                <div>
-                    <div class="checkbox checkbox-primary no-label">
-                        <input id="seeProfile" type="checkbox" ng-model="data.seeProfile" ng-click="warn()" >
-                        <label for="seeProfile"></label>
-                    </div>
-                </div>
-            </div>
-
     </form>
-    <div class="padded-sm" id="actions"></div>
+
+    <div style="padding: 0px 12px !important;">
+        <h1>Action Items</h1>
+        <div id="actions"></div>
+    </div>
 </div>
