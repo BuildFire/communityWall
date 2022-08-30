@@ -310,7 +310,7 @@
                             buildfire.datastore.save(result.data, 'Social', (err, saved) => {
                                 buildfire.dialog.alert(
                                     {
-                                        title: 'Database perfomance',
+                                        title: 'Community Wall Update',
                                         message: "Database has been successfully updated. Thank you for your patience, you can now publish the app!",
                                     }, (err, isConfirmed) => {
                                         if (err) return console.error(err);
@@ -402,9 +402,9 @@
                 showIndexingDialog: function () {
                     buildfire.dialog.confirm(
                         {
-                            title: 'Database perfomance',
+                            title: 'Community Wall Update',
                             message: "We are improving your database perfomance, please do not close your browser or leave the plugin until you see success dialog. This may take a while...",
-                            confirmButton: { text: "Yes", type: "danger" },
+                            confirmButton: { text: "Yes", type: "success" },
                         }, (err, isConfirmed) => {
                             if (err) return console.error(err);
                             if (isConfirmed) return this.startSubscribedUsersDataIndexingUpdate();
