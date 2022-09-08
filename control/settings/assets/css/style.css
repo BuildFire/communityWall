@@ -294,6 +294,7 @@ tags-input > div > div > input {
 .tableDiv {
   overflow-x: hidden;
   overflow-y: auto;
+  max-height: 13.5rem;
 }
 
 .headerPadding {

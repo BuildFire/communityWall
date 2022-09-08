@@ -1,6 +1,6 @@
 class SearchTableHelper {
 
-  constructor(tableId, config, loading) {
+  constructor(tableId, config, loading, headTable) {
     if (!config) throw "No config provided";
     if (!tableId) throw "No tableId provided";
     this.table = document.getElementById(tableId);
@@ -9,6 +9,11 @@ class SearchTableHelper {
     if (!loading) throw "No loading provided";
     this.loading = document.getElementById(loading);
     if (!this.loading)
+      throw "Cant find loading with ID that was provided";
+
+    if (!headTable) throw "No loading provided";
+    this.headTable = document.getElementById(headTable);
+    if (!this.headTable)
       throw "Cant find loading with ID that was provided";
 
     this.config = config;
@@ -20,13 +25,14 @@ class SearchTableHelper {
   init() {
     this.table.innerHTML = "";
     this.table.classList.add("hidden");
+    this.headTable.classList.add("hidden");
     this.renderHeader();
     this.renderBody();
   }
 
   renderHeader() {
     if (!this.config.columns) throw "No columns are indicated in the config";
-    this.thead = this.createElement("thead", this.table);
+    this.thead = this.createElement("thead", this.table, "", ["hidden"]);
     this.config.columns.forEach((colConfig) => {
       let classes = ["headerCell"];
       if (colConfig.type == "date") classes.push("text-center");
@@ -81,6 +87,7 @@ class SearchTableHelper {
   search(filter) {
     this.tbody.innerHTML = "";
     this.table.classList.add("hidden");
+    this.headTable.classList.remove("hidden");
     this.loading.classList.remove("hidden");
     this.filter = filter;
     this._fetchPageOfData(this.filter, 0);
@@ -127,17 +134,17 @@ class SearchTableHelper {
     window.buildfire.publicData.search(this.searchOptions, 'subscribedUsersData', function (err, data) {
       if (err) console.error(err);
       else if (data && data.length > 0) {
-        console.log(data)
         t.productsLength = data.length;
         t.loading.classList.add("hidden");
         t.table.classList.remove("hidden");
+        t.headTable.classList.remove("hidden");
         t.tbody.innerHTML = "";
-        t.loading.classList.add("hidden");
         data.forEach((p) => t.renderRow(p));
         t.endReached = data.length < pageSize;
       } else {
         t.tbody.innerHTML = "";
         t.loading.classList.add("hidden");
+        t.headTable.classList.add("hidden");
       }
     })
   }
@@ -190,7 +197,7 @@ class SearchTableHelper {
             "img-holder",
             "aspect-1-1",
           ]);
-          var cellImg = this.createElement("img", cellDiv, "", ["imgStyle","imgBorder"]);
+          var cellImg = this.createElement("img", cellDiv, "", ["imgStyle", "imgBorder"]);
           var data = obj.data;
           cellImg.src = eval("`" + colConfig.data + "`");
         } catch (error) {
@@ -311,6 +318,7 @@ class SearchTableHelper {
     this.productsLength -= 1;
     if (this.productsLength == 0) {
       this.table.classList.add("hidden");
+      this.headTable.classList.add("hidden");
     }
   }
 }

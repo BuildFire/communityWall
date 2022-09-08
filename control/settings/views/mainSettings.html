@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        <div class="row" style="margin-bottom: 1.25rem;" ng-show="data.allowChat == 'selectedUsers'">
+        <div class="row" ng-show="data.allowChat == 'selectedUsers'">
             <div class="col-md-9">
                 <label class="subtitles-labels">Allowed Users</label>
             </div>
@@ -109,9 +109,20 @@
         </div>
 
         <div class="row" style="margin-bottom: 1.25rem;" ng-show="data.allowChat == 'selectedUsers'">
-            <div class="col-md-3">
+            <div class="col-md-4">
             </div>
-            <div class="col-md-9">
+            <div class="col-md-8">
+                <table class="table table-bf hidden" id="headTable" style="margin-bottom: 0;">
+                    <thead>
+                        <th class="headerPadding" style="width: 56.5px;">
+                            <h5 class="headerCell text-left"> </h5>
+                        </th>
+                        <th class="headerPadding" style="width: 162px;">
+                            <h5 class="headerCell text-left">User Name</h5>
+                        </th>
+                        <th class="editColumn"></th>
+                    </thead>
+                </table>
                 <div class="tableDiv">
                     <table id="searchResults" class="table table-bf hidden"></table>
                 </div>

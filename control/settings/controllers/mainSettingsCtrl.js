@@ -157,7 +157,8 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         $scope.searchTableHelper = new SearchTableHelper(
             "searchResults",
             searchTableConfig,
-            "loading"
+            "loading",
+            "headTable"
         );
         $scope.searchTableHelper.search();
     }
