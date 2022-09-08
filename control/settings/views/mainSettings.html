@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="margin-bottom: 1.25rem;" ng-show="data.allowMainThreadTags">
             <div class="col-md-3">
                 <label>Tags</label>
                 <span class="customTooltipBox btn-primary">
@@ -43,7 +43,6 @@
             </div>
         </div>
 
-
         <div class="row">
             <div class="col-md-8">
                 <label for="sideThreadTag">Allow posts on side threads only by users with tags</label>
@@ -56,7 +55,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="margin-bottom: 1.25rem;" ng-show="data.allowSideThreadTags">
             <div class="col-md-3">
                 <label>Tags</label>
                 <span class="customTooltipBox btn-primary">
@@ -73,18 +72,56 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-8">
-                <label for="privateChat">Disable private chat</label>
+        <div class="row" style="margin-bottom: 1.25rem;">
+            <div class="col-md-3">
+                <label for="privateChat">Allow private chat</label>
             </div>
-            <div class="col-md-4">
-                <div class="button-switch">
-                    <input id="privateChat" type="checkbox" ng-model="data.disablePrivateChat" ng-change="save()">
-                    <label for="privateChat" class="label-success"></label>
-                </div>
+            <div class="col-md-2 radio radio-primary radio-inline" style="width: 22% !important;">
+                <input id="noUsers" type="radio" name="allowChat" ng-model="data.allowChat" value="noUsers">
+                <label class="subtitles-labels" for="noUsers">None</label>
+            </div>
+            <div class="col-md-2 radio radio-primary radio-inline" style="width: 22% !important;">
+                <input id="AllUsers" type="radio" name="allowChat" ng-model="data.allowChat" value="allUsers">
+                <label class="subtitles-labels" for="AllUsers">All users</label>
+            </div>
+            <div class="col-md-4 radio radio-primary radio-inline" style="width: 31% !important;">
+                <input id="selectedUsers" type="radio" name="allowChat" ng-model="data.allowChat" value="selectedUsers">
+                <label class="subtitles-labels" for="selectedUsers">Selected Users</label>
+                <span class="customTooltipBox btn-primary">
+                    <div style="bottom: -5px; left: 5px; position: absolute;">i</div>
+                    <span class="customTooltipText2">Users added to the list will be able to send private messages to
+                        all
+                        users. Users that are not in the list, will be able to send private messages only to the users
+                        in the list.</span>
+                </span>
             </div>
         </div>
 
+        <div class="row" style="margin-bottom: 1.25rem;" ng-show="data.allowChat == 'selectedUsers'">
+            <div class="col-md-9">
+                <label class="subtitles-labels">Allowed Users</label>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-success stretch" id="addUser" ng-click="selectUsers()">
+                    <span class="icon icon-plus margin-right-ten"></span>Select User
+                </button>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 1.25rem;" ng-show="data.allowChat == 'selectedUsers'">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-9">
+                <div class="tableDiv">
+                    <table id="searchResults" class="table table-bf hidden"></table>
+                </div>
+                <div id="loading" class="well empty-state-lg">
+                    <h5 class="text-center" style="margin-bottom: 0px">
+                        Loading...
+                    </h5>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-8">
                 <label for="followLeave">Disable Follow/Leave Group</label>
@@ -111,7 +148,7 @@
 
         <div class="row">
             <div class="col-md-8">
-                <label for="allowCommunityFeedFollow">Enable Users to Follow others
+                <label for="allowCommunityFeedFollow">Allow Users to Follow others
                 </label>
                 <span class="customTooltipBox btn-primary">
                     <div style="bottom: -5px; left: 5px; position: absolute;">i</div>
@@ -129,7 +166,7 @@
 
         <div class="row">
             <div class="col-md-8">
-                <label for="seeProfile">Enable See Profile Option
+                <label for="seeProfile">Allow See Profile Option
                 </label>
                 <span class="customTooltipBox btn-primary">
                     <div style="bottom: -5px; left: 5px; position: absolute;">i</div>

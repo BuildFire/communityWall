@@ -20,7 +20,6 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
             } else {
                 if (result && result.data) {
                     _pluginData = result;
-                    console.log(_pluginData)
                     if (result.data.appSettings) {
                         if (!result.data.appSettings.mainThreadUserTags) {
                             result.data.appSettings.mainThreadUserTags = [];
@@ -33,25 +32,43 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                             items.push(result.data.appSettings.actionItem);
                             editor.loadItems(items);
                         }
-                        if(typeof (result.data.appSettings.showMembers) == 'undefined') {
+                        if (typeof (result.data.appSettings.showMembers) == 'undefined') {
                             result.data.appSettings.showMembers = true;
                         }
-                        if(typeof (result.data.appSettings.allowCommunityFeedFollow) == 'undefined'){
+                        if (typeof (result.data.appSettings.allowCommunityFeedFollow) == 'undefined') {
                             result.data.appSettings.allowCommunityFeedFollow = false;
                         }
-                        if(typeof (result.data.appSettings.seeProfile) == 'undefined'){
+                        if (typeof (result.data.appSettings.seeProfile) == 'undefined') {
                             result.data.appSettings.seeProfile = false;
                         }
-                        if(typeof (result.data.appSettings.allowAutoSubscribe) == 'undefined') {
+                        if (typeof (result.data.appSettings.allowAutoSubscribe) == 'undefined') {
                             result.data.appSettings.allowAutoSubscribe = true;
                         }
-                    } else if(!result.data.appSettings) {
+                        if (typeof (result.data.appSettings.allowChat) == 'undefined') {
+                            result.data.appSettings.allowChat = "allUsers";
+                        }
+                    } else if (!result.data.appSettings) {
                         result.data.appSettings = {};
                         result.data.appSettings.showMembers = true;
                         result.data.appSettings.allowAutoSubscribe = true;
-                    }    
+                    }
                     $scope.data = result.data.appSettings;
+
+                    $scope.fillUsers();
                     $scope.$digest();
+
+
+                    document.getElementById('noUsers').addEventListener('change', () => {
+                        $scope.save();
+                    })
+
+                    document.getElementById('AllUsers').addEventListener('change', () => {
+                        $scope.save();
+                    })
+
+                    document.getElementById('selectedUsers').addEventListener('change', () => {
+                        $scope.save();
+                    })
                 }
             }
         });
@@ -71,15 +88,16 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
             if (!$scope.data.actionItem) {
                 $scope.data.actionItem = editor.items[0];
                 $scope.save();
-            }
-            else {
+            } else {
                 let items = [];
                 items.push($scope.data.actionItem);
                 editor.loadItems(items)
                 buildfire.notifications.alert({
-                    title: "Adding Denied"
-                    , message: "You can only have one action item"
-                    , okButton: { text: 'Ok' }
+                    title: "Adding Denied",
+                    message: "You can only have one action item",
+                    okButton: {
+                        text: 'Ok'
+                    }
                 }, function (e, data) {
                     if (e) console.error(e);
                     if (data) console.log(data);
@@ -88,22 +106,21 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
 
         }
     }
-    
 
-    $scope.warn = function(){
+
+    $scope.warn = function () {
         let el = document.getElementById("seeProfile");
-        if(el.checked) {
-            buildfire.dialog.confirm(
-                {
+        if (el.checked) {
+            buildfire.dialog.confirm({
                     message: "Are you sure you want to enable this option?",
-                    confirmButton:{
+                    confirmButton: {
                         text: "Confirm",
                         type: "success"
                     }
                 },
                 (err, isConfirmed) => {
                     if (err) el.checked = false;
-                    
+
                     if (isConfirmed) {
                         el.checked = true;
                         $scope.save()
@@ -111,12 +128,11 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                         el.checked = false;
                     }
                 }
-                );
-            }
-            else{
+            );
+        } else {
             el.checked = false;
             $scope.save();
-            }
+        }
     }
 
     $scope.save = function () {
@@ -135,5 +151,71 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
 
     $scope.init = function () {
         load()
+    }
+
+    $scope.fillUsers = function () {
+        $scope.searchTableHelper = new SearchTableHelper(
+            "searchResults",
+            searchTableConfig,
+            "loading"
+        );
+        $scope.searchTableHelper.search();
+    }
+
+    $scope.selectUsers = function () {
+        buildfire.auth.showUsersSearchDialog(null, (err, result) => {
+            if (err) return console.log(err);
+
+            if (result) {
+                verifyUsers(result);
+            }
+        });
+    }
+
+    var verifyUsers = function (result) {
+        result.userIds.forEach((userId, index) => {
+            $scope.getById(userId, (err, res) => {
+                console.log(res)
+                if (res) {
+                    res.data.userDetails.hasAllowChat = true;
+                    $scope.update(res.id, res.data, (err, res2) => {
+                        console.log(res2)
+                        if (index == result.userIds.length - 1)
+                            $scope.searchTableHelper.search();
+                    });
+                } else {
+                    if (index == result.userIds.length - 1)
+                        $scope.searchTableHelper.search();
+                }
+            })
+        });
+    }
+
+    $scope.update = function (id, obj, callback) {
+        window.buildfire.publicData.update(id, obj, 'subscribedUsersData', function (err, data) {
+            if (err) callback ? callback(err) : console.error(err);
+            else
+                callback && callback(null, data);
+        });
+    }
+
+    $scope.getById = function (userId, callback) {
+
+        window.buildfire.publicData.search({
+            filter: {
+                $and: [{
+                    "_buildfire.index.array1.string1": `${userId}-`
+                }, {
+                    "_buildfire.index.string1": ""
+                }]
+            }
+        }, 'subscribedUsersData', function (err, data) {
+            if (err) callback ? callback(err) : console.error(err);
+            else if (data && data.length > 0) {
+                callback && callback(null, data[0]);
+            } else {
+                callback && callback(null, null);
+            }
+        })
     }
 }]);
