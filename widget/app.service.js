@@ -32,7 +32,10 @@
                     var lookup = [];
 
                     text = text.replace(URLREGEX, function (url) {
-                        var obj = { url: url, target: '_system' }
+                        var obj = {
+                            url: url,
+                            target: '_system'
+                        }
                         if (obj.url && obj.url.indexOf('http') !== 0 && obj.url.indexOf('https') !== 0) {
                             obj.url = 'http://' + obj.url;
                         }
@@ -40,7 +43,10 @@
                         return "_RF" + (lookup.length - 1) + "_";
                     });
                     text = text.replace(EMAILREGEX, function (url) {
-                        var obj = { url: "mailto:" + url, target: '_system' };
+                        var obj = {
+                            url: "mailto:" + url,
+                            target: '_system'
+                        };
                         lookup.push("<a href='" + obj.url + "' target='" + obj.target + "'>" + url + "</a>");
                         return "_RF" + (lookup.length - 1) + "_";
                     });
@@ -63,6 +69,39 @@
             }
         }])
         .factory("SubscribedUsersData", function () {
+
+            function continueToCheckCurrent(callback) {
+                window.buildfire.auth.getCurrentUser((err, currentUser) => {
+                    if (err) {
+                        callback(err, false)
+                    }
+                    if (currentUser) {
+                        window.buildfire.publicData.search({
+                            filter: {
+                                $and: [{
+                                    "_buildfire.index.array1.string1": `${currentUser.userId}-`
+                                }, {
+                                    "_buildfire.index.string1": ""
+                                }]
+                            }
+                        }, 'subscribedUsersData', function (err, data) {
+                            if (err) callback(err, false);
+                            else if (data && data.length > 0) {
+                                if (data[0].data.userDetails.hasAllowChat) {
+                                    callback(null, true);
+                                } else {
+                                    callback(err, false)
+                                }
+                            } else {
+                                callback(err, false)
+                            }
+                        })
+                    } else {
+                        callback(err, false)
+                    }
+                });
+            }
+
             return {
                 indexingUpdateDone: false,
                 banUser: function (params, callback) {
@@ -74,19 +113,22 @@
                         delete params.userDetails.userTags
                         delete params.userDetails.userToken
                     }
-                    window.buildfire.publicData.insert(_this.getDataWithIndex({ data: params }).data, 'subscribedUsersData', function (err, data) {
+                    window.buildfire.publicData.insert(_this.getDataWithIndex({
+                        data: params
+                    }).data, 'subscribedUsersData', function (err, data) {
                         if (err) callback(err);
                         else {
                             callback();
                         }
-                    }
-                    );
+                    });
                 },
                 unfollowWall: function (userId, wallId, banUser, callback) {
                     var _this = this;
-                    window.buildfire.publicData.search(
-                        { filter: this.getIndexedFilter(userId, wallId) },
-                        'subscribedUsersData', function (err, data) {
+                    window.buildfire.publicData.search({
+                            filter: this.getIndexedFilter(userId, wallId)
+                        },
+                        'subscribedUsersData',
+                        function (err, data) {
                             if (err) return console.error(err)
                             if (data && data.length > 1) {
                                 let count = 0;
@@ -132,34 +174,43 @@
                             '_buildfire.index.string1': wallId,
                             '_buildfire.index.number1': 0
                         }
-                    }
-                    else {
+                    } else {
                         filter = {
                             '_buildfire.index.string1': wallId ? wallId : "",
-                            $or: [
-                                { '$json.leftWall': { $exists: true, $eq: false } },
-                                { '$json.leftWall': { $exists: false } }
+                            $or: [{
+                                    '$json.leftWall': {
+                                        $exists: true,
+                                        $eq: false
+                                    }
+                                },
+                                {
+                                    '$json.leftWall': {
+                                        $exists: false
+                                    }
+                                }
                             ]
                         }
                     }
 
                     function getUsers() {
-                        window.buildfire.publicData.search(
-                            {
-                                pageSize, page, recordCount: true,
-                                filter: filter,
-                            }, 'subscribedUsersData', function (err, data) {
-                                if (err) return cb(err, null);
-                                data.result.map(item => allUsers.push(item.data));
-                                if (allUsers.length === data.totalRecord) {
-                                    allUsers = allUsers.filter((item) => { return item.userId !== userId });
-                                    cb(null, allUsers);
-                                }
-                                else {
-                                    page++;
-                                    getUsers();
-                                }
-                            })
+                        window.buildfire.publicData.search({
+                            pageSize,
+                            page,
+                            recordCount: true,
+                            filter: filter,
+                        }, 'subscribedUsersData', function (err, data) {
+                            if (err) return cb(err, null);
+                            data.result.map(item => allUsers.push(item.data));
+                            if (allUsers.length === data.totalRecord) {
+                                allUsers = allUsers.filter((item) => {
+                                    return item.userId !== userId
+                                });
+                                cb(null, allUsers);
+                            } else {
+                                page++;
+                                getUsers();
+                            }
+                        })
                     }
                     getUsers();
                 },
@@ -177,64 +228,61 @@
                     })
                 },
                 getGroupFollowingStatus: function (userId, wallId, instanceId, cb) {
-                    window.buildfire.publicData.search(
-                        {
-                            filter: this.getIndexedFilter(userId, wallId)
-                        }, 'subscribedUsersData', function (err, data) {
-                            if (err) return cb(err);
-                            if (data) cb(null, data);
-                            else cb(null, []);
-                        }
-                    );
+                    window.buildfire.publicData.search({
+                        filter: this.getIndexedFilter(userId, wallId)
+                    }, 'subscribedUsersData', function (err, data) {
+                        if (err) return cb(err);
+                        if (data) cb(null, data);
+                        else cb(null, []);
+                    });
                 },
                 followThread: function (params, callback) {
                     var _this = this;
-                    window.buildfire.publicData.search(
-                        {
-                            filter: this.getIndexedFilter(params.userId, params.wallId)
-                        }, 'subscribedUsersData', function (err, result) {
-                            if (result && result.length) {
-                                let data = result[0].data;
-                                data.posts.push(params.post);
-                                buildfire.publicData.update(result[0].id, _this.getDataWithIndex(result[0]).data, 'subscribedUsersData', (err, posts) => {
-                                });
-                            }
-                        })
+                    window.buildfire.publicData.search({
+                        filter: this.getIndexedFilter(params.userId, params.wallId)
+                    }, 'subscribedUsersData', function (err, result) {
+                        if (result && result.length) {
+                            let data = result[0].data;
+                            data.posts.push(params.post);
+                            buildfire.publicData.update(result[0].id, _this.getDataWithIndex(result[0]).data, 'subscribedUsersData', (err, posts) => {});
+                        }
+                    })
                 },
                 unFollowThread: function (params, callback) {
                     var _this = this;
-                    window.buildfire.publicData.search(
-                        {
-                            filter: this.getIndexedFilter(params.userId, params.wallId)
-                        }, 'subscribedUsersData', function (error, result) {
-                            if (error) return console.log(error)
-                            if (result && result.length) {
-                                let data = result[0].data;
-                                data.posts = data.posts.filter(x => x !== params.post);
-                                buildfire.publicData.update(result[0].id, _this.getDataWithIndex(result[0]).data, 'subscribedUsersData', (err, posts) => {
-                                });
-                            }
-                        });
+                    window.buildfire.publicData.search({
+                        filter: this.getIndexedFilter(params.userId, params.wallId)
+                    }, 'subscribedUsersData', function (error, result) {
+                        if (error) return console.log(error)
+                        if (result && result.length) {
+                            let data = result[0].data;
+                            data.posts = data.posts.filter(x => x !== params.post);
+                            buildfire.publicData.update(result[0].id, _this.getDataWithIndex(result[0]).data, 'subscribedUsersData', (err, posts) => {});
+                        }
+                    });
                 },
                 getThreadFollowingStatus: function (userId, threadId, wallId, instanceId, cb) {
-                    window.buildfire.publicData.search(
-                        {
-                            filter: this.getIndexedFilter(userId, wallId)
-                        }, 'subscribedUsersData', function (error, result) {
-                            if (error) return console.log(error)
-                            if (result && result.length) {
-                                let data = result[0].data;
-                                let exists = data.posts.find(x => x === threadId);
-                                if (exists) cb(null, data);
-                                else cb(null, null);
-                            }
-                        });
+                    window.buildfire.publicData.search({
+                        filter: this.getIndexedFilter(userId, wallId)
+                    }, 'subscribedUsersData', function (error, result) {
+                        if (error) return console.log(error)
+                        if (result && result.length) {
+                            let data = result[0].data;
+                            let exists = data.posts.find(x => x === threadId);
+                            if (exists) cb(null, data);
+                            else cb(null, null);
+                        }
+                    });
                 },
                 getIndexedFilter: function (userId, wallId) {
-                    let filter = { '_buildfire.index.text': userId + '-' + wallId };
+                    let filter = {
+                        '_buildfire.index.text': userId + '-' + wallId
+                    };
 
                     if (this.indexingUpdateDone)
-                        filter = { '_buildfire.index.array1.string1': userId + '-' + wallId };
+                        filter = {
+                            '_buildfire.index.array1.string1': userId + '-' + wallId
+                        };
                     return filter;
                 },
                 getDataWithIndex: function (item) {
@@ -248,11 +296,47 @@
                         'string1': data.wallId,
                         'text': data.userId + '-' + data.wallId,
                         'number1': data.leftWall ? 1 : 0,
-                        array1: [
-                            { string1: data.userId + '-' + data.wallId }
-                        ]
+                        array1: [{
+                            string1: data.userId + '-' + data.wallId
+                        }]
                     }
                     return index;
+                },
+                checkIfCanChat: function (toUser, callback) {
+                    window.buildfire.publicData.search({
+                        filter: {
+                            $and: [{
+                                "_buildfire.index.array1.string1": `${toUser}-`
+                            }, {
+                                "_buildfire.index.string1": ""
+                            }]
+                        }
+                    }, 'subscribedUsersData', function (err, data) {
+                        if (err) callback(err, false);
+                        else if (data && data.length > 0) {
+                            if (data[0].data.userDetails.hasAllowChat) {
+                                callback(null, true);
+                            } else {
+                                continueToCheckCurrent((err, response) => {
+                                    if (err) callback(null, false);
+                                    if (response) {
+                                        callback(null, true);
+                                    } else {
+                                        callback(null, false);
+                                    }
+                                })
+                            }
+                        } else {
+                            continueToCheckCurrent((err, response) => {
+                                if (err) callback(null, false);
+                                if (response) {
+                                    callback(null, true);
+                                } else {
+                                    callback(null, false);
+                                }
+                            })
+                        }
+                    })
                 }
             }
         })
@@ -306,14 +390,19 @@
                 reportPost: function (data) {
                     buildfire.publicData.get('reports_' + data.wid, (err, result) => {
                         if (!result.data.length)
-                            buildfire.publicData.save([{ ...data }], 'reports_' + data.wid, () => { });
+                            buildfire.publicData.save([{
+                                ...data
+                            }], 'reports_' + data.wid, () => {});
                         else {
                             let alreadyReported = result.data.find(el =>
                                 el.reporter === data.reporter && el.postId === data.postId)
                             if (!alreadyReported) {
                                 result.data.push(data);
                                 buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
-                                    buildfire.messaging.sendMessageToControl({ 'name': "POST_REPORTED", wid: data.wid });
+                                    buildfire.messaging.sendMessageToControl({
+                                        'name': "POST_REPORTED",
+                                        wid: data.wid
+                                    });
                                 });
                             }
                         }
@@ -391,19 +480,18 @@
             SocialItems.prototype.getUserName = function (userDetails) {
                 let name = null;
                 const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if (userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase())
-                    && userDetails.displayName) {
+                if (userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase()) &&
+                    userDetails.displayName) {
                     name = userDetails.displayName;
-                }
-                else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase())
-                    && userDetails.firstName && userDetails.lastName)
+                } else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
+                    userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
 
-                else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase())
-                    && userDetails.firstName)
+                else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
+                    userDetails.firstName)
                     name = userDetails.firstName;
-                else if (userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase())
-                    && userDetails.lastName)
+                else if (userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase()) &&
+                    userDetails.lastName)
                     name = userDetails.lastName;
                 else name = 'Someone';
                 if (name.length > 25)
@@ -428,8 +516,10 @@
                     if (re.test(String(user.displayName).toLowerCase()))
                         _this.userDetails.displayName = 'Someone';
                 }
-                if (loggedUser) { prepareData(loggedUser); return callback(null, loggedUser); }
-                else buildfire.auth.getCurrentUser((err, user) => {
+                if (loggedUser) {
+                    prepareData(loggedUser);
+                    return callback(null, loggedUser);
+                } else buildfire.auth.getCurrentUser((err, user) => {
                     if (err) return callback(err, null);
                     if (user) {
                         prepareData(user);
@@ -438,16 +528,25 @@
                         _this.forcedToLogin = true;
                         buildfire.auth.login(null, (err, user) => {
                             if (err) return callback(err, null);
-                            if (user) { prepareData(user); callback(null, user); }
-                            else if (!user) callback(null, null);
+                            if (user) {
+                                prepareData(user);
+                                callback(null, user);
+                            } else if (!user) callback(null, null);
                         });
                     }
                 });
             }
 
             SocialItems.prototype.getPosts = function (callback) {
-                let pageSize = _this.pageSize, page = _this.page;
-                let searchOptions = { pageSize, page, filter: getFilter(), sort: getSort(), recordCount: true }
+                let pageSize = _this.pageSize,
+                    page = _this.page;
+                let searchOptions = {
+                    pageSize,
+                    page,
+                    filter: getFilter(),
+                    sort: getSort(),
+                    recordCount: true
+                }
 
                 buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                     if (error) return console.log(error);
@@ -466,8 +565,7 @@
                         else clearInterval(_this.newPostTimerChecker);
                         $rootScope.$digest();
                         callback(null, data);
-                    }
-                    else {
+                    } else {
                         _this.showMorePosts = false;
                         $rootScope.$digest();
                         callback(null, _this.items = [])
@@ -484,23 +582,39 @@
 
             function getSort() {
                 if (_this.indexingUpdateDone)
-                    return { "_buildfire.index.date1": -1 };
-                else return { "createdOn": -1 };
+                    return {
+                        "_buildfire.index.date1": -1
+                    };
+                else return {
+                    "createdOn": -1
+                };
             }
 
             function getFilter() {
                 let filter = {}
                 if (_this.wid === "")
-                    filter = { '_buildfire.index.string1': { $eq: '' } }
+                    filter = {
+                        '_buildfire.index.string1': {
+                            $eq: ''
+                        }
+                    }
                 else
-                    filter = { "_buildfire.index.string1": { "$regex": _this.wid, "$options": "i" } }
+                    filter = {
+                        "_buildfire.index.string1": {
+                            "$regex": _this.wid,
+                            "$options": "i"
+                        }
+                    }
                 return filter;
             }
 
             function startBackgroundService() {
                 if (!_this.newPostTimerChecker) {
                     _this.newPostTimerChecker = setInterval(function () {
-                        let searchOptions = { filter: getFilter(), sort: getSort(), }
+                        let searchOptions = {
+                            filter: getFilter(),
+                            sort: getSort(),
+                        }
 
                         buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                             if (error) return console.log(error);
@@ -538,7 +652,9 @@
                         Object.keys(stringsCopy[defaultKey].labels).forEach((newKey) => {
                             let defaultValue = stringsCopy[defaultKey].labels[newKey].defaultValue;
                             let value = stringsCopy[defaultKey].labels[newKey].value;
-                            stringsCopy[defaultKey][newKey] = { defaultValue };
+                            stringsCopy[defaultKey][newKey] = {
+                                defaultValue
+                            };
                             if (value) stringsCopy[defaultKey][newKey].value = value;
                         });
                         delete stringsCopy[defaultKey].labels;
@@ -573,8 +689,8 @@
                         let lastInHistory = history[history.length - 1];
                         let wallId = '';
                         let userIds = '';
-                        if (lastInHistory && lastInHistory.options.pluginData
-                            && lastInHistory.options.pluginData.queryString) {
+                        if (lastInHistory && lastInHistory.options.pluginData &&
+                            lastInHistory.options.pluginData.queryString) {
                             wallId = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('wid');
                             userIds = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('userIds');
                             wallId = wallId ? wallId : '';
@@ -618,6 +734,3 @@
             };
         }])
 })(window.angular, window.buildfire, window.location);
-
-
-
