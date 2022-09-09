@@ -64,10 +64,30 @@
                     '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
                     $or: [
 
-                        { "$json.userDetails.displayName": { $regex: $scope.searchInput, $options: 'i' } },
-                        { "$json.userDetails.firstName": { $regex: $scope.searchInput, $options: 'i' } },
-                        { "$json.userDetails.lastName": { $regex: $scope.searchInput, $options: 'i' } },
-                        { "$json.userDetails.email": { $regex: $scope.searchInput, $options: 'i' } },
+                        {
+                            "$json.userDetails.displayName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "$json.userDetails.firstName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "$json.userDetails.lastName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "$json.userDetails.email": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
                     ]
                 }
                 Members.searchOptions.page = 0;
@@ -81,11 +101,9 @@
                     if (users.length === Members.searchOptions.pageSize) {
                         Members.searchOptions.page++;
                         Members.showMore = true;
-                    }
-                    else if (users.length === 0) {
+                    } else if (users.length === 0) {
                         Members.noResultsText = Members.languages.membersNoResults;
-                    }
-                    else {
+                    } else {
                         Members.showMore = false;
                     }
 
@@ -121,15 +139,16 @@
                     Members.languages = languages;
                     Members.noResultsText = languages.membersBlankState;
                     $scope.$digest();
-                }
-                else if (response.tag === "Social") {
+                } else if (response.tag === "Social") {
                     Members.appSettings = response.data.appSettings;
                     $scope.$digest();
                 }
             });
 
             Members.followPrivateWall = function (userId, wid, userName = null) {
-                buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
+                buildfire.auth.getUserProfile({
+                    userId: userId
+                }, (err, user) => {
                     if (err || !user) return console.log('Error while saving subscribed user data.');
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (re.test(String(user.firstName).toLowerCase()))
@@ -150,7 +169,10 @@
                         wallId: wid,
                         posts: [],
                         _buildfire: {
-                            index: { text: userId + '-' + wid, string1: wid }
+                            index: {
+                                text: userId + '-' + wid,
+                                string1: wid
+                            }
                         }
                     };
 
@@ -158,36 +180,62 @@
                     SubscribedUsersData.save(params, function (err) {
                         if (err) console.log('Error while saving subscribed user data.');
                         if (userName)
-                            Members.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                            Members.navigateToPrivateChat({
+                                id: userId,
+                                name: userName,
+                                wid: wid
+                            });
                     });
                 })
             }
 
-            Members.openBottomDrawer = function(user){
-                Follows.isFollowingUser(user.userId  , (err , r) =>{
+            Members.openBottomDrawer = function (user) {
+                Follows.isFollowingUser(user.userId, (err, r) => {
                     let listItems = [];
-                    if(Members.appSettings && Members.appSettings.seeProfile == true) listItems.push({text:'See Profile'});
-                    if((Members.appSettings && !Members.appSettings.disablePrivateChat) || Members.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
-                    if(Members.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
-                    if(listItems.length == 0) return;
-                    Buildfire.components.drawer.open(
-                        {
-                            enableFilter:false,
-                            listItems: listItems
-                        },(err, result) => {
-                            if (err) return console.error(err);
-                            else if(result.text == "See Profile") buildfire.auth.openProfile(user.userId );
-                            else if(result.text == "Send Direct Message") Members.openPrivateChat(user );
-                            else if(result.text == "Unfollow") Follows.unfollowUser(user.userId ,(err, r) => err ? console.log(err) : console.log(r));
-                            else if(result.text == "Follow") Follows.followUser(user.userId ,(err, r) => err ? console.log(err) : console.log(r));
-                            buildfire.components.drawer.closeDrawer();
-                        }
-                    );
+                    if (Members.appSettings && Members.appSettings.seeProfile == true) listItems.push({
+                        text: 'See Profile'
+                    });
+                    if ((Members.appSettings && !Members.appSettings.allowChat) || Members.appSettings.allowChat == "allUsers")
+                        listItems.push({
+                            text: 'Send Direct Message'
+                        });
+                    if (Members.appSettings.allowCommunityFeedFollow == true) listItems.push({
+                        text: r ? 'Unfollow' : 'Follow'
+                    });
+
+                    if (Members.appSettings && Members.appSettings.allowChat == "selectedUsers") {
+                        SubscribedUsersData.checkIfCanChat(user.userId, (err, response) => {
+                            if (response) {
+                                listItems.push({
+                                    text: 'Send Direct Message'
+                                });
+                            }
+                            Members.ContinueDrawer(user, listItems)
+                        })
+                    } else {
+                        Members.ContinueDrawer(user, listItems)
+                    }
+
                 })
             }
 
+            Members.ContinueDrawer = function (user, listItems) {
+                if (listItems.length == 0) return;
+                Buildfire.components.drawer.open({
+                    enableFilter: false,
+                    listItems: listItems
+                }, (err, result) => {
+                    if (err) return console.error(err);
+                    else if (result.text == "See Profile") buildfire.auth.openProfile(user.userId);
+                    else if (result.text == "Send Direct Message") Members.openPrivateChat(user);
+                    else if (result.text == "Unfollow") Follows.unfollowUser(user.userId, (err, r) => err ? console.log(err) : console.log(r));
+                    else if (result.text == "Follow") Follows.followUser(user.userId, (err, r) => err ? console.log(err) : console.log(r));
+                    buildfire.components.drawer.closeDrawer();
+                });
+            }
 
-            Members.navigateToPrivateChat = function(user) {
+
+            Members.navigateToPrivateChat = function (user) {
                 Members.SocialItems.isPrivateChat = true;
                 Members.SocialItems.items = [];
                 Members.SocialItems.wid = user.wid;
@@ -202,32 +250,30 @@
             }
 
             Members.openPrivateChat = function (user) {
-                console.log("openPrivateChat");
-                console.log(user);
-
-                if (Members.appSettings && Members.appSettings.disablePrivateChat) return;
                 Members.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (userData) {
                         let wid = null;
 
-                        if (Members.SocialItems.userDetails.userId && Members.SocialItems.userDetails.userId
-                            != user.userId) {
+                        if (Members.SocialItems.userDetails.userId && Members.SocialItems.userDetails.userId !=
+                            user.userId) {
                             if (Members.SocialItems.userDetails.userId > user.userId)
                                 wid = Members.SocialItems.userDetails.userId + user.userId;
                             else
                                 wid = user.userId + Members.SocialItems.userDetails.userId;
-                                console.log(wid)
 
-                               let userName = Members.SocialItems.getUserName(user.userDetails)
+                            let userName = Members.SocialItems.getUserName(user.userDetails)
 
                             SubscribedUsersData.getGroupFollowingStatus(user.userId, wid, Members.SocialItems.context.instanceId, function (err, status) {
                                 if (err) console.error('Error while getting initial group following status.', err);
-                                console.log(user, status)
                                 if (!status.length) {
                                     Members.followPrivateWall(user.userId, wid, userName);
                                 } else {
-                                    Members.navigateToPrivateChat({ id: user.userId, name: userName, wid: wid });
+                                    Members.navigateToPrivateChat({
+                                        id: user.userId,
+                                        name: userName,
+                                        wid: wid
+                                    });
                                 }
                             });
 

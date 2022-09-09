@@ -30,7 +30,9 @@
                             let selectedImage = e.detail.filter(image => image.selected);
                             if (selectedImage && selectedImage[0] && selectedImage[0].name)
                                 selectedImage[0].name = selectedImage[0].name;
-                            buildfire.imagePreviewer.show({ images: selectedImage });
+                            buildfire.imagePreviewer.show({
+                                images: selectedImage
+                            });
                         });
                     }, 0);
                 }
@@ -99,7 +101,9 @@
                             let selectedImage = e.detail.filter(image => image.selected);
                             if (selectedImage && selectedImage[0] && selectedImage[0].name)
                                 selectedImage[0].name = selectedImage[0].name;
-                            buildfire.imagePreviewer.show({ images: selectedImage });
+                            buildfire.imagePreviewer.show({
+                                images: selectedImage
+                            });
                         });
 
                     });
@@ -128,8 +132,7 @@
                                         Thread.followingStatus = true;
                                     else
                                         Thread.followingStatus = false;
-                                }
-                                else {
+                                } else {
                                     SubscribedUsersData.getGroupFollowingStatus(userData._id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                                         if (err) console.error('Error while getting initial group following status.', err);
                                         if (status.length) {
@@ -172,7 +175,9 @@
             }
 
             Thread.followPrivateWall = function (userId, wid, userName = null) {
-                buildfire.auth.getUserProfile({ userId: userId }, (err, user) => {
+                buildfire.auth.getUserProfile({
+                    userId: userId
+                }, (err, user) => {
                     if (err || !user) return console.log('Error while saving subscribed user data.');
                     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     if (re.test(String(user.firstName).toLowerCase()))
@@ -193,7 +198,10 @@
                         wallId: wid,
                         posts: [],
                         _buildfire: {
-                            index: { text: userId + '-' + wid, string1: wid }
+                            index: {
+                                text: userId + '-' + wid,
+                                string1: wid
+                            }
                         }
                     };
                     userName = Thread.SocialItems.getUserName(params.userDetails)
@@ -201,32 +209,57 @@
                     SubscribedUsersData.save(params, function (err) {
                         if (err) console.log('Error while saving subscribed user data.');
                         if (userName)
-                            Thread.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                            Thread.navigateToPrivateChat({
+                                id: userId,
+                                name: userName,
+                                wid: wid
+                            });
                     });
                 })
             }
 
-            Thread.openBottomDrawer = function(userId){
-                Follows.isFollowingUser(userId  , (err , r) =>{
+            Thread.openBottomDrawer = function (userId) {
+                Follows.isFollowingUser(userId, (err, r) => {
                     let listItems = [];
-                    if(Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true) listItems.push({text:'See Profile'});
-                    if((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
-                    if(Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({text: r ? 'Unfollow' : 'Follow'});
-                    if(listItems.length == 0) return;
-                    Buildfire.components.drawer.open(
-                        {
-                            enableFilter:false,
-                            listItems: listItems
-                        },(err, result) => {
-                            if (err) return console.error(err);
-                            else if(result.text == "See Profile") buildfire.auth.openProfile(user.userId );
-                            else if(result.text == "Send Direct Message") Members.openPrivateChat(user );
-                            else if(result.text == "Unfollow") Follows.unfollowUser(user.userId ,(err, r) => err ? console.log(err) : console.log(r));
-                            else if(result.text == "Follow") Follows.followUser(user.userId ,(err, r) => err ? console.log(err) : console.log(r));
-                            buildfire.components.drawer.closeDrawer();
-                        }
-                    );
+                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true) listItems.push({
+                        text: 'See Profile'
+                    });
+                    if ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat) || Thread.SocialItems.appSettings.allowChat == "allUsers")
+                        listItems.push({
+                            text: 'Send Direct Message'
+                        });
+                    if (Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({
+                        text: r ? 'Unfollow' : 'Follow'
+                    });
+
+                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers") {
+                        SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
+                            if (response) {
+                                listItems.push({
+                                    text: 'Send Direct Message'
+                                });
+                            }
+                            Thread.ContinueDrawer(userId, listItems)
+                        })
+                    } else {
+                        Thread.ContinueDrawer(userId, listItems)
+                    }
                 })
+            }
+
+            Thread.ContinueDrawer = function (userId, listItems) {
+                if (listItems.length == 0) return;
+                Buildfire.components.drawer.open({
+                    enableFilter: false,
+                    listItems: listItems
+                }, (err, result) => {
+                    if (err) return console.error(err);
+                    else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
+                    else if (result.text == "Send Direct Message") Thread.openChat(userId);
+                    else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
+                    else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
+                    buildfire.components.drawer.closeDrawer();
+                });
             }
 
 
@@ -235,13 +268,30 @@
                     Thread.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
                         if (userId === Thread.SocialItems.userDetails.userId) return;
-                        buildfire.auth.getUserProfile({ userId: userId }, function (err, otherUser) {
+                        buildfire.auth.getUserProfile({
+                            userId: userId
+                        }, function (err, otherUser) {
                             if (err || !otherUser) return console.error("Getting user profile failed.", err);
                             Thread.openPrivateChat(userId, Thread.SocialItems.getUserName(otherUser));
                         });
                     });
                 }
             };
+
+            Thread.openChat = function (userId) {
+                Thread.SocialItems.authenticateUser(null, (err, user) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (user) {
+                        buildfire.auth.getUserProfile({
+                            userId: userId
+                        }, function (err, user) {
+                            if (err || !user) return console.error("Getting user profile failed.", err);
+                            if (userId === Thread.SocialItems.userDetails.userId) return;
+                            Thread.openPrivateChat(userId, Thread.SocialItems.getUserName(user));
+                        });
+                    }
+                });
+            }
 
             Thread.openPrivateChat = function (userId, userName) {
                 let wid = null;
@@ -254,11 +304,14 @@
                 }
                 SubscribedUsersData.getGroupFollowingStatus(userId, wid, Thread.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.error('Error while getting initial group following status.', err);
-                    console.log(status)
                     if (!status.length) {
                         Thread.followPrivateWall(userId, wid, userName);
                     } else {
-                        Thread.navigateToPrivateChat({ id: userId, name: userName, wid: wid });
+                        Thread.navigateToPrivateChat({
+                            id: userId,
+                            name: userName,
+                            wid: wid
+                        });
                     }
                 });
             }
@@ -277,18 +330,18 @@
                             'socialItemUserId': Thread.SocialItems.userDetails.userId,
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
-                            if(data === Thread.SocialItems.languages.reportPost) {
-                                SocialDataStore.reportPost({
-                                    reportedAt: new Date(),
-                                    reporter: Thread.SocialItems.userDetails.email,
-                                    reported: Thread.post.userDetails.email,
-                                    reportedUserID: Thread.post.userId,
-                                    text: Thread.post.text,
-                                    postId: Thread.post.id,
-                                    wid: Thread.SocialItems.wid
-                                });
-                            }
-                        },
+                                if (data === Thread.SocialItems.languages.reportPost) {
+                                    SocialDataStore.reportPost({
+                                        reportedAt: new Date(),
+                                        reporter: Thread.SocialItems.userDetails.email,
+                                        reported: Thread.post.userDetails.email,
+                                        reportedUserID: Thread.post.userId,
+                                        text: Thread.post.text,
+                                        postId: Thread.post.id,
+                                        wid: Thread.SocialItems.wid
+                                    });
+                                }
+                            },
                             function (err) {
                                 console.log('Error in Error handler--------------------------', err);
                             });
@@ -308,8 +361,8 @@
                             'commentId': commentId,
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
-                            console.log('Data in Successs------------------data');
-                        },
+                                console.log('Data in Successs------------------data');
+                            },
                             function (err) {
                                 console.log('Error in Error handler--------------------------', err);
                             });
@@ -364,8 +417,7 @@
                                 'id': post.id,
                                 'userId': Thread.SocialItems.userDetails.userId
                             });
-                        }
-                        else {
+                        } else {
                             post.likes.push(Thread.SocialItems.userDetails.userId);
                             post.isUserLikeActive = true;
                             Buildfire.messaging.sendMessageToControl({
@@ -392,8 +444,7 @@
                         if (liked !== undefined) {
                             comment.likes.splice(index, 1)
                             comment.isUserLikeActive = false;
-                        }
-                        else {
+                        } else {
                             comment.likes.push(Thread.SocialItems.userDetails.userId);
                             comment.isUserLikeActive = true;
                             Buildfire.messaging.sendMessageToControl({
@@ -423,7 +474,9 @@
                     instanceId: Thread.SocialItems.context.instanceId,
                     post: Thread.post.id,
                     _buildfire: {
-                        index: { text: Thread.SocialItems.userDetails.userId + '-' + Thread.SocialItems.wid }
+                        index: {
+                            text: Thread.SocialItems.userDetails.userId + '-' + Thread.SocialItems.wid
+                        }
                     }
                 };
                 if (Thread.followingStatus) {
@@ -514,6 +567,7 @@
                     if (gif && $scope.Thread.images && $scope.Thread.images.push) {
                         $scope.Thread.images.push(gif);
                     }
+
                     function getGifUrl(gifs) {
                         if (gifs["0"] && gifs["0"].images.downsided_medium && gifs["0"].images.downsided_medium.url) {
                             return gifs["0"].images.downsided_medium.url;
@@ -533,8 +587,13 @@
                             "saveText": Thread.SocialItems.languages.confirmPost.length > 9 ? Thread.SocialItems.languages.confirmPost.substring(0, 9) : Thread.SocialItems.languages.confirmPost,
                             "cancelText": Thread.SocialItems.languages.cancelPost.length > 9 ? Thread.SocialItems.languages.cancelPost.substring(0, 9) : Thread.SocialItems.languages.cancelPost,
                             "attachments": {
-                                "images": { enable: true, multiple: true },
-                                "gifs": { enable: true }
+                                "images": {
+                                    enable: true,
+                                    multiple: true
+                                },
+                                "gifs": {
+                                    enable: true
+                                }
                             }
                         }, (err, data) => {
                             if (err) return console.error("Something went wrong.", err);
@@ -562,7 +621,10 @@
                 var success = function (response) {
                     console.log('inside success of delete post', response);
                     if (response.data.result) {
-                        Buildfire.messaging.sendMessageToControl({ 'name': EVENTS.POST_DELETED, 'id': postId });
+                        Buildfire.messaging.sendMessageToControl({
+                            'name': EVENTS.POST_DELETED,
+                            'id': postId
+                        });
                         console.log('post successfully deleted');
                         let postToDelete = Thread.SocialItems.items.find(element => element.id === postId)
                         let index = Thread.SocialItems.items.indexOf(postToDelete);
@@ -619,7 +681,7 @@
                             if (Thread.modalPopupThreadId == event._id)
                                 Modals.close('Comment already deleted');
                             break;
-                            case "ASK_FOR_WALLID": 
+                        case "ASK_FOR_WALLID":
                             window.buildfire.messaging.sendMessageToControl({
                                 name: 'SEND_WALLID',
                                 wid: Thread.SocialItems.wid,
@@ -637,6 +699,7 @@
                 else if (response.tag === "Social") {
                     Thread.SocialItems.appSettings.allowSideThreadTags = response.data.appSettings.allowSideThreadTags;
                     Thread.SocialItems.appSettings.sideThreadUserTags = response.data.appSettings.sideThreadUserTags;
+                    Thread.SocialItems.appSettings.allowChat = response.data.appSettings.allowChat;
                     Thread.showHideCommentBox();
                     $scope.$digest();
                 }
@@ -672,7 +735,10 @@
              * Unbind the onRefresh
              */
             $scope.$on('$destroy', function () {
-                $rootScope.$broadcast('ROUTE_CHANGED', { _id: Thread.post.id, isUserLikeActive: Thread.post.isUserLikeActive });
+                $rootScope.$broadcast('ROUTE_CHANGED', {
+                    _id: Thread.post.id,
+                    isUserLikeActive: Thread.post.isUserLikeActive
+                });
                 onRefresh.clear();
                 Buildfire.datastore.onRefresh(function () {
                     Location.goToHome();
