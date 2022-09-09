@@ -426,17 +426,16 @@
                         WidgetWall.followLeaveGroupPermission();
                         WidgetWall.setAppTheme();
                         WidgetWall.getPosts();
-                        if (!WidgetWall.SocialItems.appSettings.preLoginPreview) {
-                            WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
-                                if (err) return console.error("Getting user failed.", err);
-                                if (user) {
-                                    WidgetWall.checkFollowingStatus(user);
-                                    WidgetWall.checkForPrivateChat();
-                                } else {
-                                    WidgetWall.groupFollowingStatus = false;
-                                }
-                            });
-                        }
+                        WidgetWall.SocialItems.authenticateUserWOLogin(null, (err, user) => {
+                            if (err) return console.error("Getting user failed.", err);
+                            if (user) {
+                                console.log(user)
+                                WidgetWall.checkFollowingStatus(user);
+                                WidgetWall.checkForPrivateChat();
+                            } else {
+                                WidgetWall.groupFollowingStatus = false;
+                            }
+                        });
                     }
                 });
             };

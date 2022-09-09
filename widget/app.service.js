@@ -537,6 +537,39 @@
                 });
             }
 
+            
+            SocialItems.prototype.authenticateUserWOLogin = function (loggedUser, callback) {
+                function prepareData(user) {
+                    _this.userDetails = {
+                        userToken: user.userToken,
+                        userId: user._id,
+                        email: user.email,
+                        firstName: user.firstName ? user.firstName : "",
+                        lastName: user.lastName ? user.lastName : "",
+                        displayName: user.displayName ? user.displayName : "",
+                        imageUrl: user.imageUrl,
+                        userTags: user.tags ? user.tags : {}
+                    }
+                    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    if (re.test(String(user.firstName).toLowerCase()))
+                        _this.userDetails.firstName = 'Someone';
+                    if (re.test(String(user.displayName).toLowerCase()))
+                        _this.userDetails.displayName = 'Someone';
+                }
+                if (loggedUser) {
+                    prepareData(loggedUser);
+                    return callback(null, loggedUser);
+                } else buildfire.auth.getCurrentUser((err, user) => {
+                    if (err) return callback(err, null);
+                    if (user) {
+                        prepareData(user);
+                        return callback(null, user);
+                    } else {
+                        callback(null, null);
+                    }
+                });
+            }
+
             SocialItems.prototype.getPosts = function (callback) {
                 let pageSize = _this.pageSize,
                     page = _this.page;
