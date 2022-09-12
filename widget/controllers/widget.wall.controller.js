@@ -429,7 +429,6 @@
                         WidgetWall.SocialItems.authenticateUserWOLogin(null, (err, user) => {
                             if (err) return console.error("Getting user failed.", err);
                             if (user) {
-                                console.log(user)
                                 WidgetWall.checkFollowingStatus(user);
                                 WidgetWall.checkForPrivateChat();
                             } else {
