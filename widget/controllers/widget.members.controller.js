@@ -190,6 +190,7 @@
             }
 
             Members.openBottomDrawer = function (user) {
+                $scope.notYou = false;
                 Follows.isFollowingUser(user.userId, (err, r) => {
                     let listItems = [];
                     if (Members.appSettings && Members.appSettings.seeProfile == true) listItems.push({
@@ -209,6 +210,8 @@
                                 listItems.push({
                                     text: 'Send Direct Message'
                                 });
+                            } else {
+                                $scope.notYou = true;
                             }
                             Members.ContinueDrawer(user, listItems)
                         })
@@ -220,6 +223,13 @@
             }
 
             Members.ContinueDrawer = function (user, listItems) {
+                if ($scope.notYou) {
+                    const options = {
+                        text: Members.SocialItems.languages.specificChat
+                    };
+                    buildfire.components.toast.showToastMessage(options, () => {});
+                    return;
+                }
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({
                     enableFilter: false,

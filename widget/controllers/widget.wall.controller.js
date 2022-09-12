@@ -353,6 +353,7 @@
 
 
             WidgetWall.openBottomDrawer = function (userId) {
+                $scope.notYou = false;
                 Follows.isFollowingUser(userId, (err, r) => {
                     let listItems = [];
                     if (WidgetWall.SocialItems.appSettings.seeProfile)
@@ -374,6 +375,8 @@
                                 listItems.push({
                                     text: 'Send Direct Message'
                                 });
+                            } else {
+                                $scope.notYou = true;
                             }
                             WidgetWall.ContinueDrawer(userId, listItems)
                         })
@@ -384,6 +387,13 @@
             }
 
             WidgetWall.ContinueDrawer = function (userId, listItems) {
+                if ($scope.notYou) {
+                    const options = {
+                        text: WidgetWall.SocialItems.languages.specificChat
+                    };
+                    buildfire.components.toast.showToastMessage(options, () => {});
+                    return;
+                }
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({
                     enableFilter: false,
