@@ -703,7 +703,6 @@
             };
             // On Login
             Buildfire.datastore.onUpdate(function (response) {
-                console.log('----------- on Update Side Thread ----', response);
                 if (response.tag === "languages")
                     Thread.SocialItems.formatLanguages(response);
                 else if (response.tag === "Social") {

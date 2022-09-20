@@ -582,6 +582,34 @@
                 WidgetWall.init();
             });
 
+            $rootScope.$on('$locationChangeSuccess', function () {
+                $rootScope.actualLocation = $location.path();
+                if ($rootScope.actualLocation == "/") {
+                    WidgetWall.SocialItems.getSettings((err, result) => {
+                        if (err) return console.error("Fetching settings failed.", err);
+                        if (result) {
+                            WidgetWall.SocialItems.appSettings = result.data && result.data.appSettings ? result.data.appSettings : {};
+                
+                            Buildfire.datastore.onUpdate(function (response) {
+                                if (response.tag === "Social") {
+                                    WidgetWall.setSettings(response);
+                                    setTimeout(function () {
+                                        if (!response.data.appSettings.disableFollowLeaveGroup) {
+                                            let wallSVG = document.getElementById("WidgetWallSvg")
+                                            if (wallSVG) {
+                                                wallSVG.style.setProperty("fill", WidgetWall.appTheme.icons, "important");
+                                            }
+                                        }
+                                    }, 100);
+                                } else if (response.tag === "languages")
+                                    WidgetWall.SocialItems.formatLanguages(response);
+                                $scope.$digest();
+                            });
+                        }
+                    });
+                }
+            });
+
             $rootScope.$on('navigatedBack', function (event, error) {
                 WidgetWall.SocialItems.items = [];
                 WidgetWall.SocialItems.isPrivateChat = false;
@@ -1242,6 +1270,7 @@
             };
 
             Buildfire.datastore.onUpdate(function (response) {
+                console.log(response)
                 if (response.tag === "Social") {
                     WidgetWall.setSettings(response);
                     setTimeout(function () {
