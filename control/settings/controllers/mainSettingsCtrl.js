@@ -45,12 +45,16 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                             result.data.appSettings.allowAutoSubscribe = true;
                         }
                         if (typeof (result.data.appSettings.allowChat) == 'undefined') {
-                            result.data.appSettings.allowChat = "allUsers";
+                            if (result.data.appSettings.disablePrivateChat && result.data.appSettings.disablePrivateChat == true) {
+                                result.data.appSettings.allowChat = "noUsers";
+                            } else
+                                result.data.appSettings.allowChat = "allUsers";
                         }
                     } else if (!result.data.appSettings) {
                         result.data.appSettings = {};
                         result.data.appSettings.showMembers = true;
                         result.data.appSettings.allowAutoSubscribe = true;
+                        result.data.appSettings.allowChat = "allUsers";
                     }
                     $scope.data = result.data.appSettings;
 

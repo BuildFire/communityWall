@@ -196,7 +196,12 @@
                     if (Members.appSettings && Members.appSettings.seeProfile == true) listItems.push({
                         text: 'See Profile'
                     });
-                    if ((Members.appSettings && !Members.appSettings.allowChat) || Members.appSettings.allowChat == "allUsers")
+                    if (Members.appSettings && !Members.appSettings.allowChat) {
+                        if ((Members.appSettings && !Members.appSettings.disablePrivateChat) || Members.appSettings.disablePrivateChat == false) listItems.push({
+                            text: 'Send Direct Message'
+                        });
+                    }
+                    if (Members.appSettings && Members.appSettings.allowChat == "allUsers")
                         listItems.push({
                             text: 'Send Direct Message'
                         });

@@ -225,7 +225,12 @@
                     if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true) listItems.push({
                         text: 'See Profile'
                     });
-                    if ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat) || Thread.SocialItems.appSettings.allowChat == "allUsers")
+                    if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat) {
+                        if ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({
+                            text: 'Send Direct Message'
+                        });
+                    }
+                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers")
                         listItems.push({
                             text: 'Send Direct Message'
                         });

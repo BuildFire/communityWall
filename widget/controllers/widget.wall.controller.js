@@ -364,7 +364,12 @@
                         listItems.push({
                             text: r ? 'Unfollow' : 'Follow'
                         });
-                    if ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat) || WidgetWall.SocialItems.appSettings.allowChat == "allUsers")
+
+                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat){
+                        if((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
+                    }
+                    
+                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers")
                         listItems.push({
                             text: 'Send Direct Message'
                         });
