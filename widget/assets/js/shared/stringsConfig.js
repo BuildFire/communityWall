@@ -16,7 +16,7 @@ const stringsConfig = {
 				, defaultValue: "Join Group"
 			},			
 			specificChat: {
-				title: "User can't chat"
+				title: "Restricted Chat"
 				, placeholder: 'Direct message is only set for specific users!'
 				, maxLength: 100
 				, defaultValue: 'Direct message is only set for specific users!'

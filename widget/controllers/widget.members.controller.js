@@ -132,12 +132,9 @@
 
             Buildfire.datastore.onUpdate(function (response) {
                 if (response.tag === "languages") {
-                    let languages = {};
-                    Object.keys(response.data.screenOne).forEach(e => {
-                        response.data.screenOne[e].value ? languages[e] = response.data.screenOne[e].value : languages[e] = response.data.screenOne[e].defaultValue;
-                    });
-                    Members.languages = languages;
-                    Members.noResultsText = languages.membersBlankState;
+                    Members.SocialItems.formatLanguages(response);
+                    Members.languages = Members.SocialItems.languages;
+                    Members.noResultsText = Members.SocialItems.languages.membersBlankState;
                     $scope.$digest();
                 } else if (response.tag === "Social") {
                     Members.appSettings = response.data.appSettings;
@@ -229,11 +226,13 @@
 
             Members.ContinueDrawer = function (user, listItems) {
                 if ($scope.notYou) {
-                    const options = {
-                        text: Members.SocialItems.languages.specificChat
-                    };
-                    buildfire.components.toast.showToastMessage(options, () => {});
-                    return;
+                    if (Members.SocialItems.languages.specificChat && Members.SocialItems.languages.specificChat != "") {
+                        const options = {
+                            text: Members.SocialItems.languages.specificChat
+                        };
+                        buildfire.components.toast.showToastMessage(options, () => {});
+                        return;
+                    }
                 }
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({

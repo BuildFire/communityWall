@@ -365,10 +365,12 @@
                             text: r ? 'Unfollow' : 'Follow'
                         });
 
-                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat){
-                        if((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false) listItems.push({text:'Send Direct Message'});
+                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat) {
+                        if ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false) listItems.push({
+                            text: 'Send Direct Message'
+                        });
                     }
-                    
+
                     if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers")
                         listItems.push({
                             text: 'Send Direct Message'
@@ -393,11 +395,13 @@
 
             WidgetWall.ContinueDrawer = function (userId, listItems) {
                 if ($scope.notYou) {
-                    const options = {
-                        text: WidgetWall.SocialItems.languages.specificChat
-                    };
-                    buildfire.components.toast.showToastMessage(options, () => {});
-                    return;
+                    if (WidgetWall.SocialItems.languages.specificChat && WidgetWall.SocialItems.languages.specificChat != "") {
+                        const options = {
+                            text: WidgetWall.SocialItems.languages.specificChat
+                        };
+                        buildfire.components.toast.showToastMessage(options, () => {});
+                        return;
+                    }
                 }
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({
@@ -594,7 +598,7 @@
                         if (err) return console.error("Fetching settings failed.", err);
                         if (result) {
                             WidgetWall.SocialItems.appSettings = result.data && result.data.appSettings ? result.data.appSettings : {};
-                
+
                             Buildfire.datastore.onUpdate(function (response) {
                                 if (response.tag === "Social") {
                                     WidgetWall.setSettings(response);

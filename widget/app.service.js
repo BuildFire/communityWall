@@ -537,7 +537,7 @@
                 });
             }
 
-            
+
             SocialItems.prototype.authenticateUserWOLogin = function (loggedUser, callback) {
                 function prepareData(user) {
                     _this.userDetails = {
@@ -704,7 +704,10 @@
                     else
                         strings = Object.assign({}, stringsConfig.mainWall.labels, stringsConfig.sideThread.labels, stringsConfig.members.labels, stringsConfig.input.labels, stringsConfig.modal.labels);
                     Object.keys(strings).forEach(e => {
-                        strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
+                        if (e == "specificChat" && strings[e].value == "")
+                            _this.languages[e] = strings[e].value
+                        else
+                            strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
                     });
                 }
                 $rootScope.$digest();

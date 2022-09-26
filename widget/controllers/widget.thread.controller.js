@@ -257,11 +257,13 @@
 
             Thread.ContinueDrawer = function (userId, listItems) {
                 if ($scope.notYou) {
-                    const options = {
-                        text: Thread.SocialItems.languages.specificChat
-                    };
-                    buildfire.components.toast.showToastMessage(options, () => {});
-                    return;
+                    if (Thread.SocialItems.languages.specificChat && Thread.SocialItems.languages.specificChat != "") {
+                        const options = {
+                            text: Thread.SocialItems.languages.specificChat
+                        };
+                        buildfire.components.toast.showToastMessage(options, () => {});
+                        return;
+                    }
                 }
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({
