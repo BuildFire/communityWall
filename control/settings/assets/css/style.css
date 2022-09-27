@@ -312,3 +312,7 @@ tags-input > div > div > input {
 .imgBorder {
   border-radius: 1.25rem;
 }
+
+.label2 {
+  margin-bottom: 1.25rem !important;
+}
