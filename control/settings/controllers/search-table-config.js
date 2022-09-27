@@ -11,7 +11,7 @@ const searchTableConfig = {
     },
     {
       header: "First Name",
-      data: "${data.userDetails.displayName}",
+      data: "${data.userDetails.displayName ? data.userDetails.displayName : (data.userDetails.firstName + ' ' + data.userDetails.lastName)}",
       type: "string",
       width: "162px",
     }

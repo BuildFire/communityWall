@@ -259,8 +259,7 @@ class SearchTableHelper {
         btn.onclick = () => {
           buildfire.dialog.confirm({
               title: "Remove User",
-              message: "Are you sure you want to remove chat availability for " + obj.data.userDetails.firstName +
-                " " + obj.data.userDetails.lastName + " ?",
+              message: "Are you sure you want to remove chat availability for " + (obj.data.userDetails.displayName ? obj.data.userDetails.displayName : (obj.data.userDetails.firstName + ' ' + obj.data.userDetails.lastName)) + " ?",
               confirmButton: {
                 text: "Remove User",
                 type: "warning",
