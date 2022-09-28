@@ -63,7 +63,8 @@ class Posts{
             post = Posts.createPost(post, currentUser);
             buildfire.appData.insert(post, Posts.TAG, (err, rPost) =>{
                 if(err || !rPost) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"});
-                callback(null, rPost)
+                Analytics.trackAction("post-added");
+                callback(null, rPost);
             })
         });
     }
@@ -74,6 +75,7 @@ class Posts{
         
         buildfire.appData.insert(post, Posts.TAG, (err, rPost) =>{
             if(err || !rPost) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"});
+            Analytics.trackAction("post-added");
             callback(null, rPost)
         })
     }
@@ -83,7 +85,10 @@ class Posts{
             if(err) return callback({code: errorsList.ERROR_404,message:"Couldn't find post with this ID"});
             buildfire.appData.delete(id, Posts.TAG, (err, r) =>{
                 if(err || !r) return callback({code: errorsList.ERROR_404,message:"Couldn't find post with this ID"});
-                else return callback(null,"Deleted successfully")
+                else {
+                    Analytics.trackAction("post-deleted");
+                    return callback(null,"Deleted successfully")
+                }
             })
         })
     }
@@ -97,6 +102,7 @@ class Posts{
                 else if(r.data.userId != currentUser._id) return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
                 buildfire.appData.delete(id, Posts.TAG, (err, r) =>{
                     if(err) return console.error(err);
+                    Analytics.trackAction("post-deleted");
                     callback(r);
                 })
             })
@@ -113,6 +119,7 @@ class Posts{
                     if(p.data.userId != currentUser._id && buildfire.getContext().type !== 'control') return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
                     buildfire.appData.delete(p.id, Posts.TAG, (err, r) =>{
                         if(err) return console.error(err);
+                        Analytics.trackAction("post-added");
                         callback(r);
                     })
 
@@ -186,6 +193,7 @@ class Posts{
                 else {
                     buildfire.appData.update( id, {...r.data , postText : post?.postText || "", postImages : post?.postImages || [] , isPublic : post?.isPublic || false}, Posts.TAG, (e , r) => {
                         if(e) return callback({code:errorsList.ERROR_400,message:e});
+                        Analytics.trackAction("post-updated");
                         callback(null , r);
                         // buildfire.analytics.trackAction(analyticKeys.POST_postD.key);
                     });
@@ -229,6 +237,7 @@ class Posts{
             else {
                 buildfire.appData.update( id, {...r.data , postText : post.postText, displayName: post.postTitle}, Posts.TAG, (e , r) => {
                     if(e) return callback({code:errorsList.ERROR_400,message:e});
+                    Analytics.trackAction("post-updated");
                     callback(null , r);
                     // buildfire.analytics.trackAction(analyticKeys.POST_postD.key);
                 });
