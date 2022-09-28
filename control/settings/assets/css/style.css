@@ -258,7 +258,61 @@ tags-input > div > div > input {
   opacity: 0.9;
 }
 
+.customTooltipText2 {
+  visibility: hidden;
+  width: 300px;
+  background-color: #414547;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 50%;
+  transform: translate(10px, 50%);
+  right: 200%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.customTooltipBox:hover .customTooltipText2 {
+  visibility: visible;
+  opacity: 0.9;
+}
+
 .pull-right {
-    float: right !important;
-    width: fit-content !important;
+  float: right !important;
+  width: fit-content !important;
+}
+
+.radio-inline + .radio-inline,
+.checkbox-inline + .checkbox-inline {
+  margin-top: 0;
+  margin-left: 0px !important;
+}
+
+.tableDiv {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 13.5rem;
+}
+
+.headerPadding {
+  padding: 0.5rem;
+}
+
+.biggerIcon {
+  font-size: 20px;
+}
+
+.customWidth {
+  min-width: 0 !important;
+}
+
+.imgBorder {
+  border-radius: 1.25rem;
+}
+
+.label2 {
+  margin-bottom: 1.25rem !important;
 }

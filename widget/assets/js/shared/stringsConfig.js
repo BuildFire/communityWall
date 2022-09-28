@@ -14,7 +14,13 @@ const stringsConfig = {
 				, placeholder: "Join Group"
 				, maxLength: 30
 				, defaultValue: "Join Group"
-			},
+			},			
+			specificChat: {
+				title: "Restricted Chat"
+				, placeholder: 'Direct message is only set for specific users!'
+				, maxLength: 100
+				, defaultValue: 'Direct message is only set for specific users!'
+			}
 		}
 	},
 	sideThread: {
