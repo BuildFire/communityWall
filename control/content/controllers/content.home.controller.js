@@ -614,6 +614,18 @@
                             buildfire.datastore.save({ appSettings: appSettings }, "Social", console.log)
                         }, 700);
                     });
+                    ed.on('change', (e) => {
+                        clearTimeout(updateDelay);
+                        updateDelay = setTimeout(() => {
+                            if(ContentHome.appSettings){
+                                appSettings = ContentHome.appSettings.appSettings ? ContentHome.appSettings.appSettings : {};
+                            }else{
+                                appSettings = {};
+                            }
+                            appSettings.pinnedPost = ed.getContent();
+                            buildfire.datastore.save({ appSettings: appSettings }, "Social", console.log)
+                        }, 700);
+                    });
                 }
             });
 
