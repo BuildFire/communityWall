@@ -286,11 +286,11 @@
                 };
 
                 if (text === 'post')
-                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + decodeURIComponent(WidgetWall.SocialItems.context.title);
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + WidgetWall.SocialItems.context.title;
                 else if (text === 'like')
-                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + decodeURIComponent(WidgetWall.SocialItems.context.title);
+                    options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
 
-                options.inAppMessage = decodeURIComponent(options.text);
+                options.inAppMessage = options.text;
                 options.queryString = `wid=${WidgetWall.SocialItems.wid}`
 
                 if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
