@@ -161,20 +161,21 @@
                             WidgetWall.loading = false;
                             return WidgetWall.followWall();
                         }
-                        if (status.length && !status[0].data.leftWall) {
-                            buildfire.notifications.pushNotification.subscribe({
-                                groupName: WidgetWall.SocialItems.wid === '' ?
-                                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                            }, () => {});
-                            WidgetWall.groupFollowingStatus = true;
-                        } else {
-                            if (status[0].data.banned) {
-                                WidgetWall.SocialItems.userBanned = true;
-                                WidgetWall.allowFollowLeaveGroup = false;
-                                WidgetWall.allowCreateThread = false;
-                                WidgetWall.SocialItems.appSettings.showMembers = false;
+                        if(status.length){
+                            if (!status[0].data.leftWall) {
+                                buildfire.notifications.pushNotification.subscribe({
+                                    groupName: WidgetWall.SocialItems.wid === '' ?
+                                        WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                                }, () => {});
+                                WidgetWall.groupFollowingStatus = true;
+                            } else if(status[0].data.banned){
+                              
+                                    WidgetWall.SocialItems.userBanned = true;
+                                    WidgetWall.allowFollowLeaveGroup = false;
+                                    WidgetWall.allowCreateThread = false;
+                                    WidgetWall.SocialItems.appSettings.showMembers = false;
+                                    WidgetWall.groupFollowingStatus = false;
                             }
-                            WidgetWall.groupFollowingStatus = false;
                         }
                         WidgetWall.showHideCommentBox();
                         if (user) WidgetWall.statusCheck(status, user);
