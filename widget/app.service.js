@@ -271,6 +271,8 @@
                             let exists = data.posts.find(x => x === threadId);
                             if (exists) cb(null, data);
                             else cb(null, null);
+                        } else {
+                            cb(null, null);
                         }
                     });
                 },
