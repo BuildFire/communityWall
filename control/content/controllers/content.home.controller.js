@@ -90,7 +90,8 @@
 								if (result1.totalRecord > 0 || result2.totalRecord > 0) {
 									PerfomanceIndexingService.showIndexingDialog();
 
-								} else if (socialData && !socialData?.appSettings?.indexingUpdateDone) {
+								} // initial run or there is no data / no need for indexing fix it will take the updated index.
+								else if (socialData && !socialData?.appSettings?.indexingUpdateDone) {
 									if (!socialData.appSettings) {
 										socialData.appSettings = {
 											indexingUpdateDone: true
