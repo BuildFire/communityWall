@@ -48,7 +48,6 @@
   background-color: #f2f2f2;
 }
 html[buildfire] .d-item .btn-delete-icon:after{
-  /* content: "\e60e"; */
   font-family: "icomoon";
   font-size: 2rem;
   display: flex;
