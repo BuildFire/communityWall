@@ -77,14 +77,14 @@
 							buildfire.publicData.search({
 								recordCount: true,
 								filter: {
-									'_buildfire.index.array1.string1': { $exists: false }
+									'_buildfire.index.array1.string1': null
 								}
 							}, 'subscribedUsersData', (err, result1) => {
 								if (err) return console.error(err);
 								buildfire.publicData.search({
 									recordCount: true,
 									filter: {
-										'_buildfire.index.date1': { $exists: false }
+										'_buildfire.index.date1': null
 									}
 								}, 'posts', (err, result2) => {
 									if (err) return console.error(err);
