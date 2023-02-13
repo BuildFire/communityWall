@@ -72,25 +72,42 @@
                         } else {
 
                         }
-                        buildfire.publicData.search({
-                            recordCount: true,
-                            filter: {
-                                '_buildfire.index.array1.string1': { $exists: false }
-                            }
-                        }, 'subscribedUsersData', (err, result1) => {
-                            if (err) return console.error(err);
-                            buildfire.publicData.search({
-                                recordCount: true,
-                                filter: {
-                                    '_buildfire.index.date1': { $exists: false }
-                                }
-                            }, 'posts', (err, result2) => {
-                                if (err) return console.error(err);
-                                if (result1.totalRecord > 0 || result2.totalRecord > 0) {
-                                    PerfomanceIndexingService.showIndexingDialog();
-                                }
-                            });
-                        });
+						// Only if the data has not been updated yet will it proceed./ indexingUpdateDone = false
+						if(!data?.data?.appSettings?.indexingUpdateDone){
+							buildfire.publicData.search({
+								recordCount: true,
+								filter: {
+									'_buildfire.index.array1.string1': null
+								}
+							}, 'subscribedUsersData', (err, result1) => {
+								if (err) return console.error(err);
+								buildfire.publicData.search({
+									recordCount: true,
+									filter: {
+										'_buildfire.index.date1': null
+									}
+								}, 'posts', (err, result2) => {
+									if (err) return console.error(err);
+									if (result1.totalRecord > 0 || result2.totalRecord > 0) {
+										PerfomanceIndexingService.showIndexingDialog();
+	
+									} // initial run or there is no data / no need for indexing fix it will take the updated index.
+									else if (data.data) {
+										if (!data.data.appSettings) {
+											data.data.appSettings = {
+												indexingUpdateDone: true
+											}
+										}
+										else {
+											data.data.appSettings.indexingUpdateDone = true;
+										}
+										buildfire.datastore.save(data.data, 'Social', (err, data) => {
+											if (err) return console.error(err)
+										});
+									}
+								});
+							});
+						}
 
                         setTimeout(() => {
                             if (!ContentHome.posts.length)
