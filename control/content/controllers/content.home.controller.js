@@ -73,8 +73,8 @@
 
                         }
 						// Only if the data has not been updated yet will it proceed./ indexingUpdateDone = false
-						if(!data?.data?.appSettings?.indexingUpdateDone){
-							buildfire.publicData.search({
+						if (!(data && data.data && data.data.appSettings && data.data.appSettings.indexingUpdateDone)){
+								buildfire.publicData.search({
 								recordCount: true,
 								filter: {
 									'_buildfire.index.array1.string1': null
@@ -92,7 +92,7 @@
 										PerfomanceIndexingService.showIndexingDialog();
 	
 									} // initial run or there is no data / no need for indexing fix it will take the updated index.
-									else if (data.data) {
+									else if (data && data.data) {
 										if (!data.data.appSettings) {
 											data.data.appSettings = {
 												indexingUpdateDone: true
