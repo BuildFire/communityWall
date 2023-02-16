@@ -154,7 +154,7 @@
                                         class="post-text copy">
                                         <p class="cursor-pointer">
                                             <span
-                                                ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : WidgetWall.goInToThread(post.id)"
+                                                ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 ng-bind-html="(WidgetWall.util.injectAnchors(post.text) | limitTo : (post.limit || 150) :0) | newLine"></span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 class="ng-cloak">...</span>
