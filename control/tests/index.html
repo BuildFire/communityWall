@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../../../../scripts/buildfire.min.js"></script>
+
+  <!-- build:bundleSharedJSFiles  -->
+  <script src="../../widget/assets/js/shared/deletedUsersSync.js"></script>
+  <!-- endbuild -->
+  <!-- build:bundleJSFiles  -->
+  <script src="./index.js"></script>
+  <script src="../../tests/basic/deletedUsers.test.js"></script>
+  <script src="../../tests/helper.js"></script>
+  <script src="../../tests/setup.js"></script>
+  <!-- endbuild -->
+</head>
+
+<body>
+
+  <div id="tests" style="display: none">
+    <h3>Tests</h3>
+
+    <button type="button" class="btn btn-primary" id="runTestButton">Run Deleted Users Tests</button>
+    <br />
+    <br />
+    <ul className="list-group" id="resultHolder"></ul>
+  </div>
+
+  <div id="loading">Initializing Tests...</div>
+
+  <script type="module">
+    window.onload = () => {
+      buildfire.auth.getCurrentUser((err, user) => {
+        if (err) return console.error(err);
+        if (user && user._id) {
+          tests.style.display = 'block';
+          loading.style.display = 'none';
+        }
+      });
+    }
+
+    document.getElementById('runTestButton').addEventListener('click', () => {
+      runTests();
+    });
+
+  </script>
+</body>
+
+</html>

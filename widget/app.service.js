@@ -488,17 +488,17 @@
             SocialItems.prototype.getUserName = function (userDetails) {
                 let name = null;
                 const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if (userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase()) &&
+                if (userDetails && userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase()) &&
                     userDetails.displayName) {
                     name = userDetails.displayName;
-                } else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
+                } else if (userDetails && userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
                     userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
 
-                else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
+                else if (userDetails && userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
                     userDetails.firstName)
                     name = userDetails.firstName;
-                else if (userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase()) &&
+                else if (userDetails && userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase()) &&
                     userDetails.lastName)
                     name = userDetails.lastName;
                 else name = 'Someone';
@@ -593,7 +593,7 @@
                     if (error) return console.log(error);
 
                     if (data && data.result.length) {
-                        data.result.map(item => _this.items.push(item.data))
+                        data.result.map(item => _this.items.push({ ...item.data, id: item.id,}))
                         if (data.totalRecord > _this.items.length) {
                             _this.showMorePosts = true;
                             _this.page++;
@@ -602,8 +602,8 @@
                             name: 'SEND_POSTS_TO_CP',
                             posts: _this.items,
                         });
-                        if (page === 0) startBackgroundService();
-                        else clearInterval(_this.newPostTimerChecker);
+                       // if (page === 0) startBackgroundService();
+                       // else clearInterval(_this.newPostTimerChecker);
                         $rootScope.$digest();
                         callback(null, data);
                     } else {
@@ -611,7 +611,8 @@
                         $rootScope.$digest();
                         callback(null, _this.items = [])
                         //Checking if user comming from notification for thread comment.
-                        startBackgroundService();
+                        //startBackgroundService();
+                        
                         if (window.URLSearchParams && window.location.search) {
                             var queryParamsInstance = new URLSearchParams(window.location.search);
                             var postId = queryParamsInstance.get('threadPostUniqueLink');
@@ -662,7 +663,7 @@
                             if (data && data.length) {
                                 if (data[0].data.id === (_this.items.length && _this.items[0].id)) return;
                                 let items = [];
-                                data.map(item => items.push(item.data));
+                                data.map(item => items.push({...item.data, id: item.id}));
                                 _this.items = items;
                                 window.buildfire.messaging.sendMessageToControl({
                                     name: 'SEND_POSTS_TO_CP',

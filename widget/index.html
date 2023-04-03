@@ -2,7 +2,7 @@
 <html lang="en" ng-app="socialPluginWidget">
 
 <head>
-    <meta name="buildfire" content="disableFastClick,disableSelect">
+    <meta name="buildfire" content="disableFastClick,disableSelect,enablePluginJsonLoad">
     <!-- Plugin CSS -->
     
     <!-- build:bundleCSSFiles  -->
@@ -37,6 +37,7 @@
     <script src="controllers/widget.thread.controller.js"></script>
     <script src="controllers/widget.members.controller.js"></script>
     <script src="./assets/js/shared/stringsConfig.js"></script>
+    <script src="./assets/js/shared/deletedUsersSync.js"></script>
     <!-- endbuild -->
     <script>
         moment().format();
@@ -153,15 +154,19 @@
                                     <div ng-class="{'post-text-user': WidgetWall.SocialItems.userDetails.userId == post.userId}"
                                         class="post-text copy">
                                         <p class="cursor-pointer">
-                                            <span
+                                            <span ng-if="!post.deletedOn"
                                                 ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 ng-bind-html="(WidgetWall.util.injectAnchors(post.text) | limitTo : (post.limit || 150) :0) | newLine"></span>
+                                            <span  ng-if="post.deletedOn">
+                                                {{WidgetWall.SocialItems.languages.messageDeleted}}
+                                            </span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 class="ng-cloak">...</span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 ng-click="WidgetWall.seeMore(post)" class="text-info ng-cloak">Read
                                                 More</span>
-                                                <p ng-if="(post.text.trim().length>150 && post.seeMore)" class="text-info" ng-click="WidgetWall.seeLess(post)">Read Less</p>
+                                        <p ng-if="(post.text.trim().length>150 && post.seeMore)" class="text-info"
+                                            ng-click="WidgetWall.seeLess(post)">Read Less</p>
                                         </p>
                                     </div>
                                     <div class="plugin-banner">
@@ -174,10 +179,11 @@
                                     </div>
                                     <div ng-show="post.userId" class="footer clearfix">
                                         <div class="status">
-                                            <div class="status-footer">
-                                                <a class="social-icon ng-cloak"
-                                                ng-click="WidgetWall.likeThread(post)">
-                                                <i class="material-icons-outlined" ng-class="{notActive: !post.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                                            <div class="status-footer" ng-if="!post.deletedOn">
+                                                <a class="social-icon ng-cloak" ng-click="WidgetWall.likeThread(post)">
+                                                    <i class="material-icons-outlined"
+                                                        ng-class="{notActive: !post.isUserLikeActive }"
+                                                        aria-hidden="true">thumb_up_off_alt</i>
                                                 <span class="iconsTheme iconsFont"
                                                 ng-class="{notActive: !post.isUserLikeActive}">{{post.likes.length}}</span>
                                             </a>
