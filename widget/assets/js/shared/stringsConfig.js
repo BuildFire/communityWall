@@ -20,6 +20,12 @@ const stringsConfig = {
 				, placeholder: 'Direct message is only set for specific users!'
 				, maxLength: 100
 				, defaultValue: 'Direct message is only set for specific users!'
+			},
+			messageDeleted: {
+				title: "Message Deleted"
+				, placeholder: 'This message has been deleted.'
+				, maxLength: 100
+				, defaultValue: 'This message has been deleted.'
 			}
 		}
 	},

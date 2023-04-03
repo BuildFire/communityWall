@@ -184,10 +184,7 @@ button,
     justify-content: center;
     font-size: 0.875rem;
     line-height: 0.875rem;
-    background-color: inherit;
     border: 1px solid transparent;
-    padding: 1rem 1.5rem;
-    border-radius: 2.5rem;
     cursor: pointer;
     outline: 0;
     transition: opacity ease-in-out 0.1s, transform ease-in-out 0.1s;
@@ -677,6 +674,10 @@ button.btn--lg,
 .footer .icon {
     font-size:1.4rem;
     margin-right: .25rem;
+}
+
+.footer > .status {
+    height: 50px;
 }
 
 .social-item {
@@ -1416,12 +1417,12 @@ html[buildfire][safe-area="true"] body {
 
 .material-icons {
     font-family: "Material Icons" !important;
-    --webkit-font-feature-settings: "liga" !important;
+    -webkit-font-feature-settings: "liga" !important;
 }
 
 .material-icons-outlined {
     font-family: "Material Icons" !important;
-    --webkit-font-feature-settings: "liga" !important;
+    -webkit-font-feature-settings: "liga" !important;
     font-size: 28px;
 }
 

@@ -20,9 +20,20 @@ function releaseFolder() {
 }
 
 console.log(">> Building to ", destinationFolder);
+const widgetStyles = [
+	{ name: "widgetCSS", src: "widget/**/*.css", dest: "/widget" }
+];
+
+widgetStyles.forEach(function (task) {
+
+	gulp.task(task.name, function () {
+		return gulp.src(task.src, { base: '.' })
+			.pipe(concat('assets/css/style.css'))
+			.pipe(gulp.dest(destinationFolder + task.dest))
+	});
+});
 
 const cssTasks = [
-    { name: "widgetCSS", src: "widget/**/*.css", dest: "/widget" },
     { name: "controlContentCSS", src: "control/content/**/**/*.css", dest: "/control/content" },
     { name: "controlDesignCSS", src: "control/design/**/**/*.css", dest: "/control/design" },
     { name: "controlSettingsCSS", src: "control/settings/**/**/*.css", dest: "/control/settings" },
@@ -84,7 +95,7 @@ const jsTasks = [
     { name: "controlSettingsJS", src: "control/settings/**/**/*.js", dest: "/control/settings"},
     { name: "controlLanguagesJS", src: "control/languages/**/**/*.js", dest: "/control/languages" },
     { name: "controlReportsJS", src: "control/reports/**/**/*.js", dest: "/control/reports" },
-
+    { name: "controlTestsDataJS", src: ["control/tests/**/*.js", "tests/**/*.js"], dest: "/control/tests" },
 ];
 
 jsTasks.forEach(function (task) {
@@ -181,6 +192,8 @@ gulp.task('fonts', function () {
 });
 
 var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS", "fonts"];
+
+widgetStyles.forEach(function (task) { buildTasksToRun.push(task.name) });
 
 cssTasks.forEach(function (task) {
   buildTasksToRun.push(task.name);

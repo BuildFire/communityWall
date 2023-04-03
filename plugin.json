@@ -24,11 +24,24 @@
       {
         "title": "Languages",
         "url": "languages/index.html"
+      },
+      {
+        "title": "Tests",
+        "url": "/tests/index.html"
       }
-    ]
+    ],
+    "cssInjection": {
+      "enabled": true,
+      "layouts": [
+        {
+          "name": "Layout",
+          "imageUrl": "resources/layout.png",
+          "cssPath": "widget/assets/css/style.css"
+        }
+      ]
+    }
   },
-  "widget": {
-  },
+  "widget": {},
   "features": [],
   "languages": [
     "en"
