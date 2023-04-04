@@ -602,8 +602,8 @@
                             name: 'SEND_POSTS_TO_CP',
                             posts: _this.items,
                         });
-                       // if (page === 0) startBackgroundService();
-                       // else clearInterval(_this.newPostTimerChecker);
+                       if (page === 0) startBackgroundService();
+                       else clearInterval(_this.newPostTimerChecker);
                         $rootScope.$digest();
                         callback(null, data);
                     } else {
@@ -611,7 +611,7 @@
                         $rootScope.$digest();
                         callback(null, _this.items = [])
                         //Checking if user comming from notification for thread comment.
-                        //startBackgroundService();
+                        startBackgroundService();
                         
                         if (window.URLSearchParams && window.location.search) {
                             var queryParamsInstance = new URLSearchParams(window.location.search);
