@@ -1,3 +1,0 @@
-function runTests() {
-    DeletedUsersTest.run(() => { });
-}
