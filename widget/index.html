@@ -7,6 +7,8 @@
     
     <!-- build:bundleCSSFiles  -->
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../../../styles/components/skeleton.css" />
+
     <!-- endbuild -->
 
     <!-- JS -->
@@ -17,6 +19,8 @@
     <script src="../../../scripts/angular/angular-route.min.js"></script>
     <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
+    <script src="../../../scripts/buildfire/components/skeleton/skeleton.js"></script>
+
     <!-- build:bundleCFFiles  -->    
     <script src="./CommunityFeedAPI/data/analyticKeys.js"></script>
     <script src="./CommunityFeedAPI/data/Errors.js"></script>
@@ -48,8 +52,9 @@
 
 </head>
 
-<body id="test">
+<body >
     <div class="main_view">
+        <div id="initialSkeleton"></div>
         <div class="slide-right main-thread-section" ng-show="showThread" ng-controller="WidgetWallCtrl as WidgetWall"
             ng-cloak>
             <div class="backgroundColorTheme content">
@@ -202,6 +207,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div id="postsSkeleton"></div>
                                 <div class="loadMorePosts" ng-show="WidgetWall.SocialItems.showMorePosts" ng-click="WidgetWall.loadMorePosts()">
                                     <button><a>Show More</a></button>
                                 </div>
@@ -254,6 +260,7 @@
         </div>
 
         <div class="slide-left side-thread-section" ng-view="" ng-hide="showThread">
+            <div id="loading-skeleton" style="height: 100%;" ng-show="showSkeleton"></div>
             <h5 class="titleBarTheme text-center" style="margin-top: 35px;">Something went wrong!! Please try again</h5>
         </div>
     </div>

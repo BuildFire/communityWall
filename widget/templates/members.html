@@ -1,6 +1,6 @@
-<div class="padding-zero" style="height:100%;">
+<div id="homeMembersSkeleton"></div>
+<div class="padding-zero" style="height:100%;" ng-show="Members.loaded">
   <div class="social-plugin social-thread" style="height: 100%;">
-
     <div>
       <form class="search-form form search-holder" ng-submit="onSearchSubmit(this)">
         <div class="inner-addon left-addon">
@@ -12,7 +12,7 @@
 
     </div>
 
-    <div class="wallMembers">
+    <div class="wallMembers" >
       <div  ng-repeat="user in Members.users">
         <div class="social-item">
           <div class="head">
@@ -34,8 +34,8 @@
             </div>
           </div>
         </div>
-
       </div>
+      <div id="membersSkeleton"></div>
       <div class="loadMorePosts" ng-show="Members.showMore" ng-click="Members.loadMore()">
         <button><a>Show More</a></button>
     </div>

@@ -20,8 +20,48 @@
             WidgetWall.loadedPlugin = false;
             WidgetWall.SocialItems = SocialItems.getInstance();
             WidgetWall.util = util;
-            $rootScope.showThread = true;
+            $rootScope.showThread = false;
             WidgetWall.loading = true;
+
+            $rootScope.showSkeleton = false;
+            
+            $rootScope.applySkeleton = (screen) => {
+                let pattern = ['button-full'], skeletonId = null;
+                for(let i = 0; i < 7; i++) {
+                    pattern.push('list-item-avatar-two-line');
+                }
+
+                switch(screen) {
+                    case 'home':
+                        skeletonId = '#initialSkeleton';
+                        break;
+                    case 'posts':
+                        skeletonId = '#postsSkeleton'
+                        break;
+                    case 'homeMembers':
+                        skeletonId = '#homeMembersSkeleton'
+                        break;
+                    case 'members':
+                        skeletonId = '#membersSkeleton'
+                        break;
+                    default:
+                        break;
+                }
+
+                if(screen == 'posts' || screen == 'members') {
+                    pattern.splice(0, 1);
+                }
+                
+                $rootScope.skeleton = new buildfire.components.skeleton(skeletonId, {
+                    type: pattern.toString(),
+                }).start();
+            }
+
+            $rootScope.stopSkeletonLoading = (screen) => {
+                $rootScope.skeleton.stop();
+            }
+
+            $rootScope.applySkeleton('home');
 
             WidgetWall.showHideCommentBox = function () {
                 if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
@@ -152,12 +192,10 @@
 
             WidgetWall.checkFollowingStatus = function (user = null) {
                 WidgetWall.loading = true;
-                buildfire.spinner.show();
                 SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.log('error while getting initial group following status.', err);
                     else {
                         if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
-                            buildfire.spinner.hide();
                             WidgetWall.loading = false;
                             return WidgetWall.followWall();
                         }
@@ -455,6 +493,8 @@
                             } else {
                                 WidgetWall.groupFollowingStatus = false;
                             }
+                            $rootScope.showThread = true;
+                            $rootScope.stopSkeletonLoading('home');
                         });
                     }
                 });
@@ -1037,6 +1077,7 @@
                 })
             }
             WidgetWall.loadMorePosts = function () {
+                $rootScope.applySkeleton('posts');
                 WidgetWall.SocialItems.getPosts(function (err, data) {
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
@@ -1044,6 +1085,7 @@
                         pinnedPost: WidgetWall.pinnedPost,
                         wid: WidgetWall.SocialItems.wid
                     });
+                    $rootScope.stopSkeletonLoading('posts');
                     $scope.$digest();
                 });
             }

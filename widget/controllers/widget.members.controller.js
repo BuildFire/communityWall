@@ -18,8 +18,10 @@
             Members.languages = null;
             Members.appSettings = null;
             Members.SocialItems = SocialItems.getInstance();
+            Members.loaded = false;
 
             Members.init = function () {
+                $rootScope.applySkeleton('homeMembers');
                 $rootScope.showThread = false;
 
                 Buildfire.appearance.getAppTheme((err, obj) => {
@@ -38,9 +40,12 @@
                         SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
                             if (err) return console.log(err);
                             Members.users = users;
+                            Members.loaded = true;
+                            $rootScope.stopSkeletonLoading('homeMembers');
                             $scope.$digest();
                         });
                     }
+                    
                 });
             }
 
@@ -114,6 +119,7 @@
             }
 
             Members.loadMore = function () {
+                $rootScope.applySkeleton('members');
                 SubscribedUsersData.searchForUsers(Members.searchOptions, function (err, users) {
                     if (err) return console.log(err);
                     users.map(user => {
@@ -125,6 +131,7 @@
                     } else {
                         Members.showMore = false;
                     }
+                    $rootScope.stopSkeletonLoading('members');
                     $scope.$digest();
                 });
             }
