@@ -129,6 +129,7 @@ const softDeleteComments = (userId) => {
                         comment.originalUserId = userId;
                         comment.userId = null;
                         comment.userDetails = null;
+                        comment.imageUrl = [];
                     }
                 })
             });
@@ -192,7 +193,9 @@ const softDeletePosts = (userId) => {
                 'deletedOn': new Date(),
                 'originalCreatedBy': userId,
                 'createdBy': null,
-                'userDetails': null
+                'userDetails': null,
+                'imageUrl': [],
+                'images': [],
             }
         }, 'posts', (err, result) => {
             if (err) return reject(err);

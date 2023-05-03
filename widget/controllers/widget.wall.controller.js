@@ -145,10 +145,15 @@
                     WidgetWall.SocialItems.appSettings.showMembers = true;
                 if (typeof (WidgetWall.SocialItems.appSettings.allowAutoSubscribe) == 'undefined')
                     WidgetWall.SocialItems.appSettings.allowAutoSubscribe = true;
-                if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined') {
-                    WidgetWall.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
-                    pinnedPost.innerHTML = WidgetWall.pinnedPost;
+                    
+                if (WidgetWall.SocialItems.pinnedPost) {
+                    pinnedPost.innerHTML = WidgetWall.SocialItems.pinnedPost;
                 }
+                else if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined') {
+                    WidgetWall.SocialItems.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
+                    pinnedPost.innerHTML = WidgetWall.SocialItems.pinnedPost;
+                }
+
                 WidgetWall.loadedPlugin = true;
                 $scope.$digest();
 
@@ -175,7 +180,7 @@
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
                         posts: WidgetWall.SocialItems.items,
-                        pinnedPost: WidgetWall.pinnedPost,
+                        pinnedPost: WidgetWall.SocialItems.pinnedPost,
                         wid: WidgetWall.SocialItems.wid
                     });
                 });
@@ -391,8 +396,9 @@
             }
 
 
-            WidgetWall.openBottomDrawer = function (userId) {
+            WidgetWall.openBottomDrawer = function (userId, post) {
                 $scope.notYou = false;
+                if (post.deletedOn) return;
                 Follows.isFollowingUser(userId, (err, r) => {
                     let listItems = [];
                     if (WidgetWall.SocialItems.appSettings.seeProfile)
@@ -1082,7 +1088,7 @@
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
                         posts: WidgetWall.SocialItems.items,
-                        pinnedPost: WidgetWall.pinnedPost,
+                        pinnedPost: WidgetWall.SocialItems.pinnedPost,
                         wid: WidgetWall.SocialItems.wid
                     });
                     $rootScope.stopSkeletonLoading('posts');
@@ -1417,7 +1423,7 @@
                                 window.buildfire.messaging.sendMessageToControl({
                                     name: 'SEND_POSTS_TO_CP',
                                     posts: WidgetWall.SocialItems.items,
-                                    pinnedPost: WidgetWall.pinnedPost
+                                    pinnedPost: WidgetWall.SocialItems.pinnedPost
                                 });
                             }
                             break;
