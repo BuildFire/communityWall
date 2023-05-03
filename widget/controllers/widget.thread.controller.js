@@ -218,8 +218,9 @@
                 })
             }
 
-            Thread.openBottomDrawer = function (userId) {
+            Thread.openBottomDrawer = function (userId, post) {
                 $scope.notYou = false;
+                if(post.deletedOn) return;
                 Follows.isFollowingUser(userId, (err, r) => {
                     let listItems = [];
                     if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true) listItems.push({
@@ -280,7 +281,8 @@
             }
 
 
-            Thread.openChatOrProfile = function (userId) {
+            Thread.openChatOrProfile = function (userId, comment) {
+                if(comment.deletedOn) return;
                 if (Thread.allowPrivateChat) {
                     Thread.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);

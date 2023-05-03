@@ -66,7 +66,7 @@
                             <div class="social-profile-photo">
                                 <div class="social-copy">
                                     <a class="social-name text-primary"
-                                        ng-click="Thread.openChatOrProfile(comment.userId)">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
+                                        ng-click="Thread.openChatOrProfile(comment.userId, comment)">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
                                     <div ng-if="comment.createdOn">
                                         <p class="time-ago opacity-seventy">
                                             {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>
@@ -88,7 +88,7 @@
                                     ng-click="Thread.showMoreOptionsComment(comment.threadId)">
                                     <span class="material-icons-outlined">more_horiz</span>
                                 </a>
-                                <a class="social-icon likes" ng-click="Thread.likeComment(comment, 'comment')">
+                                <a class="social-icon likes" ng-click="Thread.likeComment(comment, 'comment')" ng-if="!comment.deletedOn">
                                     <i class="material-icons-outlined" ng-class="{notActive: !comment.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
                                     <span class="iconsTheme iconsFont"
                                         ng-class="{active: comment.isUserLikeActive}">{{comment.likes.length}}</span>

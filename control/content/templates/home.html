@@ -69,7 +69,8 @@
                 </div> -->
                 <div class="social-footer">
                     <div class="status flex">
-                        <a class="text-danger padded-sm caption" ng-click="ContentHome.banUser(post.userId, post.id, getUserName(post.userDetails))">Ban User</a>    
+                        <a class="text-danger padded-sm caption" ng-click="ContentHome.banUser(post.userId, post.id, getUserName(post.userDetails))"
+                        ng-if="!post.deletedOn">Ban User</a>    
                         <a class="text-danger padded-sm caption" ng-click="ContentHome.deletePost(post.id)">Delete Post</a>
                         <a class="left-auto padded-sm caption" ng-show="post.comments.length" ng-click="post.viewComments = !post.viewComments">
                             {{ post.viewComments ? 'Hide Comments' : 'Show Comments'}}
