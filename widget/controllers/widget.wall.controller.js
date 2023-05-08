@@ -146,12 +146,9 @@
                 if (typeof (WidgetWall.SocialItems.appSettings.allowAutoSubscribe) == 'undefined')
                     WidgetWall.SocialItems.appSettings.allowAutoSubscribe = true;
                     
-                if (WidgetWall.SocialItems.pinnedPost) {
-                    pinnedPost.innerHTML = WidgetWall.SocialItems.pinnedPost;
-                }
-                else if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined') {
-                    WidgetWall.SocialItems.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
-                    pinnedPost.innerHTML = WidgetWall.SocialItems.pinnedPost;
+                if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined') {
+                    WidgetWall.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
+                    pinnedPost.innerHTML = WidgetWall.pinnedPost;
                 }
 
                 WidgetWall.loadedPlugin = true;
@@ -180,7 +177,7 @@
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
                         posts: WidgetWall.SocialItems.items,
-                        pinnedPost: WidgetWall.SocialItems.pinnedPost,
+                        pinnedPost: WidgetWall.pinnedPost,
                         wid: WidgetWall.SocialItems.wid
                     });
                 });
@@ -1088,7 +1085,7 @@
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
                         posts: WidgetWall.SocialItems.items,
-                        pinnedPost: WidgetWall.SocialItems.pinnedPost,
+                        pinnedPost: WidgetWall.pinnedPost,
                         wid: WidgetWall.SocialItems.wid
                     });
                     $rootScope.stopSkeletonLoading('posts');
@@ -1423,7 +1420,7 @@
                                 window.buildfire.messaging.sendMessageToControl({
                                     name: 'SEND_POSTS_TO_CP',
                                     posts: WidgetWall.SocialItems.items,
-                                    pinnedPost: WidgetWall.SocialItems.pinnedPost
+                                    pinnedPost: WidgetWall.pinnedPost
                                 });
                             }
                             break;
@@ -1597,7 +1594,7 @@
                 buildfire.notifications.pushNotification.unsubscribe({
                     groupName: WidgetWall.SocialItems.wid === '' ?
                         WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                }, () => {});
+                }, () => { });
                 WidgetWall.privateChatSecurity();
                 $scope.$digest();
             });
