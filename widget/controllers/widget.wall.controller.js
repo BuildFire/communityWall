@@ -145,11 +145,16 @@
                     WidgetWall.SocialItems.appSettings.showMembers = true;
                 if (typeof (WidgetWall.SocialItems.appSettings.allowAutoSubscribe) == 'undefined')
                     WidgetWall.SocialItems.appSettings.allowAutoSubscribe = true;
-                    
-                if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined') {
-                    WidgetWall.pinnedPost = WidgetWall.SocialItems.appSettings.pinnedPost;
-                    pinnedPost.innerHTML = WidgetWall.pinnedPost;
+
+                let pinnedPostMessage = null;
+                if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined' && !WidgetWall.SocialItems.headerContent) {
+                    pinnedPostMessage = WidgetWall.SocialItems.appSettings.pinnedPost;
+                } else if(WidgetWall.SocialItems.headerContent) {
+                    pinnedPostMessage = WidgetWall.SocialItems.headerContent;
                 }
+
+                WidgetWall.pinnedPost = pinnedPostMessage;
+                pinnedPost.innerHTML = pinnedPostMessage;
 
                 WidgetWall.loadedPlugin = true;
                 $scope.$digest();
