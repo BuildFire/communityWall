@@ -619,6 +619,16 @@
                             if (postId) location.href = '#/thread/' + postId;
                         }
                     }
+
+                    if(_this.isPrivateChat && !_this.items.length) {
+                        //wall id is users ids in reverse order and there is no posts between users yet so we correct the wall id to correct one
+                        let correctWallId = _this.orderChatUserIds();
+                        if(_this.wid !== correctWallId)  {
+                            _this.wid = correctWallId;
+                            _this.mainWallID = correctWallId;
+                            console.log("PRIVATAN CHAT");
+                        }
+                    }
                 });
             }
 
@@ -720,6 +730,16 @@
                     });
                 }
                 $rootScope.$digest();
+            }
+
+            SocialItems.prototype.orderChatUserIds = () => {
+                const user1Id = _this.wid.slice(0, 24);
+                const user2Id = _this.wid.slice(24, 48);
+                let wallId = null;
+                if(user1Id > user2Id) { 
+                    wallId = user1Id + user2Id;
+                } else wallId = user2Id + user1Id;
+                return wallId;
             }
 
             SocialItems.prototype.getSettings = function (callback) {
