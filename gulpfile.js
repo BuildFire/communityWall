@@ -20,18 +20,6 @@ function releaseFolder() {
 }
 
 console.log(">> Building to ", destinationFolder);
-const widgetStyles = [
-	{ name: "widgetCSS", src: "widget/**/*.css", dest: "/widget" }
-];
-
-widgetStyles.forEach(function (task) {
-
-	gulp.task(task.name, function () {
-		return gulp.src(task.src, { base: '.' })
-			.pipe(concat('assets/css/style.css'))
-			.pipe(gulp.dest(destinationFolder + task.dest))
-	});
-});
 
 const cssTasks = [
     { name: "controlContentCSS", src: "control/content/**/**/*.css", dest: "/control/content" },
@@ -198,8 +186,6 @@ gulp.task('jasmine', function () {
 });
 
 var buildTasksToRun = ["widgetHtml", "controlHtml", "jasmine", "resources", "images", "sharedJS", "fonts"];
-
-widgetStyles.forEach(function (task) { buildTasksToRun.push(task.name) });
 
 cssTasks.forEach(function (task) {
   buildTasksToRun.push(task.name);

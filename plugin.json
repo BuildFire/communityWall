@@ -29,17 +29,7 @@
         "title": "Tests",
         "url": "/tests/index.html"
       }
-    ],
-    "cssInjection": {
-      "enabled": true,
-      "layouts": [
-        {
-          "name": "Layout",
-          "imageUrl": "resources/layout.png",
-          "cssPath": "widget/assets/css/style.css"
-        }
-      ]
-    }
+    ]
   },
   "widget": {},
   "features": [],
