@@ -758,7 +758,7 @@
 
                         let headerContent = Util.getParameterByName("headerContent");
                         if(headerContent) {
-                            _this.headerContent = decodeURIComponent(headerContent);
+                            _this.headerContent = headerContent;
                         }
 
                         buildfire.datastore.get("languages", (err, languages) => {
