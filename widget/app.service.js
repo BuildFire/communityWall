@@ -756,7 +756,7 @@
                             _this.isPrivateChat = true;
                         }
 
-                        let headerContent = Util.getParameterByName("headerContent");
+                        let headerContent = Util.getParameterByName("headerContentHtml");
                         if(headerContent) {
                             _this.headerContent = headerContent;
                         }
