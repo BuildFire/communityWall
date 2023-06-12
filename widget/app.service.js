@@ -756,6 +756,11 @@
                             _this.isPrivateChat = true;
                         }
 
+                        let headerContent = Util.getParameterByName("headerContentHtml");
+                        if(headerContent) {
+                            _this.headerContent = headerContent;
+                        }
+
                         buildfire.datastore.get("languages", (err, languages) => {
                             if (err) return console.log(err)
                             _this.formatLanguages(languages);
