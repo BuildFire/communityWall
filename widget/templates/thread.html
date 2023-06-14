@@ -56,7 +56,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="comments-list">
+                <div class="comments-list" ng-if="Thread.processedComments">
                     <div class="social-comment" ng-repeat="comment in Thread.post.comments">
                         <div class="thread-dot">
                             <div class="primaryBackgroundTheme">
@@ -66,7 +66,7 @@
                             <div class="social-profile-photo">
                                 <div class="social-copy">
                                     <a class="social-name text-primary"
-                                        ng-click="Thread.openChatOrProfile(comment.userId)">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
+                                        ng-click="Thread.openChatOrProfile(comment.userId, comment)">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
                                     <div ng-if="comment.createdOn">
                                         <p class="time-ago opacity-seventy">
                                             {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>
@@ -74,8 +74,11 @@
                                 </div>
                             </div>
                             <div class="post-text copy">
-                                <p class="margin-zero"
+                                <p class="margin-zero" ng-if="!comment.deletedOn"
                                     ng-bind-html="Thread.util.injectAnchors(comment.comment)|newLine"></p>
+                                    <p class="margin-zero" ng-if="comment.deletedOn">
+                                        {{Thread.SocialItems.languages.messageDeleted ? Thread.SocialItems.languages.messageDeleted  : "This message was deleted."}}
+                                    </p>
                             </div>
                             <div class="plugin-banner ellipsis" ng-init="setupImageList(comment)">
                                 <div class="plugin-slide text-center" style="max-height: none !important;">
@@ -83,7 +86,7 @@
                                         token="czi3m2qn"></bf-image-list>
                                 </div>
                             </div>
-                            <div ng-show="comment.threadId" class="status-footer">
+                            <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">
                                 <a class="more-info social-icon" ng-if="Thread.SocialItems.userDetails.userId == comment.userId"
                                     ng-click="Thread.showMoreOptionsComment(comment.threadId)">
                                     <span class="material-icons-outlined">more_horiz</span>
