@@ -257,7 +257,7 @@
                 Members.SocialItems.page = 0;
                 $rootScope.showThread = true;
                 $rootScope.$broadcast("loadPrivateChat");
-                buildfire.history.push(Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + Members.SocialItems.getUserName(user.name), {
+                buildfire.history.push(Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + user.name, {
                     isPrivateChat: true,
                     showLabelInTitlebar: true
                 });
