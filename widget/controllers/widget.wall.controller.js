@@ -128,6 +128,7 @@
                         elements[i].style.setProperty("fill", obj.colors.icons, "important");
                     }
                     WidgetWall.appTheme = obj.colors;
+                    
                     elements[2].style.setProperty("fill", 'white', "important");
                     document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
                     document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
