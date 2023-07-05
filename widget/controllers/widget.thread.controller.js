@@ -87,8 +87,9 @@
             Thread.setAppTheme = function () {
                 buildfire.appearance.getAppTheme((err, obj) => {
                     let elements = document.getElementsByTagName('svg');
-                    document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementsByClassName("add-new-comment-btn")[0].style.setProperty("background-color", obj.colors.icons, "important");
                     elements[3].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
+                    document.getElementById("add-comment-svg").style.setProperty("fill", 'white', "important");
                 });
             }
 
