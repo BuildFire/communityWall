@@ -42,6 +42,10 @@
 		{ "type": "image-resource", "path": "6-Content-Tab.png" },
 		{ "type": "image-resource", "path": "7-Settings-Tab.png" },
 		{ "type": "image-resource", "path": "8-Analytics-Tab.png" },
-		{ "type": "image-resource", "path": "9-Language-Tab.png" }
+		{ "type": "image-resource", "path": "9-Language-Tab.png" },
+    {
+      "type": "youtube-video",
+      "path": "https://www.youtube.com/watch?v=FMKup4MOx10"
+    }
 	]
 }
