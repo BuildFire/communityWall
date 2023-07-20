@@ -36,7 +36,7 @@
                     </div>
                     <div class="">
                         <p class="ellipsis margin-bottom-zero">
-                            {{getUserName(post.userDetails) || 'Unknown'}}
+                            {{getUserName(post.userDetails)}}
                         </p>
                         <p class="time-ago caption margin-bottom-zero">{{ContentHome.getDuration(post.createdOn) | convertTimeFormat}}</p>
                     </div>
@@ -82,7 +82,7 @@
 
                         <div class="head clearfix margin-bottom-zero flex">
                             <div class="thread-comment">
-                                <p class="ellipsis margin-bottom-zero">{{comment.userDetails.displayName || 'Unknown'}}</p>
+                                <p class="ellipsis margin-bottom-zero">{{getUserName(comment.userDetails)}}</p>
                                 <p class="time-ago caption">{{ContentHome.getDuration(comment.createdOn) | convertTimeFormat}}</p>
                             </div>
                             <div class="icons left-auto">
@@ -94,7 +94,10 @@
                         </div>
 
                         <div class="copy margin-bottom-five">
-                            <p class="margin-zero" ng-bind-html="ContentHome.util.injectAnchors(comment.comment) | newLine"></p>
+                            <p class="margin-zero" ng-if="!comment.deletedOn" ng-bind-html="ContentHome.util.injectAnchors(comment.comment) | newLine"></p>
+                            <p class="margin-zero" ng-if="comment.deletedOn">
+                                This message was deleted.
+                            </p>
                         </div>
                         <!-- <div class="plugin-banner margin-bottom-fifteen" ng-if="comment.imageUrl.length > 0">
                             <div ng-repeat="imageUrl in comment.imageUrl" class="plugin-slide text-center">
@@ -105,7 +108,8 @@
                             <img ng-repeat="imageUrl in comment.imageUrl" src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
                         </div>
                         <div class="social-footer flex">
-                            <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.banUser(post.userId, comment.id, comment.userDetails.displayName)">Ban User</a>
+                            <a class="text-danger padded-sm caption padding-left-zero" ng-if="!comment.deletedOn"
+                             ng-click="ContentHome.banUser(post.userId, comment.id, comment.userDetails.displayName)">Ban User</a>
                             <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.deleteComment(post, comment)">Delete Comment</a>
                         </div>
                     </div>

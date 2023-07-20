@@ -504,17 +504,17 @@
 
             $scope.getUserName = function (userDetails) {
                 let name = null;
-                if (userDetails.displayName !== 'Someone'
+                if (userDetails && userDetails.displayName !== 'Someone'
                     && userDetails.displayName) {
                     name = userDetails.displayName;
                 }
-                else if (userDetails.firstName !== 'Someone' &&
+                else if (userDetails && userDetails.firstName !== 'Someone' &&
                     userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
-                else if (userDetails.firstName !== 'Someone' &&
+                else if (userDetails && userDetails.firstName !== 'Someone' &&
                     userDetails.firstName)
                     name = userDetails.firstName;
-                else if (userDetails.lastName)
+                else if (userDetails && userDetails.lastName)
                     name = userDetails.lastName;
                 else name = 'Someone';
                 return name;
