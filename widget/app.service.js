@@ -65,6 +65,15 @@
                     if (!results) return null;
                     if (!results[2]) return '';
                     return decodeURIComponent(results[2].replace(/\+/g, " "));
+                },
+                splitArrayIntoChunks: function(array) {
+                    let chunkSize = 50, chunks = [];
+    
+                    for (let i = 0; i < array.length; i += chunkSize) {
+                        chunks.push(array.slice(i, i + chunkSize));
+                    }
+    
+                    return chunks;
                 }
             }
         }])
@@ -488,17 +497,17 @@
             SocialItems.prototype.getUserName = function (userDetails) {
                 let name = null;
                 const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if (userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase()) &&
+                if (userDetails && userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase()) &&
                     userDetails.displayName) {
                     name = userDetails.displayName;
-                } else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
+                } else if (userDetails && userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
                     userDetails.firstName && userDetails.lastName)
                     name = userDetails.firstName + ' ' + userDetails.lastName;
 
-                else if (userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
+                else if (userDetails && userDetails.firstName !== 'Someone' && !re.test(String(userDetails.firstName).toLowerCase()) &&
                     userDetails.firstName)
                     name = userDetails.firstName;
-                else if (userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase()) &&
+                else if (userDetails && userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase()) &&
                     userDetails.lastName)
                     name = userDetails.lastName;
                 else name = 'Someone';
