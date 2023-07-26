@@ -32,5 +32,21 @@
   "features": [],
   "languages": [
     "en"
-  ]
+  ],
+	"media": [
+		{ "type": "image-resource", "path": "1-Plugin.png" },
+		{ "type": "image-resource", "path": "2-Benefits.png" },
+		{ "type": "image-resource", "path": "3-Features.png" },
+		{ "type": "image-resource", "path": "4-Use-Case.png" },
+		{ "type": "image-resource", "path": "5-Sales-Pitch.png" },
+		{ "type": "image-resource", "path": "6-Content-Tab.png" },
+		{ "type": "image-resource", "path": "7-Settings-Tab.png" },
+		{ "type": "image-resource", "path": "8-Analytics-Tab.png" },
+		{ "type": "image-resource", "path": "9-Language-Tab.png" },
+    {
+      "type": "youtube-video",
+      "path": "https://www.youtube.com/watch?v=FMKup4MOx10"
+    }
+	]
 }
+

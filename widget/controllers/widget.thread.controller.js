@@ -15,6 +15,7 @@
             Thread.followingStatus = false;
             Thread.util = Util;
             Thread.loaded = false;
+            Thread.processedComments = false;
             var counter = 0;
             $scope.setupImageList = function (comment) {
                 if (comment.imageUrl.length) {
@@ -111,6 +112,62 @@
                 }
             }
 
+            Thread.showComments = () => {
+                Thread.processedComments = true;
+                if (!$scope.$$phase) $scope.$digest();
+            }
+
+            Thread.handleDeletedUsers = function () {
+                if (!Thread.post.comments.length) return Thread.showComments();
+
+                let userIds = [... new Set(Thread.post.comments.map(comment => comment.userId))];
+                if (userIds.length)
+                    Thread.getUserProfiles(userIds);
+            }
+
+            Thread.getUserProfiles = (userIds) => {
+                let userProfilesChunks = Util.splitArrayIntoChunks(userIds);
+                let userProfilesIds = [];
+
+                const extractAndProcessDeletedUsers = () => {
+                    let deletedUsers = userIds.filter(id => !userProfilesIds.includes(id)).filter(el => el);
+
+                    if (!deletedUsers.length) return Thread.showComments();
+
+                    deletedUsers.forEach(userId => {
+                        let comments = Thread.post.comments.filter(comment => comment.userId == userId);
+                        comments.forEach(comment => {
+                            comment.comment = "MESSAGE DELETED";
+                            comment.deletedOn = new Date();
+                            comment.originalUserId = userId;
+                            comment.userId = null;
+                            comment.userDetails = null;
+                            comment.imageUrl = [];
+                        });
+                    });
+
+                    SocialDataStore.updatePost(Thread.post).then(() => {
+                        return Thread.showComments();
+                    }, (err) => console.error(err));
+                }
+
+                const getUserProfiles = (userIds) => {
+                    return new Promise((resolve, reject) => {
+                        buildfire.auth.getUserProfiles({ userIds }, (err, users) => {
+                            if (err) return reject(err);
+                            resolve(users);
+                        });
+                    });
+                }
+
+                let promises = userProfilesChunks.map(chunk => getUserProfiles(chunk));
+
+                Promise.all(promises).then((results) => {
+                    results.forEach((result) => userProfilesIds = userProfilesIds.concat(result.map(el => el._id)));
+                    extractAndProcessDeletedUsers();
+                }).catch((error) => console.error(error));
+            }
+
             Thread.init = function () {
                 Thread.setAppTheme();
                 if ($routeParams.threadId) {
@@ -127,6 +184,7 @@
                             Thread.showHideCommentBox();
                             Thread.showHidePrivateChat();
                             Thread.followLeaveGroupPermission();
+                            Thread.handleDeletedUsers();
                             SubscribedUsersData.getThreadFollowingStatus(userData._id, Thread.post.id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                                 if (status) {
                                     if (!status.leftWall)
@@ -281,7 +339,8 @@
             }
 
 
-            Thread.openChatOrProfile = function (userId) {
+            Thread.openChatOrProfile = function (userId, comment) {
+                if(comment.deletedOn) return;
                 if (Thread.allowPrivateChat) {
                     Thread.SocialItems.authenticateUser(null, (err, user) => {
                         if (err) return console.error("Getting user failed.", err);
