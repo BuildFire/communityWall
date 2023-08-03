@@ -41,21 +41,27 @@
                 },
                 injectAnchors: function (text, options) {
                     text = decodeURIComponent(text);
-                    var URL_CLASS = "reffix-url";
-                    var URLREGEX = new RegExp(/^(?!.*iframe).*(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/);
+                    var URL_CLASS = "reffix-url";                    
+                    var URLREGEX = new RegExp(/(https?:\/\/(?:www\.|(?!www))(?!.*iframe)[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/g);
                     var EMAILREGEX = /([\w\.]+)@([\w\.]+)\.(\w+)/g;
                     var lookup = [];
 
-                    text = text.replace(URLREGEX, function (url) {
-                        var obj = { url: url, target: '_system' }
+                    text = text.replaceAll(URLREGEX, function (url) {
+                        var obj = {
+                            url: url,
+                            target: '_system'
+                        }
                         if (obj.url && obj.url.indexOf('http') !== 0 && obj.url.indexOf('https') !== 0) {
                             obj.url = 'http://' + obj.url;
                         }
                         lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' >" + url + "</a>");
                         return "_RF" + (lookup.length - 1) + "_";
                     });
-                    text = text.replace(EMAILREGEX, function (url) {
-                        var obj = { url: "mailto:" + url, target: '_system' };
+                    text = text.replaceAll(EMAILREGEX, function (url) {
+                        var obj = {
+                            url: "mailto:" + url,
+                            target: '_system'
+                        };
                         lookup.push("<a href='" + obj.url + "' target='" + obj.target + "'>" + url + "</a>");
                         return "_RF" + (lookup.length - 1) + "_";
                     });

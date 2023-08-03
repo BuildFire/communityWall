@@ -27,11 +27,11 @@
                 injectAnchors: function (text, options) {
                     text = decodeURIComponent(text);
                     var URL_CLASS = "reffix-url";
-                    var URLREGEX = new RegExp(/^(?!.*iframe).*(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/);
+                    var URLREGEX = new RegExp(/(https?:\/\/(?:www\.|(?!www))(?!.*iframe)[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/g);
                     var EMAILREGEX = /([\w\.]+)@([\w\.]+)\.(\w+)/g;
                     var lookup = [];
 
-                    text = text.replace(URLREGEX, function (url) {
+                    text = text.replaceAll(URLREGEX, function (url) {
                         var obj = {
                             url: url,
                             target: '_system'
@@ -42,7 +42,7 @@
                         lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' >" + url + "</a>");
                         return "_RF" + (lookup.length - 1) + "_";
                     });
-                    text = text.replace(EMAILREGEX, function (url) {
+                    text = text.replaceAll(EMAILREGEX, function (url) {
                         var obj = {
                             url: "mailto:" + url,
                             target: '_system'
@@ -148,7 +148,6 @@
                                     if (banUser) {
                                         data[0].data.banned = true;
                                     }
-
                                     buildfire.publicData.save(_this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
                                         callback(null, true);
                                     });
