@@ -775,13 +775,13 @@
         }])
 })(window.angular, window.buildfire, window.location);
 
-function sendEmail(url) {
+function sendEmail(emailAddress) {
     buildfire.actionItems.execute(
         {
             title: "",
             subject: "",
             body: "",
-            email: url,
+            email: emailAddress,
             action: "sendEmail",
             iconUrl: "",
         },

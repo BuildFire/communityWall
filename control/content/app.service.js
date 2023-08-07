@@ -342,7 +342,6 @@
                     return item;
                 },
                 buildSubscribedUsersDataIndex: function (data) {
-                    debugger
                     var index = {
                         'string1': data.wallId,
                         'text': data.userId + '-' + data.wallId,
@@ -406,13 +405,13 @@
         }])
 })(window.angular, window.buildfire);
 
-function sendEmail(url) {
+function sendEmail(emailAddress) {
     buildfire.actionItems.execute(
         {
             title: "",
             subject: "",
             body: "",
-            email: url,
+            email: emailAddress,
             action: "sendEmail",
             iconUrl: "",
         },
