@@ -39,36 +39,20 @@
                 getProxyServerUrl: function () {
                     return this.requiresHttps() ? SERVER_URL.secureLink : SERVER_URL.link;
                 },
-                injectAnchors: function (text, options) {
-                    text = decodeURIComponent(text);
-                    var URL_CLASS = "reffix-url";                    
-                    var URLREGEX = new RegExp(/(https?:\/\/(?:www\.|(?!www))(?!.*iframe)[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/g);
-                    var EMAILREGEX = /([\w\.]+)@([\w\.]+)\.(\w+)/g;
-                    var lookup = [];
-
-                    text = text.replaceAll(URLREGEX, function (url) {
-                        var obj = {
-                            url: url,
-                            target: '_system'
+                injectAnchors(text) {
+                    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9._-]+%40[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})/g;
+                    return text.replace(urlRegex, function(url) {
+                        if (url.includes('%40')) {
+                            return `<a href="#" onclick='sendEmail("${url}"); return false;'>${decodeURIComponent(url)}</a>`;
                         }
-                        if (obj.url && obj.url.indexOf('http') !== 0 && obj.url.indexOf('https') !== 0) {
-                            obj.url = 'http://' + obj.url;
+                        else {
+                            let fullUrl = url;
+                            if(url.startsWith('www.')){
+                                fullUrl = "https://"+url;
+                            }
+                            return `<a href="#" onclick='buildfire.navigation.openWindow("https://${fullUrl}", "_system"); return false;'>${url}</a>`;
                         }
-                        lookup.push("<a href='" + obj.url + "' target='" + obj.target + "' >" + url + "</a>");
-                        return "_RF" + (lookup.length - 1) + "_";
                     });
-                    text = text.replaceAll(EMAILREGEX, function (url) {
-                        var obj = {
-                            url: "mailto:" + url,
-                            target: '_system'
-                        };
-                        lookup.push("<a href='" + obj.url + "' target='" + obj.target + "'>" + url + "</a>");
-                        return "_RF" + (lookup.length - 1) + "_";
-                    });
-                    lookup.forEach(function (e, i) {
-                        text = text.replace("_RF" + i + "_", e);
-                    });
-                    return text;
                 },
                 getParameterByName: function (name, url) {
                     if (!url) {
@@ -358,6 +342,7 @@
                     return item;
                 },
                 buildSubscribedUsersDataIndex: function (data) {
+                    debugger
                     var index = {
                         'string1': data.wallId,
                         'text': data.userId + '-' + data.wallId,
@@ -420,3 +405,19 @@
             }
         }])
 })(window.angular, window.buildfire);
+
+function sendEmail(url) {
+    buildfire.actionItems.execute(
+        {
+            title: "",
+            subject: "",
+            body: "",
+            email: url,
+            action: "sendEmail",
+            iconUrl: "",
+        },
+        (err) => {
+            if (err) return console.error(err);
+        }
+    );
+}
