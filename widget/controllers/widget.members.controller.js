@@ -60,9 +60,6 @@
                 let minSearchLength = 1;
                 if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
-                Members.searchOptions.filter={}
-                Members.searchOptions.filter.$or=[]
-
                 if (Members.appSettings.indexingUpdateDone) {
                     Members.searchOptions.filter = {
                         '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
