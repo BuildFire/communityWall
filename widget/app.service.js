@@ -212,7 +212,6 @@
                             var allUsers = [];
                             if (data && data.length) {
                                 data.map(user => allUsers.push(user.data));
-                                allUsers = allUsers.filter(el => !el.leftWall)
                                 callback(null, allUsers);
                             } else callback(null, [])
                         }
