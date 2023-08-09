@@ -31,8 +31,8 @@
                             return `<a href="#" onclick='sendEmail("${url}"); return false;'>${decodeURIComponent(url)}</a>`;
                         } else {
                             let fullUrl = url
-                            if(url.startsWith('www.')){
-                                fullUrl = "https://"+url;
+                            if (url && url.indexOf('http') !== 0 && url.indexOf('https') !== 0) {
+                                fullUrl = "http://"+url;
                             }
                             return `<a href="#" onclick='buildfire.navigation.openWindow("${fullUrl}", "_system"); return false;'>${url}</a>`;
                         }
