@@ -60,36 +60,59 @@
                 let minSearchLength = 1;
                 if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
-                Members.searchOptions.filter = {
-                    '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
-                    $or: [
-
-                        {
-                            "$json.userDetails.displayName": {
-                                $regex: $scope.searchInput,
-                                $options: 'i'
+                if (Members.appSettings.indexingUpdateDone) {
+                    Members.searchOptions.filter = {
+                        '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
+                        '_buildfire.index.number1': 0
+                    }
+                } else {
+                    Members.searchOptions.filter = {
+                        '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
+                        $or: [{
+                            '$json.leftWall': {
+                                $exists: true,
+                                $eq: false
                             }
                         },
                         {
-                            "$json.userDetails.firstName": {
-                                $regex: $scope.searchInput,
-                                $options: 'i'
+                            '$json.leftWall': {
+                                $exists: false
                             }
-                        },
-                        {
-                            "$json.userDetails.lastName": {
-                                $regex: $scope.searchInput,
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            "$json.userDetails.email": {
-                                $regex: $scope.searchInput,
-                                $options: 'i'
-                            }
-                        },
-                    ]
+                        }
+                        ]
+                    }
                 }
+                // Initialize Members.searchOptions.filter.$or as an empty array if it's not already initialized
+                if (!Members.searchOptions.filter.$or) {
+                    Members.searchOptions.filter.$or = [];
+                }
+
+                Members.searchOptions.filter.$or.push(
+                    {
+                        "$json.userDetails.displayName": {
+                            $regex: $scope.searchInput,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        "$json.userDetails.firstName": {
+                            $regex: $scope.searchInput,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        "$json.userDetails.lastName": {
+                            $regex: $scope.searchInput,
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        "$json.userDetails.email": {
+                            $regex: $scope.searchInput,
+                            $options: 'i'
+                        }
+                    }
+                );
                 Members.searchOptions.page = 0;
                 Members.executeSearch(Members.searchOptions);
             };
