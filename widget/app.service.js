@@ -25,10 +25,11 @@
         .factory('Util', ['SERVER_URL', function (SERVER_URL) {
             return {
                 injectAnchors(text) {
-                    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9._-]+%40[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})/g;
-                    return text.replace(urlRegex, function(url) {
-                        if (url.includes('%40')) {
-                            return `<a href="#" onclick='sendEmail("${url}"); return false;'>${decodeURIComponent(url)}</a>`;
+                    let decodeedText = decodeURIComponent(text);
+                    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})/g;
+                    return decodeedText.replace(urlRegex, function(url) {
+                        if (url.includes('@')) {
+                            return `<a href="#" onclick='sendEmail("${url}"); return false;'>${url}</a>`;
                         } else {
                             let fullUrl = url
                             if (url && url.indexOf('http') !== 0 && url.indexOf('https') !== 0) {
