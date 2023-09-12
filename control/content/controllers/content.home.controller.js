@@ -407,7 +407,6 @@
                         _data.push('post');
                         _data.push(moment(threadData.data.createdOn).format('DD/MM/YYYY hh:mm a'));
                         _data.push(threadData.data.userDetails.displayName);
-                        debugger
                         _data.push(ContentHome.util.injectAnchors(threadData.data.text));
                         lineArray.push(_data);
                         if (threadData.data.comments.length > 0) {
