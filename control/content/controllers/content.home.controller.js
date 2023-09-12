@@ -432,12 +432,11 @@
                         }
                     });
 
-                    csv = "data:text/csv;charset=utf-8," + csv;
-                    var csvContent = csv;
-                    var encodedUri = encodeURI(csvContent);
+                    
+                    csv = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
                     var link = document.createElement("a");
                     var _fileName = "Social App Chat" + ".csv";
-                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("href", csv);
                     link.setAttribute("download", _fileName);
                     link.setAttribute("id", "exportThreadsLink");
                     document.body.appendChild(link); // Required for FF
