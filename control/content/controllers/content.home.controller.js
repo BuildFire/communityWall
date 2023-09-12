@@ -407,6 +407,7 @@
                         _data.push('post');
                         _data.push(moment(threadData.data.createdOn).format('DD/MM/YYYY hh:mm a'));
                         _data.push(threadData.data.userDetails.displayName);
+                        debugger
                         _data.push(ContentHome.util.injectAnchors(threadData.data.text));
                         lineArray.push(_data);
                         if (threadData.data.comments.length > 0) {
@@ -432,12 +433,11 @@
                         }
                     });
 
-                    csv = "data:text/csv;charset=utf-8," + csv;
-                    var csvContent = csv;
-                    var encodedUri = encodeURI(csvContent);
+                    
+                    csv = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
                     var link = document.createElement("a");
                     var _fileName = "Social App Chat" + ".csv";
-                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("href", csv);
                     link.setAttribute("download", _fileName);
                     link.setAttribute("id", "exportThreadsLink");
                     document.body.appendChild(link); // Required for FF
