@@ -367,15 +367,6 @@
                                 if (error) return deferred.reject(error);
                                 return deferred.resolve(posts);
                             });
-                        } else {
-                            buildfire.publicData.insert(obj, 'posts', (error, result) => {
-                                if (error) return deferred.reject(error);
-                                result.data.uniqueLink = result.id + "-" + result.data.wid;
-                                buildfire.publicData.update(result.id, result.data, 'posts', (error, post) => {
-                                    if (error) return deferred.reject(error);
-                                    return deferred.resolve(post);
-                                });
-                            });
                         }
                     });
                     return deferred.promise;
@@ -584,7 +575,7 @@
                     if (error) return console.log(error);
 
                     if (data && data.result.length) {
-                        data.result.map(item => _this.items.push(item.data))
+                        data.result.map(item => _this.items.push({...item.data, id: item.id}))
                         if (data.totalRecord > _this.items.length) {
                             _this.showMorePosts = true;
                             _this.page++;
@@ -653,7 +644,7 @@
                             if (data && data.length) {
                                 if (data[0].data.id === (_this.items.length && _this.items[0].id)) return;
                                 let items = [];
-                                data.map(item => items.push(item.data));
+                                data.map(item => items.push({...item.data, id: item.id}));
                                 _this.items = items;
                                 window.buildfire.messaging.sendMessageToControl({
                                     name: 'SEND_POSTS_TO_CP',

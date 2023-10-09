@@ -119,7 +119,7 @@ class Posts{
                     if(p.data.userId != currentUser._id && buildfire.getContext().type !== 'control') return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
                     buildfire.appData.delete(p.id, Posts.TAG, (err, r) =>{
                         if(err) return console.error(err);
-                        Analytics.trackAction("post-added");
+                        Analytics.trackAction("post-deleted");
                         callback(r);
                     })
 
