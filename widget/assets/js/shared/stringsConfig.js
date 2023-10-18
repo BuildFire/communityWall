@@ -116,6 +116,12 @@ const stringsConfig = {
 				, placeholder: "Delete Post"
 				, maxLength: 30
 				, defaultValue: "Delete Post"
+			},
+			reportPostMessage: {
+				title: "Your Report Has Been Successfully Submitted and Is Pending Review By The App Administrator"
+				, placeholder: "Your report has been successfully submitted and is pending review by the app administrator"
+				, maxLength: 100
+				, defaultValue: "Your report has been successfully submitted and is pending review by the app administrator"
 			}
 		}
 	},

@@ -67,10 +67,14 @@
             $scope.socialItemUserId=Info.socialItemUserId;
             $scope.languages = Info.languages;
             console.log("INFO LANGUAGES", Info.languages)
-            let reportPost = Info.languages.reportPost;
+            let reportPost =Info.languages.reportPost;
             MoreOptionsPopup.options.push(reportPost);
 
             $scope.ok = function (option) {
+                buildfire.dialog.toast({
+                    message: Info.languages.reportPostMessage || "Reported successfully, waiting admin approval ",
+                    type: 'info'
+                });
                 $modalInstance.close(option);
             };
             $scope.cancel = function () {
