@@ -459,16 +459,21 @@
                             let options = {
                                 title: 'Notification',
                                 text: '',
-                                users: [post.userId],
                                 sendToSelf: false
                             };
 
-                            if (text === 'comment')
+                            if (text === 'comment'){
+                                options.users =[Thread.post.userId];
                                 options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' commented on post: ' + Thread.SocialItems.context.title;
-                            else if (text === 'likedComment')
+                            }
+                            else if (text === 'likedComment'){
+                                options.users =[post.userId];
                                 options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a comment on ' + Thread.SocialItems.context.title;
-                            else if (text === 'likedPost')
+                            }
+                            else if (text === 'likedPost'){
+                                options.users =[Thread.post.userId];
                                 options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + Thread.SocialItems.context.title;
+                            }
                             options.inAppMessage = options.text;
                             options.queryString = `wid=${Thread.SocialItems.wid}`;
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
@@ -631,7 +636,7 @@
                             'comment': commentData
                         });
                         Thread.post.comments.push(commentData);
-                        Thread.scheduleNotification(Thread.post, 'comment');
+                        Thread.scheduleNotification(commentData, 'comment');
                     });
             }
 
