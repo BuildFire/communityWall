@@ -497,6 +497,10 @@
                 }
                 buildfire.deeplink.onUpdate((deeplinkData) => {
                     if (deeplinkData) {
+                        if(deeplinkData.split('=')[0] === 'postId'){
+                            WidgetWall.goInToThread(deeplinkData.split('=')[1]);
+                            return;
+                        }
                         let wallId = new URLSearchParams(deeplinkData).get('wid');
                         let userIds = new URLSearchParams(deeplinkData).get('userIds');
                         if (!userIds && wallId && wallId.length === 48) {

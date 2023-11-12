@@ -475,7 +475,11 @@
                                 options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + Thread.SocialItems.context.title;
                             }
                             options.inAppMessage = options.text;
-                            options.queryString = `wid=${Thread.SocialItems.wid}`;
+                            if(Thread.SocialItems.wid){
+                                options.queryString = `wid=${Thread.SocialItems.wid}`;
+                            }else{
+                                options.queryString = `postId=${Thread.post.id}`;
+                            }
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
                                 if (err) return console.error('Error while setting PN schedule.', err);
                                 console.log("SENT NOTIFICATION", options);
