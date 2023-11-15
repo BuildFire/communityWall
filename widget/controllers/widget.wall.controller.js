@@ -1035,26 +1035,29 @@
                                                 postText: WidgetWall.postText ? WidgetWall.postText : "",
                                                 postImages: $scope.WidgetWall.images || []
                                             }, (err, r) => {
-                                                if (err) return console.log(err) ;
-
-                                                setTimeout(() => {
-                                                    const param = {
-                                                        userId: WidgetWall.SocialItems.userDetails.userId,
-                                                        wallId: WidgetWall.SocialItems.wid,
-                                                        instanceId: WidgetWall.SocialItems.context.instanceId,
-                                                        post: WidgetWall.SocialItems.items[0].id,
-                                                        _buildfire: {
-                                                            index: {
-                                                                text: WidgetWall.SocialItems.userDetails.userId + '-' + WidgetWall.SocialItems.wid
-                                                            }
-                                                        }
-                                                    }
-                                                    SubscribedUsersData.followThread(param);
-                                                }, 1000);
+                                                if (err) return console.log(err) ;                                         
+                                                followThread(r.id);
                                             });
                                         }
                                     })
                                 }
+                            }
+                        });
+                    }
+                });
+            }
+
+            const followThread = () =>{
+                WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        SubscribedUsersData.getGroupFollowingStatus(userData._id, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                            if (status.length) {
+                                SubscribedUsersData.followThread({
+                                    userId: userData._id,
+                                    wallId: WidgetWall.SocialItems.wid,
+                                    post: WidgetWall.SocialItems.items[0].id
+                                });
                             }
                         });
                     }
