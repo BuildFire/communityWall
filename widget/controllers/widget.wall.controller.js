@@ -1205,8 +1205,6 @@
             };
 
             WidgetWall.goInToThread = function (threadId) {
-            console.log('🚀 ~ file: widget.wall.controller.js:1227 ~ threadId:', threadId)
-
                 WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
