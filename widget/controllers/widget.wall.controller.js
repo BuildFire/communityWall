@@ -1036,7 +1036,7 @@
                                                 postImages: $scope.WidgetWall.images || []
                                             }, (err, r) => {
                                                 if (err) return console.log(err) ;                                         
-                                                followThread(r.id);
+                                                followThread();
                                             });
                                         }
                                     })
