@@ -1034,7 +1034,24 @@
                                             Posts.addPost({
                                                 postText: WidgetWall.postText ? WidgetWall.postText : "",
                                                 postImages: $scope.WidgetWall.images || []
-                                            }, (err, r) => err ? console.log(err) : console.log(r));
+                                            }, (err, r) => {
+                                                if (err) return console.log(err) ;
+
+                                                setTimeout(() => {
+                                                    const param = {
+                                                        userId: WidgetWall.SocialItems.userDetails.userId,
+                                                        wallId: WidgetWall.SocialItems.wid,
+                                                        instanceId: WidgetWall.SocialItems.context.instanceId,
+                                                        post: WidgetWall.SocialItems.items[0].id,
+                                                        _buildfire: {
+                                                            index: {
+                                                                text: WidgetWall.SocialItems.userDetails.userId + '-' + WidgetWall.SocialItems.wid
+                                                            }
+                                                        }
+                                                    }
+                                                    SubscribedUsersData.followThread(param);
+                                                }, 1000);
+                                            });
                                         }
                                     })
                                 }
@@ -1188,6 +1205,7 @@
             };
 
             WidgetWall.goInToThread = function (threadId) {
+            console.log('🚀 ~ file: widget.wall.controller.js:1227 ~ threadId:', threadId)
 
                 WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
