@@ -497,6 +497,10 @@
                 }
                 buildfire.deeplink.onUpdate((deeplinkData) => {
                     if (deeplinkData) {
+                        if(deeplinkData.split('=')[0] === 'postId'){
+                            WidgetWall.goInToThread(deeplinkData.split('=')[1]);
+                            return;
+                        }
                         let wallId = new URLSearchParams(deeplinkData).get('wid');
                         let userIds = new URLSearchParams(deeplinkData).get('userIds');
                         if (!userIds && wallId && wallId.length === 48) {
@@ -1030,10 +1034,30 @@
                                             Posts.addPost({
                                                 postText: WidgetWall.postText ? WidgetWall.postText : "",
                                                 postImages: $scope.WidgetWall.images || []
-                                            }, (err, r) => err ? console.log(err) : console.log(r));
+                                            }, (err, r) => {
+                                                if (err) return console.log(err) ;                                         
+                                                followThread();
+                                            });
                                         }
                                     })
                                 }
+                            }
+                        });
+                    }
+                });
+            }
+
+            const followThread = () =>{
+                WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        SubscribedUsersData.getGroupFollowingStatus(userData._id, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                            if (status.length) {
+                                SubscribedUsersData.followThread({
+                                    userId: userData._id,
+                                    wallId: WidgetWall.SocialItems.wid,
+                                    post: WidgetWall.SocialItems.items[0].id
+                                });
                             }
                         });
                     }
@@ -1184,7 +1208,6 @@
             };
 
             WidgetWall.goInToThread = function (threadId) {
-
                 WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
