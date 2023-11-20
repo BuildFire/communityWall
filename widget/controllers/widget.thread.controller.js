@@ -416,6 +416,16 @@
                                         text: Thread.post.text,
                                         postId: Thread.post.id,
                                         wid: Thread.SocialItems.wid
+                                    }).then(() => {
+                                      buildfire.dialog.toast({
+                                        message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                        type: 'info'
+                                      });
+                                    }, (err) => {
+                                      buildfire.dialog.toast({
+                                        message: Thread.SocialItems.languages.reportPostAlreadyReported || "This post has already been reported.",
+                                        type: 'info'
+                                      });
                                     });
                                 }
                             },

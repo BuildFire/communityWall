@@ -52,11 +52,11 @@
                 },
                 splitArrayIntoChunks: function(array) {
                     let chunkSize = 50, chunks = [];
-    
+
                     for (let i = 0; i < array.length; i += chunkSize) {
                         chunks.push(array.slice(i, i + chunkSize));
                     }
-    
+
                     return chunks;
                 },
             }
@@ -372,27 +372,33 @@
                     return deferred.promise;
                 },
                 reportPost: function (data) {
+                    const deferred = $q.defer();
                     buildfire.publicData.get('reports_' + data.wid, (err, result) => {
                         if (!result.data.length)
                             buildfire.publicData.save([{
                                 ...data
-                            }], 'reports_' + data.wid, () => {});
+                            }], 'reports_' + data.wid, deferred.resolve);
                         else {
-                            let alreadyReported = result.data.find(el =>
-                                el.reporter === data.reporter && el.postId === data.postId)
-                            if (!alreadyReported) {
-                                Analytics.trackAction("post-reported");
-                                result.data.push(data);
-                                buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
-                                    buildfire.messaging.sendMessageToControl({
-                                        'name': "POST_REPORTED",
-                                        wid: data.wid
-                                    });
-                                });
+                            const alreadyReported = result.data.find(el =>
+                                el.reporter === data.reporter && el.postId === data.postId);
+
+                            if (alreadyReported) {
+                              return deferred.reject('ALREADY_REPORTED');
                             }
+
+                            Analytics.trackAction("post-reported");
+                            result.data.push(data);
+                            buildfire.publicData.update(result.id, result.data, 'reports_' + data.wid, (err, saved) => {
+                              deferred.resolve();
+                              buildfire.messaging.sendMessageToControl({
+                                'name': "POST_REPORTED",
+                                wid: data.wid
+                              });
+                            });
                         }
 
                     });
+                  return deferred.promise;
                 },
                 addComment: function (data) {
                     var deferred = $q.defer();

@@ -117,11 +117,23 @@ const stringsConfig = {
 				, maxLength: 30
 				, defaultValue: "Delete Post"
 			},
-			reportPostMessage: {
-				title: "Your Report Has Been Successfully Submitted and Is Pending Review By The App Administrator"
-				, placeholder: "Your report has been successfully submitted and is pending review by the app administrator"
-				, maxLength: 100
-				, defaultValue: "Your report has been successfully submitted and is pending review by the app administrator"
+			reportPostSuccess: {
+				title: "Report Submitted And Pending Admin Review"
+				, placeholder: "Report submitted and pending admin review."
+				, maxLength: 50
+				, defaultValue: "Report submitted and pending admin review."
+			},
+			reportPostAlreadyReported: {
+				title: "This Post Has Already Been Reported"
+				, placeholder: "This post has already been reported."
+				, maxLength: 50
+				, defaultValue: "This post has already been reported."
+			},
+			reportPostUserBanned: {
+				title: "Owner of This Post is Already Banned."
+				, placeholder: "Owner of this post is already banned."
+				, maxLength: 50
+				, defaultValue: "Owner of this post is already banned."
 			}
 		}
 	},

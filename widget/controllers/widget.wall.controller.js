@@ -128,7 +128,7 @@
                         elements[i].style.setProperty("fill", obj.colors.icons, "important");
                     }
                     WidgetWall.appTheme = obj.colors;
-                    
+
                     elements[2].style.setProperty("fill", 'white', "important");
                     document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
                     document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
@@ -177,7 +177,7 @@
                                 }, () => {});
                                 WidgetWall.groupFollowingStatus = true;
                             } else if(status[0].data.banned){
-                              
+
                                     WidgetWall.SocialItems.userBanned = true;
                                     WidgetWall.allowFollowLeaveGroup = false;
                                     WidgetWall.allowCreateThread = false;
@@ -235,7 +235,7 @@
                     }
                 };
                 Follows.followPlugin((e, u) => e ? console.log(e) : console.log(u));
-                
+
                 SubscribedUsersData.save(params, function (err) {
                     if (err) console.log('Error while saving subscribed user data.');
                     else {
@@ -644,7 +644,7 @@
 
             // TODO
             /**
-             * 
+             *
              */
 
 
@@ -1035,7 +1035,7 @@
                                                 postText: WidgetWall.postText ? WidgetWall.postText : "",
                                                 postImages: $scope.WidgetWall.images || []
                                             }, (err, r) => {
-                                                if (err) return console.log(err) ;                                         
+                                                if (err) return console.log(err) ;
                                                 followThread();
                                             });
                                         }
@@ -1110,7 +1110,13 @@
                                 'languages': WidgetWall.SocialItems.languages
                             })
                             .then(function (data) {
-                                    if (WidgetWall.SocialItems.userBanned) return;
+                                    if (WidgetWall.SocialItems.userBanned) {
+                                      buildfire.dialog.toast({
+                                        message: WidgetWall.SocialItems.languages.reportPostUserBanned || "Owner of this post is already banned.",
+                                        type: 'info'
+                                      });
+                                      return;
+                                    }
                                     switch (data) {
                                         case WidgetWall.SocialItems.languages.reportPost:
                                             SocialDataStore.reportPost({
@@ -1121,6 +1127,16 @@
                                                 text: post.text,
                                                 postId: post.id,
                                                 wid: WidgetWall.SocialItems.wid
+                                            }).then(() => {
+                                              buildfire.dialog.toast({
+                                                message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                                type: 'info'
+                                              });
+                                            }, (err) => {
+                                              buildfire.dialog.toast({
+                                                message: WidgetWall.SocialItems.languages.reportPostAlreadyReported || "This post has already been reported.",
+                                                type: 'info'
+                                              });
                                             });
                                             break;
                                         case "delete":

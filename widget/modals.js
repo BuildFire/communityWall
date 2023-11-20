@@ -71,10 +71,6 @@
             MoreOptionsPopup.options.push(reportPost);
 
             $scope.ok = function (option) {
-                buildfire.dialog.toast({
-                    message: Info.languages.reportPostMessage || "Reported successfully, waiting admin approval ",
-                    type: 'info'
-                });
                 $modalInstance.close(option);
             };
             $scope.cancel = function () {
@@ -83,7 +79,6 @@
 
             $scope.block = function () {
                 console.log('block called');
-
             };
 
             $scope.deletePost=function(postId){
@@ -114,5 +109,5 @@
                 $modalInstance.close();
             }
         }])
-       
+
 })(window.angular, window.buildfire);
