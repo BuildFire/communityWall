@@ -22,6 +22,7 @@
             WidgetWall.util = util;
             $rootScope.showThread = true;
             WidgetWall.loading = true;
+            WidgetWall.scrollPosition = null;
 
             WidgetWall.showHideCommentBox = function () {
                 if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
@@ -937,6 +938,7 @@
                 })
             }
             WidgetWall.loadMorePosts = function () {
+                saveScrollPosition();
                 WidgetWall.SocialItems.getPosts(function (err, data) {
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
@@ -945,7 +947,23 @@
                         wid: WidgetWall.SocialItems.wid
                     });
                     $scope.$digest();
+                    restoreScrollPosition();
                 });
+            }
+
+
+            function restoreScrollPosition() {
+              const postsContainer = document.querySelector('.post-infinite-scroll');
+              if (typeof WidgetWall.scrollPosition === 'number' && postsContainer) {
+                postsContainer.scrollTop = WidgetWall.scrollPosition
+              }
+            }
+
+            function saveScrollPosition() {
+              const postsContainer = document.querySelector('.post-infinite-scroll');
+              if (postsContainer) {
+                WidgetWall.scrollPosition =  postsContainer.scrollTop;
+              }
             }
 
             function finalPostCreation(imageUrl) {
