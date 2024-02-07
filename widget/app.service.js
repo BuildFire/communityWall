@@ -59,6 +59,62 @@
 
                     return chunks;
                 },
+                isHTML: function(content) {
+                    const a = document.createElement('div');
+                    a.innerHTML = content;
+
+                    for (let c = a.childNodes, i = c.length; i--; ) {
+                        if (c[i].nodeType === 1) return true;
+                    }
+
+                    return false;
+                },
+                limitToHtmlSafely: function(htmlString, limit) {
+                    // Create a temporary container for the HTML content
+                    const tempDiv = document.createElement('div');
+                    tempDiv.style.display = 'none'; // Hide the element
+                    document.body.appendChild(tempDiv); // Append it to the body to ensure scripts are not executed
+
+                    // Use the safer method to set HTML content
+                    tempDiv.innerHTML = htmlString;
+
+                    let currentLength = 0;
+                    let shouldTruncate = false;
+
+                    // Function to traverse and possibly truncate text nodes
+                    function traverseAndTruncate(node) {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            if (currentLength + node.textContent.length > limit) {
+                                // Calculate remaining characters and truncate
+                                const remaining = limit - currentLength;
+                                node.textContent = node.textContent.slice(0, remaining);
+                                shouldTruncate = true;
+                            } else {
+                                currentLength += node.textContent.length;
+                            }
+                        } else if (node.nodeType === Node.ELEMENT_NODE) {
+                            Array.from(node.childNodes).forEach(traverseAndTruncate);
+                            if (shouldTruncate) {
+                                // Once truncation starts, remove all following siblings
+                                while (node.nextSibling) {
+                                    node.parentNode.removeChild(node.nextSibling);
+                                }
+                                shouldTruncate = false; // Reset flag after truncation
+                            }
+                        }
+                    }
+
+                    traverseAndTruncate(tempDiv);
+
+                    // Extract the processed HTML
+                    const resultHtml = tempDiv.innerHTML;
+
+                    // Clean up by removing the temporary element
+                    document.body.removeChild(tempDiv);
+
+                    return resultHtml;
+                }
+
             }
         }])
         .factory("SubscribedUsersData", function () {
