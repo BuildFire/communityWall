@@ -50,4 +50,21 @@
                 }
             };
         }])
+        .filter('truncateAndFormat', ['$sce','Util', 'limitToFilter',
+            function ($sce, Util, limitToFilter) {
+                // custom function to limit the post length + handle new lines
+                // created to handle edge cases of having HTML elements within the post
+                // instead of counting the HTML syntax, this function will only count the innerText
+                return function(input, limit, begin) {
+                    let content = Util.isHTML(input) ?
+                        Util.limitToHtmlSafely(input, limit) :
+                        limitToFilter(input, limit, begin);
+
+                    if (!content) return '';
+
+                    content = content.replace(/\n/g, '<br />');
+                    return $sce.trustAsHtml(content);
+                };
+            }
+        ])
 })(window.angular, window.location);

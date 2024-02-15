@@ -4,7 +4,7 @@
 <head>
     <meta name="buildfire" content="disableFastClick,disableSelect">
     <!-- Plugin CSS -->
-    
+
     <!-- build:bundleCSSFiles  -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- endbuild -->
@@ -17,18 +17,18 @@
     <script src="../../../scripts/angular/angular-route.min.js"></script>
     <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
-    <!-- build:bundleCFFiles  -->    
+    <!-- build:bundleCFFiles  -->
     <script src="./CommunityFeedAPI/data/analyticKeys.js"></script>
     <script src="./CommunityFeedAPI/data/Errors.js"></script>
     <script src="./CommunityFeedAPI/data/Follow.js"></script>
     <script src="./CommunityFeedAPI/data/Post.js"></script>
     <script src="./CommunityFeedAPI/dataAccess/Follows.js"></script>
-    <script src="./CommunityFeedAPI/dataAccess/Posts.js"></script>    
+    <script src="./CommunityFeedAPI/dataAccess/Posts.js"></script>
     <!-- endbuild -->
     <!-- build:bundleJSFiles  -->
     <script src="assets/js/moment.js"></script>
     <script src="modals.js"></script>
-    <script src="app.js"></script> 
+    <script src="app.js"></script>
     <script src="app.service.js"></script>
     <script src="enums.js"></script>
     <script src="assets/js/filters.js"></script>
@@ -53,11 +53,11 @@
             <div class="backgroundColorTheme content">
                 <div class="padding-zero" style="height: 100%;">
                     <div class="social-plugin social-wall">
-                        <div ng-show="WidgetWall.loadedPlugin && 
-                        WidgetWall.allowFollowLeaveGroup 
-                        || 
-                        (!WidgetWall.allowFollowLeaveGroup && WidgetWall.SocialItems.appSettings.showMembers) 
-                        " 
+                        <div ng-show="WidgetWall.loadedPlugin &&
+                        WidgetWall.allowFollowLeaveGroup
+                        ||
+                        (!WidgetWall.allowFollowLeaveGroup && WidgetWall.SocialItems.appSettings.showMembers)
+                        "
                         ng-class="{'head-btn': WidgetWall.allowFollowLeaveGroup, 'head-btn2': !WidgetWall.allowFollowLeaveGroup}" class="text-center" id="socialHeader">
                             <a>
                                 <div>
@@ -70,11 +70,11 @@
                                         margin: 5px;
                                         margin-left: 0;"
                                         >
-                                        
+
                                         <button class="btn btn-primary" id="followBtn" style="display: flex; font-size: 13px;">
                                             <span class="plusMinusIcon" >{{WidgetWall.groupFollowingStatus ? '&#8722;' : '&#43;'}}</span>
                                             {{WidgetWall.groupFollowingStatus ? (WidgetWall.SocialItems.languages.leaveGroup) : WidgetWall.SocialItems.languages.joinGroup}}
-                                        </button>                                    
+                                        </button>
                                     </p>
                                     <p class="text-primary" ng-show="WidgetWall.SocialItems.appSettings.showMembers" ng-click="WidgetWall.showMembers()" style="margin-bottom :0px;
                                         width: 2em;
@@ -103,7 +103,7 @@
                                     <div class="empty_state"></div>
                                 </div>
                                 <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items">
-                                    
+
                                     <div class="head">
                                         <div ng-class="{'social-profile-user-photo': WidgetWall.SocialItems.userDetails.userId == post.userId}"
                                             class="social-profile-photo">
@@ -155,7 +155,7 @@
                                         <p class="cursor-pointer">
                                             <span
                                                 ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
-                                                ng-bind-html="(WidgetWall.util.injectAnchors(post.text) | limitTo : (post.limit || 150) :0) | newLine"></span>
+                                                ng-bind-html="(WidgetWall.util.injectAnchors(post.text) | truncateAndFormat : (post.limit || 150) :0)"></span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
                                                 class="ng-cloak">...</span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
@@ -181,7 +181,7 @@
                                                 <span class="iconsTheme iconsFont"
                                                 ng-class="{notActive: !post.isUserLikeActive}">{{post.likes.length}}</span>
                                             </a>
-                                            
+
                                             <a ng-if="!WidgetWall.SocialItems.isPrivateChat"
                                                 ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 class="social-icon comments ng-cloak">
@@ -209,13 +209,13 @@
                     <div class="post-holder">
 
                         <div id="actionBtn"  ng-show="WidgetWall.SocialItems.appSettings.actionItem" class="add-message btn btn--act btn--add btn-primary" ng-click="WidgetWall.navigateTo()"
-                            on-touchend="WidgetWall.navigateTo()">                            
+                            on-touchend="WidgetWall.navigateTo()">
                             <svg ng-show="!WidgetWall.SocialItems.appSettings.actionItem.iconUrl" class="svgIcon" viewBox="0 0 24 24" aria-hidden="true" height="32px"
                             width="32px" version="1.1">
                             <path
                                 d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z">
                             </path>
-                        </svg> 
+                        </svg>
 
                         </div>
 
@@ -243,7 +243,7 @@
     </script>
     <script src="../../../scripts/buildfire/components/web-components/buildfire-components.js"></script>
     <script src="../../../scripts/buildfire/services/notifications/pushNotifications.js"></script>
-    <script src="../../../scripts/buildfire/components/toast/toast.js"></script>    
+    <script src="../../../scripts/buildfire/components/toast/toast.js"></script>
 </body>
 
 </html>
