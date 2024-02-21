@@ -637,7 +637,8 @@
                     if (error) return console.log(error);
 
                     if (data && data.result.length) {
-                        data.result.map(item => _this.items.push({...item.data, id: item.id}))
+                        const result = data.result.filter(item => !_this.items.find(_item => _item.id === item.id));
+                        result.map(item => _this.items.push({...item.data, id: item.id}))
                         if (data.totalRecord > _this.items.length) {
                             _this.showMorePosts = true;
                             _this.page++;
