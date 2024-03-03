@@ -102,7 +102,7 @@
                                 <div ng-show="WidgetWall.SocialItems.items.length<=0 && WidgetWall.loadedPlugin && !WidgetWall.loading">
                                     <div class="empty_state"></div>
                                 </div>
-                                <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items">
+                                <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items track by post.id">
 
                                     <div class="head">
                                         <div ng-class="{'social-profile-user-photo': WidgetWall.SocialItems.userDetails.userId == post.userId}"
