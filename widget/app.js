@@ -65,15 +65,12 @@
                         $rootScope.showThread = true;
                         $location.path('/');
                         $rootScope.$broadcast("navigatedBack");
-                        //location.reload();
                     }
                     else {
-                         if(result[0].label === 'thread' || result[0].label === 'members') {
-                            $rootScope.showThread = true;
-                            $location.path('/');
-                            $rootScope.$digest();
-                            buildfire.history.pop();
-                        } 
+                        $rootScope.showThread = true;
+                        $location.path('/');
+                        $rootScope.$digest();
+                        buildfire.history.pop();
                     }
                 });
             }
