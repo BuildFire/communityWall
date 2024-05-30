@@ -89,7 +89,10 @@
             console.log('MoreOptionsModalPopup Controller called-----');
             var MoreOptionsPopup=this;
 
-            $scope.commentId=Info.commentId;
+            $scope.comment=Info.comment;
+            $scope.threadId=Info.threadId;
+            $scope.userId=Info.userId;
+            $scope.commentUserId=Info.commentUserId;            
             $scope.languages = Info.languages;
 
             $scope.ok = function (option) {
@@ -104,8 +107,13 @@
 
             };
 
-            $scope.deleteComment=function(commentId){
-                $rootScope.$emit('Delete-Comment',{'commentId':commentId})
+            $scope.reportComment=function(comment){
+                $rootScope.$emit('Report-Comment',comment)
+                $modalInstance.close();
+            }
+
+            $scope.deleteComment=function(comment){
+                $rootScope.$emit('Delete-Comment', comment)
                 $modalInstance.close();
             }
         }])

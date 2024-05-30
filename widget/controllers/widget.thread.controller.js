@@ -419,10 +419,18 @@
                                             "itemType": "post"
                                         },
                                         (err, result) => {
-                                            Buildfire.dialog.toast({
-                                                message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                                                type: 'info'
-                                            });
+                                            if(err) {
+                                                Buildfire.dialog.toast({
+                                                    message: Thread.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
+                                                    type: 'info'
+                                                });                                
+                                            }
+                                            if(result) {
+                                                Buildfire.dialog.toast({
+                                                    message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                                    type: 'info'
+                                                });    
+                                            }
                                         }
                                     );
                                 }
@@ -438,15 +446,21 @@
              * showMoreOptions method shows the more Option popup.
              */
             Thread.showMoreOptionsComment = function (comment) {
+                console.log("********************************************************");
+                console.log(comment.userId);
+                console.log(Thread.SocialItems.userDetails.userId);
+                console.log(comment.commentId);
+                console.log("********************************************************");
+                
                 Thread.modalPopupThreadId = comment.threadId;
                 Thread.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
                         Modals.showMoreOptionsCommentModal({
-                            'comment': comment.commentId || '',
+                            'comment': comment,
                             'threadId': comment.threadId,
                             'userId': Thread.SocialItems.userDetails.userId,
-                            'commentUserId': comment.userDetails.userId,
+                            'commentUserId': comment.userId,
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
                                 console.log('Data in Successs------------------data');
@@ -604,12 +618,16 @@
                 Thread.deleteComment(comment);
             });
 
+            $rootScope.$on("Report-Comment", function (event, comment) {
+                Thread.reportComment(comment);
+            });
+
             Thread.deleteComment = function (comment) {
                 SocialDataStore.deleteComment(Thread.post.id, comment).then(
                     function (data) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.COMMENT_DELETED,
-                            comment: comment,
+                            comment: comment.comment,
                             post: Thread.post
                         });
                         let commentToDelete = Thread.post.comments.find(element => element.comment === comment.comment)
@@ -626,6 +644,12 @@
             };
 
             Thread.reportComment = function(comment){
+                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
+                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
+                console.log(comment)
+
+                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
+                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
                 Buildfire.services.reportAbuse.report(
                     {
                         "itemId": Thread.post.id,
@@ -633,15 +657,23 @@
                         "deeplink": {
                             "postId": Thread.post.id,
                             "wallId": Thread.SocialItems.wid,
-                            "commentId": comment.commentId || "123456"
+                            "commentId": comment.commentId
                         },
                         "itemType": "comment"
                     },
                     (err, result) => {
-                        Buildfire.dialog.toast({
-                            message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                            type: 'info'
-                        });
+                        if(err) {
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportCommentFail || "Report could not be submitted. It may have already been reported.",
+                                type: 'info'
+                            });                                
+                        }
+                        if(result) {
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportCommentSuccess || "Report submitted and pending admin review.",
+                                type: 'info'
+                            });    
+                        }
                     }
                 );
             }
@@ -652,6 +684,7 @@
                     comment: Thread.comment ? Thread.comment.replace(/[#&%+!@^*()-]/g, function (match) {
                         return encodeURIComponent(match)
                     }) : '',
+                    commentId: Util.UUID(),
                     userToken: Thread.SocialItems.userDetails.userToken,
                     imageUrl: imageUrl || null,
                     userId: Thread.SocialItems.userDetails.userId,

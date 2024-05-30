@@ -135,12 +135,24 @@ const stringsConfig = {
 				, maxLength: 50
 				, defaultValue: "Report submitted and pending admin review."
 			},
+			reportPostFail: {
+				title: "Report could not be submitted. It may have already been reported"
+				, placeholder: "Report could not be submitted. It may have already been reported."
+				, maxLength: 100
+				, defaultValue: "Report could not be submitted. It may have already been reported."
+			},
 			reportComemntSuccess: {
 				title: "Report Submitted And Pending Admin Review"
 				, placeholder: "Report submitted and pending admin review."
 				, maxLength: 50
 				, defaultValue: "Report submitted and pending admin review."
-			},			
+			},
+			reportCommentFail: {
+				title: "Report could not be submitted. It may have already been reported"
+				, placeholder: "Report could not be submitted. It may have already been reported."
+				, maxLength: 100
+				, defaultValue: "Report could not be submitted. It may have already been reported."
+			},
 			reportPostAlreadyReported: {
 				title: "This Post Has Already Been Reported"
 				, placeholder: "This post has already been reported."

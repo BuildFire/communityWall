@@ -1141,10 +1141,18 @@
                                                 "itemType": "post"
                                             },
                                             (err, result) => {
-                                                Buildfire.dialog.toast({
-                                                    message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                                                    type: 'info'
-                                                });
+                                                if(err) {
+                                                    Buildfire.dialog.toast({
+                                                        message: WidgetWall.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
+                                                        type: 'info'
+                                                    });                                
+                                                }
+                                                if(result) {
+                                                    Buildfire.dialog.toast({
+                                                        message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                                        type: 'info'
+                                                    });    
+                                                }
                                             }
                                         );
                                         break;

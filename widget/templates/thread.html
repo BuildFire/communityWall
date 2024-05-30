@@ -88,6 +88,7 @@
                             </div>
                             <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">
                                 <a class="more-info social-icon"
+                                    ng-hide = "comment.userId != Thread.SocialItems.userDetails.userId && !comment.commentId"
                                     ng-click="Thread.showMoreOptionsComment(comment)">
                                     <span class="material-icons-outlined">more_horiz</span>
                                 </a>

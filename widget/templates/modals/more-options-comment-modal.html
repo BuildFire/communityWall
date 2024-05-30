@@ -7,11 +7,11 @@
 			text-overflow: ellipsis;">{{languages.moreOptions}}</p>
 		</div>
 		<div class="dynamic-links">
-			<a ng-if="commentUserId == userId" class="text-danger"  ng-click="deleteComment(threadId)"
+			<a ng-if="commentUserId == userId" class="text-danger"  ng-click="deleteComment(comment)"
 			style="white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;">{{languages.deleteComment}}</a>
-			<a ng-if="commentUserId != userId && true " class="text-danger"  ng-click="reportComment(comment)"
+			<a ng-if="commentUserId != userId" class="text-danger"  ng-click="reportComment(comment)"
 			style="white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;">{{languages.reportComment}}</a>
