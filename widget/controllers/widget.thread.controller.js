@@ -408,25 +408,23 @@
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
                                 if (data === Thread.SocialItems.languages.reportPost) {
-                                    SocialDataStore.reportPost({
-                                        reportedAt: new Date(),
-                                        reporter: Thread.SocialItems.userDetails.email,
-                                        reported: Thread.post.userDetails.email,
-                                        reportedUserID: Thread.post.userId,
-                                        text: Thread.post.text,
-                                        postId: Thread.post.id,
-                                        wid: Thread.SocialItems.wid
-                                    }).then(() => {
-                                      buildfire.dialog.toast({
-                                        message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                                        type: 'info'
-                                      });
-                                    }, (err) => {
-                                      buildfire.dialog.toast({
-                                        message: Thread.SocialItems.languages.reportPostAlreadyReported || "This post has already been reported.",
-                                        type: 'info'
-                                      });
-                                    });
+                                    Buildfire.services.reportAbuse.report(
+                                        {
+                                            "itemId": Thread.post.id,
+                                            "reportedUserId": Thread.post.userId,
+                                            "deeplink": {
+                                                "postId": Thread.post.id,
+                                                "wallId": Thread.SocialItems.wid
+                                            },
+                                            "itemType": "post"
+                                        },
+                                        (err, result) => {
+                                            Buildfire.dialog.toast({
+                                                message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                                type: 'info'
+                                            });
+                                        }
+                                    );
                                 }
                             },
                             function (err) {
@@ -439,13 +437,16 @@
             /**
              * showMoreOptions method shows the more Option popup.
              */
-            Thread.showMoreOptionsComment = function (commentId) {
-                Thread.modalPopupThreadId = commentId;
+            Thread.showMoreOptionsComment = function (comment) {
+                Thread.modalPopupThreadId = comment.threadId;
                 Thread.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
                         Modals.showMoreOptionsCommentModal({
-                            'commentId': commentId,
+                            'comment': comment.commentId || '',
+                            'threadId': comment.threadId,
+                            'userId': Thread.SocialItems.userDetails.userId,
+                            'commentUserId': comment.userDetails.userId,
                             'languages': Thread.SocialItems.languages
                         }).then(function (data) {
                                 console.log('Data in Successs------------------data');
@@ -623,6 +624,27 @@
                     }
                 );
             };
+
+            Thread.reportComment = function(comment){
+                Buildfire.services.reportAbuse.report(
+                    {
+                        "itemId": Thread.post.id,
+                        "reportedUserId": Thread.post.userId,
+                        "deeplink": {
+                            "postId": Thread.post.id,
+                            "wallId": Thread.SocialItems.wid,
+                            "commentId": comment.commentId || "123456"
+                        },
+                        "itemType": "comment"
+                    },
+                    (err, result) => {
+                        Buildfire.dialog.toast({
+                            message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                            type: 'info'
+                        });
+                    }
+                );
+            }
 
             Thread.addComment = function (imageUrl) {
                 let commentData = {

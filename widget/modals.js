@@ -57,18 +57,18 @@
             };
         }])
         .controller('MoreOptionsModalPopupCtrl', ['$scope', '$modalInstance', 'Info','$rootScope','SocialDataStore','Buildfire', function ($scope, $modalInstance, Info,$rootScope,SocialDataStore,Buildfire) {
-            console.log('MoreOptionsModalPopup Controller called-----');
             var MoreOptionsPopup=this;
             MoreOptionsPopup.option='';
             MoreOptionsPopup.options = []
-            console.log("MoreOptionsModalPopupCtrl", Info)
             $scope.postId=Info.postId;
             $scope.userId=Info.userId;
             $scope.socialItemUserId=Info.socialItemUserId;
             $scope.languages = Info.languages;
-            console.log("INFO LANGUAGES", Info.languages)
             let reportPost =Info.languages.reportPost;
-            MoreOptionsPopup.options.push(reportPost);
+            let blockUser =Info.languages.blockUser;
+            
+            if($scope.socialItemUserId != $scope.userId)  MoreOptionsPopup.options.push(reportPost);
+            if($scope.socialItemUserId != $scope.userId)  MoreOptionsPopup.options.push(blockUser);
 
             $scope.ok = function (option) {
                 $modalInstance.close(option);

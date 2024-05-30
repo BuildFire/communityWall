@@ -50,7 +50,13 @@ const stringsConfig = {
 				, placeholder: "Delete Comment"
 				, maxLength: 30
 				, defaultValue: "Delete Comment"
-			}
+			},
+			reportComment: {
+				title: "Report Comment"
+				, placeholder: "Report Comment"
+				, maxLength: 30
+				, defaultValue: "Report Comment"
+			}			
 		}
 	},
 	members: {
@@ -109,8 +115,14 @@ const stringsConfig = {
 				title: "Report Post"
 				, placeholder: "Report Post"
 				, maxLength: 30
-				, defaultValue: "Report Post and Block User"
-			},
+				, defaultValue: "Report Post"
+			},		
+			blockUser: {
+				title: "Block User"
+				, placeholder: "Block User"
+				, maxLength: 30
+				, defaultValue: "Block User"
+			},			
 			deletePost: {
 				title: "Delete Post"
 				, placeholder: "Delete Post"
@@ -123,6 +135,12 @@ const stringsConfig = {
 				, maxLength: 50
 				, defaultValue: "Report submitted and pending admin review."
 			},
+			reportComemntSuccess: {
+				title: "Report Submitted And Pending Admin Review"
+				, placeholder: "Report submitted and pending admin review."
+				, maxLength: 50
+				, defaultValue: "Report submitted and pending admin review."
+			},			
 			reportPostAlreadyReported: {
 				title: "This Post Has Already Been Reported"
 				, placeholder: "This post has already been reported."

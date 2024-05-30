@@ -1128,55 +1128,51 @@
                                 'languages': WidgetWall.SocialItems.languages
                             })
                             .then(function (data) {
-                                    if (WidgetWall.SocialItems.userBanned) {
-                                      buildfire.dialog.toast({
-                                        message: WidgetWall.SocialItems.languages.reportPostUserBanned || "Owner of this post is already banned.",
-                                        type: 'info'
-                                      });
-                                      return;
-                                    }
-                                    switch (data) {
-                                        case WidgetWall.SocialItems.languages.reportPost:
-                                            SocialDataStore.reportPost({
-                                                reportedAt: new Date(),
-                                                reporter: WidgetWall.SocialItems.userDetails.email,
-                                                reported: post.userDetails.email,
-                                                reportedUserID: post.userId,
-                                                text: post.text,
-                                                postId: post.id,
-                                                wid: WidgetWall.SocialItems.wid
-                                            }).then(() => {
-                                              buildfire.dialog.toast({
-                                                message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                                                type: 'info'
-                                              });
-                                            }, (err) => {
-                                              buildfire.dialog.toast({
-                                                message: WidgetWall.SocialItems.languages.reportPostAlreadyReported || "This post has already been reported.",
-                                                type: 'info'
-                                              });
-                                            });
-                                            break;
-                                        case "delete":
-                                            WidgetWall.deletePost(post.id);
-                                            break;
-                                        case MORE_MENU_POPUP.BLOCK:
-
-                                            $modal
-                                                .open({
-                                                    templateUrl: 'templates/modals/delete-post-modal.html',
-                                                    controller: 'MoreOptionsModalPopupCtrl',
-                                                    controllerAs: 'MoreOptionsPopup',
-                                                    size: 'sm',
-                                                    resolve: {
-                                                        Info: function () {
-                                                            return post.id;
-                                                        }
-                                                    }
+                                switch (data) {
+                                    case WidgetWall.SocialItems.languages.reportPost:
+                                        Buildfire.services.reportAbuse.report(
+                                            {
+                                                "itemId": post.id,
+                                                "reportedUserId": post.userId,
+                                                "deeplink": {
+                                                    "postId": post.id,
+                                                    "wallId": WidgetWall.SocialItems.wid
+                                                },
+                                                "itemType": "post"
+                                            },
+                                            (err, result) => {
+                                                Buildfire.dialog.toast({
+                                                    message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                                    type: 'info'
                                                 });
-                                            break;
-                                        default:
-                                    }
+                                            }
+                                        );
+                                        break;
+
+                                    case WidgetWall.SocialItems.languages.blockUser:
+                                        // TODO:
+                                        break;
+
+                                    case "delete":
+                                        WidgetWall.deletePost(post.id);
+                                        break;
+                                    case MORE_MENU_POPUP.BLOCK:
+
+                                        $modal
+                                            .open({
+                                                templateUrl: 'templates/modals/delete-post-modal.html',
+                                                controller: 'MoreOptionsModalPopupCtrl',
+                                                controllerAs: 'MoreOptionsPopup',
+                                                size: 'sm',
+                                                resolve: {
+                                                    Info: function () {
+                                                        return post.id;
+                                                    }
+                                                }
+                                            });
+                                        break;
+                                    default:
+                                }
 
                                 },
                                 function (err) {

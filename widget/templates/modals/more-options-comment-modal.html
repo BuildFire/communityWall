@@ -7,10 +7,14 @@
 			text-overflow: ellipsis;">{{languages.moreOptions}}</p>
 		</div>
 		<div class="dynamic-links">
-			<a class="text-danger"  ng-click="deleteComment(commentId)"
+			<a ng-if="commentUserId == userId" class="text-danger"  ng-click="deleteComment(threadId)"
 			style="white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;">{{languages.deleteComment}}</a>
+			<a ng-if="commentUserId != userId && true " class="text-danger"  ng-click="reportComment(comment)"
+			style="white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;">{{languages.reportComment}}</a>
 		</div>
 	</div>
 	<div class="bottom border-top-grey clearfix">

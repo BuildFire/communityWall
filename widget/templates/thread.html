@@ -87,8 +87,8 @@
                                 </div>
                             </div>
                             <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">
-                                <a class="more-info social-icon" ng-if="Thread.SocialItems.userDetails.userId == comment.userId"
-                                    ng-click="Thread.showMoreOptionsComment(comment.threadId)">
+                                <a class="more-info social-icon"
+                                    ng-click="Thread.showMoreOptionsComment(comment)">
                                     <span class="material-icons-outlined">more_horiz</span>
                                 </a>
                                 <a class="social-icon likes" ng-click="Thread.likeComment(comment, 'comment')">
