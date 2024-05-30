@@ -627,7 +627,7 @@
                     function (data) {
                         Buildfire.messaging.sendMessageToControl({
                             name: EVENTS.COMMENT_DELETED,
-                            comment: comment.comment,
+                            comment: comment,
                             post: Thread.post
                         });
                         let commentToDelete = Thread.post.comments.find(element => element.comment === comment.comment)
