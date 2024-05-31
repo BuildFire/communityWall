@@ -413,6 +413,8 @@
                                             "itemId": Thread.post.id,
                                             "reportedUserId": Thread.post.userId,
                                             "deeplink": {
+                                                "fromReportAbuse": true,
+                                                "post": Thread.post,
                                                 "postId": Thread.post.id,
                                                 "wallId": Thread.SocialItems.wid
                                             },
@@ -644,17 +646,13 @@
             };
 
             Thread.reportComment = function(comment){
-                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
-                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
-                console.log(comment)
-
-                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
-                console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
                 Buildfire.services.reportAbuse.report(
                     {
                         "itemId": Thread.post.id,
                         "reportedUserId": Thread.post.userId,
                         "deeplink": {
+                        "fromReportAbuse": true,
+                            "post": Thread.post,
                             "postId": Thread.post.id,
                             "wallId": Thread.SocialItems.wid,
                             "commentId": comment.commentId
@@ -807,14 +805,6 @@
                                 Buildfire.history.pop();
                                 Modals.close('Post already deleted');
                             }
-                            if (!$scope.$$phase)
-                                $scope.$digest();
-                            break;
-                        case EVENTS.BAN_USER:
-                            Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
-                                return el.userId != event.id;
-                            });
-                            Modals.close('User already banned');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;

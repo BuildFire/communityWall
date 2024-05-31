@@ -498,6 +498,10 @@
                 }
                 buildfire.deeplink.onUpdate((deeplinkData) => {
                     if (deeplinkData) {
+                        if(deeplinkData.fromReportAbuse) {
+                            const serializedData = encodeURIComponent(JSON.stringify(deeplinkData));
+                            return Location.go(`/report/${serializedData}`);
+                        }
                         if(deeplinkData.split('=')[0] === 'postId'){
                             WidgetWall.goInToThread(deeplinkData.split('=')[1]);
                             return;
@@ -1135,6 +1139,8 @@
                                                 "itemId": post.id,
                                                 "reportedUserId": post.userId,
                                                 "deeplink": {
+                                                    "fromReportAbuse": true,
+                                                    "post": post,
                                                     "postId": post.id,
                                                     "wallId": WidgetWall.SocialItems.wid
                                                 },
