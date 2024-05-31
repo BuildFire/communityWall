@@ -24,6 +24,11 @@
                     controllerAs: 'Members',
                     controller: 'MembersCtrl'
                 })
+                .when('/report/:id', {
+                    templateUrl: 'templates/report.html',
+                    controllerAs: 'Report',
+                    controller: 'ReportCtrl'
+                })
                 .otherwise('/');
 
             var interceptor = ['$q', function ($q) {
