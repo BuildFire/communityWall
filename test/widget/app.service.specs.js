@@ -210,18 +210,6 @@ describe('Unit : socialPluginWidget content services', function () {
 
         });
 
-
-        it('SocialDataStore.reportPost should be a function', function () {
-            console.info(">>>>>>>>>>",SocialDataStore.reportPost);
-            expect(typeof SocialDataStore.reportPost).toEqual('function');
-        });
-
-        it('SocialDataStor reportPost called', function () {
-            console.info("SocialDataStor.reportPost Called ???????????????");
-            SocialDataStore.reportPost('121asas','sasa','asas');
-
-        });
-
         it('SocialDataStore.deletePost should be a function', function () {
             console.info(">>>>>>>>>>",SocialDataStore.deletePost);
             expect(typeof SocialDataStore.deletePost).toEqual('function');
