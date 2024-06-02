@@ -24,7 +24,7 @@
                     controllerAs: 'Members',
                     controller: 'MembersCtrl'
                 })
-                .when('/report/:id', {
+                .when('/report', {
                     templateUrl: 'templates/report.html',
                     controllerAs: 'Report',
                     controller: 'ReportCtrl'

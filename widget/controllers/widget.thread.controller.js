@@ -414,7 +414,6 @@
                                             "reportedUserId": Thread.post.userId,
                                             "deeplink": {
                                                 "fromReportAbuse": true,
-                                                "post": Thread.post,
                                                 "postId": Thread.post.id,
                                                 "wallId": Thread.SocialItems.wid
                                             },
@@ -651,8 +650,7 @@
                         "itemId": Thread.post.id,
                         "reportedUserId": Thread.post.userId,
                         "deeplink": {
-                        "fromReportAbuse": true,
-                            "post": Thread.post,
+                            "fromReportAbuse": true,
                             "postId": Thread.post.id,
                             "wallId": Thread.SocialItems.wid,
                             "commentId": comment.commentId

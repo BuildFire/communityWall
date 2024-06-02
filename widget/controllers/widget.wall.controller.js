@@ -496,11 +496,45 @@
                         }
                     });
                 }
-                buildfire.deeplink.onUpdate((deeplinkData) => {
+
+                buildfire.deeplink.getData((deeplinkData) => {
                     if (deeplinkData) {
                         if(deeplinkData.fromReportAbuse) {
-                            const serializedData = encodeURIComponent(JSON.stringify(deeplinkData));
-                            return Location.go(`/report/${serializedData}`);
+                            WidgetWall.SocialItems.reportData = deeplinkData;
+                            $rootScope.showThread = false;
+                            $timeout(function() {
+                                Location.go('#/report');
+                            });
+                            return;
+                        }
+                        if(deeplinkData.split('=')[0] === 'postId'){
+                            WidgetWall.goInToThread(deeplinkData.split('=')[1]);
+                            return;
+                        }
+                        let wallId = new URLSearchParams(deeplinkData).get('wid');
+                        let userIds = new URLSearchParams(deeplinkData).get('userIds');
+                        if (!userIds && wallId && wallId.length === 48) {
+                            const user1Id = wallId.slice(0, 24);
+                            const user2Id = wallId.slice(24, 48);
+                            const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
+                                user2Id : user1Id;
+
+                            WidgetWall.openChat(otherUser);
+                        } else {
+                            WidgetWall.openGroupChat(userIds, wallId);
+                        }
+                    }
+                });
+
+                Buildfire.deeplink.onUpdate((deeplinkData) => {
+                    if (deeplinkData) {
+                        if(deeplinkData.fromReportAbuse) {
+                            WidgetWall.SocialItems.reportData = deeplinkData
+                            $rootScope.showThread = false;
+                            $timeout(function() {
+                                Location.go('#/report');
+                            });
+                            return;
                         }
                         if(deeplinkData.split('=')[0] === 'postId'){
                             WidgetWall.goInToThread(deeplinkData.split('=')[1]);
@@ -1140,7 +1174,6 @@
                                                 "reportedUserId": post.userId,
                                                 "deeplink": {
                                                     "fromReportAbuse": true,
-                                                    "post": post,
                                                     "postId": post.id,
                                                     "wallId": WidgetWall.SocialItems.wid
                                                 },

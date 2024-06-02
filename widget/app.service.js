@@ -14,7 +14,7 @@
             return {
                 go: function (path) {
                     _location.href = path;
-                    let label = path.includes('thread') ? 'thread' : 'members';
+                    let label = path.includes('thread') ? 'thread' : path.includes('members') ? 'members' : 'report';
                     buildfire.history.push(label, {});
                 },
                 goToHome: function () {
@@ -433,7 +433,6 @@
                     });
                     return deferred.promise;
                 },
-
                 addComment: function (data) {
                     var deferred = $q.defer();
                     if (data.userDetails.userTags) {
@@ -477,7 +476,10 @@
                     buildfire.publicData.getById(threadId, 'posts', function (error, result) {
                         if (error) return deferred.reject(error);
                         if (result) {
-                            let commentToDelete = result.data.comments.find(element => element.comment === comment.comment)
+                            let commentToDelete = result.data.comments.find((element) => {
+                                if(comment.commentId) return element.commentId === comment.commentId;
+                                else return element.comment === comment.comment;
+                            })
                             let index = result.data.comments.indexOf(commentToDelete);
                             result.data.comments.splice(index, 1);
                             buildfire.publicData.update(result.id, result.data, 'posts', function (error, result) {
@@ -486,7 +488,15 @@
                         }
                     });
                     return deferred.promise;
-                }
+                },
+                getPost: function (postId) {
+                    var deferred = $q.defer();
+                    buildfire.publicData.getById(postId, 'posts', function (error, result) {
+                        if (error) return deferred.reject(error);
+                        if (result) return deferred.resolve(result.data);
+                    });
+                    return deferred.promise;
+                }                
             }
         }])
         .factory('SocialItems', ['Util', '$rootScope', function (Util, $rootScope) {
@@ -505,6 +515,7 @@
                 _this.pageSize = 5;
                 _this.page = 0;
                 _this.indexingUpdateDone = false;
+                _this.reportData = {};
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
