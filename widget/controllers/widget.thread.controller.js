@@ -434,6 +434,18 @@
                                             }
                                         }
                                     );
+                                } else if(data === Thread.SocialItems.languages.blockUser){
+                                    SubscribedUsersData.blockUser(Thread.post.userId, (err, result) => {
+                                        if(err) {
+                                            console.log(err);
+                                        }
+                                        if(result) {
+                                            Buildfire.dialog.toast({
+                                                message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
+                                                type: 'info'
+                                            });
+                                        }
+                                    });
                                 }
                             },
                             function (err) {
@@ -623,6 +635,10 @@
                 Thread.reportComment(comment);
             });
 
+            $rootScope.$on("Block-User", function (event, userId) {
+                Thread.blockUser(userId);
+            });
+
             Thread.deleteComment = function (comment) {
                 SocialDataStore.deleteComment(Thread.post.id, comment).then(
                     function (data) {
@@ -705,6 +721,20 @@
                     });
             }
 
+            Thread.blockUser = function(userId) {
+                SubscribedUsersData.blockUser(post.userId, (err, result) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                    if(result) {
+                        Buildfire.dialog.toast({
+                            message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
+                            type: 'info'
+                        });
+                    }
+                });
+            }
+            
             Thread.getPostContent = function (data) {
                 if (data && data.results && data.results.length > 0 && !data.cancelled) {
                     $scope.Thread.comment = data.results["0"].textValue;

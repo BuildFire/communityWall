@@ -102,9 +102,9 @@
                 $modalInstance.dismiss('no');
             };
 
-            $scope.block = function () {
-                console.log('block called');
-
+            $scope.block = function (userId) {
+                $rootScope.$emit('Block-User',userId)
+                $modalInstance.close();
             };
 
             $scope.reportComment=function(comment){

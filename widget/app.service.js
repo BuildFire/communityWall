@@ -355,6 +355,13 @@
                             string1: data.userId + '-' + data.wallId
                         }]
                     }
+                    if (Array.isArray(data.blockedUsers)) {
+                        data.blockedUsers.forEach(function (blockedUser) {
+                            index.array1.push({
+                                string1: `blockedUser_${blockedUser}`
+                            });
+                        });
+                    }                    
                     return index;
                 },
                 checkIfCanChat: function (toUser, callback) {
@@ -392,7 +399,42 @@
                             })
                         }
                     })
-                }
+                },
+                blockUser: function (userId, callback) {
+                    let _this = this;
+                    window.buildfire.auth.getCurrentUser((err, currentUser) => {
+                        if (err) {
+                            callback(err, false)
+                        }
+                        if (currentUser) {
+                            window.buildfire.publicData.search({
+                                filter: {
+                                    $and: [{
+                                        "_buildfire.index.array1.string1": `${currentUser.userId}-`
+                                    }, {
+                                        "_buildfire.index.string1": ""
+                                    }]
+                                }
+                            }, 'subscribedUsersData', function (err, data) {
+                                if (err) callback(err, false);
+                                else if (data && data.length > 0) {
+                                    
+                                    if (data[0].data.blockedUsers && !data[0].data.blockedUsers.includes(item)) {
+                                        data[0].data.blockedUsers.push(userId);
+                                    }
+
+                                    buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
+                                        callback(null, result);
+                                    });
+                                } else {
+                                    callback(err, false)
+                                }
+                            })
+                        } else {
+                            callback(err, false)
+                        }
+                    });
+                },
             }
         })
         .factory("SocialDataStore", ['$q', function ($q) {

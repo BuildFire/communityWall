@@ -130,25 +130,31 @@ const stringsConfig = {
 				, defaultValue: "Delete Post"
 			},
 			reportPostSuccess: {
-				title: "Report Submitted And Pending Admin Review"
+				title: "Report Post Success"
 				, placeholder: "Report submitted and pending admin review."
 				, maxLength: 50
 				, defaultValue: "Report submitted and pending admin review."
 			},
 			reportPostFail: {
-				title: "Report could not be submitted. It may have already been reported"
+				title: "Report Post Failure"
 				, placeholder: "Report could not be submitted. It may have already been reported."
 				, maxLength: 100
 				, defaultValue: "Report could not be submitted. It may have already been reported."
 			},
+			blockUserSuccess : {
+				title: "Block User Success"
+				, placeholder: "User has been blocked succesfully"
+				, maxLength: 50
+				, defaultValue: "User has been blocked succesfully"
+			},
 			reportComemntSuccess: {
-				title: "Report Submitted And Pending Admin Review"
+				title: "Report Comment Success"
 				, placeholder: "Report submitted and pending admin review."
 				, maxLength: 50
 				, defaultValue: "Report submitted and pending admin review."
 			},
 			reportCommentFail: {
-				title: "Report could not be submitted. It may have already been reported"
+				title: "Report Comment Failure"
 				, placeholder: "Report could not be submitted. It may have already been reported."
 				, maxLength: 100
 				, defaultValue: "Report could not be submitted. It may have already been reported."

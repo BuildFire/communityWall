@@ -15,6 +15,10 @@
 			style="white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;">{{languages.reportComment}}</a>
+			<a ng-if="commentUserId != userId" class="text-danger"  ng-click="block(commentUserId)"
+			style="white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;">{{languages.blockUser}}</a>
 		</div>
 	</div>
 	<div class="bottom border-top-grey clearfix">

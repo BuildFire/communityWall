@@ -1197,7 +1197,17 @@
                                         break;
 
                                     case WidgetWall.SocialItems.languages.blockUser:
-                                        // TODO:
+                                        SubscribedUsersData.blockUser(post.userId, (err, result) => {
+                                            if(err) {
+                                                console.log(err);
+                                            }
+                                            if(result) {
+                                                Buildfire.dialog.toast({
+                                                    message: WidgetWall.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
+                                                    type: 'info'
+                                                });
+                                            }
+                                        });
                                         break;
 
                                     case "delete":
