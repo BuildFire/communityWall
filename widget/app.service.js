@@ -496,7 +496,8 @@
                     postData._buildfire = {
                         index: {
                             string1: postData.wid,
-                            date1: new Date().getTime()
+                            date1: new Date().getTime(),
+                            array1: [{string1: `createdBy_${postData.userDetails.userId}`}]
                         }
                     }
                     buildfire.publicData.insert(postData, 'posts', (error, result) => {

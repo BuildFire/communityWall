@@ -119,7 +119,7 @@
                 const blockedUsers = Thread.SocialItems.blockedUsers;
                 const postComments = Thread.post.comments;
 
-                Thread.post.comments = postComments.filter(comment => blockedUsers.includes(comment.userId));
+                Thread.post.comments = postComments.filter(comment => !blockedUsers.includes(comment.userId));
                                 
                 if (!$scope.$$phase) $scope.$digest();
             }
@@ -427,7 +427,7 @@
                                             "itemType": "post"
                                         },
                                         (err, result) => {
-                                            if(err) {
+                                            if(err && err != 'Report is cancelled') {
                                                 Buildfire.dialog.toast({
                                                     message: Thread.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
                                                     type: 'info'
@@ -465,13 +465,7 @@
             /**
              * showMoreOptions method shows the more Option popup.
              */
-            Thread.showMoreOptionsComment = function (comment) {
-                console.log("********************************************************");
-                console.log(comment.userId);
-                console.log(Thread.SocialItems.userDetails.userId);
-                console.log(comment.commentId);
-                console.log("********************************************************");
-                
+            Thread.showMoreOptionsComment = function (comment) {                
                 Thread.modalPopupThreadId = comment.threadId;
                 Thread.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
@@ -681,7 +675,7 @@
                         "itemType": "comment"
                     },
                     (err, result) => {
-                        if(err) {
+                        if(err && err != 'Report is cancelled'){
                             Buildfire.dialog.toast({
                                 message: Thread.SocialItems.languages.reportCommentFail || "Report could not be submitted. It may have already been reported.",
                                 type: 'info'
@@ -738,6 +732,7 @@
                             message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
                             type: 'info'
                         });
+                        Location.goToHome();
                     }
                 });
             }

@@ -4,6 +4,7 @@ class Posts{
 
     static lastPostTime = "";
     static skip = 0;
+    
     static createPost = (post, user, isPublic = false) =>{
         let displayName = "Someone";
         if(isPublic){
@@ -38,7 +39,6 @@ class Posts{
         })
     } 
 
-
     static searchPosts = (options,callback) =>{
         if(!options.filter) return console.error("Malformatted data");
         buildfire.appData.search({
@@ -54,6 +54,7 @@ class Posts{
             return callback(null,r);
         });
     }
+    
     static addPost = (post , callback) =>{
         console.log(post);
         if((!post.postText && !post.postImages) ||  post?.postImages && !Array.isArray(post.postImages) || (post?.postImages && Array.isArray(post.postImages) && post.postImages.length == 0 && !post?.postText)) return callback({code:errorsList.ERROR_400,message:"Must have atleast post text or post images, post images must be an array of atleast one image url"});

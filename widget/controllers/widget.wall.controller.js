@@ -464,7 +464,7 @@
                         WidgetWall.setAppTheme();
                         WidgetWall.getBlockedUsers((error, res) => {
                             if(err) console.log("Error while fetching blocked users ", err);
-                            if(result) WidgetWall.SocialItems.blockedUsers = res;
+                            if(res) WidgetWall.SocialItems.blockedUsers = res;
                             WidgetWall.getPosts();
                             WidgetWall.SocialItems.authenticateUserWOLogin(null, (err, user) => {
                                 if (err) return console.error("Getting user failed.", err);
@@ -509,7 +509,7 @@
                     });
                 }
 
-                buildfire.deeplink.getData((deeplinkData) => {
+                Buildfire.deeplink.getData((deeplinkData) => {
                     if (deeplinkData) {
                         if(deeplinkData.fromReportAbuse) {
                             WidgetWall.SocialItems.reportData = deeplinkData;
@@ -539,7 +539,7 @@
                 });
 
                 Buildfire.deeplink.onUpdate((deeplinkData) => {
-                    if (deeplinkData) {
+                    if (deeplinkData && $location.path() == '/') {
                         if(deeplinkData.fromReportAbuse) {
                             WidgetWall.SocialItems.reportData = deeplinkData
                             $rootScope.showThread = false;
@@ -565,7 +565,7 @@
                             WidgetWall.openGroupChat(userIds, wallId);
                         }
                     }
-                });
+                }, true);
             }
 
             WidgetWall.sanitizeWall = function (callback) {
@@ -1186,7 +1186,7 @@
                                                 "itemType": "post"
                                             },
                                             (err, result) => {
-                                                if(err) {
+                                                if(err && err != 'Report is cancelled') {
                                                     Buildfire.dialog.toast({
                                                         message: WidgetWall.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
                                                         type: 'info'
@@ -1212,6 +1212,7 @@
                                                     message: WidgetWall.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
                                                     type: 'info'
                                                 });
+                                                Location.goToHome();
                                             }
                                         });
                                         break;
