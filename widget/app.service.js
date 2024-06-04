@@ -402,12 +402,12 @@
                 },
                 blockUser: function (userId, callback) {
                     let _this = this;
-                    window.buildfire.auth.getCurrentUser((err, currentUser) => {
+                    buildfire.auth.getCurrentUser((err, currentUser) => {
                         if (err) {
                             callback(err, false)
                         }
                         if (currentUser) {
-                            window.buildfire.publicData.search({
+                            buildfire.publicData.search({
                                 filter: {
                                     $and: [{
                                         "_buildfire.index.array1.string1": `${currentUser.userId}-`
@@ -419,7 +419,11 @@
                                 if (err) callback(err, false);
                                 else if (data && data.length > 0) {
                                     
-                                    if (data[0].data.blockedUsers && !data[0].data.blockedUsers.includes(item)) {
+                                    if(!data[0].data.blockedUsers) {
+                                        data[0].data.blockedUsers = [];
+                                    }
+
+                                    if (!data[0].data.blockedUsers.includes(userId)) {
                                         data[0].data.blockedUsers.push(userId);
                                     }
 
@@ -435,6 +439,39 @@
                         }
                     });
                 },
+                getBlockedUsers: function(callback) {
+                    let _this = this;
+                    buildfire.auth.getCurrentUser((err, currentUser) => {
+                        if (err) {
+                            callback(err, false)
+                        }
+                        if (currentUser) {
+                            buildfire.publicData.search({
+                                filter: {
+                                    $and: [{
+                                        "_buildfire.index.array1.string1": `${currentUser.userId}-`
+                                    }, {
+                                        "_buildfire.index.string1": ""
+                                    }]
+                                }
+                            }, 'subscribedUsersData', function (err, data) {
+                                if (err) callback(err, false);
+                                else if (data && data.length > 0) {
+                                    
+                                    if (data[0].data.blockedUsers) {
+                                        callback(null, data[0].data.blockedUsers);
+                                    } else {
+                                        callback(null, []);
+                                    }
+                                } else {
+                                    callback(err, false)
+                                }
+                            })
+                        } else {
+                            callback(err, false)
+                        }
+                    });
+                }
             }
         })
         .factory("SocialDataStore", ['$q', function ($q) {
@@ -558,6 +595,7 @@
                 _this.page = 0;
                 _this.indexingUpdateDone = false;
                 _this.reportData = {};
+                _this.blockedUsers = [];
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
@@ -708,20 +746,43 @@
             }
 
             function getFilter() {
-                let filter = {}
-                if (_this.wid === "")
+                let filter = {};
+                
+                const blockedUserStrings = _this.blockedUsers.map(userId => `createdBy_${userId}`);
+            
+                if (_this.wid === "") {
                     filter = {
-                        '_buildfire.index.string1': {
-                            $eq: ''
-                        }
-                    }
-                else
+                        $and: [
+                            {
+                                '_buildfire.index.string1': {
+                                    $eq: ''
+                                }
+                            },
+                            {
+                                '_buildfire.index.array1.string1': {
+                                    $nin: blockedUserStrings
+                                }
+                            }
+                        ]
+                    };
+                } else {
                     filter = {
-                        "_buildfire.index.string1": {
-                            "$regex": _this.wid,
-                            "$options": "i"
-                        }
-                    }
+                        $and: [
+                            {
+                                "_buildfire.index.string1": {
+                                    "$regex": _this.wid,
+                                    "$options": "i"
+                                }
+                            },
+                            {
+                                '_buildfire.index.array1.string1': {
+                                    $nin: blockedUserStrings
+                                }
+                            }
+                        ]
+                    };
+                }
+            
                 return filter;
             }
 

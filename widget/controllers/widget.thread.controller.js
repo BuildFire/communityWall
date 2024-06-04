@@ -114,6 +114,13 @@
 
             Thread.showComments = () => {
                 Thread.processedComments = true;
+
+                // Filtering blocked users comments
+                const blockedUsers = Thread.SocialItems.blockedUsers;
+                const postComments = Thread.post.comments;
+
+                Thread.post.comments = postComments.filter(comment => blockedUsers.includes(comment.userId));
+                                
                 if (!$scope.$$phase) $scope.$digest();
             }
 

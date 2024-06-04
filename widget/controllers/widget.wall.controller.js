@@ -444,6 +444,14 @@
                 }
             };
 
+            WidgetWall.getBlockedUsers = function(callback) {
+                SubscribedUsersData.getBlockedUsers((err, result)=>{
+                    if (err) {
+                        callback("Fetching Blocked Users Failed", null);
+                    } 
+                    if(result) callback(null, result);
+                })
+            }
             WidgetWall.init = function () {
 
                 WidgetWall.SocialItems.getSettings((err, result) => {
@@ -454,15 +462,19 @@
                         WidgetWall.showHidePrivateChat();
                         WidgetWall.followLeaveGroupPermission();
                         WidgetWall.setAppTheme();
-                        WidgetWall.getPosts();
-                        WidgetWall.SocialItems.authenticateUserWOLogin(null, (err, user) => {
-                            if (err) return console.error("Getting user failed.", err);
-                            if (user) {
-                                WidgetWall.checkFollowingStatus(user);
-                                WidgetWall.checkForPrivateChat();
-                            } else {
-                                WidgetWall.groupFollowingStatus = false;
-                            }
+                        WidgetWall.getBlockedUsers((error, res) => {
+                            if(err) console.log("Error while fetching blocked users ", err);
+                            if(result) WidgetWall.SocialItems.blockedUsers = res;
+                            WidgetWall.getPosts();
+                            WidgetWall.SocialItems.authenticateUserWOLogin(null, (err, user) => {
+                                if (err) return console.error("Getting user failed.", err);
+                                if (user) {
+                                    WidgetWall.checkFollowingStatus(user);
+                                    WidgetWall.checkForPrivateChat();
+                                } else {
+                                    WidgetWall.groupFollowingStatus = false;
+                                }
+                            });
                         });
                     }
                 });
@@ -680,12 +692,6 @@
                 WidgetWall.SocialItems.pluginTitle = '';
                 WidgetWall.init();
             });
-
-            // TODO
-            /**
-             *
-             */
-
 
             WidgetWall.openGroupChat = function (userIds, wid) {
                 if (WidgetWall.allowPrivateChat) {
@@ -1347,25 +1353,6 @@
                                 Modals.close('Post already deleted');
                             if (!$scope.$$phase)
                                 $scope.$digest();
-                            break;
-                        case EVENTS.BAN_USER:
-                            delete event.name;
-                            SubscribedUsersData.unfollowWall(event.reported, event.wid, true, function (err, result) {
-                                if (err) return console.error(err);
-                                else {
-                                    WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.filter(function (el) {
-                                        return el.userId !== event.reported;
-                                    });
-                                    WidgetWall.SocialItems.items.map(item => {
-                                        item.comments.filter(function (el) {
-                                            return el.userId !== event.reported;
-                                        });
-                                    });
-                                    if (!$scope.$$phase)
-                                        $scope.$digest();
-                                }
-                            });
-
                             break;
                         case EVENTS.COMMENT_DELETED:
                             let post = WidgetWall.SocialItems.items.find(element => element.id === event.postId)
