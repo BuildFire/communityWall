@@ -22,7 +22,7 @@ describe('socialPluginWidget: Services', function () {
             }
         };
 
-        SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost']);
+        SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','getCommentsOfAPost']);
 
         Buildfire = {
 

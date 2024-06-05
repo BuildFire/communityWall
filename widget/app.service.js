@@ -159,9 +159,6 @@
 
             return {
                 indexingUpdateDone: false,
-                banUser: function (params, callback) {
-
-                },
                 save: function (params, callback) {
                     var _this = this;
                     if (params.userDetails.userTags) {
@@ -177,7 +174,7 @@
                         }
                     });
                 },
-                unfollowWall: function (userId, wallId, banUser, callback) {
+                unfollowWall: function (userId, wallId, callback) {
                     var _this = this;
                     window.buildfire.publicData.search({
                             filter: this.getIndexedFilter(userId, wallId)
@@ -191,9 +188,6 @@
                                 let update = function () {
                                     data[0].data.posts = allPosts;
                                     data[0].data.leftWall = true;
-                                    if (banUser) {
-                                        data[0].data.banned = true;
-                                    }
                                     buildfire.publicData.save(_this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
                                         callback(null, true);
                                     });
@@ -209,9 +203,6 @@
                                 });
                             } else {
                                 data[0].data.leftWall = true;
-                                if (banUser) {
-                                    data[0].data.banned = true;
-                                }
                                 buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
                                     callback(null, result);
                                 });

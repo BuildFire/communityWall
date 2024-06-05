@@ -282,57 +282,6 @@
                 );
             };
 
-            // Method for banning a user by calling SocialDataStore banUser method
-            ContentHome.banUser = function (userId, threadId, username) {
-                ContentHome.modalPopupThreadId = threadId;
-                console.log('inside ban user controller method>>>>>>>>>>');
-
-                buildfire.dialog.confirm(
-                    {
-                        title: "Ban User",
-                        message: `Are you sure you want to ban ${username || 'this user'}?`,
-                        confirmButton: {
-                            text: "Ban User",
-                            type: "danger",
-                        },
-                    },
-                    (err, isConfirmed) => {
-                        if (err) console.error(err);
-
-                        if (isConfirmed) {
-                            // Called when getting success from SocialDataStore banUser method
-                            var success = function (response) {
-                                console.log(
-                                    "User successfully banned and response is :",
-                                    response
-                                );
-                                Buildfire.messaging.sendMessageToWidget({
-                                    name: EVENTS.BAN_USER,
-                                    reported: userId,
-                                    wid: ContentHome.posts[0].wallId,
-                                });
-                                ContentHome.posts = ContentHome.posts.filter(
-                                    function (el) {
-                                        return el.userId != userId;
-                                    }
-                                );
-                                ContentHome.loading = false;
-                                if (!$scope.$$phase) $scope.$digest();
-                            };
-                            // Called when getting error from SocialDataStore banUser method
-                            var error = function (err) {
-                                console.log("Error while banning a user ", err);
-                            };
-                            // Calling SocialDataStore banUser method for banning a user
-                            SocialDataStore.banUser(userId).then(
-                                success,
-                                error
-                            );
-                        }
-                    }
-                );
-            };
-
             // Method for loading comments
             ContentHome.loadMoreComments = function (thread, viewComment) {
                 var newUniqueLinksOfComments = [];

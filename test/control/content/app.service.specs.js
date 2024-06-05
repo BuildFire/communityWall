@@ -54,11 +54,6 @@ describe('Unit : socialPluginContent content services', function () {
 
         });
 
-        it('SocialDataStor banUser called', function () {
-            console.info("SocialDataStor banUser Called ???????????????");
-            SocialDataStore.banUser('121wasa', '2121saasa','sqw121');
-
-        });
         it('SocialDataStor deleteComment called', function () {
             console.info("SocialDataStor deleteComment Called ???????????????");
             SocialDataStore.deleteComment('121wasa', '2121saasa','sqw121');
