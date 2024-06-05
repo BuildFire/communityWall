@@ -403,7 +403,7 @@
             /**
              * showMoreOptions method shows the more Option popup.
              */
-            Thread.showMoreOptions = function () {
+            Thread.showMoreOptions_old = function () {
                 Thread.modalPopupThreadId = Thread.post._id;
                 Thread.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
@@ -462,6 +462,73 @@
                 });
             };
 
+            Thread.showMoreOptions = function () {
+                Thread.modalPopupThreadId = Thread.post._id;
+                Thread.SocialItems.authenticateUser(null, (err, user) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (user) {
+                        const drawerOptions = {
+                            listItems: [
+                                {
+                                    id: 'reportPost',
+                                    text: Thread.SocialItems.languages.reportPost
+                                },
+                                {
+                                    id: 'blockUser',
+                                    text: Thread.SocialItems.languages.blockUser
+                                }
+                            ]
+                        };
+            
+                        buildfire.components.drawer.open(drawerOptions, (err, result) => {
+                            if (err) return console.error("Error opening drawer.", err);
+                            if (result) {
+                                if (result.id === 'reportPost') {
+                                    Buildfire.services.reportAbuse.report(
+                                        {
+                                            "itemId": Thread.post.id,
+                                            "reportedUserId": Thread.post.userId,
+                                            "deeplink": {
+                                                "fromReportAbuse": true,
+                                                "postId": Thread.post.id,
+                                                "wallId": Thread.SocialItems.wid
+                                            },
+                                            "itemType": "post"
+                                        },
+                                        (err, reportResult) => {
+                                            if (err && err !== 'Report is cancelled') {
+                                                Buildfire.dialog.toast({
+                                                    message: Thread.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
+                                                    type: 'info'
+                                                });
+                                            }
+                                            if (reportResult) {
+                                                Buildfire.dialog.toast({
+                                                    message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                                    type: 'info'
+                                                });
+                                            }
+                                        }
+                                    );
+                                } else if (result.id === 'blockUser') {
+                                    SubscribedUsersData.blockUser(Thread.post.userId, (err, blockResult) => {
+                                        if (err) {
+                                            return console.error("Error blocking user.", err);
+                                        }
+                                        if (blockResult) {
+                                            Buildfire.dialog.toast({
+                                                message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked successfully.",
+                                                type: 'info'
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            };
+            
             /**
              * showMoreOptions method shows the more Option popup.
              */

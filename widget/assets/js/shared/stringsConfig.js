@@ -116,13 +116,13 @@ const stringsConfig = {
 				, placeholder: "Report Post"
 				, maxLength: 30
 				, defaultValue: "Report Post"
-			},		
+			},
 			blockUser: {
 				title: "Block User"
 				, placeholder: "Block User"
 				, maxLength: 30
 				, defaultValue: "Block User"
-			},			
+			},
 			deletePost: {
 				title: "Delete Post"
 				, placeholder: "Delete Post"
