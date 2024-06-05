@@ -1093,7 +1093,7 @@
                                         if (err || !currentUser) return;
                                         else {
                                             console.log(WidgetWall.postText);
-                                            Posts.addPost({
+                                            SocialDataStore.addFeedPost({
                                                 postText: WidgetWall.postText ? WidgetWall.postText : "",
                                                 postImages: $scope.WidgetWall.images || []
                                             }, (err, r) => {
@@ -1321,7 +1321,7 @@
                         });
                         let postToDelete = WidgetWall.SocialItems.items.find(element => element.id === postId)
                         console.log(postToDelete);
-                        Posts.deletePost({
+                        SocialDataStore.deleteFeedPost({
                             userId: postToDelete.userId,
                             postText: postToDelete.text,
                             postImages: postToDelete.imageUrl || [],

@@ -223,7 +223,7 @@
                             };
 
                             var postToDelete = ContentHome.posts.find(element => element.id === postId);
-                            if (postToDelete) Posts.deletePost({ userId: postToDelete.userId, postText: postToDelete.text, postImages: postToDelete.imageUrl || [], }, (err, r) => { return });
+                            if (postToDelete) SocialDataStore.deleteFeedPost({ userId: postToDelete.userId, postText: postToDelete.text, postImages: postToDelete.imageUrl || [], }, (err, r) => { return });
 
                             // Deleting post having id as postId
                             SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
