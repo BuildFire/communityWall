@@ -616,7 +616,7 @@ button.btn--lg,
 .social-item .social-profile-photo{
     display: flex;
     align-items: center;
-    padding: 8px;
+    padding: 0.75rem 1rem;
 }
 
 .social-item .social-profile-user-photo{
@@ -626,7 +626,7 @@ button.btn--lg,
     justify-content: flex-end;
 }
 .social-item .social-copy{
-    margin-left: 12px;
+    margin-left: 0px;
 }
 .social-item .social-copy p{
     margin: 0;
@@ -641,10 +641,11 @@ button.btn--lg,
 
 .social-item .social-copy .time-ago{
     font-size: 12px;
+    padding-top: 0.25rem;
 }
 .social-item .post-text{
-    margin-left: 20px;
-    margin-right: 16px;
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 .social-item .post-text-user{
     text-align: end;
@@ -655,9 +656,9 @@ button.btn--lg,
 .status-footer{
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding-top: .5rem;
-    margin-left: 52px;
+    justify-content: flex-start;
+    padding-top: 0;
+    margin-left: 1rem;
 }
 .status-footer .social-icon,
 .footer .social-icon {
@@ -689,8 +690,8 @@ button.btn--lg,
     border-radius: 0;
  }
  .side-thread-section .social-item .post-text{
-     margin-left: .75rem;
-     margin-right: .75rem;
+     margin-left: 1rem;
+     margin-right: 1rem;
  }
  .side-thread-section .status-footer {
      margin:0;
@@ -751,7 +752,7 @@ button.btn--lg,
  }
  .status-footer .likes,
  .status-footer .comments{
-     margin-left: auto;
+     
  }
 
 
@@ -1446,4 +1447,47 @@ html[buildfire][safe-area="true"] body {
     background-repeat: no-repeat !important;
     background-attachment: absolute !important;
     background-position: center !important;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-space-between {
+    justify-content: space-between;
+}
+
+.margin-one-rem {
+    margin: 1rem;
+}
+.margin-half-rem {
+    margin: 0.5rem;
+}
+
+.margin-zero {
+    margin: 0;
+}
+.margin-top-zero {
+    margin-top: 0;
+}
+.margin-bottom-zero {
+    margin-bottom: 0;
+}
+.padding-one-rem {
+    padding: 1rem;
+}
+.padding-half-rem {
+    padding: 0.5rem;
+}
+.padding-zero{
+    padding: 0;
+}
+.padding-top-zero{
+    padding-top: 0;
+}
+.padding-bottom-zero{
+    padding-bottom: 0;
+}
+.plugin-banner .box {
+    margin: 0 !important;
 }

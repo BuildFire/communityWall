@@ -106,24 +106,8 @@
                                 </div>
                                 <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items track by post.id">
 
-                                    <div class="head">
-                                        <div ng-class="{'social-profile-user-photo': WidgetWall.SocialItems.userDetails.userId == post.userId}"
-                                            class="social-profile-photo">
-                                            <div ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId"
-                                                class="social-profile-photo">
-                                                <div ng-class="{'social-copy-user': WidgetWall.SocialItems.userDetails.userId == post.userId}"
-                                                    class="social-copy">
-                                                    <p class="text-primary ellipsis">
-                                                        <a class="ng-cloak"
-                                                            ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
-                                                    </p>
-                                                    <div ng-if="post.createdOn">
-                                                        <p class="time-ago opacity-seventy ng-cloak">
-                                                            {{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    <div class="head flex flex-space-between">
+                                        <div class="social-profile-photo">
                                             <div class="media-holder ng-cloak">
                                                 <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"
                                                     data-final-src="{{post.userDetails.imageUrl}}" crop-width="40"
@@ -136,13 +120,18 @@
                                                     crop-type="default"
                                                     alt="Anonymous">
                                             </div>
-                                            <div ng-if="WidgetWall.SocialItems.userDetails.userId != post.userId"
-                                                class="social-profile-photo">
+                                            <div class="padding-half-rem padding-top-zero padding-bottom-zero">
                                                 <div class="social-copy">
-                                                    <p class="text-primary ellipsis">
+                                                    <p ng-if="WidgetWall.SocialItems.userDetails.userId != post.userId" class="text-primary ellipsis">
+                                                        <a class="ng-cloak"
+                                                            ng-click="WidgetWall.openChat(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
+                                                    </p>
+
+                                                    <p ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId" class="text-primary ellipsis">
                                                         <a class="ng-cloak"
                                                             ng-click="WidgetWall.openBottomDrawer(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
                                                     </p>
+
                                                     <div ng-if="post.createdOn">
                                                         <p class="time-ago opacity-seventy ng-cloak">
                                                             {{WidgetWall.getDuration(post.createdOn) | convertTimeFormat}}
@@ -151,10 +140,12 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <a class="likes social-icon margin-one-rem margin-top-zero margin-bottom-zero ng-cloak" ng-click="WidgetWall.showMoreOptions(post)" style="height: 2rem; margin-top: 0.75rem;">
+                                            <span class="material-icons-outlined">more_horiz</span>
+                                        </a>
                                     </div>
-                                    <div ng-class="{'post-text-user': WidgetWall.SocialItems.userDetails.userId == post.userId}"
-                                        class="post-text copy">
-                                        <p class="cursor-pointer">
+                                    <div class="post-text copy">
+                                        <p class="cursor-pointer margin-zero">
                                             <span
                                                 ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 ng-bind-html="(WidgetWall.util.injectAnchors(post.text) | truncateAndFormat : (post.limit || 150) :0)"></span>
@@ -189,9 +180,6 @@
                                                 class="social-icon comments ng-cloak">
                                                 <i class="material-icons-outlined icons2Font notActive" aria-hidden="true">chat_bubble_outline</i>
                                                 <span class="iconsTheme iconsFont">{{post.comments.length}}</span>
-                                            </a>
-                                            <a class="likes social-icon ng-cloak" ng-click="WidgetWall.showMoreOptions(post)">
-                                                <span class="material-icons-outlined">more_horiz</span>
                                             </a>
                                             </div>
                                         </div>
