@@ -613,6 +613,14 @@ button.btn--lg,
     border-radius: 100%;
     object-fit: cover;
 }
+
+.social-item .social-copy p a {
+    color: var(--bf-theme-header-text);
+    font-size: 1rem;
+    line-height: 1;
+}
+
+
 .social-item .social-profile-photo{
     display: flex;
     align-items: center;
@@ -1490,4 +1498,15 @@ html[buildfire][safe-area="true"] body {
 }
 .plugin-banner .box {
     margin: 0 !important;
+}
+.wallMembers .social-item .social-profile-photo {
+    gap: 1rem
+}
+
+button.btn-danger-outlined {
+    background-color: transparent;
+    color: var(--bf-theme-danger);
+    border-color: var(--bf-theme-danger);
+    text-transform: unset;
+    box-shadow: none !important;
 }

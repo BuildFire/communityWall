@@ -131,8 +131,8 @@
                     WidgetWall.appTheme = obj.colors;
 
                     elements[2].style.setProperty("fill", 'white', "important");
-                    document.getElementById('followBtn').style.setProperty("background-color", obj.colors.icons, "important");
-                    document.getElementById('addBtn').style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementById('followBtn').style.setProperty("background-color", "var(--bf-theme-danger)", "important");
+                    document.getElementById('addBtn').style.setProperty("background-color", "var(--bf-theme-success)", "important");
                     document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
                     WidgetWall.loadedPlugin = true;
                 });
@@ -1156,10 +1156,9 @@
                         }
                     }
                 });
-
             }
 
-            WidgetWall.showMoreOptions = function (post) {
+            WidgetWall.showMoreOptionsOld = function (post) {
                 WidgetWall.modalPopupThreadId = post.id;
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
@@ -1246,6 +1245,59 @@
                 });
             };
 
+            WidgetWall.showMoreOptions = function (post) {
+                WidgetWall.modalPopupThreadId = post.id;
+                WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        WidgetWall.checkFollowingStatus();
+            
+                        const drawerOptions = {
+                            listItems: []
+                        };
+            
+                        // Add options based on user conditions
+                        if (post.userId === WidgetWall.SocialItems.userDetails.userId) {
+                            drawerOptions.listItems.push(
+                                {
+                                    id: 'deletePost',
+                                    text: WidgetWall.SocialItems.languages.deletePost
+                                }
+                            );
+                        } else {
+                            drawerOptions.listItems.push(
+                                {
+                                    id: 'reportPost',
+                                    text: WidgetWall.SocialItems.languages.reportPost
+                                },
+                                {
+                                    id: 'blockUser',
+                                    text: WidgetWall.SocialItems.languages.blockUser
+                                }
+                            );
+                        }
+            
+                        Buildfire.components.drawer.open(drawerOptions, (err, result) => {
+                            if (err) return console.error("Error opening drawer.", err);
+                            if (result) {
+                                switch (result.id) {
+                                    case 'reportPost':
+                                        WidgetWall.reportPost(post);
+                                        break;
+                                    case 'blockUser':
+                                        WidgetWall.blockUser(post.userId);
+                                        break;
+                                    case 'deletePost':
+                                        WidgetWall.deletePost(post.id);
+                                        break;
+                                }
+                            }
+                        });
+                    }
+                });
+            };
+
+            
             WidgetWall.likeThread = function (post) {
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
@@ -1330,6 +1382,7 @@
                         });
                         let index = WidgetWall.SocialItems.items.indexOf(postToDelete);
                         WidgetWall.SocialItems.items.splice(index, 1);
+                        buildfire.spinner.hide();
                         if (!$scope.$$phase)
                             $scope.$digest();
                     }
@@ -1339,8 +1392,57 @@
                     console.log('Error while deleting post ', err);
                 };
                 // Deleting post having id as postId
+                buildfire.spinner.show();
+                buildfire.components.drawer.closeDrawer();
                 SocialDataStore.deletePost(postId).then(success, error);
             };
+
+            WidgetWall.blockUser = function (userId) {
+                buildfire.spinner.show();
+                buildfire.components.drawer.closeDrawer();
+                SubscribedUsersData.blockUser(userId, (err, result) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                    if(result) {
+                        buildfire.spinner.hide();
+                        Buildfire.dialog.toast({
+                            message: WidgetWall.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
+                            type: 'info'
+                        });
+                        Location.goToHome();
+                    }
+                });
+                
+            }
+            WidgetWall.reportPost = function (post) {
+                Buildfire.services.reportAbuse.report(
+                    {
+                        "itemId": post.id,
+                        "reportedUserId": post.userId,
+                        "deeplink": {
+                            "fromReportAbuse": true,
+                            "postId": post.id,
+                            "wallId": WidgetWall.SocialItems.wid
+                        },
+                        "itemType": "post"
+                    },
+                    (err, reportResult) => {
+                        if (err && err !== 'Report is cancelled') {
+                            Buildfire.dialog.toast({
+                                message: WidgetWall.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
+                                type: 'info'
+                            });
+                        }
+                        if (reportResult) {
+                            Buildfire.dialog.toast({
+                                message: WidgetWall.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                type: 'info'
+                            });
+                        }
+                    }
+                );
+            }
 
             Buildfire.messaging.onReceivedMessage = function (event) {
                 if (event) {

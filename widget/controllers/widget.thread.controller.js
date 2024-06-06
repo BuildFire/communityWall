@@ -88,7 +88,7 @@
             Thread.setAppTheme = function () {
                 buildfire.appearance.getAppTheme((err, obj) => {
                     let elements = document.getElementsByTagName('svg');
-                    document.getElementById("addCommentBtn").style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementById("addCommentBtn").style.setProperty("background-color", "var(--bf-theme-success)", "important");
                     elements[3].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
                     document.getElementById("add-comment-svg").style.setProperty("fill", 'white', "important");
                 });
@@ -403,125 +403,92 @@
             /**
              * showMoreOptions method shows the more Option popup.
              */
-            Thread.showMoreOptions_old = function () {
-                Thread.modalPopupThreadId = Thread.post._id;
-                Thread.SocialItems.authenticateUser(null, (err, user) => {
-                    if (err) return console.error("Getting user failed.", err);
-                    if (user) {
-                        Modals.showMoreOptionsModal({
-                            'postId': Thread.post.id,
-                            'userId': Thread.post.userId,
-                            'socialItemUserId': Thread.SocialItems.userDetails.userId,
-                            'languages': Thread.SocialItems.languages
-                        }).then(function (data) {
-                                if (data === Thread.SocialItems.languages.reportPost) {
-                                    Buildfire.services.reportAbuse.report(
-                                        {
-                                            "itemId": Thread.post.id,
-                                            "reportedUserId": Thread.post.userId,
-                                            "deeplink": {
-                                                "fromReportAbuse": true,
-                                                "postId": Thread.post.id,
-                                                "wallId": Thread.SocialItems.wid
-                                            },
-                                            "itemType": "post"
-                                        },
-                                        (err, result) => {
-                                            if(err && err != 'Report is cancelled') {
-                                                Buildfire.dialog.toast({
-                                                    message: Thread.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
-                                                    type: 'info'
-                                                });                                
-                                            }
-                                            if(result) {
-                                                Buildfire.dialog.toast({
-                                                    message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                                                    type: 'info'
-                                                });    
-                                            }
-                                        }
-                                    );
-                                } else if(data === Thread.SocialItems.languages.blockUser){
-                                    SubscribedUsersData.blockUser(Thread.post.userId, (err, result) => {
-                                        if(err) {
-                                            console.log(err);
-                                        }
-                                        if(result) {
-                                            Buildfire.dialog.toast({
-                                                message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
-                                                type: 'info'
-                                            });
-                                        }
-                                    });
-                                }
-                            },
-                            function (err) {
-                                console.log('Error in Error handler--------------------------', err);
-                            });
-                    }
-                });
-            };
-
             Thread.showMoreOptions = function () {
                 Thread.modalPopupThreadId = Thread.post._id;
                 Thread.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
+                        const drawerOptions = { listItems: [] };
+            
+                        // Check if the current user is the owner of the post
+                        const isOwner = Thread.post.userId === user._id;
+            
+                        if (isOwner) {
+                            // Add delete option if the user is the owner
+                            drawerOptions.listItems.push({
+                                id: 'deletePost',
+                                text: Thread.SocialItems.languages.deletePost || 'Delete Post'
+                            });
+                        } else {
+                            // Add report and block options if the user is not the owner
+                            drawerOptions.listItems.push({
+                                id: 'reportPost',
+                                text: Thread.SocialItems.languages.reportPost || 'Report Post'
+                            });
+                            drawerOptions.listItems.push({
+                                id: 'blockUser',
+                                text: Thread.SocialItems.languages.blockUser || 'Block User'
+                            });
+                        }
+            
+                        buildfire.components.drawer.open(drawerOptions, (err, result) => {
+                            if (result && result.id === 'deletePost') {
+                                Thread.deletePost(Thread.post.id);
+                            } else if (result && result.id === 'reportPost') {
+                                Thread.reportPost();
+                            } else if (result && result.id === 'blockUser') {
+                                buildfire.components.drawer.closeDrawer();
+                                Thread.blockUser(Thread.post.userId);
+                            }
+                        });
+                    }
+                });
+            };
+
+            Thread.showMoreOptionsComment = function (comment) {
+                Thread.modalPopupThreadId = comment.threadId;
+                Thread.SocialItems.authenticateUser(null, (err, user) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (user) {
                         const drawerOptions = {
-                            listItems: [
+                            listItems: []
+                        };
+            
+                        // Add options based on user conditions
+                        if (comment.userId === Thread.SocialItems.userDetails.userId) {
+                            drawerOptions.listItems.push({
+                                id: 'deleteComment',
+                                text: Thread.SocialItems.languages.deleteComment
+                            });
+                        } else {
+                            drawerOptions.listItems.push(
                                 {
-                                    id: 'reportPost',
-                                    text: Thread.SocialItems.languages.reportPost
+                                    id: 'reportComment',
+                                    text: Thread.SocialItems.languages.reportComment
                                 },
                                 {
                                     id: 'blockUser',
                                     text: Thread.SocialItems.languages.blockUser
                                 }
-                            ]
-                        };
+                            );
+                        }
             
                         buildfire.components.drawer.open(drawerOptions, (err, result) => {
                             if (err) return console.error("Error opening drawer.", err);
                             if (result) {
-                                if (result.id === 'reportPost') {
-                                    Buildfire.services.reportAbuse.report(
-                                        {
-                                            "itemId": Thread.post.id,
-                                            "reportedUserId": Thread.post.userId,
-                                            "deeplink": {
-                                                "fromReportAbuse": true,
-                                                "postId": Thread.post.id,
-                                                "wallId": Thread.SocialItems.wid
-                                            },
-                                            "itemType": "post"
-                                        },
-                                        (err, reportResult) => {
-                                            if (err && err !== 'Report is cancelled') {
-                                                Buildfire.dialog.toast({
-                                                    message: Thread.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
-                                                    type: 'info'
-                                                });
-                                            }
-                                            if (reportResult) {
-                                                Buildfire.dialog.toast({
-                                                    message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                                                    type: 'info'
-                                                });
-                                            }
-                                        }
-                                    );
-                                } else if (result.id === 'blockUser') {
-                                    SubscribedUsersData.blockUser(Thread.post.userId, (err, blockResult) => {
-                                        if (err) {
-                                            return console.error("Error blocking user.", err);
-                                        }
-                                        if (blockResult) {
-                                            Buildfire.dialog.toast({
-                                                message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked successfully.",
-                                                type: 'info'
-                                            });
-                                        }
-                                    });
+                                switch (result.id) {
+                                    case 'deleteComment':
+                                        // Call the existing deleteComment function
+                                        Thread.deleteComment(comment);
+                                        break;
+                                    case 'reportComment':
+                                        // Call the existing reportComment function
+                                        Thread.reportComment(comment);
+                                        break;
+                                    case 'blockUser':
+                                        // Call the existing block function
+                                        Thread.blockUser(comment.userId);
+                                        break;
                                 }
                             }
                         });
@@ -529,29 +496,6 @@
                 });
             };
             
-            /**
-             * showMoreOptions method shows the more Option popup.
-             */
-            Thread.showMoreOptionsComment = function (comment) {                
-                Thread.modalPopupThreadId = comment.threadId;
-                Thread.SocialItems.authenticateUser(null, (err, user) => {
-                    if (err) return console.error("Getting user failed.", err);
-                    if (user) {
-                        Modals.showMoreOptionsCommentModal({
-                            'comment': comment,
-                            'threadId': comment.threadId,
-                            'userId': Thread.SocialItems.userDetails.userId,
-                            'commentUserId': comment.userId,
-                            'languages': Thread.SocialItems.languages
-                        }).then(function (data) {
-                                console.log('Data in Successs------------------data');
-                            },
-                            function (err) {
-                                console.log('Error in Error handler--------------------------', err);
-                            });
-                    }
-                });
-            };
             /**
              * likeThread method is used to like a post.
              * @param post
@@ -695,18 +639,6 @@
                     return moment(timestamp.toString()).fromNow();
             };
 
-            $rootScope.$on("Delete-Comment", function (event, comment) {
-                Thread.deleteComment(comment);
-            });
-
-            $rootScope.$on("Report-Comment", function (event, comment) {
-                Thread.reportComment(comment);
-            });
-
-            $rootScope.$on("Block-User", function (event, userId) {
-                Thread.blockUser(userId);
-            });
-
             Thread.deleteComment = function (comment) {
                 SocialDataStore.deleteComment(Thread.post.id, comment).then(
                     function (data) {
@@ -758,6 +690,35 @@
                 );
             }
 
+            Thread.reportPost = function(){
+                Buildfire.services.reportAbuse.report(
+                    {
+                        "itemId": Thread.post.id,
+                        "reportedUserId": Thread.post.userId,
+                        "deeplink": {
+                            "fromReportAbuse": true,
+                            "postId": Thread.post.id,
+                            "wallId": Thread.SocialItems.wid
+                        },
+                        "itemType": "post"
+                    },
+                    (err, reportResult) => {
+                        if (err && err !== 'Report is cancelled') {
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
+                                type: 'info'
+                            });
+                        }
+                        if (reportResult) {
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                type: 'info'
+                            });
+                        }
+                    }
+                );
+            }
+
             Thread.addComment = function (imageUrl) {
                 let commentData = {
                     threadId: Thread.post.id,
@@ -790,13 +751,13 @@
             }
 
             Thread.blockUser = function(userId) {
-                SubscribedUsersData.blockUser(post.userId, (err, result) => {
-                    if(err) {
-                        console.log(err);
+                SubscribedUsersData.blockUser(userId, (err, blockResult) => {
+                    if (err) {
+                        return console.error("Error blocking user.", err);
                     }
-                    if(result) {
+                    if (blockResult) {
                         Buildfire.dialog.toast({
-                            message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
+                            message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked successfully.",
                             type: 'info'
                         });
                         Location.goToHome();
@@ -864,20 +825,27 @@
             }, true);
 
             Thread.deletePost = function (postId) {
+                buildfire.spinner.show();
                 var success = function (response) {
-                    console.log('inside success of delete post', response);
-                    if (response.data.result) {
+                    if (response) {
                         Buildfire.messaging.sendMessageToControl({
                             'name': EVENTS.POST_DELETED,
                             'id': postId
                         });
-                        console.log('post successfully deleted');
                         let postToDelete = Thread.SocialItems.items.find(element => element.id === postId)
                         let index = Thread.SocialItems.items.indexOf(postToDelete);
                         Thread.SocialItems.items.splice(index, 1);
-                        console.log('post successfully deleted', postId, index);
+
                         if (!$scope.$$phase)
                             $scope.$digest();
+                        Buildfire.components.drawer.closeDrawer();
+                        Buildfire.spinner.hide();
+                        Buildfire.dialog.toast({
+                            message: Thread.SocialItems.languages.postDeleteSuccess || "Post successfully deleted",
+                            type: 'info'
+                        });
+                        
+                        Location.goToHome();
                     }
                 };
                 // Called when getting error from SocialDataStore.deletePost method

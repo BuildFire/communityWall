@@ -56,6 +56,12 @@ const stringsConfig = {
 				, placeholder: "Report Comment"
 				, maxLength: 30
 				, defaultValue: "Report Comment"
+			},
+			postDeleteSuccess: {
+				title: "Delete Post Success"
+				, placeholder: "Post successfully deleted"
+				, maxLength: 50
+				, defaultValue: "Post successfully deleted"
 			}			
 		}
 	},
