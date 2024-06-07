@@ -3,11 +3,13 @@
 
         <div ng-if="Thread.allowFollowLeaveGroup" class="head-btn text-center backgroundColorTheme">
 
-            <a ng-click="Thread.followUnfollow()">
-                <p class="text-primary">
+            <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 0; position: absolute; padding-left: 15px; margin: 5px;margin-left: 0;">
+                <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px;">
+                    <span class="plusMinusIcon ng-binding">−</span>
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
-                </p>
-            </a>
+                </button>
+            </p>
+
         </div>
         <div ng-class="{'has-comment-box':Thread.SocialItems.userDetails.userId == null || Thread.allowCreateThread,'has-group-header' : Thread.allowFollowLeaveGroup}"
             class="post-section backgroundColorTheme">
@@ -100,11 +102,11 @@
 
                             </div>
                         </div>
-                        <a class="more-info social-icon"
+                        <a class="social-icon margin-one-rem margin-top-zero margin-bottom-zero"
                         ng-hide = "comment.userId != Thread.SocialItems.userDetails.userId && !comment.commentId"
-                        ng-click="Thread.showMoreOptionsComment(comment)">
+                        ng-click="Thread.showMoreOptionsComment(comment)" style="height: 2rem; margin-top: 0.75rem;">
                         <span class="material-icons-outlined">more_horiz</span>
-                    </a>
+                        </a>
                     </div>
                 </div>
             </div>

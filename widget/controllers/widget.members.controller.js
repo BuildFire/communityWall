@@ -18,10 +18,13 @@
             Members.languages = null;
             Members.appSettings = null;
             Members.SocialItems = SocialItems.getInstance();
+            Members.skeleton = new Buildfire.components.skeleton('body', {
+                type: 'image, sentence, list-item-avatar-two-line, list-item-avatar-two-line',
+            });
 
             Members.init = function () {
                 $rootScope.showThread = false;
-
+                Members.skeleton.start();
                 Buildfire.appearance.getAppTheme((err, obj) => {
                     if (err) return console.log(err);
                     document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
@@ -39,6 +42,7 @@
                             if (err) return console.log(err);
                             Members.users = users;
                             $scope.$digest();
+                            Members.skeleton.stop();
                         });
                     }
                 });

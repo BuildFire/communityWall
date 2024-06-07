@@ -24,6 +24,10 @@
             WidgetWall.loading = true;
             WidgetWall.scrollPosition = null;
 
+            WidgetWall.skeleton = new Buildfire.components.skeleton('body', {
+                type: 'image, sentence, list-item-avatar-two-line, list-item-avatar-two-line',
+            })
+
             WidgetWall.showHideCommentBox = function () {
                 if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
                     WidgetWall.SocialItems.appSettings.mainThreadUserTags && WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
@@ -139,6 +143,7 @@
 
             WidgetWall.getPosts = function () {
                 WidgetWall.SocialItems.getPosts(function (err, data) {
+                    WidgetWall.skeleton.stop();
                     WidgetWall.showUserLikes();
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
@@ -160,12 +165,10 @@
 
             WidgetWall.checkFollowingStatus = function (user = null) {
                 WidgetWall.loading = true;
-                buildfire.spinner.show();
                 SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
                     if (err) console.log('error while getting initial group following status.', err);
                     else {
                         if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
-                            buildfire.spinner.hide();
                             WidgetWall.loading = false;
                             return WidgetWall.followWall();
                         }
@@ -195,7 +198,7 @@
             }
 
             WidgetWall.unfollowWall = function () {
-                SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, false, function (err, result) {
+                SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, result) {
                     if (err) return console.error(err);
                     else {
                         Follows.unfollowPlugin((err, r) => err ? console.log(err) : console.log(r));
@@ -452,9 +455,14 @@
                 })
             }
             WidgetWall.init = function () {
+                
+                WidgetWall.skeleton.start();
 
                 WidgetWall.SocialItems.getSettings((err, result) => {
-                    if (err) return console.error("Fetching settings failed.", err);
+                    if (err) {
+                        WidgetWall.skeleton.stop();
+                        return console.error("Fetching settings failed.", err);
+                    }
                     if (result) {
                         WidgetWall.SocialItems.items = [];
                         WidgetWall.setSettings(result);
@@ -1621,6 +1629,7 @@
                     }
                 }
             }
+
             // On Login
             Buildfire.auth.onLogin(function (user) {
                 console.log("NEW USER LOGGED IN", WidgetWall.SocialItems.forcedToLogin)

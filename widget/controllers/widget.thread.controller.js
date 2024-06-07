@@ -16,6 +16,9 @@
             Thread.util = Util;
             Thread.loaded = false;
             Thread.processedComments = false;
+            Thread.skeleton = new Buildfire.components.skeleton('body', {
+                type: 'image, sentence, list-item-avatar-two-line, list-item-avatar-two-line',
+            });
             var counter = 0;
             $scope.setupImageList = function (comment) {
                 if (comment.imageUrl.length) {
@@ -176,6 +179,7 @@
             }
 
             Thread.init = function () {
+                Thread.skeleton.start();
                 Thread.setAppTheme();
                 if ($routeParams.threadId) {
                     let post = Thread.SocialItems.items.find(el => el.id === $routeParams.threadId);
@@ -215,6 +219,7 @@
                                     });
                                 }
                                 Thread.loaded = true;
+                                Thread.skeleton.stop();
                                 Thread.setupThreadImage();
                                 $scope.$digest();
                             });
