@@ -131,7 +131,6 @@
                     WidgetWall.appTheme = obj.colors;
 
                     elements[2].style.setProperty("fill", 'white', "important");
-                    document.getElementById('followBtn').style.setProperty("background-color", "var(--bf-theme-danger)", "important");
                     document.getElementById('addBtn').style.setProperty("background-color", "var(--bf-theme-success)", "important");
                     document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
                     WidgetWall.loadedPlugin = true;

@@ -704,20 +704,27 @@ button.btn--lg,
  .side-thread-section .status-footer {
      margin:0;
      padding-left: .75rem;
-     border-bottom: 1px solid rgba(150,150,150,.3);
-
  }
  .social-comment {
      display: flex;
  }
+ 
+ .comments-list{
+    border-top: 1px solid rgba(150,150,150,.3);
+ }
+
  .side-thread-section .social-comment .post-text{
-    margin-left: .5rem;
+    margin-left: 1rem;
     word-break: break-word;
     white-space: normal;
+ }
+ .comment-content .social-icon{
+    padding-left: 0;
  }
  .social-comment .comment-content{
      flex: auto;
  }
+ .comment-content 
  .social-comment .status-footer{
      border-bottom: 0;
  }
@@ -725,11 +732,16 @@ button.btn--lg,
      margin-left: 0;
  }
  .social-comment .thread-dot{
-    width: 3.125rem;
+    width: 3.5rem;
     position: relative;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    padding-left: 1rem;
+ }
+
+ .thread-dot .media-holder {
+    margin-top: 0.75rem;
  }
  .social-comment .thread-dot .primaryBackgroundTheme{
     width: 1rem;
@@ -748,7 +760,7 @@ button.btn--lg,
     width: .125rem;
     background-color: rgba(150,150,150,.3);
     position: absolute;
-    left: calc(1.5rem + .075rem);
+    left: 2.25rem;
  }
  .social-comment:last-of-type .thread-dot::before{
      height: 1rem;
@@ -1509,4 +1521,8 @@ button.btn-danger-outlined {
     border-color: var(--bf-theme-danger);
     text-transform: unset;
     box-shadow: none !important;
+}
+
+.body-text-theme {
+    color: var(--bf-theme-body-text) !important;
 }

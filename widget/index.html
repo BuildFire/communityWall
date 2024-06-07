@@ -74,7 +74,7 @@
                                         margin-left: 0;"
                                         >
 
-                                        <button class="btn btn-primary" id="followBtn" style="display: flex; font-size: 13px;">
+                                        <button class="btn btn-danger-outlined" id="followBtn" style="display: flex; font-size: 13px;">
                                             <span class="plusMinusIcon" >{{WidgetWall.groupFollowingStatus ? '&#8722;' : '&#43;'}}</span>
                                             {{WidgetWall.groupFollowingStatus ? (WidgetWall.SocialItems.languages.leaveGroup) : WidgetWall.SocialItems.languages.joinGroup}}
                                         </button>
@@ -148,6 +148,7 @@
                                     <div class="post-text copy">
                                         <p class="cursor-pointer margin-zero">
                                             <span
+                                                class="body-text-theme"
                                                 ng-click=" (!WidgetWall.SocialItems.isPrivateChat) ? WidgetWall.goInToThread(post.id) : return"
                                                 ng-bind-html="(WidgetWall.util.injectAnchors(post.text) | truncateAndFormat : (post.limit || 150) :0)"></span>
                                             <span ng-if="(post.text.trim().length>150 && !post.seeMore)"
