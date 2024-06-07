@@ -602,13 +602,17 @@
                             postText: post.postText || "",
                             postImages: post.postImages || [],
                             isPublic,
-                            pluginInstance : {
-                                pluginInstanceId : post?.pluginInstance?.pluginInstanceId || buildfire.getContext().instanceId,
-                                pluginInstanceTitle : post?.pluginInstance?.pluginInstanceTitle ||  buildfire.getContext().title || buildfire.getContext().pluginId
+                            pluginInstance : {                                
+                                pluginInstanceId: (post && post.pluginInstance && post.pluginInstance.pluginInstanceId) 
+                                ? post.pluginInstance.pluginInstanceId 
+                                : buildfire.getContext().instanceId,
+                                pluginInstanceTitle: (post && post.pluginInstance && post.pluginInstance.pluginInstanceTitle) 
+                                                        ? post.pluginInstance.pluginInstanceTitle 
+                                                        : (buildfire.getContext().title || buildfire.getContext().pluginId)                                    
                             },
                             _buildfire:{index : buildIndex({
                                 displayName : !isPublic ? (user.displayName || user.username) : (post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId) , 
-                                userId : !isPublic ? user?._id : "publicPost", 
+                                userId: !isPublic ? (user && user._id ? user._id : undefined) : "publicPost",
                                 pluginTitle : buildfire.getContext().title || buildfire.getContext().pluginId,
                                 isPublic : isPublic ? 1 : 0,
                                 pluginInstanceId: buildfire.getContext().instanceId
@@ -616,7 +620,15 @@
                         })
                     } 
             
-                    if((!post.postText && !post.postImages) ||  post?.postImages && !Array.isArray(post.postImages) || (post?.postImages && Array.isArray(post.postImages) && post.postImages.length == 0 && !post?.postText)) return callback({code:errorsList.ERROR_400,message:"Must have atleast post text or post images, post images must be an array of atleast one image url"});
+                    if ((!post.postText && !post.postImages) ||
+                        (post && post.postImages && !Array.isArray(post.postImages)) ||
+                        (post && post.postImages && Array.isArray(post.postImages) && post.postImages.length === 0 && !post.postText)) {
+                        return callback({
+                            code: errorsList.ERROR_400,
+                            message: "Must have at least post text or post images, post images must be an array of at least one image URL"
+                        });
+                    }
+
                     buildfire.auth.getCurrentUser((err, currentUser) =>{
                         if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});
                         else if(!(post.postText || (post.postImages && post.postImages.length > 0))) return callback({code:errorsList.ERROR_400,message:"Must have atleast post text or post images, post images must be an array of atleast one image url"});
