@@ -17,7 +17,7 @@
             Thread.loaded = false;
             Thread.processedComments = false;
             Thread.skeleton = new Buildfire.components.skeleton('body', {
-                type: 'image, sentence, list-item-avatar-two-line, list-item-avatar-two-line',
+                type: 'list-item-avatar-two-line, list-item-three-line, image',
             });
             var counter = 0;
             $scope.setupImageList = function (comment) {

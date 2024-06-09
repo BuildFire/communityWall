@@ -19,12 +19,20 @@
             Members.appSettings = null;
             Members.SocialItems = SocialItems.getInstance();
             Members.skeleton = new Buildfire.components.skeleton('body', {
-                type: 'image, sentence, list-item-avatar-two-line, list-item-avatar-two-line',
+                type: 'button-full, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar',
             });
 
+            const initSkeleton = () => {
+                Members.skeleton.start();
+                document.querySelectorAll('.bf-skeleton-container .skeleton-list-item-avatar').forEach((el)=>{
+                    el.style.padding = '0.5rem 1rem';
+                });
+                document.querySelector('.bf-skeleton-container .bf-skeleton-loader.skeleton-button--full-width').style.margin = '0.5rem 1rem';
+                document.querySelector('.bf-skeleton-container .bf-skeleton-loader.skeleton-button--full-width').style.width = 'calc(100% - 2rem)';
+            }
             Members.init = function () {
                 $rootScope.showThread = false;
-                Members.skeleton.start();
+                initSkeleton();
                 Buildfire.appearance.getAppTheme((err, obj) => {
                     if (err) return console.log(err);
                     document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);

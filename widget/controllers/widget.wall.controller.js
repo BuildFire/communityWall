@@ -25,7 +25,7 @@
             WidgetWall.scrollPosition = null;
 
             WidgetWall.skeleton = new Buildfire.components.skeleton('body', {
-                type: 'image, sentence, list-item-avatar-two-line, list-item-avatar-two-line',
+                type: 'list-item-avatar-two-line, list-item-three-line, image, list-item-avatar-two-line, list-item-three-line, image, list-item-avatar-three-line, image, list-item-avatar-three-line',
             })
 
             WidgetWall.showHideCommentBox = function () {

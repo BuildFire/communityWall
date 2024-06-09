@@ -551,7 +551,7 @@ button.btn--lg,
 }
 
 .social-plugin .head-btn {
-    position: fixed;
+    position: sticky;
     width:100%;
     z-index: 2;
     height: 45px;
@@ -1193,6 +1193,7 @@ textarea {
     overflow-x:hidden;
     overflow-y:hidden;
     -webkit-overflow-scrolling:touch;
+    padding-top: 0.5rem;
 }
 .post-section .post-infinite-scroll,
 .side-thread-section .post-section{
@@ -1205,7 +1206,7 @@ textarea {
 }
 .has-group-header.post-section .post-infinite-scroll,
 .side-thread-section .has-group-header.post-section{
-    padding-top: 3.75rem;
+    padding-top: 0;
 }
 .has-comment-box .post-infinite-scroll,
 .side-thread-section .has-comment-box.post-section{
