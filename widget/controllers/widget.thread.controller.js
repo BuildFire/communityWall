@@ -289,67 +289,89 @@
                 })
             }
 
-            Thread.openBottomDrawer = function (userId) {
-                $scope.notYou = false;
-                Follows.isFollowingUser(userId, (err, r) => {
-                    let listItems = [];
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true) listItems.push({
-                        text: 'See Profile'
-                    });
-                    if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat) {
-                        if ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({
-                            text: 'Send Direct Message'
-                        });
+            Thread.openBottomDrawer = function (post) {
+                let listItems = [];
+                let userId = post.userId;
+                Thread.modalPopupThreadId = post.id;
+                Thread.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        // Add options based on user conditions
+                        if (post.userId === Thread.SocialItems.userDetails.userId) {
+                            listItems.push(
+                                {
+                                    id: 'deletePost',
+                                    text: Thread.SocialItems.languages.deletePost
+                                }
+                            );
+                        } else {
+                            listItems.push(
+                                {
+                                    id: 'reportPost',
+                                    text: Thread.SocialItems.languages.reportPost
+                                },
+                                {
+                                    id: 'blockUser',
+                                    text: Thread.SocialItems.languages.blockUser
+                                }
+                            );
+                        }
                     }
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers")
+                });
+
+                Follows.isFollowingUser(userId, (err, r) => {
+                    if (Thread.SocialItems.appSettings.allowCommunityFeedFollow == true)
+                        listItems.push({
+                            text: r ? 'Unfollow' : 'Follow'
+                        });
+
+                    if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat 
+                        && post.userId != Thread.SocialItems.userDetails.userId && ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false)){                        
                         listItems.push({
                             text: 'Send Direct Message'
                         });
-                    if (Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({
-                        text: r ? 'Unfollow' : 'Follow'
-                    });
+                    }
 
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers") {
+                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers" && post.userId != Thread.SocialItems.userDetails.userId)
+                        listItems.push({
+                            text: 'Send Direct Message'
+                        });
+
+                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers" && post.userId != Thread.SocialItems.userDetails.userId) {
                         SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
                             if (response) {
                                 listItems.push({
                                     text: 'Send Direct Message'
                                 });
-                            } else {
-                                $scope.notYou = true;
                             }
-                            Thread.ContinueDrawer(userId, listItems)
+                            Thread.ContinueDrawer(post, listItems)
                         })
                     } else {
-                        Thread.ContinueDrawer(userId, listItems)
+                        Thread.ContinueDrawer(post, listItems)
                     }
-                })
+                });
             }
 
-            Thread.ContinueDrawer = function (userId, listItems) {
-                if ($scope.notYou) {
-                    if (Thread.SocialItems.languages.specificChat && Thread.SocialItems.languages.specificChat != "") {
-                        const options = {
-                            text: Thread.SocialItems.languages.specificChat
-                        };
-                        buildfire.components.toast.showToastMessage(options, () => {});
-                        return;
-                    }
-                }
+            Thread.ContinueDrawer = function (post, listItems) {
+                let userId = post.userId;
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({
                     enableFilter: false,
                     listItems: listItems
                 }, (err, result) => {
                     if (err) return console.error(err);
-                    else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                     else if (result.text == "Send Direct Message") Thread.openChat(userId);
                     else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
+                    else if (result.id == "reportPost") Thread.reportPost(post);
+                    else if (result.id == "blockUser") Thread.blockUser(userId);
+                    else if (result.id == "deletePost"){
+                        buildfire.components.drawer.closeDrawer();
+                        Thread.blockUser(userId);
+                    }
                     buildfire.components.drawer.closeDrawer();
                 });
             }
-
 
             Thread.openChatOrProfile = function (userId, comment) {
                 if(comment.deletedOn) return;
@@ -404,51 +426,6 @@
                     }
                 });
             }
-
-            /**
-             * showMoreOptions method shows the more Option popup.
-             */
-            Thread.showMoreOptions = function () {
-                Thread.modalPopupThreadId = Thread.post._id;
-                Thread.SocialItems.authenticateUser(null, (err, user) => {
-                    if (err) return console.error("Getting user failed.", err);
-                    if (user) {
-                        const drawerOptions = { listItems: [] };
-            
-                        // Check if the current user is the owner of the post
-                        const isOwner = Thread.post.userId === user._id;
-            
-                        if (isOwner) {
-                            // Add delete option if the user is the owner
-                            drawerOptions.listItems.push({
-                                id: 'deletePost',
-                                text: Thread.SocialItems.languages.deletePost || 'Delete Post'
-                            });
-                        } else {
-                            // Add report and block options if the user is not the owner
-                            drawerOptions.listItems.push({
-                                id: 'reportPost',
-                                text: Thread.SocialItems.languages.reportPost || 'Report Post'
-                            });
-                            drawerOptions.listItems.push({
-                                id: 'blockUser',
-                                text: Thread.SocialItems.languages.blockUser || 'Block User'
-                            });
-                        }
-            
-                        buildfire.components.drawer.open(drawerOptions, (err, result) => {
-                            if (result && result.id === 'deletePost') {
-                                Thread.deletePost(Thread.post.id);
-                            } else if (result && result.id === 'reportPost') {
-                                Thread.reportPost();
-                            } else if (result && result.id === 'blockUser') {
-                                buildfire.components.drawer.closeDrawer();
-                                Thread.blockUser(Thread.post.userId);
-                            }
-                        });
-                    }
-                });
-            };
 
             Thread.showMoreOptionsComment = function (comment) {
                 Thread.modalPopupThreadId = comment.threadId;

@@ -16,7 +16,7 @@
             class="post-section backgroundColorTheme">
             <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
                 <div class="head flex flex-space-between">
-                    <div class="social-profile-photo"  ng-click="Thread.showMoreOptions()">
+                    <div class="social-profile-photo"  ng-click="Thread.openBottomDrawer(Thread.post)">
                         <div class="media-holder pull-left">
                             <img ng-if="Thread.post.userId && Thread.post.userDetails.imageUrl"
                                 load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
@@ -27,7 +27,7 @@
                         </div>
                         <div class="social-copy padding-half-rem padding-top-zero padding-bottom-zero">
                             <p class="text-primary ellipsis">
-                                <a ng-click="Thread.openBottomDrawer(Thread.post.userId)">
+                                <a ng-click="Thread.openBottomDrawer(Thread.post)">
                                     {{Thread.SocialItems.getUserName(Thread.post.userDetails)}}</a>
                             </p>
                             <div ng-if="Thread.post.createdOn">
@@ -37,7 +37,7 @@
                         </div>
                     </div>
                     <div class="padding-half-rem padding-top-zero padding-bottom-zero"></div>
-                    <a class="social-icon margin-one-rem margin-top-zero margin-bottom-zero ng-cloak" ng-click="Thread.showMoreOptions()" style="height: 2rem; margin-top: 0.75rem;">
+                    <a class="social-icon margin-one-rem margin-top-zero margin-bottom-zero ng-cloak" ng-click="Thread.openBottomDrawer(Thread.post)" style="height: 2rem; margin-top: 0.75rem;">
                         <span class="material-icons-outlined">more_horiz</span>
                     </a>
                 </div>

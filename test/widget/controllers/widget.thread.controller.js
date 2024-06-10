@@ -164,13 +164,6 @@ describe('Unit : Controller - ThreadCtrl', function () {
         });
     });
 
-    describe('Thread.showMoreOptions', function () {
-
-        it('it should pass if Thread.showMoreOptions is called', function () {
-            ThreadCtrl.showMoreOptions();
-        });
-    });
-
     describe('Thread.likeThread', function () {
 
         it('it should pass if Thread.likeThread is called', function () {

@@ -364,67 +364,84 @@
             }
 
 
-            WidgetWall.openBottomDrawer = function (userId) {
-                $scope.notYou = false;
+            WidgetWall.openBottomDrawer = function (post) {
+                let listItems = [];
+                let userId = post.userId;
+                WidgetWall.modalPopupThreadId = post.id;
+                WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        WidgetWall.checkFollowingStatus();           
+                        // Add options based on user conditions
+                        if (post.userId === WidgetWall.SocialItems.userDetails.userId) {
+                            listItems.push(
+                                {
+                                    id: 'deletePost',
+                                    text: WidgetWall.SocialItems.languages.deletePost
+                                }
+                            );
+                        } else {
+                            listItems.push(
+                                {
+                                    id: 'reportPost',
+                                    text: WidgetWall.SocialItems.languages.reportPost
+                                },
+                                {
+                                    id: 'blockUser',
+                                    text: WidgetWall.SocialItems.languages.blockUser
+                                }
+                            );
+                        }
+                    }
+                });
+
                 Follows.isFollowingUser(userId, (err, r) => {
-                    let listItems = [];
-                    if (WidgetWall.SocialItems.appSettings.seeProfile)
-                        listItems.push({
-                            text: "See Profile"
-                        })
                     if (WidgetWall.SocialItems.appSettings.allowCommunityFeedFollow == true)
                         listItems.push({
                             text: r ? 'Unfollow' : 'Follow'
                         });
 
-                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat) {
-                        if ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false) listItems.push({
+                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat 
+                        && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){                        
+                        listItems.push({
                             text: 'Send Direct Message'
                         });
                     }
 
-                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers")
+                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers" && post.userId != WidgetWall.SocialItems.userDetails.userId)
                         listItems.push({
                             text: 'Send Direct Message'
                         });
 
-                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "selectedUsers") {
+                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "selectedUsers" && post.userId != WidgetWall.SocialItems.userDetails.userId) {
                         SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
                             if (response) {
                                 listItems.push({
                                     text: 'Send Direct Message'
                                 });
-                            } else {
-                                $scope.notYou = true;
                             }
-                            WidgetWall.ContinueDrawer(userId, listItems)
+                            WidgetWall.ContinueDrawer(post, listItems)
                         })
                     } else {
-                        WidgetWall.ContinueDrawer(userId, listItems)
+                        WidgetWall.ContinueDrawer(post, listItems)
                     }
-                })
+                });
             }
 
-            WidgetWall.ContinueDrawer = function (userId, listItems) {
-                if ($scope.notYou) {
-                    if (WidgetWall.SocialItems.languages.specificChat && WidgetWall.SocialItems.languages.specificChat != "") {
-                        const options = {
-                            text: WidgetWall.SocialItems.languages.specificChat
-                        };
-                        buildfire.components.toast.showToastMessage(options, () => {});
-                        return;
-                    }
-                }
+            WidgetWall.ContinueDrawer = function (post, listItems) {
+                let userId = post.userId;
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({
                     enableFilter: false,
                     listItems: listItems
                 }, (err, result) => {
                     if (err) return console.error(err);
-                    else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                     else if (result.text == "Send Direct Message") WidgetWall.openChat(userId);
                     else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
+                    else if (result.id == "reportPost") WidgetWall.reportPost(post);
+                    else if (result.id == "blockUser") WidgetWall.blockUser(userId);
+                    else if (result.id == "deletePost") WidgetWall.deletePost(post.id);                 
                     buildfire.components.drawer.closeDrawer();
                 });
             }
@@ -1165,59 +1182,6 @@
                 });
             }
 
-            WidgetWall.showMoreOptions = function (post) {
-                WidgetWall.modalPopupThreadId = post.id;
-                WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
-                    if (err) return console.error("Getting user failed.", err);
-                    if (userData) {
-                        WidgetWall.checkFollowingStatus();
-            
-                        const drawerOptions = {
-                            listItems: []
-                        };
-            
-                        // Add options based on user conditions
-                        if (post.userId === WidgetWall.SocialItems.userDetails.userId) {
-                            drawerOptions.listItems.push(
-                                {
-                                    id: 'deletePost',
-                                    text: WidgetWall.SocialItems.languages.deletePost
-                                }
-                            );
-                        } else {
-                            drawerOptions.listItems.push(
-                                {
-                                    id: 'reportPost',
-                                    text: WidgetWall.SocialItems.languages.reportPost
-                                },
-                                {
-                                    id: 'blockUser',
-                                    text: WidgetWall.SocialItems.languages.blockUser
-                                }
-                            );
-                        }
-            
-                        Buildfire.components.drawer.open(drawerOptions, (err, result) => {
-                            if (err) return console.error("Error opening drawer.", err);
-                            if (result) {
-                                switch (result.id) {
-                                    case 'reportPost':
-                                        WidgetWall.reportPost(post);
-                                        break;
-                                    case 'blockUser':
-                                        WidgetWall.blockUser(post.userId);
-                                        break;
-                                    case 'deletePost':
-                                        WidgetWall.deletePost(post.id);
-                                        break;
-                                }
-                            }
-                        });
-                    }
-                });
-            };
-
-            
             WidgetWall.likeThread = function (post) {
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);

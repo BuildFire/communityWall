@@ -180,18 +180,6 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
 
     });
 
-    describe('WidgetWall.showMoreOptions', function () {
-
-
-        it('it should pass if it calls SocialDataStore.showMoreOptions is called', function () {
-            WidgetWallCtrl.picFile = 'a';
-            WidgetWallCtrl.showMoreOptions('asasasa');
-
-        });
-
-
-    });
-
     describe('WidgetWall.likeThread', function () {
         it('it should pass if it calls SocialDataStore.likeThread is called', function () {
             WidgetWallCtrl.picFile = 'a';

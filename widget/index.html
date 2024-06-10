@@ -127,7 +127,7 @@
 
                                                     <p ng-if="WidgetWall.SocialItems.userDetails.userId == post.userId" class="text-primary ellipsis">
                                                         <a class="ng-cloak"
-                                                            ng-click="WidgetWall.openBottomDrawer(post.userId)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
+                                                            ng-click="WidgetWall.openBottomDrawer(post)">{{WidgetWall.SocialItems.getUserName(post.userDetails)}}</a>
                                                     </p>
 
                                                     <div ng-if="post.createdOn">
@@ -138,7 +138,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <a class="likes social-icon margin-one-rem margin-top-zero margin-bottom-zero ng-cloak" ng-click="WidgetWall.showMoreOptions(post)" style="height: 2rem; margin-top: 0.75rem;">
+                                        <a class="likes social-icon margin-one-rem margin-top-zero margin-bottom-zero ng-cloak" ng-click="WidgetWall.openBottomDrawer(post)" style="height: 2rem; margin-top: 0.75rem;">
                                             <span class="material-icons-outlined">more_horiz</span>
                                         </a>
                                     </div>
