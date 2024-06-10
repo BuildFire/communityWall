@@ -551,7 +551,6 @@ button.btn--lg,
 }
 
 .social-plugin .head-btn {
-    position: sticky;
     width:100%;
     z-index: 2;
     height: 45px;
@@ -1526,4 +1525,11 @@ button.btn-danger-outlined {
 
 .body-text-theme {
     color: var(--bf-theme-body-text) !important;
+}
+
+/* styles/style.css */
+#socialHeader, .head-btn, .head-btn2 {
+    transition: transform 0.3s ease-in-out;
+    position: sticky;
+    z-index: 1000;
 }

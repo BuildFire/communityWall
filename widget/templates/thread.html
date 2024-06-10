@@ -1,8 +1,9 @@
 <div class="padding-zero" style="height:100%;">
     <div class="social-plugin social-thread" ng-if="Thread.loaded" style="height: 100%;">
 
-        <div ng-if="Thread.allowFollowLeaveGroup" class="head-btn text-center backgroundColorTheme">
-
+        <div ng-if="Thread.allowFollowLeaveGroup" 
+        sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
+        class="head-btn text-center backgroundColorTheme">
             <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 0; position: absolute; padding-left: 15px; margin: 5px;margin-left: 0;">
                 <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px;">
                     <span class="plusMinusIcon ng-binding">−</span>
@@ -15,7 +16,7 @@
             class="post-section backgroundColorTheme">
             <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
                 <div class="head flex flex-space-between">
-                    <div class="social-profile-photo">
+                    <div class="social-profile-photo"  ng-click="Thread.showMoreOptions()">
                         <div class="media-holder pull-left">
                             <img ng-if="Thread.post.userId && Thread.post.userDetails.imageUrl"
                                 load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
@@ -59,7 +60,7 @@
                 </div>
                 <div class="comments-list" ng-if="Thread.processedComments">
                     <div class="social-comment" ng-repeat="comment in Thread.post.comments">
-                        <div class="thread-dot">
+                        <div class="thread-dot head" ng-click="Thread.showMoreOptionsComment(comment)">
                             <div class="media-holder pull-left">
                                 <img ng-if="comment.userDetails.imageUrl"
                                     load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
@@ -70,10 +71,9 @@
                             </div>
                         </div>
                         <div class="comment-content ellipsis" style="max-width: 85%">
-                            <div class="social-profile-photo">
+                            <div class="social-profile-photo" ng-click="Thread.showMoreOptionsComment(comment)">
                                 <div class="social-copy">
-                                    <a class="social-name text-primary"
-                                        ng-click="Thread.openChatOrProfile(comment.userId, comment)">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
+                                    <a class="social-name text-primary">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
                                     <div ng-if="comment.createdOn">
                                         <p class="time-ago opacity-seventy">
                                             {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>
