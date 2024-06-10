@@ -455,7 +455,7 @@
                                         callback(null, []);
                                     }
                                 } else {
-                                    callback(err, false)
+                                    callback(err, []);
                                 }
                             })
                         } else {

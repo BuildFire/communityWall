@@ -4,7 +4,7 @@
         <div ng-if="Thread.allowFollowLeaveGroup" 
         sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
         class="head-btn text-center backgroundColorTheme">
-            <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 0; position: absolute; padding-left: 15px; margin: 5px;margin-left: 0;">
+            <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 0; position: absolute; padding-left: 15px;margin-left: 0;">
                 <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px;">
                     <span class="plusMinusIcon ng-binding">−</span>
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
@@ -22,7 +22,7 @@
                                 load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
                                 crop-height="40" crop-type="crop">
                             <img ng-if="!(Thread.post.userId && Thread.post.userDetails.imageUrl)"
-                                load-image="1x1" data-final-src="../../../styles/media/avatar.png"
+                                load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"
                                 data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
                         </div>
                         <div class="social-copy padding-half-rem padding-top-zero padding-bottom-zero">
@@ -66,7 +66,7 @@
                                     load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
                                     crop-height="40" crop-type="crop">
                                 <img ng-if="!(comment.userDetails.imageUrl)"
-                                    load-image="1x1" data-final-src="../../../styles/media/avatar.png"
+                                    load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"
                                     data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
                             </div>
                         </div>

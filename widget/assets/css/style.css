@@ -1199,6 +1199,7 @@ textarea {
     padding: .5rem;
     height: 100vh;
     overflow: scroll;
+    padding-top: 45px !important;
 }
 .side-thread-section .post-section{
     padding: 0;
@@ -1209,7 +1210,8 @@ textarea {
 }
 .has-comment-box .post-infinite-scroll,
 .side-thread-section .has-comment-box.post-section{
-    padding-bottom: 6rem;   
+    padding-bottom: 6rem;
+    padding-top: 45px;
 }
 
 .side-thread-section{
@@ -1516,9 +1518,9 @@ html[buildfire][safe-area="true"] body {
 }
 
 button.btn-danger-outlined {
-    background-color: transparent;
-    color: var(--bf-theme-danger);
-    border-color: var(--bf-theme-danger);
+    background-color: transparent !important;
+    color: var(--bf-theme-danger) !important;
+    border-color: var(--bf-theme-danger) !important;
     text-transform: unset;
     box-shadow: none !important;
 }
@@ -1529,7 +1531,11 @@ button.btn-danger-outlined {
 
 /* styles/style.css */
 #socialHeader, .head-btn, .head-btn2 {
-    transition: transform 0.3s ease-in-out;
-    position: sticky;
-    z-index: 1000;
+    transition: transform .3s ease-in-out;
+    position: fixed;
+    z-index: 1000 !important;
+}
+
+.head-btn p.text-primary {
+    padding-top: 0.25rem;
 }

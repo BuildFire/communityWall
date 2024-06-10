@@ -4,7 +4,7 @@ const searchTableConfig = {
   },
   columns: [{
       header: "",
-      data: "${data.userDetails.imageUrl != null ? data.userDetails.imageUrl : '../../../../../styles/media/avatar.png'}",
+      data: "${data.userDetails.imageUrl != null ? data.userDetails.imageUrl : '../../../../../styles/media/avatar-placeholder.png'}",
       type: "Image",
       width: "50px",
       sortBy: "",

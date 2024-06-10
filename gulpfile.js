@@ -68,6 +68,7 @@ cfTasks.forEach(function (task){
         presets: ['@babel/env']
         }))
       .pipe(uglify())
+      .pipe(concat("cfScripts.min.js"))
       .pipe(gulp.dest(destinationFolder+task.dest))
     );
   })
@@ -149,6 +150,7 @@ gulp.task("widgetHtml", function () {
       /// with scripts.min.js with cache buster
       .pipe(
         htmlReplace({
+          bundleCFFiles: "./CommunityFeed/cfScripts.min.js?v=" + new Date().getTime(),
           bundleJSFiles: "scripts.min.js?v=" + new Date().getTime(),
           bundleSharedJSFiles: "scripts.shared-min.js?v=" + new Date().getTime(),
           bundleCSSFiles: "styles.min.css?v=" + new Date().getTime(),

@@ -19,14 +19,15 @@
     <script src="../../../scripts/angular/ui-bootstrap.min.js"></script>
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
     <script src="../../../scripts/buildfire/components/skeleton/skeleton.js"></script>
+    <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
 
     <link rel="stylesheet" href="../../../styles/components/skeleton.css" />
 
     <!-- build:bundleCFFiles  -->
     <script src="./CommunityFeedAPI/data/analyticKeys.js"></script>
     <script src="./CommunityFeedAPI/data/Errors.js"></script>
-    <script src="./CommunityFeedAPI/data/Follow.js"></script>
     <script src="./CommunityFeedAPI/data/Post.js"></script>
+    <script src="./CommunityFeedAPI/data/Follow.js"></script>
     <script src="./CommunityFeedAPI/dataAccess/Follows.js"></script>
     <!-- endbuild -->
     <!-- build:bundleJSFiles  -->
@@ -36,7 +37,6 @@
     <script src="app.service.js"></script>
     <script src="enums.js"></script>
     <script src="assets/js/filters.js"></script>
-    <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
     <script src="controllers/widget.wall.controller.js"></script>
     <script src="controllers/widget.thread.controller.js"></script>
     <script src="controllers/widget.members.controller.js"></script>
@@ -65,37 +65,31 @@
                         "
                         sticky-navbar scroll-container=".post-infinite-scroll"
                         ng-class="{'head-btn': WidgetWall.allowFollowLeaveGroup, 'head-btn2': !WidgetWall.allowFollowLeaveGroup}" class="text-center" id="socialHeader">
-                            <a>
-                                <div>
-                                    <p class="text-primary" ng-click="WidgetWall.followUnfollow()"  ng-show="WidgetWall.allowFollowLeaveGroup"
-                                    style="
-                                        left: 0;
-                                        top: 0;
-                                        position: absolute;
-                                        padding-left: 15px;
-                                        margin: 5px;
-                                        margin-left: 0;"
-                                        >
+                            <p class="text-primary" ng-click="WidgetWall.followUnfollow()"  ng-show="WidgetWall.allowFollowLeaveGroup"
+                            style="
+                                left: 0;
+                                top: 0;
+                                position: absolute;
+                                padding-left: 15px;
+                                margin-left: 0;"
+                                >
 
-                                        <button class="btn btn-danger-outlined" id="followBtn" style="display: flex; font-size: 13px;">
-                                            <span class="plusMinusIcon" >{{WidgetWall.groupFollowingStatus ? '&#8722;' : '&#43;'}}</span>
-                                            {{WidgetWall.groupFollowingStatus ? (WidgetWall.SocialItems.languages.leaveGroup) : WidgetWall.SocialItems.languages.joinGroup}}
-                                        </button>
-                                    </p>
-                                    <p class="text-primary" ng-show="WidgetWall.SocialItems.appSettings.showMembers" ng-click="WidgetWall.showMembers()" style="margin-bottom :0px;
-                                        width: 2em;
-                                        right: 1em;
-                                        position: absolute;
-                                        ">
-                                        <svg class="svgIcon" id="membersSvg" viewBox="0 0 24 24">
-                                            <path
-                                                d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z">
-                                            </path>
-                                        </svg>
-                                    </p>
-                                </div>
-
-                            </a>
+                                <button class="btn btn-danger-outlined" id="followBtn" style="display: flex; font-size: 13px;">
+                                    <span class="plusMinusIcon" >{{WidgetWall.groupFollowingStatus ? '&#8722;' : '&#43;'}}</span>
+                                    {{WidgetWall.groupFollowingStatus ? (WidgetWall.SocialItems.languages.leaveGroup) : WidgetWall.SocialItems.languages.joinGroup}}
+                                </button>
+                            </p>
+                            <p class="text-primary" ng-show="WidgetWall.SocialItems.appSettings.showMembers" ng-click="WidgetWall.showMembers()" style="margin-bottom :0px;
+                                width: 2em;
+                                right: 1em;
+                                position: absolute;
+                                ">
+                                <svg class="svgIcon" id="membersSvg" viewBox="0 0 24 24">
+                                    <path
+                                        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z">
+                                    </path>
+                                </svg>
+                            </p>
                         </div>
                         <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
                             class="post-section backgroundColorTheme">
@@ -119,7 +113,7 @@
                                                     alt={{WidgetWall.SocialItems.getUserName(post.userDetails)}}>
                                                 <img ng-if="!(post.userId && post.userDetails.imageUrl)"
                                                     load-image="1x1"
-                                                    data-final-src="../../../styles/media/avatar.png"
+                                                    data-final-src="../../../styles/media/avatar-placeholder.png"
                                                     data-img-type="local" crop-width="40" crop-height="40"
                                                     crop-type="default"
                                                     alt="Anonymous">

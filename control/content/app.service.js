@@ -210,6 +210,25 @@
                         headers: { 'Content-Type': 'application/json' }
                     }).then(success, error);
                     return deferred.promise;
+                },
+                deleteFeedPost : (filter, callback) =>{
+                    console.log(filter);
+                    buildfire.auth.getCurrentUser((err, currentUser) =>{
+                        if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});
+                        buildfire.appData.search({filter:{$and:[{...filter}]},sort:{createdOn: -1} }, "posts", (err, r) =>{
+                            if(err || !r || r.length == 0) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"});
+                            r.forEach(p =>{
+                                if(!p) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"})
+                                if(p.data.userId != currentUser._id && buildfire.getContext().type !== 'control') return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
+                                buildfire.appData.delete(p.id, "posts", (err, r) =>{
+                                    if(err) return console.error(err);
+                                    Analytics.trackAction("post-deleted");
+                                    callback(r);
+                                })
+            
+                            })
+                        })
+                    })
                 }
             }
         }])
