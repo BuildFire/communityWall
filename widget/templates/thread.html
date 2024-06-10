@@ -4,7 +4,7 @@
         <div ng-if="Thread.allowFollowLeaveGroup" 
         sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
         class="head-btn text-center backgroundColorTheme">
-            <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 0; position: absolute; padding-left: 15px;margin-left: 0;">
+            <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 4px; position: absolute; padding-left: 15px;margin-left: 0;">
                 <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px;">
                     <span class="plusMinusIcon ng-binding">−</span>
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
@@ -16,7 +16,7 @@
             class="post-section backgroundColorTheme">
             <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
                 <div class="head flex flex-space-between">
-                    <div class="social-profile-photo"  ng-click="Thread.openBottomDrawer(Thread.post)">
+                    <div class="social-profile-photo pointer"  ng-click="Thread.openBottomDrawer(Thread.post)">
                         <div class="media-holder pull-left">
                             <img ng-if="Thread.post.userId && Thread.post.userDetails.imageUrl"
                                 load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
@@ -27,7 +27,7 @@
                         </div>
                         <div class="social-copy padding-half-rem padding-top-zero padding-bottom-zero">
                             <p class="text-primary ellipsis">
-                                <a ng-click="Thread.openBottomDrawer(Thread.post)">
+                                <a>
                                     {{Thread.SocialItems.getUserName(Thread.post.userDetails)}}</a>
                             </p>
                             <div ng-if="Thread.post.createdOn">
@@ -60,7 +60,7 @@
                 </div>
                 <div class="comments-list" ng-if="Thread.processedComments">
                     <div class="social-comment" ng-repeat="comment in Thread.post.comments">
-                        <div class="thread-dot head" ng-click="Thread.showMoreOptionsComment(comment)">
+                        <div class="thread-dot head pointer" ng-click="Thread.showMoreOptionsComment(comment)">
                             <div class="media-holder pull-left">
                                 <img ng-if="comment.userDetails.imageUrl"
                                     load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"

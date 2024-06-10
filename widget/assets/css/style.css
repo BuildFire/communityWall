@@ -1516,7 +1516,9 @@ html[buildfire][safe-area="true"] body {
 .wallMembers .social-item .social-profile-photo {
     gap: 1rem
 }
-
+.pointer{
+    cursor: pointer;
+}
 button.btn-danger-outlined {
     background-color: transparent !important;
     color: var(--bf-theme-danger) !important;
