@@ -103,8 +103,8 @@
                                     <div class="empty_state"></div>
                                 </div>
                                 <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items track by post.id">
-
-                                    <div class="head flex flex-space-between">
+                                    <div class="head flex flex-space-between"
+                                    ng-class="{'first-post': $first && (WidgetWall.allowFollowLeaveGroup || WidgetWall.SocialItems.appSettings.showMembers)}">
                                         <div class="social-profile-photo pointer" ng-click="WidgetWall.openBottomDrawer(post)">
                                             <div class="media-holder ng-cloak">
                                                 <img ng-if="post.userId && post.userDetails.imageUrl" load-image="1x1"

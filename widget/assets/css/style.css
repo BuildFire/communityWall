@@ -1531,7 +1531,6 @@ button.btn-danger-outlined {
     color: var(--bf-theme-body-text) !important;
 }
 
-/* styles/style.css */
 #socialHeader, .head-btn, .head-btn2 {
     transition: transform .3s ease-in-out;
     position: fixed;
@@ -1540,4 +1539,8 @@ button.btn-danger-outlined {
 
 .head-btn p.text-primary {
     padding-top: 0.25rem;
+}
+
+.social-item .first-item {
+    margin-top: 51px;
 }

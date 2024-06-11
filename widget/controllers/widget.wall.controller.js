@@ -401,6 +401,11 @@
                             text: r ? 'Unfollow' : 'Follow'
                         });
 
+                    if (WidgetWall.SocialItems.appSettings.seeProfile && post.userId != WidgetWall.SocialItems.userDetails.userId)
+                        listItems.push({
+                            text: "See Profile"
+                        })
+    
                     if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat 
                         && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){                        
                         listItems.push({
@@ -437,6 +442,7 @@
                 }, (err, result) => {
                     if (err) return console.error(err);
                     else if (result.text == "Send Direct Message") WidgetWall.openChat(userId);
+                    else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                     else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.id == "reportPost") WidgetWall.reportPost(post);
@@ -1314,7 +1320,7 @@
                     (err, reportResult) => {
                         if (err && err !== 'Report is cancelled') {
                             Buildfire.dialog.toast({
-                                message: WidgetWall.SocialItems.languages.reportPostFail || "Report could not be submitted. It may have already been reported.",
+                                message: WidgetWall.SocialItems.languages.reportPostFail || "This post is already reported.",
                                 type: 'info'
                             });
                         }

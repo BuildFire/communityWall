@@ -143,9 +143,9 @@ const stringsConfig = {
 			},
 			reportPostFail: {
 				title: "Report Post Failure"
-				, placeholder: "Report could not be submitted. It may have already been reported."
+				, placeholder: "This post is already reported."
 				, maxLength: 100
-				, defaultValue: "Report could not be submitted. It may have already been reported."
+				, defaultValue: "This post is already reported."
 			},
 			blockUserSuccess : {
 				title: "Block User Success"
@@ -161,9 +161,9 @@ const stringsConfig = {
 			},
 			reportCommentFail: {
 				title: "Report Comment Failure"
-				, placeholder: "Report could not be submitted. It may have already been reported."
+				, placeholder: "This comment is already reported."
 				, maxLength: 100
-				, defaultValue: "Report could not be submitted. It may have already been reported."
+				, defaultValue: "This comment is already reported."
 			},
 			reportPostAlreadyReported: {
 				title: "This Post Has Already Been Reported"
