@@ -1526,7 +1526,9 @@ button.btn-danger-outlined {
     text-transform: unset;
     box-shadow: none !important;
 }
-
+button.btn-danger-outlined:hover{
+    color: var(--bf-theme-danger) !important;
+}
 .body-text-theme {
     color: var(--bf-theme-body-text) !important;
 }
@@ -1539,10 +1541,6 @@ button.btn-danger-outlined {
 
 .head-btn p.text-primary {
     padding-top: 0.25rem;
-}
-
-.social-item .first-item {
-    margin-top: 51px;
 }
 
 .first-post{

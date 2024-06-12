@@ -5,7 +5,7 @@
         sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
         class="head-btn text-center backgroundColorTheme">
             <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 4px; position: absolute; padding-left: 15px;margin-left: 0;">
-                <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px;">
+                <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px; width:140px; overflow:hidden">
                     <span class="plusMinusIcon ng-binding">−</span>
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
                 </button>
@@ -14,7 +14,7 @@
         </div>
         <div ng-class="{'has-comment-box':Thread.SocialItems.userDetails.userId == null || Thread.allowCreateThread,'has-group-header' : Thread.allowFollowLeaveGroup}"
             class="post-section backgroundColorTheme">
-            <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
+            <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1, 'first-post':Thread.allowFollowLeaveGroup}">
                 <div class="head flex flex-space-between">
                     <div class="social-profile-photo pointer"  ng-click="Thread.openBottomDrawer(Thread.post)">
                         <div class="media-holder pull-left">
@@ -63,7 +63,7 @@
                         <div class="thread-dot head pointer" ng-click="Thread.showMoreOptionsComment(comment)">
                             <div class="media-holder pull-left">
                                 <img ng-if="comment.userDetails.imageUrl"
-                                    load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
+                                    load-image="1x1" data-final-src="{{comment.userDetails.imageUrl}}" crop-width="40"
                                     crop-height="40" crop-type="crop">
                                 <img ng-if="!(comment.userDetails.imageUrl)"
                                     load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"

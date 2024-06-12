@@ -18,9 +18,13 @@
                 const triggerResponse = () => {
                     Buildfire.services.reportAbuse.triggerOnAdminResponseHandled({ reportId: event.report.id });
                 };
+                let goBack = Buildfire.navigation.onBackButtonClick;
 
-                if (event.action != 'markAbuse') return triggerResponse();
-
+                if (event.action != 'markAbuse') {
+                    triggerResponse();
+                    goBack();
+                    return;
+                }
                 if (event.report.data.itemType == 'post') {
                     deletePost(event.report.data.deeplink.postId, (success) => {
                         if (success) triggerResponse();
@@ -90,6 +94,10 @@
                     Report.SocialItems.items.splice(index, 1);
                     callback(true);
                     goBack();
+                    Buildfire.dialog.toast({
+                        message: "Reported post deleted successfully",
+                        type: 'info'
+                    });
                     if (!$scope.$$phase)
                         $scope.$digest();
                 }
@@ -104,11 +112,15 @@
         const deleteComment = function (postId, comment, callback) {
             SocialDataStore.deleteComment(postId, comment).then(
                 function (data) {
-                    let commentToDelete = Report.post.comments.find(element => element.commentId === comment.commentId)
+                    let commentToDelete = Report.post.comments.find(element => element.commentId && element.commentId === comment.commentId)
                     let index = Report.post.comments.indexOf(commentToDelete);
                     let goBack = Buildfire.navigation.onBackButtonClick;
                     Report.post.comments.splice(index, 1);
                     goBack();
+                    Buildfire.dialog.toast({
+                        message: "Reported comment deleted successfully",
+                        type: 'info'
+                    });
                     callback(true);
                     if (!$scope.$$phase)
                         $scope.$digest();
