@@ -1192,14 +1192,14 @@ textarea {
     overflow-x:hidden;
     overflow-y:hidden;
     -webkit-overflow-scrolling:touch;
-    padding-top: 0.5rem;
 }
+
 .post-section .post-infinite-scroll,
 .side-thread-section .post-section{
     padding: .5rem;
     height: 100vh;
     overflow: scroll;
-    padding-top: 45px !important;
+    padding-top: 0px !important;
 }
 .side-thread-section .post-section{
     padding: 0;
@@ -1543,4 +1543,8 @@ button.btn-danger-outlined {
 
 .social-item .first-item {
     margin-top: 51px;
+}
+
+.first-post{
+    margin-top: 58px;
 }
