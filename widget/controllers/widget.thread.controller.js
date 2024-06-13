@@ -659,7 +659,7 @@
             Thread.reportComment = function(comment){
                 Buildfire.services.reportAbuse.report(
                     {
-                        "itemId": Thread.post.id,
+                        "itemId": comment.commentId,
                         "reportedUserId": Thread.post.userId,
                         "deeplink": {
                             "fromReportAbuse": true,
