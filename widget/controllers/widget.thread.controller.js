@@ -336,19 +336,21 @@
                             text: 'See Profile'
                         });
 
-                    if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat 
+                    if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat && !Thread.SocialItems.isPrivateChat
                         && post.userId != Thread.SocialItems.userDetails.userId && ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false)){                        
                         listItems.push({
                             text: 'Send Direct Message'
                         });
                     }
 
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers" && post.userId != Thread.SocialItems.userDetails.userId)
+                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers" && !Thread.SocialItems.isPrivateChat
+                        && post.userId != Thread.SocialItems.userDetails.userId)
                         listItems.push({
                             text: 'Send Direct Message'
                         });
 
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers" && post.userId != Thread.SocialItems.userDetails.userId) {
+                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers" && !Thread.SocialItems.isPrivateChat
+                        && post.userId != Thread.SocialItems.userDetails.userId) {
                         SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
                             if (response) {
                                 listItems.push({

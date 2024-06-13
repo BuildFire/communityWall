@@ -112,10 +112,7 @@
         const deleteComment = function (postId, comment, callback) {
             SocialDataStore.deleteComment(postId, comment).then(
                 function (data) {
-                    let commentToDelete = Report.post.comments.find(element => element.commentId && element.commentId === comment.commentId)
-                    let index = Report.post.comments.indexOf(commentToDelete);
                     let goBack = Buildfire.navigation.onBackButtonClick;
-                    Report.post.comments.splice(index, 1);
                     goBack();
                     Buildfire.dialog.toast({
                         message: "Reported comment deleted successfully",

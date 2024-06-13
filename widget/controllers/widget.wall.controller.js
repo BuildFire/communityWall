@@ -407,19 +407,21 @@
                             text: "See Profile"
                         })
     
-                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat 
+                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat && !WidgetWall.SocialItems.isPrivateChat
                         && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){                        
                         listItems.push({
                             text: 'Send Direct Message'
                         });
                     }
 
-                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers" && post.userId != WidgetWall.SocialItems.userDetails.userId)
+                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers" && !WidgetWall.SocialItems.isPrivateChat
+                        && post.userId != WidgetWall.SocialItems.userDetails.userId)
                         listItems.push({
                             text: 'Send Direct Message'
                         });
 
-                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "selectedUsers" && post.userId != WidgetWall.SocialItems.userDetails.userId) {
+                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "selectedUsers" && !WidgetWall.SocialItems.isPrivateChat
+                        && post.userId != WidgetWall.SocialItems.userDetails.userId) {
                         SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
                             if (response) {
                                 listItems.push({
