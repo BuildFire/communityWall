@@ -13,7 +13,8 @@
             WidgetWall.allowPrivateChat = false;
             WidgetWall.allowFollowLeaveGroup = true;
             WidgetWall.groupFollowingStatus = false;
-
+            WidgetWall.postsLoaded = false;
+            
             WidgetWall.threadTag = "thread";
             WidgetWall.appTheme = null;
 
@@ -24,9 +25,8 @@
             WidgetWall.loading = true;
             WidgetWall.scrollPosition = null;
 
-            WidgetWall.skeleton = new Buildfire.components.skeleton('body', {
-                type: 'list-item-avatar-two-line, list-item-three-line, image, list-item-avatar-two-line, list-item-three-line, image, list-item-avatar-three-line, image, list-item-avatar-three-line',
-            })
+            WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
+                type: 'list-item-avatar, list-item-two-line, image'});
 
             WidgetWall.showHideCommentBox = function () {
                 if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
@@ -143,8 +143,9 @@
 
             WidgetWall.getPosts = function () {
                 WidgetWall.SocialItems.getPosts(function (err, data) {
-                    WidgetWall.skeleton.stop();
+                    WidgetWall.postsLoaded = true;
                     WidgetWall.showUserLikes();
+                    WidgetWall.skeleton.stop();
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
                         posts: WidgetWall.SocialItems.items,
@@ -484,6 +485,7 @@
                 WidgetWall.SocialItems.getSettings((err, result) => {
                     if (err) {
                         WidgetWall.skeleton.stop();
+                        WidgetWall.postsLoaded = true;
                         return console.error("Fetching settings failed.", err);
                     }
                     if (result) {

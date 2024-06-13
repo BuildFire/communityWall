@@ -16,9 +16,13 @@
             Thread.util = Util;
             Thread.loaded = false;
             Thread.processedComments = false;
-            Thread.skeleton = new Buildfire.components.skeleton('body', {
-                type: 'list-item-avatar-two-line, list-item-three-line, image',
+            Thread.skeletonPost = new Buildfire.components.skeleton('.social-item', {
+                type: 'list-item-avatar, list-item-two-line, image'
             });
+            Thread.skeletonComments = new Buildfire.components.skeleton('.social-item-comment', {
+                type: 'list-item-avatar, list-item-two-line'
+            });
+
             var counter = 0;
             $scope.setupImageList = function (comment) {
                 if (comment.imageUrl.length) {
@@ -179,7 +183,8 @@
             }
 
             Thread.init = function () {
-                Thread.skeleton.start();
+                Thread.skeletonPost.start();
+                Thread.skeletonComments.start();
                 Thread.setAppTheme();
                 if ($routeParams.threadId) {
                     let post = Thread.SocialItems.items.find(el => el.id === $routeParams.threadId);
@@ -219,7 +224,8 @@
                                     });
                                 }
                                 Thread.loaded = true;
-                                Thread.skeleton.stop();
+                                Thread.skeletonPost.stop();
+                                Thread.skeletonComments.stop();
                                 Thread.setupThreadImage();
                                 $scope.$digest();
                             });

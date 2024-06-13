@@ -13,16 +13,18 @@
                                 load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"
                                 data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
                         </div>
-                        <div class="social-copy">
-                            <p class="text-primary ellipsis">
-                                <a>
-                                    {{Report.SocialItems.getUserName(Report.post.userDetails)}}
-                                </a>
-                            </p>
-                            <div ng-if="Report.post.createdOn">
-                                <p class="time-ago opacity-seventy">
-                                    {{Report.getDuration(Report.post.createdOn) | convertTimeFormat}}</p>
-                            </div>
+                        <div class="padding-half-rem padding-top-zero padding-bottom-zero">
+                            <div class="social-copy">
+                                <p class="text-primary ellipsis">
+                                    <a>
+                                        {{Report.SocialItems.getUserName(Report.post.userDetails)}}
+                                    </a>
+                                </p>
+                                <div ng-if="Report.post.createdOn">
+                                    <p class="time-ago opacity-seventy">
+                                        {{Report.getDuration(Report.post.createdOn) | convertTimeFormat}}</p>
+                                </div>
+                            </div>    
                         </div>
                     </div>
 

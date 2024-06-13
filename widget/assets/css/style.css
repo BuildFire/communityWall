@@ -690,7 +690,8 @@ button.btn--lg,
 .social-item {
     background-color: rgba(255, 255, 255, .1);
     box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.2);
-    margin-bottom: .5rem;
+    margin: 0.5rem 0;
+    padding-bottom: 0.125rem;
  }
  .side-thread-section .social-item{
     box-shadow: none;
@@ -1485,6 +1486,9 @@ html[buildfire][safe-area="true"] body {
 .margin-half-rem {
     margin: 0.5rem;
 }
+.margin-top-half-rem {
+    margin-top: 0.5rem;
+}
 
 .margin-zero {
     margin: 0;
@@ -1509,6 +1513,9 @@ html[buildfire][safe-area="true"] body {
 }
 .padding-bottom-zero{
     padding-bottom: 0;
+}
+.bf-primary-text{
+    color: var(--bf-theme-primary) !important;
 }
 .plugin-banner .box {
     margin: 0 !important;
@@ -1545,4 +1552,19 @@ button.btn-danger-outlined:hover{
 
 .first-post{
     margin-top: 58px;
+}
+
+/* skeleton adjustment */
+.bf-skeleton-container .skeleton-list-item-avatar {
+    padding-top: 0.5rem !important;
+}
+
+.bf-skeleton-container .skeleton-list-item-avatar .skeleton-text {
+    width: 86px;
+}
+
+.skeleton-list-item-avatar .skeleton-text {
+    width: 86px;
+    overflow: hidden !important;
+    flex: unset !important;
 }

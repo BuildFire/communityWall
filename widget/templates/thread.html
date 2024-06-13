@@ -10,7 +10,6 @@
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
                 </button>
             </p>
-
         </div>
         <div ng-class="{'has-comment-box':Thread.SocialItems.userDetails.userId == null || Thread.allowCreateThread,'has-group-header' : Thread.allowFollowLeaveGroup}"
             class="post-section backgroundColorTheme">
@@ -42,7 +41,7 @@
                     </a>
                 </div>
                 <div class="post-text copy" style="word-wrap: break-word">
-                    <p class="margin-zero body-text-theme" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p>
+                    <p class="margin-zero body-text-theme" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p><p></p>
                 </div>
                 <div class="plugin-banner clearfix" ng-if="Thread.post.imageUrl">
                     <div class="plugin-slide text-center" style="max-height: none !important;">
@@ -110,6 +109,23 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div ng-show="!Thread.loaded">
+        <div class="social-item margin-top-half-rem" ng-class="{'first-post': Thread.allowFollowLeaveGroup}"></div>
+        <div class="comments-list">
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
         </div>
     </div>
 </div>
