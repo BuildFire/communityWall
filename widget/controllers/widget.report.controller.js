@@ -9,8 +9,12 @@
         Report.util = Util;
         Report.loading = true;
         let onDeepLinkUpdate = Buildfire.deeplink.onUpdate;
+        Report.skeletonPost = new Buildfire.components.skeleton('.social-item', {
+            type: 'list-item-avatar, list-item-two-line, image'
+        });
 
         Report.init = function () {
+            Report.skeletonPost.start();
             Buildfire.services.reportAbuse.triggerWidgetReadyForAdminResponse();
             getReportPost(Report.SocialItems.reportData.postId);
 
@@ -51,11 +55,8 @@
         };
 
         const getReportPost = function (postId) {
-            Buildfire.spinner.show();
             SocialDataStore.getPost(postId).then(
                 function (data) {
-                    Buildfire.spinner.hide();
-
                     const isEmptyObject = (obj) => {
                         return Object.keys(obj).length === 0;
                     }
@@ -68,8 +69,17 @@
                         return;
                     } else {
                         if(Report.SocialItems.reportData.commentId) {
-                            Report.post = data.comments.find(comment => comment.commentId === Report.SocialItems.reportData.commentId);
-                            Report.post.text = Report.post.comment;
+                            let commentData =  data.comments.find(comment => comment.commentId === Report.SocialItems.reportData.commentId);
+                            if(commentData) {
+                                Report.post = commentData;
+                                Report.post.text = Report.post.comment;
+                            } else {
+                                Buildfire.dialog.toast({
+                                    message: "Reported item could not be fetched. It may have already been deleted.",
+                                    type: 'info'
+                                });
+                                return;
+                            }
                         } else {
                             Report.post = data;
                         }
@@ -77,6 +87,7 @@
                         if (!$scope.$$phase) $scope.$digest();
                     }
                     Report.loading = false;
+                    Report.skeletonPost.stop();
                 },
                 function (err) {
                     Buildfire.spinner.hide();
@@ -89,9 +100,11 @@
             let success = function (response) {
                 let goBack = Buildfire.navigation.onBackButtonClick;
                 if (response) {
-                    let postToDelete = Report.SocialItems.items.find(element => element.id === postId)
-                    let index = Report.SocialItems.items.indexOf(postToDelete);
-                    Report.SocialItems.items.splice(index, 1);
+                    let postToDelete = Report.SocialItems.items.find(element => element.id === postId);
+                    if(postToDelete) {
+                        let index = Report.SocialItems.items.indexOf(postToDelete);
+                        Report.SocialItems.items.splice(index, 1);
+                    }
                     callback(true);
                     goBack();
                     Buildfire.dialog.toast({
@@ -109,15 +122,27 @@
             SocialDataStore.deletePost(postId).then(success, error);
         };
 
-        const deleteComment = function (postId, comment, callback) {
-            SocialDataStore.deleteComment(postId, comment).then(
+        const deleteComment = function (postId, commentId, callback) {
+            SocialDataStore.deleteComment(postId, commentId).then(
                 function (data) {
                     let goBack = Buildfire.navigation.onBackButtonClick;
-                    goBack();
                     Buildfire.dialog.toast({
                         message: "Reported comment deleted successfully",
                         type: 'info'
                     });
+
+                    let postComment = Report.SocialItems.items.find(element => element.id === postId);
+                    if(postComment) {
+                        let indexPost = Report.SocialItems.items.indexOf(postComment);
+                        let commentToDelete = Report.SocialItems.items[indexPost].comments.find(element => element.commentId === commentId)
+
+                        if(commentToDelete){
+                            let indexComment = Report.SocialItems.items[indexPost].comments.indexOf(commentToDelete);
+                            Report.SocialItems.items[indexPost].comments.splice(indexComment, 1);
+                        }
+                    }
+
+                    goBack();
                     callback(true);
                     if (!$scope.$$phase)
                         $scope.$digest();

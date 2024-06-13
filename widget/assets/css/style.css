@@ -1449,10 +1449,6 @@ html[buildfire][safe-area="true"] body {
     font-size: 28px;
 }
 
-.notActive {
-    color: rgba(150,150,150,.8) !important;
-}
-
 .iconsFont {
     padding-left: 5px;
 }
