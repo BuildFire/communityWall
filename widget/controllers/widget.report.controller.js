@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-    .controller('ReportCtrl', ['$scope', '$routeParams', '$location', '$anchorScroll', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, $location, $anchorScroll, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, Util, GROUP_STATUS, SubscribedUsersData) {
+    .controller('ReportCtrl', ['$scope', '$routeParams', '$location', '$anchorScroll', 'SocialDataStore', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, $location, $anchorScroll, SocialDataStore, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, Util, GROUP_STATUS, SubscribedUsersData) {
         let Report = this;
     
         Report.SocialItems = SocialItems.getInstance();
@@ -83,7 +83,8 @@
                         } else {
                             Report.post = data;
                         }
-                        
+                        Report.setupImage();
+
                         if (!$scope.$$phase) $scope.$digest();
                     }
                     Report.loading = false;
@@ -152,6 +153,24 @@
                     callback(false);
                 }
             );
+        }
+
+        Report.setupImage = function () {
+            if (Report.post.imageUrl) {
+                setTimeout(function () {
+                    let imageList = document.getElementById("reportPostImage");
+                    imageList.images = Report.post.imageUrl;
+                    imageList.addEventListener('imageSelected', (e) => {
+                        let selectedImage = e.detail.filter(image => image.selected);
+                        if (selectedImage && selectedImage[0] && selectedImage[0].name)
+                            selectedImage[0].name = selectedImage[0].name;
+                        buildfire.imagePreviewer.show({
+                            images: selectedImage
+                        });
+                    });
+
+                });
+            }
         }
 
         Report.init();

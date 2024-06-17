@@ -1,7 +1,7 @@
 describe('Unit : Controller - WidgetWallCtrl', function () {
 
 // load the controller's module
-    var WidgetWallCtrl, scope, Modals, SocialDataStore, $timeout,$q,Buildfire,rootScope;
+    var WidgetWallCtrl, scope, SocialDataStore, $timeout,$q,Buildfire,rootScope;
 
     beforeEach(module('socialPluginWidget'));
 
@@ -21,22 +21,6 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
         });
     }));
 
-
-   /* beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _SocialDataStore_, _$timeout_,_$q_,Buildfire) {
-            scope = _$rootScope_.$new();
-            Modals = _Modals_;
-            SocialDataStore = _SocialDataStore_;
-            $timeout = _$timeout_;
-            $q = _$q_;
-            WidgetWallCtrl = $controller('WidgetWallCtrl', {
-                $scope: scope,
-                Modals: Modals,
-                SocialDataStore: SocialDataStore,
-                Buildfire :_Buildfire_
-            });
-        })
-    );*/
-
     beforeEach(inject(function ($controller, _$rootScope_, Location,SocialItems,_Modals_, _SocialDataStore_, _$timeout_,_$q_,_Buildfire_) {
         Buildfire = _Buildfire_;
         SocialDataStore = jasmine.createSpyObj('SocialDataStore', ['deletePost', 'onUpdate','getUserSettings','saveUserSettings']);;
@@ -50,7 +34,6 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
 
         WidgetWallCtrl = $controller('WidgetWallCtrl', {
             $scope: scope,
-            Modals: Modals,
             SocialDataStore: SocialDataStore,
             Buildfire :_Buildfire_
         });
