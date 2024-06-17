@@ -381,7 +381,7 @@
                     else if (result.id == "blockUser") Thread.blockUser(userId);
                     else if (result.id == "deletePost"){
                         buildfire.components.drawer.closeDrawer();
-                        Thread.blockUser(userId);
+                        Thread.deletePost(post.id)
                     }
                     buildfire.components.drawer.closeDrawer();
                 });
@@ -864,7 +864,10 @@
                             Thread.SocialItems.items.splice(index, 1);
                             if (event.id == Thread.modalPopupThreadId) {
                                 Buildfire.history.pop();
-                                Modals.close('Post already deleted');
+                                Buildfire.dialog.toast({
+                                    message: "Post already deleted",
+                                    type: 'info'
+                                }); 
                             }
                             if (!$scope.$$phase)
                                 $scope.$digest();
@@ -881,7 +884,10 @@
                                     $scope.$digest();
                             }
                             if (Thread.modalPopupThreadId == event._id)
-                                Modals.close('Comment already deleted');
+                                Buildfire.dialog.toast({
+                                    message: "Comment already deleted",
+                                    type: 'info'
+                                }); 
                             break;
                         case "ASK_FOR_WALLID":
                             window.buildfire.messaging.sendMessageToControl({

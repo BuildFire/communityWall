@@ -1347,7 +1347,10 @@
                             });
 
                             if (WidgetWall.modalPopupThreadId == event.id)
-                                Modals.close('Post already deleted');
+                                Buildfire.dialog.toast({
+                                    message: "Post already deleted",
+                                    type: 'info'
+                                });
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -1356,7 +1359,10 @@
                             let index = post.comments.indexOf(event.comment);
                             post.comments.splice(index, 1);
                             if (WidgetWall.modalPopupThreadId == event.postId)
-                                Modals.close('Comment already deleted');
+                                Buildfire.dialog.toast({
+                                    message: "Comment already deleted",
+                                    type: 'info'
+                                });
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;

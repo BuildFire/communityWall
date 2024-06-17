@@ -4,9 +4,8 @@
         <div ng-if="Thread.allowFollowLeaveGroup" 
         sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
         class="head-btn text-center backgroundColorTheme">
-            <p class="text-primary" ng-click="Thread.followUnfollow()"  style="left: 0; top: 4px; position: absolute; padding-left: 15px;margin-left: 0;">
+            <p class="text-primary follow-btn" ng-click="Thread.followUnfollow()">
                 <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px; width:140px; overflow:hidden">
-                    <span class="plusMinusIcon ng-binding">−</span>
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
                 </button>
             </p>
@@ -51,7 +50,7 @@
                 <div class="footer">
                     <div class="status-footer">                        
                         <a class="likes social-icon ng-cloak" ng-click="Thread.likeThread(Thread.post, 'thread')">
-                            <i class="material-icons-outlined" ng-class="{notActive: !Thread.post.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                            <i class="material-icons-outlined" aria-hidden="true">{{!Thread.post.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                             <span class="iconsTheme iconsFont"
                                 ng-class="{active: Thread.post.isUserLikeActive}">{{Thread.post.likes.length}}</span>
                         </a>
@@ -94,7 +93,7 @@
                             </div>
                             <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">
                                 <a class="social-icon likes" ng-click="Thread.likeComment(comment, 'comment')">
-                                    <i class="material-icons-outlined" ng-class="{notActive: !comment.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                                    <i class="material-icons-outlined" ng-class="{notActive: !comment.isUserLikeActive }" aria-hidden="true">{{!comment.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                                     <span class="iconsTheme iconsFont"
                                         ng-class="{active: comment.isUserLikeActive}">{{comment.likes.length}}</span>
                                 </a>

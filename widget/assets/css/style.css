@@ -1197,7 +1197,7 @@ textarea {
 
 .post-section .post-infinite-scroll,
 .side-thread-section .post-section{
-    padding: .5rem;
+    padding: 0;
     height: 100vh;
     overflow: scroll;
     padding-top: 0px !important;
@@ -1535,7 +1535,9 @@ button.btn-danger-outlined:hover{
 .body-text-theme {
     color: var(--bf-theme-body-text) !important;
 }
-
+.material-icons-outlined{
+    color: var(--bf-theme-icons) !important;
+}
 #socialHeader, .head-btn, .head-btn2 {
     transition: transform .3s ease-in-out;
     position: fixed;
@@ -1563,4 +1565,12 @@ button.btn-danger-outlined:hover{
     width: 86px;
     overflow: hidden !important;
     flex: unset !important;
+}
+
+.follow-btn {
+    left: 0;
+    top: 4px;
+    position: absolute;
+    padding-left: 15px;
+    margin-left: 0;
 }

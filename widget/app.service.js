@@ -641,7 +641,6 @@
                     });
                 },
                 deleteFeedPost : (filter, callback) =>{
-                    console.log(filter);
                     buildfire.auth.getCurrentUser((err, currentUser) =>{
                         if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});
                         buildfire.appData.search({filter:{$and:[{...filter}]},sort:{createdOn: -1} }, "posts", (err, r) =>{
