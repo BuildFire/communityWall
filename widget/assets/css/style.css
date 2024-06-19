@@ -675,11 +675,6 @@ button.btn--lg,
     font-size: .75rem;
     margin-right: .75rem;
 }
-.status-footer .social-icon span:not(.active),
-.footer .social-icon span:not(.active){
-    color: rgba(150,150,150,.8) !important;
-    /* mix-blend-mode: luminosity; */
-}
 
 .status-footer .icon,
 .footer .icon {
@@ -1569,8 +1564,28 @@ button.btn-danger-outlined:hover{
 
 .follow-btn {
     left: 0;
-    top: 4px;
+    top: 7px;
     position: absolute;
     padding-left: 15px;
-    margin-left: 0;
+    margin: 0;
+}
+
+.follow-btn button{
+    width: 140px;
+}
+
+#membersSvg {
+    margin-bottom: 0px;
+    top: 10px;
+    width: 2em;
+    right: 1em;
+    position: absolute;
+    padding-top: 0px;
+    cursor: pointer;
+    margin-top: 0.25rem;
+}
+
+.social-comment .head .media-holder {
+    width: 40px;
+    height: 40px;
 }

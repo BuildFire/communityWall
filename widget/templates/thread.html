@@ -5,7 +5,7 @@
         sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
         class="head-btn text-center backgroundColorTheme">
             <p class="text-primary follow-btn" ng-click="Thread.followUnfollow()">
-                <button class="btn btn-danger-outlined ng-binding" id="followBtn" style="display: flex; font-size: 13px; width:140px; overflow:hidden">
+                <button class="btn btn-danger-outlined ng-binding" id="followBtn">
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
                 </button>
             </p>
