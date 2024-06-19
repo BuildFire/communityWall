@@ -920,8 +920,8 @@
                         Thread.showHideCommentBox();
                         $scope.$digest();
                     }
+                    Location.goToHome();
                 });
-                console.log('New user loggedIN from Widget Thread Page', user);
             });
             // On Logout
             Buildfire.auth.onLogout(function () {

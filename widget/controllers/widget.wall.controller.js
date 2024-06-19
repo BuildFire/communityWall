@@ -1525,7 +1525,6 @@
 
             // On Login
             Buildfire.auth.onLogin(function (user) {
-                console.log("NEW USER LOGGED IN", WidgetWall.SocialItems.forcedToLogin)
                 if (!WidgetWall.SocialItems.forcedToLogin) {
                     WidgetWall.SocialItems.authenticateUser(user, (err, userData) => {
                         if (err) return console.error("Getting user failed.", err);
@@ -1535,6 +1534,7 @@
                     });
                 } else WidgetWall.SocialItems.forcedToLogin = false;
                 WidgetWall.showUserLikes();
+                Location.goToHome();
                 if ($scope.$$phase) $scope.$digest();
             });
             // On Logout
