@@ -417,12 +417,39 @@
                                     if (!data[0].data.blockedUsers.includes(userId)) {
                                         data[0].data.blockedUsers.push(userId);
                                     }
-
                                     buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
                                         callback(null, result);
                                     });
                                 } else {
-                                    callback(err, false)
+                                    const data = {
+                                        userId: currentUser.userId,
+                                        userDetails: {
+                                            displayName: currentUser.displayName,
+                                            firstName: currentUser.firstName,
+                                            lastName: currentUser.lastName,
+                                            imageUrl: currentUser.imageUrl,
+                                            email: currentUser.email,
+                                            lastUpdated: new Date().getTime(),
+                                        },
+                                        wallId: "",
+                                        leftWall: true,
+                                        blockedUsers : [userId],
+                                        posts: [],
+                                        _buildfire: {
+                                            index: {
+                                                'text': user.userId + '-',
+                                                'number1': 1,
+                                                array1: [{
+                                                    string1: currentUser.userId + '-',
+                                                    string1: `blockedUser_${userId}`
+                                                }]        
+                                            }
+                                        }
+                                    };
+                                    buildfire.publicData.save(_this.getDataWithIndex(data, 'subscribedUsersData', (err, result) => {
+                                        if(err) callback(err, false);
+                                        else callback(null, result);
+                                    }));
                                 }
                             })
                         } else {

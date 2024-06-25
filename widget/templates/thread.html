@@ -14,7 +14,8 @@
             class="post-section backgroundColorTheme">
             <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1, 'first-post':Thread.allowFollowLeaveGroup}">
                 <div class="head flex flex-space-between">
-                    <div class="social-profile-photo pointer"  ng-click="Thread.openBottomDrawer(Thread.post)">
+                    <div class="social-profile-photo pointer"
+                        ng-click="Thread.SocialItems.userDetails.userId !== Thread.post.userId && Thread.openBottomDrawer(Thread.post)">
                         <div class="media-holder pull-left">
                             <img ng-if="Thread.post.userId && Thread.post.userDetails.imageUrl"
                                 load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
@@ -58,7 +59,8 @@
                 </div>
                 <div class="comments-list" ng-if="Thread.processedComments">
                     <div class="social-comment" ng-repeat="comment in Thread.post.comments">
-                        <div class="thread-dot head pointer" ng-click="Thread.showMoreOptionsComment(comment)">
+                        <div class="thread-dot head pointer"
+                             ng-click="comment.userId !== Thread.SocialItems.userDetails.userId && Thread.showMoreOptionsComment(comment)">
                             <div class="media-holder pull-left">
                                 <img ng-if="comment.userDetails.imageUrl"
                                     load-image="1x1" data-final-src="{{comment.userDetails.imageUrl}}" crop-width="40"
@@ -69,7 +71,8 @@
                             </div>
                         </div>
                         <div class="comment-content ellipsis" style="max-width: 85%">
-                            <div class="social-profile-photo" ng-click="Thread.showMoreOptionsComment(comment)">
+                            <div class="social-profile-photo pointer"
+                            ng-click="comment.userId !== Thread.SocialItems.userDetails.userId && Thread.showMoreOptionsComment(comment)">
                                 <div class="social-copy">
                                     <a class="social-name text-primary">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
                                     <div ng-if="comment.createdOn">
@@ -101,7 +104,7 @@
                             </div>
                         </div>
                         <a class="social-icon margin-one-rem margin-top-zero margin-bottom-zero"
-                        ng-hide = "comment.userId != Thread.SocialItems.userDetails.userId && !comment.commentId"
+                        ng-hide = "comment.userId != Thread.SocialItems.userDetails.userId || !comment.commentId"
                         ng-click="Thread.showMoreOptionsComment(comment)" style="height: 2rem; margin-top: 0.75rem;">
                         <span class="material-icons-outlined">more_horiz</span>
                         </a>

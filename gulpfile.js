@@ -130,6 +130,7 @@ gulp.task("controlHtml", function () {
         htmlReplace({
           bundleJSFiles: "scripts.min.js?v=" + new Date().getTime(),
           bundleCSSFiles: "styles.min.css?v=" + new Date().getTime(),
+          bundleCFFiles: "../../widget/CommunityFeed/cfScripts.min.js?v=" + new Date().getTime(),
           bundleSharedJSFiles: "../../widget/scripts.shared-min.js?v=" + new Date().getTime(),
         })
       )

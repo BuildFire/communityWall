@@ -477,7 +477,8 @@
                     if (err) {
                         callback("Fetching Blocked Users Failed", null);
                     } 
-                    if(result) callback(null, result);
+                    else if(result) callback(null, result);
+                    else callback(null, null);
                 })
             }
             WidgetWall.init = function () {
