@@ -323,45 +323,45 @@
                             );
                         }
                     } else return false;
-                });
 
-                Follows.isFollowingUser(userId, (err, r) => {
-                    if (Thread.SocialItems.appSettings.allowCommunityFeedFollow == true && post.userId != Thread.SocialItems.userDetails.userId)
-                        listItems.push({
-                            text: r ? 'Unfollow' : 'Follow'
-                        });
-
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true && post.userId != Thread.SocialItems.userDetails.userId) 
-                        listItems.push({
-                            text: 'See Profile'
-                        });
-
-                    if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat && !Thread.SocialItems.isPrivateChat
-                        && post.userId != Thread.SocialItems.userDetails.userId && ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false)){                        
-                        listItems.push({
-                            text: 'Send Direct Message'
-                        });
-                    }
-
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers" && !Thread.SocialItems.isPrivateChat
-                        && post.userId != Thread.SocialItems.userDetails.userId)
-                        listItems.push({
-                            text: 'Send Direct Message'
-                        });
-
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers" && !Thread.SocialItems.isPrivateChat
-                        && post.userId != Thread.SocialItems.userDetails.userId) {
-                        SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
-                            if (response) {
-                                listItems.push({
-                                    text: 'Send Direct Message'
-                                });
-                            }
+                    Follows.isFollowingUser(userId, (err, r) => {
+                        if (Thread.SocialItems.appSettings.allowCommunityFeedFollow == true && post.userId != Thread.SocialItems.userDetails.userId)
+                            listItems.push({
+                                text: r ? 'Unfollow' : 'Follow'
+                            });
+    
+                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true && post.userId != Thread.SocialItems.userDetails.userId) 
+                            listItems.push({
+                                text: 'See Profile'
+                            });
+    
+                        if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat && !Thread.SocialItems.isPrivateChat
+                            && post.userId != Thread.SocialItems.userDetails.userId && ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false)){                        
+                            listItems.push({
+                                text: 'Send Direct Message'
+                            });
+                        }
+    
+                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers" && !Thread.SocialItems.isPrivateChat
+                            && post.userId != Thread.SocialItems.userDetails.userId)
+                            listItems.push({
+                                text: 'Send Direct Message'
+                            });
+    
+                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers" && !Thread.SocialItems.isPrivateChat
+                            && post.userId != Thread.SocialItems.userDetails.userId) {
+                            SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
+                                if (response) {
+                                    listItems.push({
+                                        text: 'Send Direct Message'
+                                    });
+                                }
+                                Thread.ContinueDrawer(post, listItems)
+                            })
+                        } else {
                             Thread.ContinueDrawer(post, listItems)
-                        })
-                    } else {
-                        Thread.ContinueDrawer(post, listItems)
-                    }
+                        }
+                    });
                 });
             }
 

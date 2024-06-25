@@ -394,45 +394,45 @@
                             );
                         }
                     } else return false;
-                });
-
-                Follows.isFollowingUser(userId, (err, r) => {
-                    if (WidgetWall.SocialItems.appSettings.allowCommunityFeedFollow == true && post.userId != WidgetWall.SocialItems.userDetails.userId)
-                        listItems.push({
-                            text: r ? 'Unfollow' : 'Follow'
-                        });
-
-                    if (WidgetWall.SocialItems.appSettings.seeProfile && post.userId != WidgetWall.SocialItems.userDetails.userId)
-                        listItems.push({
-                            text: "See Profile"
-                        })
+                    
+                    Follows.isFollowingUser(userId, (err, r) => {
+                        if (WidgetWall.SocialItems.appSettings.allowCommunityFeedFollow == true && post.userId != WidgetWall.SocialItems.userDetails.userId)
+                            listItems.push({
+                                text: r ? 'Unfollow' : 'Follow'
+                            });
     
-                    if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat && !WidgetWall.SocialItems.isPrivateChat
-                        && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){                        
-                        listItems.push({
-                            text: 'Send Direct Message'
-                        });
-                    }
-
-                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers" && !WidgetWall.SocialItems.isPrivateChat
-                        && post.userId != WidgetWall.SocialItems.userDetails.userId)
-                        listItems.push({
-                            text: 'Send Direct Message'
-                        });
-
-                    if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "selectedUsers" && !WidgetWall.SocialItems.isPrivateChat
-                        && post.userId != WidgetWall.SocialItems.userDetails.userId) {
-                        SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
-                            if (response) {
-                                listItems.push({
-                                    text: 'Send Direct Message'
-                                });
-                            }
+                        if (WidgetWall.SocialItems.appSettings.seeProfile && post.userId != WidgetWall.SocialItems.userDetails.userId)
+                            listItems.push({
+                                text: "See Profile"
+                            })
+        
+                        if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat && !WidgetWall.SocialItems.isPrivateChat
+                            && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){                        
+                            listItems.push({
+                                text: 'Send Direct Message'
+                            });
+                        }
+    
+                        if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers" && !WidgetWall.SocialItems.isPrivateChat
+                            && post.userId != WidgetWall.SocialItems.userDetails.userId)
+                            listItems.push({
+                                text: 'Send Direct Message'
+                            });
+    
+                        if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "selectedUsers" && !WidgetWall.SocialItems.isPrivateChat
+                            && post.userId != WidgetWall.SocialItems.userDetails.userId) {
+                            SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
+                                if (response) {
+                                    listItems.push({
+                                        text: 'Send Direct Message'
+                                    });
+                                }
+                                WidgetWall.ContinueDrawer(post, listItems)
+                            })
+                        } else {
                             WidgetWall.ContinueDrawer(post, listItems)
-                        })
-                    } else {
-                        WidgetWall.ContinueDrawer(post, listItems)
-                    }
+                        }
+                    });    
                 });
             }
 
