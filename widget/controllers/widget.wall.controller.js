@@ -393,7 +393,7 @@
                                 }
                             );
                         }
-                    }
+                    } else return false;
                 });
 
                 Follows.isFollowingUser(userId, (err, r) => {
