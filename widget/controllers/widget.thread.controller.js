@@ -126,9 +126,15 @@
                 const blockedUsers = Thread.SocialItems.blockedUsers;
                 const postComments = Thread.post.comments;
 
-                Thread.post.comments = postComments.filter(comment => !blockedUsers.includes(comment.userId));
+                //Thread.post.comments = postComments.filter(comment => !blockedUsers.includes(comment.userId));
                                 
                 if (!$scope.$$phase) $scope.$digest();
+            }
+
+            Thread.getDisplayName = (userId, userDetails) => {
+                const blockedUsers = Thread.SocialItems.blockedUsers;
+                if(blockedUsers.includes(userId)) return Thread.SocialItems.languages.blockedUser || "Blocked User";
+                else return Thread.SocialItems.getUserName(userDetails);
             }
 
             Thread.handleDeletedUsers = function () {

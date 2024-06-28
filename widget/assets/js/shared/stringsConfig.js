@@ -62,7 +62,13 @@ const stringsConfig = {
 				, placeholder: "Post successfully deleted"
 				, maxLength: 50
 				, defaultValue: "Post successfully deleted"
-			}			
+			},
+			blockedUser: {
+				title: "Blocked User"
+				, placeholder: "Blocked User"
+				, maxLength: 30
+				, defaultValue: "Blocked User"
+			}
 		}
 	},
 	members: {

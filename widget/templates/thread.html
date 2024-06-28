@@ -27,7 +27,7 @@
                         <div class="social-copy padding-half-rem padding-top-zero padding-bottom-zero">
                             <p class="text-primary ellipsis">
                                 <a>
-                                    {{Thread.SocialItems.getUserName(Thread.post.userDetails)}}</a>
+                                    {{Thread.getDisplayName(Thread.post.userId, Thread.post.userDetails)}}</a>
                             </p>
                             <div ng-if="Thread.post.createdOn">
                                 <p class="time-ago opacity-seventy">
@@ -74,7 +74,7 @@
                             <div class="social-profile-photo pointer"
                             ng-click="comment.userId !== Thread.SocialItems.userDetails.userId && Thread.showMoreOptionsComment(comment)">
                                 <div class="social-copy">
-                                    <a class="social-name text-primary">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
+                                    <a class="social-name text-primary">{{Thread.getDisplayName(comment.userId, comment.userDetails)}}</a>
                                     <div ng-if="comment.createdOn">
                                         <p class="time-ago opacity-seventy">
                                             {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>

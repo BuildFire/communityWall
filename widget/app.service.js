@@ -437,7 +437,7 @@
                                         posts: [],
                                         _buildfire: {
                                             index: {
-                                                'text': user.userId + '-',
+                                                'text': currentUser.userId + '-',
                                                 'number1': 1,
                                                 array1: [{
                                                     string1: currentUser.userId + '-',
