@@ -450,10 +450,10 @@
                                             }
                                         }
                                     };
-                                    buildfire.publicData.save(_this.getDataWithIndex({data: userDataObject}, 'subscribedUsersData', (err, result) => {
+                                    buildfire.publicData.save(_this.getDataWithIndex({data: userDataObject}).data, 'subscribedUsersData', (err, result) => {
                                         if(err) callback(err, false);
                                         else callback(null, result);
-                                    }));
+                                    });
                                 }
                             })
                         } else {
