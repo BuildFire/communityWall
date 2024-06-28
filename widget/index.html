@@ -79,7 +79,7 @@
                         </div>
                         <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
                             class="post-section backgroundColorTheme">
-                            <div class="post-infinite-scroll" id="top">
+                            <div class="post-infinite-scroll" id="top" ng-class="{'no-scroll': WidgetWall.skeletonActive}">
                                 <div>
                                     <div class="head" ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
                                         id="pinnedPost" style="height: 100%;">

@@ -120,14 +120,7 @@
             }
 
             Thread.showComments = () => {
-                Thread.processedComments = true;
-
-                // Filtering blocked users comments
-                const blockedUsers = Thread.SocialItems.blockedUsers;
-                const postComments = Thread.post.comments;
-
-                //Thread.post.comments = postComments.filter(comment => !blockedUsers.includes(comment.userId));
-                                
+                Thread.processedComments = true;                                
                 if (!$scope.$$phase) $scope.$digest();
             }
 
@@ -463,14 +456,20 @@
                                 text: Thread.SocialItems.languages.deleteComment
                             });
                         } else {
+                            const blockedUsers = Thread.SocialItems.blockedUsers;
+                            if(!blockedUsers.includes(comment.userId)) {
+                                drawerOptions.listItems.push(
+                                    {
+                                        id: 'blockUser',
+                                        text: Thread.SocialItems.languages.blockUser
+                                    }
+                                );
+                            }
+                            
                             drawerOptions.listItems.push(
                                 {
                                     id: 'reportComment',
                                     text: Thread.SocialItems.languages.reportComment
-                                },
-                                {
-                                    id: 'blockUser',
-                                    text: Thread.SocialItems.languages.blockUser
                                 }
                             );
                         }

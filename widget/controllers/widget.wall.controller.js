@@ -24,9 +24,20 @@
             $rootScope.showThread = true;
             WidgetWall.loading = true;
             WidgetWall.scrollPosition = null;
+            WidgetWall.skeletonActive = false;
 
             WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
                 type: 'list-item-avatar, list-item-two-line, image'});
+            
+            WidgetWall.startSkeleton = function () {
+                WidgetWall.skeleton.start();
+                WidgetWall.skeletonActive = true;
+            }
+            
+            WidgetWall.stopSkeleton = function () {
+                WidgetWall.skeleton.stop();
+                WidgetWall.skeletonActive = false;
+            }
 
             WidgetWall.showHideCommentBox = function () {
                 if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
@@ -145,7 +156,7 @@
                 WidgetWall.SocialItems.getPosts(function (err, data) {
                     WidgetWall.postsLoaded = true;
                     WidgetWall.showUserLikes();
-                    WidgetWall.skeleton.stop();
+                    WidgetWall.stopSkeleton();
                     window.buildfire.messaging.sendMessageToControl({
                         name: 'SEND_POSTS_TO_CP',
                         posts: WidgetWall.SocialItems.items,
@@ -483,11 +494,11 @@
             }
             WidgetWall.init = function () {
                 
-                WidgetWall.skeleton.start();
+                WidgetWall.startSkeleton();
 
                 WidgetWall.SocialItems.getSettings((err, result) => {
                     if (err) {
-                        WidgetWall.skeleton.stop();
+                        WidgetWall.stopSkeleton();
                         WidgetWall.postsLoaded = true;
                         return console.error("Fetching settings failed.", err);
                     }

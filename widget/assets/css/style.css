@@ -1517,6 +1517,9 @@ html[buildfire][safe-area="true"] body {
 .pointer{
     cursor: pointer;
 }
+.no-scroll {
+    overflow: hidden !important;
+}
 button.btn-danger-outlined {
     background-color: transparent !important;
     color: var(--bf-theme-danger) !important;

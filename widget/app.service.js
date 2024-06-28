@@ -439,10 +439,14 @@
                                             index: {
                                                 'text': currentUser.userId + '-',
                                                 'number1': 1,
-                                                array1: [{
-                                                    string1: currentUser.userId + '-',
-                                                    string1: `blockedUser_${userId}`
-                                                }]        
+                                                array1: [
+                                                    {
+                                                        string1: currentUser.userId + '-'
+                                                    },
+                                                    {
+                                                        string1: `blockedUser_${userId}`
+                                                    }
+                                                ]
                                             }
                                         }
                                     };
