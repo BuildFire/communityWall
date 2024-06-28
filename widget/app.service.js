@@ -421,7 +421,7 @@
                                         callback(null, result);
                                     });
                                 } else {
-                                    const data = {
+                                    const userDataObject = {
                                         userId: currentUser.userId,
                                         userDetails: {
                                             displayName: currentUser.displayName,
@@ -450,7 +450,7 @@
                                             }
                                         }
                                     };
-                                    buildfire.publicData.save(_this.getDataWithIndex(data, 'subscribedUsersData', (err, result) => {
+                                    buildfire.publicData.save(_this.getDataWithIndex({data: userDataObject}, 'subscribedUsersData', (err, result) => {
                                         if(err) callback(err, false);
                                         else callback(null, result);
                                     }));
