@@ -130,6 +130,11 @@
                 else return Thread.SocialItems.getUserName(userDetails);
             }
 
+            Thread.isBlockedUser = (userId) => {
+                const blockedUsers = Thread.SocialItems.blockedUsers;
+                return blockedUsers.includes(userId);
+            }
+
             Thread.handleDeletedUsers = function () {
                 if (!Thread.post.comments.length) return Thread.showComments();
 
