@@ -50,6 +50,24 @@ const stringsConfig = {
 				, placeholder: "Delete Comment"
 				, maxLength: 30
 				, defaultValue: "Delete Comment"
+			},
+			reportComment: {
+				title: "Report Comment"
+				, placeholder: "Report Comment"
+				, maxLength: 30
+				, defaultValue: "Report Comment"
+			},
+			postDeleteSuccess: {
+				title: "Delete Post Success"
+				, placeholder: "Post successfully deleted"
+				, maxLength: 50
+				, defaultValue: "Post successfully deleted"
+			},
+			blockedUser: {
+				title: "Blocked User"
+				, placeholder: "Blocked User"
+				, maxLength: 30
+				, defaultValue: "Blocked User"
 			}
 		}
 	},
@@ -109,7 +127,13 @@ const stringsConfig = {
 				title: "Report Post"
 				, placeholder: "Report Post"
 				, maxLength: 30
-				, defaultValue: "Report Post and Block User"
+				, defaultValue: "Report Post"
+			},
+			blockUser: {
+				title: "Block User"
+				, placeholder: "Block User"
+				, maxLength: 30
+				, defaultValue: "Block User"
 			},
 			deletePost: {
 				title: "Delete Post"
@@ -118,10 +142,34 @@ const stringsConfig = {
 				, defaultValue: "Delete Post"
 			},
 			reportPostSuccess: {
-				title: "Report Submitted And Pending Admin Review"
+				title: "Report Post Success"
 				, placeholder: "Report submitted and pending admin review."
 				, maxLength: 50
 				, defaultValue: "Report submitted and pending admin review."
+			},
+			reportPostFail: {
+				title: "Report Post Failure"
+				, placeholder: "This post is already reported."
+				, maxLength: 100
+				, defaultValue: "This post is already reported."
+			},
+			blockUserSuccess : {
+				title: "Block User Success"
+				, placeholder: "User has been blocked succesfully"
+				, maxLength: 50
+				, defaultValue: "User has been blocked succesfully"
+			},
+			reportComemntSuccess: {
+				title: "Report Comment Success"
+				, placeholder: "Report submitted and pending admin review."
+				, maxLength: 50
+				, defaultValue: "Report submitted and pending admin review."
+			},
+			reportCommentFail: {
+				title: "Report Comment Failure"
+				, placeholder: "This comment is already reported."
+				, maxLength: 100
+				, defaultValue: "This comment is already reported."
 			},
 			reportPostAlreadyReported: {
 				title: "This Post Has Already Been Reported"

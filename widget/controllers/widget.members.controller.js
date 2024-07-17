@@ -18,10 +18,20 @@
             Members.languages = null;
             Members.appSettings = null;
             Members.SocialItems = SocialItems.getInstance();
+            Members.skeleton = new Buildfire.components.skeleton('.wallMembers', {
+                type: 'list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar',
+            });
 
+            const initSkeleton = () => {
+                Members.skeleton.start();
+                document.querySelectorAll('.bf-skeleton-container .skeleton-list-item-avatar').forEach((el)=>{
+                    el.style.padding = '2rem 1rem';
+                });
+                document.querySelector('.wallMembers').style.marginTop = '5rem';
+            }
             Members.init = function () {
                 $rootScope.showThread = false;
-
+                initSkeleton();
                 Buildfire.appearance.getAppTheme((err, obj) => {
                     if (err) return console.log(err);
                     document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
@@ -39,6 +49,7 @@
                             if (err) return console.log(err);
                             Members.users = users;
                             $scope.$digest();
+                            Members.skeleton.stop();
                         });
                     }
                 });
@@ -118,7 +129,7 @@
             };
 
             Members.executeSearch = function (query) {
-                Buildfire.spinner.show();
+                initSkeleton();
                 SubscribedUsersData.searchForUsers(query, function (err, users) {
                     if (err) return console.log(err);
                     if (users.length === Members.searchOptions.pageSize) {
@@ -131,7 +142,7 @@
                     }
 
                     Members.users = users.filter(el => el.userId !== Members.SocialItems.userDetails.userId);
-                    Buildfire.spinner.hide();
+                    Members.skeleton.stop();
                     $scope.$digest();
                 })
             }

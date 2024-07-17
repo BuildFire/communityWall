@@ -1,7 +1,7 @@
 describe('Unit : Controller - ThreadCtrl', function () {
 
 // load the controller's module
-    var ThreadCtrl, $scope, Modals, SocialDataStore, $timeout,$q,Buildfire,SocialItem,Location1,routeParams, $httpBackend, authRequestHandler;
+    var ThreadCtrl, $scope, SocialDataStore, $timeout,$q,Buildfire,SocialItem,Location1,routeParams, $httpBackend, authRequestHandler;
 
     beforeEach(module('socialPluginWidget'));
 
@@ -24,21 +24,6 @@ describe('Unit : Controller - ThreadCtrl', function () {
         });
     }));
 
-
-    /* beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _SocialDataStore_, _$timeout_,_$q_,Buildfire) {
-     scope = _$rootScope_.$new();
-     Modals = _Modals_;
-     SocialDataStore = _SocialDataStore_;
-     $timeout = _$timeout_;
-     $q = _$q_;
-     WidgetWallCtrl = $controller('WidgetWallCtrl', {
-     $scope: scope,
-     Modals: Modals,
-     SocialDataStore: SocialDataStore,
-     Buildfire :_Buildfire_
-     });
-     })
-     );*/
 
     beforeEach(inject(function ($controller, _$rootScope_,_$routeParams_, _$httpBackend_, Location,_SocialItems_,_Modals_, _SocialDataStore_, _$timeout_,_$q_,_Buildfire_) {
 
@@ -161,13 +146,6 @@ describe('Unit : Controller - ThreadCtrl', function () {
 
         it('it should pass if Thread.getUserImage is called', function () {
             ThreadCtrl.getUserImage();
-        });
-    });
-
-    describe('Thread.showMoreOptions', function () {
-
-        it('it should pass if Thread.showMoreOptions is called', function () {
-            ThreadCtrl.showMoreOptions();
         });
     });
 

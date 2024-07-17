@@ -69,7 +69,6 @@
                 </div> -->
                 <div class="social-footer">
                     <div class="status flex">
-                        <a class="text-danger padded-sm caption" ng-click="ContentHome.banUser(post.userId, post.id, getUserName(post.userDetails))">Ban User</a>    
                         <a class="text-danger padded-sm caption" ng-click="ContentHome.deletePost(post.id)">Delete Post</a>
                         <a class="left-auto padded-sm caption" ng-show="post.comments.length" ng-click="post.viewComments = !post.viewComments">
                             {{ post.viewComments ? 'Hide Comments' : 'Show Comments'}}
@@ -108,8 +107,6 @@
                             <img ng-repeat="imageUrl in comment.imageUrl" src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
                         </div>
                         <div class="social-footer flex">
-                            <a class="text-danger padded-sm caption padding-left-zero" ng-if="!comment.deletedOn"
-                             ng-click="ContentHome.banUser(post.userId, comment.id, comment.userDetails.displayName)">Ban User</a>
                             <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.deleteComment(post, comment)">Delete Comment</a>
                         </div>
                     </div>

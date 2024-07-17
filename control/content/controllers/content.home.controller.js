@@ -223,7 +223,7 @@
                             };
 
                             var postToDelete = ContentHome.posts.find(element => element.id === postId);
-                            if (postToDelete) Posts.deletePost({ userId: postToDelete.userId, postText: postToDelete.text, postImages: postToDelete.imageUrl || [], }, (err, r) => { return });
+                            if (postToDelete) SocialDataStore.deleteFeedPost({ userId: postToDelete.userId, postText: postToDelete.text, postImages: postToDelete.imageUrl || [], }, (err, r) => { return });
 
                             // Deleting post having id as postId
                             SocialDataStore.deletePost(postId, ContentHome.socialAppId, datastoreWriteKey).then(success, error);
@@ -277,57 +277,6 @@
 
                             // Deleting post having id as postId
                             SocialDataStore.deleteComment(post.id, commentId).then(success, error);
-                        }
-                    }
-                );
-            };
-
-            // Method for banning a user by calling SocialDataStore banUser method
-            ContentHome.banUser = function (userId, threadId, username) {
-                ContentHome.modalPopupThreadId = threadId;
-                console.log('inside ban user controller method>>>>>>>>>>');
-
-                buildfire.dialog.confirm(
-                    {
-                        title: "Ban User",
-                        message: `Are you sure you want to ban ${username || 'this user'}?`,
-                        confirmButton: {
-                            text: "Ban User",
-                            type: "danger",
-                        },
-                    },
-                    (err, isConfirmed) => {
-                        if (err) console.error(err);
-
-                        if (isConfirmed) {
-                            // Called when getting success from SocialDataStore banUser method
-                            var success = function (response) {
-                                console.log(
-                                    "User successfully banned and response is :",
-                                    response
-                                );
-                                Buildfire.messaging.sendMessageToWidget({
-                                    name: EVENTS.BAN_USER,
-                                    reported: userId,
-                                    wid: ContentHome.posts[0].wallId,
-                                });
-                                ContentHome.posts = ContentHome.posts.filter(
-                                    function (el) {
-                                        return el.userId != userId;
-                                    }
-                                );
-                                ContentHome.loading = false;
-                                if (!$scope.$$phase) $scope.$digest();
-                            };
-                            // Called when getting error from SocialDataStore banUser method
-                            var error = function (err) {
-                                console.log("Error while banning a user ", err);
-                            };
-                            // Calling SocialDataStore banUser method for banning a user
-                            SocialDataStore.banUser(userId).then(
-                                success,
-                                error
-                            );
                         }
                     }
                 );

@@ -1,7 +1,7 @@
 'use strict';
 
 (function (angular, buildfire) {
-    angular.module('socialPluginWidget', ['ngRoute', 'ngAnimate', 'socialModals', 'socialPluginFilters'])
+    angular.module('socialPluginWidget', ['ngRoute', 'ngAnimate', 'socialPluginFilters'])
         .config(['$routeProvider', '$compileProvider', '$httpProvider', function ($routeProvider, $compileProvider, $httpProvider) {
 
             /**
@@ -23,6 +23,11 @@
                     templateUrl: 'templates/members.html',
                     controllerAs: 'Members',
                     controller: 'MembersCtrl'
+                })
+                .when('/report', {
+                    templateUrl: 'templates/report.html',
+                    controllerAs: 'Report',
+                    controller: 'ReportCtrl'
                 })
                 .otherwise('/');
 
@@ -154,5 +159,74 @@
                     });
                 });
             };
-        }]);
+        }])
+        .directive('stickyNavbar', function() {
+            return {
+                restrict: 'A',
+                scope: {
+                    scrollContainer: '@' // Bind the scroll container attribute
+                },
+                link: function(scope, element) {
+                    const navbar = element[0];
+                    let lastScrollTop = 0;
+        
+                    const throttle = function(func, limit) {
+                        let lastFunc;
+                        let lastRan;
+                        return function() {
+                            const context = this;
+                            const args = arguments;
+                            if (!lastRan) {
+                                func.apply(context, args);
+                                lastRan = Date.now();
+                            } else {
+                                clearTimeout(lastFunc);
+                                lastFunc = setTimeout(function() {
+                                    if ((Date.now() - lastRan) >= limit) {
+                                        func.apply(context, args);
+                                        lastRan = Date.now();
+                                    }
+                                }, limit - (Date.now() - lastRan));
+                            }
+                        };
+                    };
+        
+                    const handleScroll = function() {
+                        const scrollContainer = document.querySelector(scope.scrollContainer);
+                        if (!scrollContainer) return;
+                        
+                        const scrollTop = scrollContainer.scrollTop;
+                        if (scrollTop > lastScrollTop) {
+                            // User is scrolling down
+                            navbar.style.transform = 'translateY(-100%)';
+                        } else {
+                            // User is scrolling up
+                            navbar.style.transform = 'translateY(0)';
+                        }
+                        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+                    };
+        
+                    const throttledHandleScroll = throttle(handleScroll, 200);
+        
+                    angular.element(document).ready(function () {
+                        const scrollContainer = document.querySelector(scope.scrollContainer);
+                        if (scrollContainer) {
+                            scrollContainer.addEventListener('scroll', throttledHandleScroll);
+                        }
+        
+                        // Clean up
+                        scope.$on('$destroy', function() {
+                            if (scrollContainer) {
+                                scrollContainer.removeEventListener('scroll', throttledHandleScroll);
+                            }
+                        });
+                    });
+                }
+            };
+        });
+        
+        
+        
+        
+        
 })(window.angular, window.buildfire);

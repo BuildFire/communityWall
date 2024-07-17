@@ -173,56 +173,6 @@
                     }).then(successCallback, errorCallback);
                     return deferred.promise;
                 },
-                banUser: function (userId, wallId) {
-                    var deferred = $q.defer();
-
-                    let searchOptions = {
-                        filter: {
-                            $and: [
-                                { "$json.userId": userId },
-                                { '$json.wid': wallId }
-                            ]
-                        }
-                    }
-
-                    let searchOptions2 = {
-                        filter: {
-                            $and: [
-                                { "$json.comments.userId": userId },
-                                { '$json.wid': wallId }
-                            ]
-                        }
-                    }
-
-                    buildfire.publicData.search(searchOptions2, 'posts', (error, data) => {
-                        if (error) return deferred.reject(error);
-                        let count = 0;
-                        if (data && data.length) {
-                            data.map(post => {
-                                post.data.comments.map((comment, index) => {
-                                    if (comment.userId === userId) {
-                                        post.data.comments.splice(index, 1)
-                                    }
-                                })
-                                buildfire.publicData.update(post.id, post.data, 'posts', (error, data) => {
-                                    if (error) return deferred.reject(error);
-                                })
-                            })
-                        }
-                        buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
-                            if (error) return deferred.reject(error);
-                            if (data && data.length) {
-                                data.map(post => {
-                                    buildfire.publicData.delete(post.id, 'posts', function (err, status) {
-                                        if (error) return deferred.reject(error);
-                                        return deferred.resolve(status);
-                                    })
-                                })
-                            }
-                        });
-                    });
-                    return deferred.promise;
-                },
                 deleteComment: function (threadId, comment) {
                     var deferred = $q.defer();
                     buildfire.publicData.getById(threadId, 'posts', function (error, result) {
@@ -260,6 +210,24 @@
                         headers: { 'Content-Type': 'application/json' }
                     }).then(success, error);
                     return deferred.promise;
+                },
+                deleteFeedPost : (filter, callback) =>{
+                    buildfire.auth.getCurrentUser((err, currentUser) =>{
+                        if(err || !currentUser) return callback({code: errorsList.ERROR_401,message:"Must be logged in"});
+                        buildfire.appData.search({filter:{$and:[{...filter}]},sort:{createdOn: -1} }, "posts", (err, r) =>{
+                            if(err || !r || r.length == 0) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"});
+                            r.forEach(p =>{
+                                if(!p) return callback({code:errorsList.ERROR_404,message:"Couldn't find matching data"})
+                                if(p.data.userId != currentUser._id && buildfire.getContext().type !== 'control') return callback({code: errorsList.ERROR_402, message: "You are not authorized to modify this post"});
+                                buildfire.appData.delete(p.id, "posts", (err, r) =>{
+                                    if(err) return console.error(err);
+                                    Analytics.trackAction("post-deleted");
+                                    callback(r);
+                                })
+            
+                            })
+                        })
+                    })
                 }
             }
         }])

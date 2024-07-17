@@ -10,7 +10,7 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
     beforeEach(inject(function ($controller, _$rootScope_, _Modals_, _$timeout_, _$q_ ,EVENTS) {
             scope = _$rootScope_.$new();
             Modals = jasmine.createSpyObj('Modals',['removePopupModal','open','banPopupModal']);
-            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','banUser','getCommentsOfAPost','getThreadLikes']);
+            SocialDataStore = jasmine.createSpyObj('SocialDataStore',['getPosts','getUsers','deletePost','deleteComment','getCommentsOfAPost','getThreadLikes']);
 
             $timeout = _$timeout_;
             $q = _$q_;
@@ -517,121 +517,6 @@ describe('Unit : Controller - ContentHomeCtrl', function () {
             });
 
         })
-
-    });
-
-    describe('ContentHome.banUser', function () {
-
-        describe('ContentHome.banUser Modal success SocialDatastore Success',function(){
-            beforeEach(function(){
-
-                Modals.banPopupModal.and.callFake(function () {
-                    console.log('-------------------------------->');
-                    var deferred = $q.defer();
-                    deferred.resolve('yes');
-                    return deferred.promise;
-                });
-
-                SocialDataStore.banUser.and.callFake(function () {
-                    var deferred = $q.defer();
-                    deferred.resolve();
-                    return deferred.promise;
-                });
-
-            });
-
-            it('it should pass if SocialDataStore.banUser bans user', function () {
-
-                ContentHome.posts = [{_id: 1}];
-                ContentHome.banUser(1);
-                scope.$digest();
-
-
-               // expect(ContentHome.posts.length).toEqual(1);
-            });
-
-        })
-        describe('ContentHome.banUser Modal success SocialDatastore failure',function(){
-            beforeEach(function(){
-
-                Modals.banPopupModal.and.callFake(function () {
-                    console.log('-------------------------------->');
-                    var deferred = $q.defer();
-                    deferred.resolve('yes');
-                    return deferred.promise;
-                });
-
-                SocialDataStore.banUser.and.callFake(function () {
-                    var deferred = $q.defer();
-                    deferred.reject();
-                    return deferred.promise;
-                });
-
-            });
-
-            it('it should pass if SocialDataStore.deletePost deletes the given post and returns 0', function () {
-
-                ContentHome.posts = [{_id: 1}];
-                ContentHome.banUser(1);
-                scope.$digest();
-
-
-               // expect(ContentHome.posts.length).toEqual(1);
-            });
-
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns nothing to delete', function () {
-
-                ContentHome.posts = [{_id: 1}];
-                ContentHome.deletePost(2);
-                scope.$digest();
-
-
-                expect(ContentHome.posts.length).toEqual(1);
-            });
-
-        })
-
-        describe('ContentHome.banUser Modal failure SocialDatastore success',function(){
-            beforeEach(function(){
-
-                Modals.banPopupModal.and.callFake(function () {
-                    console.log('-------------------------------->');
-                    var deferred = $q.defer();
-                    deferred.reject('yes');
-                    return deferred.promise;
-                });
-
-                SocialDataStore.banUser.and.callFake(function () {
-                    var deferred = $q.defer();
-                    deferred.resolve();
-                    return deferred.promise;
-                });
-
-            });
-
-            it('it should pass if SocialDataStore.banUser deletes the given post and returns 0', function () {
-
-                ContentHome.posts = [{_id: 1}];
-                ContentHome.banUser(1);
-                scope.$digest();
-
-
-               // expect(ContentHome.posts.length).toEqual(1);
-            });
-
-            xit('it should pass if SocialDataStore.deletePost deletes the given post and returns nothing to delete', function () {
-
-                ContentHome.posts = [{_id: 1}];
-                ContentHome.deletePost(2);
-                scope.$digest();
-
-
-                expect(ContentHome.posts.length).toEqual(1);
-            });
-
-        })
-
-
 
     });
 

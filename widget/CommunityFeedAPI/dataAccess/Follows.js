@@ -54,16 +54,6 @@ class Follows {
     })
   }
 
-  static getUserFollowData = (callback) => {
-    buildfire.auth.getCurrentUser((err, currentUser) =>{
-        if(err || !currentUser) return callback({code: errorsList.ERROR_401, message: "Must be logged in"});
-        buildfire.appData.search({ filter: { "_buildfire.index.string1": currentUser._id }}, Follows.TAG, (e, r) => {
-            if (e) return callback(e);
-            else if (!r || r.length == 0) return callback(r);
-            else return callback(null, new Follow(r[0].data));
-        });
-    })
-  };
 
   static followPlugin = (callback) =>{
     buildfire.auth.getCurrentUser((e, currentUser) => {
@@ -134,24 +124,6 @@ class Follows {
     })
   }
   
-  static isFollowingPlugin = (pluginId) =>{
-    if(!pluginId) return callback("User ID cannot be null");
-    buildfire.auth.getCurrentUser((e,currentUser) => {
-      if(e || !currentUser) return callback({code: errorsList.ERROR_401, message: "Must be logged in"});
-        if(err || !user) return callback({code: errorsList.ERROR_404, message: "Couldn't find matching data"});
-        buildfire.appData.search({ filter: { "_buildfire.index.string1": currentUser._id }}, Follows.TAG, (e,r) => {
-          if(e || !r) return callback({code: errorsList.ERROR_404, message: "Couldn't find matching data"});
-          else if(r && r.length == 0) return callback(null,false);
-          else{
-            let index = r[0].data.followedPlugins.findIndex((e) => e == pluginId);
-            if (index < 0) return callback("Not following this user");
-            else return callback(null, true);
-          }
-        })
-    })
-    
-  }
-
   static buildIndex = (userId) => {
     const index = {
       string1: userId,

@@ -1,0 +1,51 @@
+<div class="padding-zero" style="height:100%;">
+    <div class="social-plugin social-Report" style="height: 100%;">
+        <div
+            class="post-section backgroundColorTheme">
+            <div class="social-item">
+                <div class="head">
+                    <div class="social-profile-photo">
+                        <div class="media-holder pull-left">
+                            <img ng-if="Report.post.userId && Report.post.userDetails.imageUrl"
+                                load-image="1x1" data-final-src="{{Report.post.userDetails.imageUrl}}" crop-width="40"
+                                crop-height="40" crop-type="crop">
+                            <img ng-if="!(Report.post.userId && Report.post.userDetails.imageUrl)"
+                                load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"
+                                data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
+                        </div>
+                        <div class="padding-half-rem padding-top-zero padding-bottom-zero">
+                            <div class="social-copy">
+                                <p class="text-primary ellipsis">
+                                    <a>
+                                        {{Report.SocialItems.getUserName(Report.post.userDetails)}}
+                                    </a>
+                                </p>
+                                <div ng-if="Report.post.createdOn">
+                                    <p class="time-ago opacity-seventy">
+                                        {{Report.getDuration(Report.post.createdOn) | convertTimeFormat}}</p>
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+
+                </div>
+                <div class="post-text copy" style="word-wrap: break-word">
+                    <p class="margin-zero" ng-bind-html="Report.util.injectAnchors(Report.post.text) | newLine"></p>
+                </div>
+                <div class="plugin-banner clearfix" ng-if="Report.post.imageUrl">
+                    <div class="plugin-slide text-center" style="max-height: none !important;">
+                        <bf-image-list id="reportPostImage" token="czi3m2qn"></bf-image-list>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="status-footer">                       
+                        <a class="likes social-icon ng-cloak">
+                            <i class="material-icons-outlined" aria-hidden="true">thumb_up_off_alt</i>
+                            <span class="iconsTheme iconsFont">{{Report.post.likes.length}}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

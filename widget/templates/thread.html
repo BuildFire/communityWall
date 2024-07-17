@@ -1,19 +1,21 @@
 <div class="padding-zero" style="height:100%;">
-    <div class="social-plugin social-thread" ng-if="Thread.loaded" style="height: 100%;">
+    <div class="social-plugin social-thread" style="height: 100%;">
 
-        <div ng-if="Thread.allowFollowLeaveGroup" class="head-btn text-center backgroundColorTheme">
-
-            <a ng-click="Thread.followUnfollow()">
-                <p class="text-primary">
+        <div ng-if="Thread.allowFollowLeaveGroup" 
+        sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
+        class="head-btn text-center backgroundColorTheme">
+            <p class="text-primary follow-btn" ng-click="Thread.followUnfollow()">
+                <button class="btn btn-danger-outlined ng-binding" id="followBtn">
                     {{Thread.followingStatus? Thread.SocialItems.languages.unfollowPost: Thread.SocialItems.languages.followPost }}
-                </p>
-            </a>
+                </button>
+            </p>
         </div>
         <div ng-class="{'has-comment-box':Thread.SocialItems.userDetails.userId == null || Thread.allowCreateThread,'has-group-header' : Thread.allowFollowLeaveGroup}"
             class="post-section backgroundColorTheme">
-            <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1}">
-                <div class="head">
-                    <div class="social-profile-photo">
+            <div class="social-item" ng-class="{'has-comments': Thread.post.commentsCount > 1, 'first-post':Thread.allowFollowLeaveGroup}">
+                <div class="head flex flex-space-between">
+                    <div class="social-profile-photo pointer"
+                        ng-click="Thread.SocialItems.userDetails.userId !== Thread.post.userId && Thread.openBottomDrawer(Thread.post)">
                         <div class="media-holder pull-left">
                             <img ng-if="Thread.post.userId && Thread.post.userDetails.imageUrl"
                                 load-image="1x1" data-final-src="{{Thread.post.userDetails.imageUrl}}" crop-width="40"
@@ -22,10 +24,10 @@
                                 load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"
                                 data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
                         </div>
-                        <div class="social-copy">
+                        <div class="social-copy padding-half-rem padding-top-zero padding-bottom-zero">
                             <p class="text-primary ellipsis">
-                                <a ng-click="Thread.openBottomDrawer(Thread.post.userId)">
-                                    {{Thread.SocialItems.getUserName(Thread.post.userDetails)}}</a>
+                                <a>
+                                    {{Thread.getDisplayName(Thread.post.userId, Thread.post.userDetails)}}</a>
                             </p>
                             <div ng-if="Thread.post.createdOn">
                                 <p class="time-ago opacity-seventy">
@@ -33,10 +35,13 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="padding-half-rem padding-top-zero padding-bottom-zero"></div>
+                    <a class="social-icon margin-one-rem margin-top-zero margin-bottom-zero ng-cloak" ng-click="Thread.openBottomDrawer(Thread.post)" style="height: 2rem; margin-top: 0.75rem;">
+                        <span class="material-icons-outlined">more_horiz</span>
+                    </a>
                 </div>
                 <div class="post-text copy" style="word-wrap: break-word">
-                    <p class="margin-zero" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p>
+                    <p class="margin-zero body-text-theme" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p><p></p>
                 </div>
                 <div class="plugin-banner clearfix" ng-if="Thread.post.imageUrl">
                     <div class="plugin-slide text-center" style="max-height: none !important;">
@@ -44,13 +49,9 @@
                     </div>
                 </div>
                 <div class="footer">
-                    <div class="status-footer">
-                        <a class="more-info social-icon ng-cloak" ng-click="Thread.showMoreOptions()">
-                            <span class="material-icons-outlined">more_horiz</span>
-                        </a>
-                        
+                    <div class="status-footer">                        
                         <a class="likes social-icon ng-cloak" ng-click="Thread.likeThread(Thread.post, 'thread')">
-                            <i class="material-icons-outlined" ng-class="{notActive: !Thread.post.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                            <i class="material-icons-outlined" aria-hidden="true">{{!Thread.post.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                             <span class="iconsTheme iconsFont"
                                 ng-class="{active: Thread.post.isUserLikeActive}">{{Thread.post.likes.length}}</span>
                         </a>
@@ -58,15 +59,22 @@
                 </div>
                 <div class="comments-list" ng-if="Thread.processedComments">
                     <div class="social-comment" ng-repeat="comment in Thread.post.comments">
-                        <div class="thread-dot">
-                            <div class="primaryBackgroundTheme">
+                        <div class="thread-dot head pointer"
+                             ng-click="comment.userId !== Thread.SocialItems.userDetails.userId && Thread.showMoreOptionsComment(comment)">
+                            <div class="media-holder pull-left">
+                                <img ng-if="comment.userDetails.imageUrl && !Thread.isBlockedUser(comment.userId)"
+                                    load-image="1x1" data-final-src="{{comment.userDetails.imageUrl}}" crop-width="40"
+                                    crop-height="40" crop-type="crop">
+                                <img ng-if="!(comment.userDetails.imageUrl) || Thread.isBlockedUser(comment.userId)"
+                                    load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png"
+                                    data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
                             </div>
                         </div>
                         <div class="comment-content ellipsis" style="max-width: 85%">
-                            <div class="social-profile-photo">
+                            <div class="social-profile-photo pointer"
+                            ng-click="comment.userId !== Thread.SocialItems.userDetails.userId && Thread.showMoreOptionsComment(comment)">
                                 <div class="social-copy">
-                                    <a class="social-name text-primary"
-                                        ng-click="Thread.openChatOrProfile(comment.userId, comment)">{{Thread.SocialItems.getUserName(comment.userDetails)}}</a>
+                                    <a class="social-name text-primary">{{Thread.getDisplayName(comment.userId, comment.userDetails)}}</a>
                                     <div ng-if="comment.createdOn">
                                         <p class="time-ago opacity-seventy">
                                             {{Thread.getDuration(comment.createdOn) | convertTimeFormat}}</p>
@@ -74,7 +82,7 @@
                                 </div>
                             </div>
                             <div class="post-text copy">
-                                <p class="margin-zero" ng-if="!comment.deletedOn"
+                                <p class="margin-zero body-text-theme" ng-if="!comment.deletedOn"
                                     ng-bind-html="Thread.util.injectAnchors(comment.comment)|newLine"></p>
                                     <p class="margin-zero" ng-if="comment.deletedOn">
                                         {{Thread.SocialItems.languages.messageDeleted ? Thread.SocialItems.languages.messageDeleted  : "This message was deleted."}}
@@ -87,22 +95,39 @@
                                 </div>
                             </div>
                             <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">
-                                <a class="more-info social-icon" ng-if="Thread.SocialItems.userDetails.userId == comment.userId"
-                                    ng-click="Thread.showMoreOptionsComment(comment.threadId)">
-                                    <span class="material-icons-outlined">more_horiz</span>
-                                </a>
-                                <a class="social-icon likes" ng-click="Thread.likeComment(comment, 'comment')">
-                                    <i class="material-icons-outlined" ng-class="{notActive: !comment.isUserLikeActive }" aria-hidden="true">thumb_up_off_alt</i>
+                                <a class="social-icon likes" ng-click="!Thread.isBlockedUser(comment.userId) && Thread.likeComment(comment, 'comment')">
+                                    <i class="material-icons-outlined" ng-class="{notActive: !comment.isUserLikeActive }" aria-hidden="true">{{!comment.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                                     <span class="iconsTheme iconsFont"
                                         ng-class="{active: comment.isUserLikeActive}">{{comment.likes.length}}</span>
                                 </a>
 
                             </div>
                         </div>
-
+                        <a class="social-icon margin-one-rem margin-top-zero margin-bottom-zero"
+                        ng-hide = "comment.userId != Thread.SocialItems.userDetails.userId || !comment.commentId"
+                        ng-click="Thread.showMoreOptionsComment(comment)" style="height: 2rem; margin-top: 0.75rem;">
+                        <span class="material-icons-outlined">more_horiz</span>
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div ng-show="!Thread.loaded">
+        <div class="social-item margin-top-half-rem" ng-class="{'first-post': Thread.allowFollowLeaveGroup}"></div>
+        <div class="comments-list">
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
+            <div class="social-item-comment"></div>
         </div>
     </div>
 </div>
@@ -110,7 +135,7 @@
     ng-class="full-post-section">
     <div ng-click="Thread.openCommentSection()" on-touchend="Thread.openCommentSection()" class="small-post-box">
         <div class="post-holder">
-            <button class="add-message btn btn--fab btn--add btn-primary" id="addCommentBtn">
+            <button class="add-message btn btn--fab btn--add btn-success" id="addCommentBtn">
                 <svg id="add-comment-svg" class="svgIcon" height="16px" width="16px" version="1.1" viewBox="0 0 16 16" x="0px"
                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
                     y="0px">

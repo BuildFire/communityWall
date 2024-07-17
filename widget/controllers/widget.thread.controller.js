@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('ThreadCtrl', ['$scope', '$routeParams', '$location', '$anchorScroll', 'SocialDataStore', 'Modals', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, $location, $anchorScroll, SocialDataStore, Modals, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, Util, GROUP_STATUS, SubscribedUsersData) {
+        .controller('ThreadCtrl', ['$scope', '$routeParams', '$location', '$anchorScroll', 'SocialDataStore', '$rootScope', 'Buildfire', 'EVENTS', 'THREAD_STATUS', 'FILE_UPLOAD', 'SocialItems', '$q', '$timeout', 'Location', 'Util', 'GROUP_STATUS', 'SubscribedUsersData', function ($scope, $routeParams, $location, $anchorScroll, SocialDataStore, $rootScope, Buildfire, EVENTS, THREAD_STATUS, FILE_UPLOAD, SocialItems, $q, $timeout, Location, Util, GROUP_STATUS, SubscribedUsersData) {
             var Thread = this;
             Thread.userDetails = {};
             Thread.SocialItems = SocialItems.getInstance();
@@ -16,6 +16,13 @@
             Thread.util = Util;
             Thread.loaded = false;
             Thread.processedComments = false;
+            Thread.skeletonPost = new Buildfire.components.skeleton('.social-item', {
+                type: 'list-item-avatar, list-item-two-line, image'
+            });
+            Thread.skeletonComments = new Buildfire.components.skeleton('.social-item-comment', {
+                type: 'list-item-avatar, list-item-two-line'
+            });
+
             var counter = 0;
             $scope.setupImageList = function (comment) {
                 if (comment.imageUrl.length) {
@@ -88,7 +95,7 @@
             Thread.setAppTheme = function () {
                 buildfire.appearance.getAppTheme((err, obj) => {
                     let elements = document.getElementsByTagName('svg');
-                    document.getElementById("addCommentBtn").style.setProperty("background-color", obj.colors.icons, "important");
+                    document.getElementById("addCommentBtn").style.setProperty("background-color", "var(--bf-theme-success)", "important");
                     elements[3].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
                     document.getElementById("add-comment-svg").style.setProperty("fill", 'white', "important");
                 });
@@ -113,8 +120,19 @@
             }
 
             Thread.showComments = () => {
-                Thread.processedComments = true;
+                Thread.processedComments = true;                                
                 if (!$scope.$$phase) $scope.$digest();
+            }
+
+            Thread.getDisplayName = (userId, userDetails) => {
+                const blockedUsers = Thread.SocialItems.blockedUsers;
+                if(blockedUsers.includes(userId)) return Thread.SocialItems.languages.blockedUser || "Blocked User";
+                else return Thread.SocialItems.getUserName(userDetails);
+            }
+
+            Thread.isBlockedUser = (userId) => {
+                const blockedUsers = Thread.SocialItems.blockedUsers;
+                return blockedUsers.includes(userId);
             }
 
             Thread.handleDeletedUsers = function () {
@@ -169,6 +187,8 @@
             }
 
             Thread.init = function () {
+                Thread.skeletonPost.start();
+                Thread.skeletonComments.start();
                 Thread.setAppTheme();
                 if ($routeParams.threadId) {
                     let post = Thread.SocialItems.items.find(el => el.id === $routeParams.threadId);
@@ -208,6 +228,8 @@
                                     });
                                 }
                                 Thread.loaded = true;
+                                Thread.skeletonPost.stop();
+                                Thread.skeletonComments.stop();
                                 Thread.setupThreadImage();
                                 $scope.$digest();
                             });
@@ -277,67 +299,97 @@
                 })
             }
 
-            Thread.openBottomDrawer = function (userId) {
-                $scope.notYou = false;
-                Follows.isFollowingUser(userId, (err, r) => {
-                    let listItems = [];
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true) listItems.push({
-                        text: 'See Profile'
-                    });
-                    if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat) {
-                        if ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false) listItems.push({
-                            text: 'Send Direct Message'
-                        });
-                    }
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers")
-                        listItems.push({
-                            text: 'Send Direct Message'
-                        });
-                    if (Thread.SocialItems.appSettings.allowCommunityFeedFollow == true) listItems.push({
-                        text: r ? 'Unfollow' : 'Follow'
-                    });
+            Thread.openBottomDrawer = function (post) {
+                let listItems = [];
+                let userId = post.userId;
+                Thread.modalPopupThreadId = post.id;
+                Thread.SocialItems.authenticateUser(null, (err, userData) => {
+                    if (err) return console.error("Getting user failed.", err);
+                    if (userData) {
+                        // Add options based on user conditions
+                        if (post.userId === Thread.SocialItems.userDetails.userId) {
+                            listItems.push(
+                                {
+                                    id: 'deletePost',
+                                    text: Thread.SocialItems.languages.deletePost
+                                }
+                            );
+                        } else {
+                            listItems.push(
+                                {
+                                    id: 'reportPost',
+                                    text: Thread.SocialItems.languages.reportPost
+                                },
+                                {
+                                    id: 'blockUser',
+                                    text: Thread.SocialItems.languages.blockUser
+                                }
+                            );
+                        }
+                    } else return false;
 
-                    if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers") {
-                        SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
-                            if (response) {
-                                listItems.push({
-                                    text: 'Send Direct Message'
-                                });
-                            } else {
-                                $scope.notYou = true;
-                            }
-                            Thread.ContinueDrawer(userId, listItems)
-                        })
-                    } else {
-                        Thread.ContinueDrawer(userId, listItems)
-                    }
-                })
+                    Follows.isFollowingUser(userId, (err, r) => {
+                        if (Thread.SocialItems.appSettings.allowCommunityFeedFollow == true && post.userId != Thread.SocialItems.userDetails.userId)
+                            listItems.push({
+                                text: r ? 'Unfollow' : 'Follow'
+                            });
+    
+                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true && post.userId != Thread.SocialItems.userDetails.userId) 
+                            listItems.push({
+                                text: 'See Profile'
+                            });
+    
+                        if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat && !Thread.SocialItems.isPrivateChat
+                            && post.userId != Thread.SocialItems.userDetails.userId && ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false)){                        
+                            listItems.push({
+                                text: 'Send Direct Message'
+                            });
+                        }
+    
+                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers" && !Thread.SocialItems.isPrivateChat
+                            && post.userId != Thread.SocialItems.userDetails.userId)
+                            listItems.push({
+                                text: 'Send Direct Message'
+                            });
+    
+                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers" && !Thread.SocialItems.isPrivateChat
+                            && post.userId != Thread.SocialItems.userDetails.userId) {
+                            SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
+                                if (response) {
+                                    listItems.push({
+                                        text: 'Send Direct Message'
+                                    });
+                                }
+                                Thread.ContinueDrawer(post, listItems)
+                            })
+                        } else {
+                            Thread.ContinueDrawer(post, listItems)
+                        }
+                    });
+                });
             }
 
-            Thread.ContinueDrawer = function (userId, listItems) {
-                if ($scope.notYou) {
-                    if (Thread.SocialItems.languages.specificChat && Thread.SocialItems.languages.specificChat != "") {
-                        const options = {
-                            text: Thread.SocialItems.languages.specificChat
-                        };
-                        buildfire.components.toast.showToastMessage(options, () => {});
-                        return;
-                    }
-                }
+            Thread.ContinueDrawer = function (post, listItems) {
+                let userId = post.userId;
                 if (listItems.length == 0) return;
                 Buildfire.components.drawer.open({
                     enableFilter: false,
                     listItems: listItems
                 }, (err, result) => {
                     if (err) return console.error(err);
-                    else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                     else if (result.text == "Send Direct Message") Thread.openChat(userId);
+                    else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                     else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
+                    else if (result.id == "reportPost") Thread.reportPost(post);
+                    else if (result.id == "blockUser") Thread.blockUser(userId);
+                    else if (result.id == "deletePost"){
+                        buildfire.components.drawer.closeDrawer();
+                        Thread.deletePost(post.id)
+                    }
                     buildfire.components.drawer.closeDrawer();
                 });
             }
-
 
             Thread.openChatOrProfile = function (userId, comment) {
                 if(comment.deletedOn) return;
@@ -393,69 +445,63 @@
                 });
             }
 
-            /**
-             * showMoreOptions method shows the more Option popup.
-             */
-            Thread.showMoreOptions = function () {
-                Thread.modalPopupThreadId = Thread.post._id;
+            Thread.showMoreOptionsComment = function (comment) {
+                Thread.modalPopupThreadId = comment.threadId;
                 Thread.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
-                        Modals.showMoreOptionsModal({
-                            'postId': Thread.post.id,
-                            'userId': Thread.post.userId,
-                            'socialItemUserId': Thread.SocialItems.userDetails.userId,
-                            'languages': Thread.SocialItems.languages
-                        }).then(function (data) {
-                                if (data === Thread.SocialItems.languages.reportPost) {
-                                    SocialDataStore.reportPost({
-                                        reportedAt: new Date(),
-                                        reporter: Thread.SocialItems.userDetails.email,
-                                        reported: Thread.post.userDetails.email,
-                                        reportedUserID: Thread.post.userId,
-                                        text: Thread.post.text,
-                                        postId: Thread.post.id,
-                                        wid: Thread.SocialItems.wid
-                                    }).then(() => {
-                                      buildfire.dialog.toast({
-                                        message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
-                                        type: 'info'
-                                      });
-                                    }, (err) => {
-                                      buildfire.dialog.toast({
-                                        message: Thread.SocialItems.languages.reportPostAlreadyReported || "This post has already been reported.",
-                                        type: 'info'
-                                      });
-                                    });
+                        const drawerOptions = {
+                            listItems: []
+                        };
+            
+                        // Add options based on user conditions
+                        if (comment.userId === Thread.SocialItems.userDetails.userId) {
+                            drawerOptions.listItems.push({
+                                id: 'deleteComment',
+                                text: Thread.SocialItems.languages.deleteComment
+                            });
+                        } else {
+                            const blockedUsers = Thread.SocialItems.blockedUsers;
+                            if(!blockedUsers.includes(comment.userId)) {
+                                drawerOptions.listItems.push(
+                                    {
+                                        id: 'blockUser',
+                                        text: Thread.SocialItems.languages.blockUser
+                                    }
+                                );
+                            }
+                            
+                            drawerOptions.listItems.push(
+                                {
+                                    id: 'reportComment',
+                                    text: Thread.SocialItems.languages.reportComment
                                 }
-                            },
-                            function (err) {
-                                console.log('Error in Error handler--------------------------', err);
-                            });
+                            );
+                        }
+            
+                        buildfire.components.drawer.open(drawerOptions, (err, result) => {
+                            if (err) return console.error("Error opening drawer.", err);
+                            if (result) {
+                                switch (result.id) {
+                                    case 'deleteComment':
+                                        // Call the existing deleteComment function
+                                        Thread.deleteComment(comment);
+                                        break;
+                                    case 'reportComment':
+                                        // Call the existing reportComment function
+                                        Thread.reportComment(comment);
+                                        break;
+                                    case 'blockUser':
+                                        // Call the existing block function
+                                        Thread.blockUser(comment.userId);
+                                        break;
+                                }
+                            }
+                        });
                     }
                 });
             };
-
-            /**
-             * showMoreOptions method shows the more Option popup.
-             */
-            Thread.showMoreOptionsComment = function (commentId) {
-                Thread.modalPopupThreadId = commentId;
-                Thread.SocialItems.authenticateUser(null, (err, user) => {
-                    if (err) return console.error("Getting user failed.", err);
-                    if (user) {
-                        Modals.showMoreOptionsCommentModal({
-                            'commentId': commentId,
-                            'languages': Thread.SocialItems.languages
-                        }).then(function (data) {
-                                console.log('Data in Successs------------------data');
-                            },
-                            function (err) {
-                                console.log('Error in Error handler--------------------------', err);
-                            });
-                    }
-                });
-            };
+            
             /**
              * likeThread method is used to like a post.
              * @param post
@@ -599,10 +645,6 @@
                     return moment(timestamp.toString()).fromNow();
             };
 
-            $rootScope.$on("Delete-Comment", function (event, comment) {
-                Thread.deleteComment(comment);
-            });
-
             Thread.deleteComment = function (comment) {
                 SocialDataStore.deleteComment(Thread.post.id, comment).then(
                     function (data) {
@@ -624,12 +666,72 @@
                 );
             };
 
+            Thread.reportComment = function(comment){
+                Buildfire.services.reportAbuse.report(
+                    {
+                        "itemId": comment.commentId,
+                        "reportedUserId": Thread.post.userId,
+                        "deeplink": {
+                            "fromReportAbuse": true,
+                            "postId": Thread.post.id,
+                            "wallId": Thread.SocialItems.wid,
+                            "commentId": comment.commentId
+                        },
+                        "itemType": "comment"
+                    },
+                    (err, result) => {
+                        if(err && err != 'Report is cancelled'){
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportCommentFail || "This comment is already reported.",
+                                type: 'info'
+                            });                                
+                        }
+                        if(result) {
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportCommentSuccess || "Report submitted and pending admin review.",
+                                type: 'info'
+                            });    
+                        }
+                    }
+                );
+            }
+
+            Thread.reportPost = function(){
+                Buildfire.services.reportAbuse.report(
+                    {
+                        "itemId": Thread.post.id,
+                        "reportedUserId": Thread.post.userId,
+                        "deeplink": {
+                            "fromReportAbuse": true,
+                            "postId": Thread.post.id,
+                            "wallId": Thread.SocialItems.wid
+                        },
+                        "itemType": "post"
+                    },
+                    (err, reportResult) => {
+                        if (err && err !== 'Report is cancelled') {
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportPostFail || "This post is already reported.",
+                                type: 'info'
+                            });
+                        }
+                        if (reportResult) {
+                            Buildfire.dialog.toast({
+                                message: Thread.SocialItems.languages.reportPostSuccess || "Report submitted and pending admin review.",
+                                type: 'info'
+                            });
+                        }
+                    }
+                );
+            }
+
             Thread.addComment = function (imageUrl) {
                 let commentData = {
                     threadId: Thread.post.id,
                     comment: Thread.comment ? Thread.comment.replace(/[#&%+!@^*()-]/g, function (match) {
                         return encodeURIComponent(match)
                     }) : '',
+                    commentId: Util.UUID(),
                     userToken: Thread.SocialItems.userDetails.userToken,
                     imageUrl: imageUrl || null,
                     userId: Thread.SocialItems.userDetails.userId,
@@ -654,6 +756,21 @@
                     });
             }
 
+            Thread.blockUser = function(userId) {
+                SubscribedUsersData.blockUser(userId, (err, blockResult) => {
+                    if (err) {
+                        return console.error("Error blocking user.", err);
+                    }
+                    if (blockResult) {
+                        Buildfire.dialog.toast({
+                            message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked successfully.",
+                            type: 'info'
+                        });
+                        Location.goToHome();
+                    }
+                });
+            }
+            
             Thread.getPostContent = function (data) {
                 if (data && data.results && data.results.length > 0 && !data.cancelled) {
                     $scope.Thread.comment = data.results["0"].textValue;
@@ -714,20 +831,27 @@
             }, true);
 
             Thread.deletePost = function (postId) {
+                buildfire.spinner.show();
                 var success = function (response) {
-                    console.log('inside success of delete post', response);
-                    if (response.data.result) {
+                    if (response) {
                         Buildfire.messaging.sendMessageToControl({
                             'name': EVENTS.POST_DELETED,
                             'id': postId
                         });
-                        console.log('post successfully deleted');
                         let postToDelete = Thread.SocialItems.items.find(element => element.id === postId)
                         let index = Thread.SocialItems.items.indexOf(postToDelete);
                         Thread.SocialItems.items.splice(index, 1);
-                        console.log('post successfully deleted', postId, index);
+
                         if (!$scope.$$phase)
                             $scope.$digest();
+                        Buildfire.components.drawer.closeDrawer();
+                        Buildfire.spinner.hide();
+                        Buildfire.dialog.toast({
+                            message: Thread.SocialItems.languages.postDeleteSuccess || "Post successfully deleted",
+                            type: 'info'
+                        });
+                        
+                        Location.goToHome();
                     }
                 };
                 // Called when getting error from SocialDataStore.deletePost method
@@ -750,16 +874,11 @@
                             Thread.SocialItems.items.splice(index, 1);
                             if (event.id == Thread.modalPopupThreadId) {
                                 Buildfire.history.pop();
-                                Modals.close('Post already deleted');
+                                Buildfire.dialog.toast({
+                                    message: "Post already deleted",
+                                    type: 'info'
+                                }); 
                             }
-                            if (!$scope.$$phase)
-                                $scope.$digest();
-                            break;
-                        case EVENTS.BAN_USER:
-                            Thread.SocialItems.items = Thread.SocialItems.items.filter(function (el) {
-                                return el.userId != event.id;
-                            });
-                            Modals.close('User already banned');
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
@@ -775,7 +894,10 @@
                                     $scope.$digest();
                             }
                             if (Thread.modalPopupThreadId == event._id)
-                                Modals.close('Comment already deleted');
+                                Buildfire.dialog.toast({
+                                    message: "Comment already deleted",
+                                    type: 'info'
+                                }); 
                             break;
                         case "ASK_FOR_WALLID":
                             window.buildfire.messaging.sendMessageToControl({
@@ -808,8 +930,8 @@
                         Thread.showHideCommentBox();
                         $scope.$digest();
                     }
+                    Location.goToHome();
                 });
-                console.log('New user loggedIN from Widget Thread Page', user);
             });
             // On Logout
             Buildfire.auth.onLogout(function () {
