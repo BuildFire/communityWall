@@ -14,7 +14,7 @@
             WidgetWall.allowFollowLeaveGroup = true;
             WidgetWall.groupFollowingStatus = false;
             WidgetWall.postsLoaded = false;
-            
+
             WidgetWall.threadTag = "thread";
             WidgetWall.appTheme = null;
 
@@ -28,12 +28,12 @@
 
             WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
                 type: 'list-item-avatar, list-item-two-line, image'});
-            
+
             WidgetWall.startSkeleton = function () {
                 WidgetWall.skeleton.start();
                 WidgetWall.skeletonActive = true;
             }
-            
+
             WidgetWall.stopSkeleton = function () {
                 WidgetWall.skeleton.stop();
                 WidgetWall.skeletonActive = false;
@@ -383,7 +383,7 @@
                 WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (userData) {
-                        WidgetWall.checkFollowingStatus();           
+                        WidgetWall.checkFollowingStatus();
                         // Add options based on user conditions
                         if (post.userId === WidgetWall.SocialItems.userDetails.userId) {
                             listItems.push(
@@ -405,31 +405,31 @@
                             );
                         }
                     } else return false;
-                    
+
                     Follows.isFollowingUser(userId, (err, r) => {
                         if (WidgetWall.SocialItems.appSettings.allowCommunityFeedFollow == true && post.userId != WidgetWall.SocialItems.userDetails.userId)
                             listItems.push({
                                 text: r ? 'Unfollow' : 'Follow'
                             });
-    
+
                         if (WidgetWall.SocialItems.appSettings.seeProfile && post.userId != WidgetWall.SocialItems.userDetails.userId)
                             listItems.push({
                                 text: "See Profile"
                             })
-        
+
                         if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat && !WidgetWall.SocialItems.isPrivateChat
-                            && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){                        
+                            && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){
                             listItems.push({
                                 text: 'Send Direct Message'
                             });
                         }
-    
+
                         if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "allUsers" && !WidgetWall.SocialItems.isPrivateChat
                             && post.userId != WidgetWall.SocialItems.userDetails.userId)
                             listItems.push({
                                 text: 'Send Direct Message'
                             });
-    
+
                         if (WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowChat == "selectedUsers" && !WidgetWall.SocialItems.isPrivateChat
                             && post.userId != WidgetWall.SocialItems.userDetails.userId) {
                             SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
@@ -443,7 +443,7 @@
                         } else {
                             WidgetWall.ContinueDrawer(post, listItems)
                         }
-                    });    
+                    });
                 });
             }
 
@@ -461,7 +461,7 @@
                     else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.id == "reportPost") WidgetWall.reportPost(post);
                     else if (result.id == "blockUser") WidgetWall.blockUser(userId);
-                    else if (result.id == "deletePost") WidgetWall.deletePost(post.id);                 
+                    else if (result.id == "deletePost") WidgetWall.deletePost(post.id);
                     buildfire.components.drawer.closeDrawer();
                 });
             }
@@ -487,13 +487,13 @@
                 SubscribedUsersData.getBlockedUsers((err, result)=>{
                     if (err) {
                         callback("Fetching Blocked Users Failed", null);
-                    } 
+                    }
                     else if(result) callback(null, result);
                     else callback(null, null);
                 })
             }
             WidgetWall.init = function () {
-                
+
                 WidgetWall.startSkeleton();
 
                 WidgetWall.SocialItems.getSettings((err, result) => {
@@ -853,7 +853,6 @@
 
             WidgetWall.verifyWallId = function (user, wallId, callback) {
                 if (!WidgetWall.SocialItems.userIds && (!wallId || wallId.length != 48)) {
-                    console.error("Invalid wall id");
                     return callback(new Error("Invalid wall id"));
                 }
 
@@ -1112,7 +1111,7 @@
                             }
                         }, (err, data) => {
                             if (err) return console.error("Something went wrong.", err);
-                            if (data.cancelled) return console.error('User canceled.')
+                            if (data.cancelled) return;
                             WidgetWall.getPostContent(data);
                             if ((WidgetWall.postText || ($scope.WidgetWall.images && $scope.WidgetWall.images.length > 0))) {
                                 finalPostCreation($scope.WidgetWall.images);
@@ -1301,7 +1300,7 @@
                         Location.goToHome();
                     }
                 });
-                
+
             }
             WidgetWall.reportPost = function (post) {
                 Buildfire.services.reportAbuse.report(

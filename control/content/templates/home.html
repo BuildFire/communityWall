@@ -61,7 +61,7 @@
                 </div>
                 <div class="plugin-banner clearfix margin-bottom-fifteen">
                     <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}" ng-init="initHesGallery()">
-                        <img ng-repeat="image in post.images" src="https://czi3m2qn.cloudimg.io/v7/{{image}}" data-alt="Post image">
+                        <img ng-repeat="image in post.images" ng-src="https://czi3m2qn.cloudimg.io/v7/{{image}}" data-alt="Post image">
                     </div>
                 </div>
                 <!-- <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl" ng-init="setupImageList(post)">
@@ -104,7 +104,7 @@
                             </div>
                         </div> -->
                         <div class="hes-gallery post-images" data-wrap="true" ng-show="comment.imageUrl.length" data-img-count="{{comment.imageUrl.length}}" ng-init="initHesGallery()">
-                            <img ng-repeat="imageUrl in comment.imageUrl" src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
+                            <img ng-repeat="imageUrl in comment.imageUrl" ng-src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
                         </div>
                         <div class="social-footer flex">
                             <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.deleteComment(post, comment)">Delete Comment</a>
