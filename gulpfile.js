@@ -177,7 +177,11 @@ gulp.task("images", function () {
 });
 gulp.task("lib", function () {
     return gulp
-      .src("control/content/assets/js/ladda/*.js", { base: "." })
+      .src([
+          "control/content/assets/js/ladda/spin.min.js",
+          "control/content/assets/js/ladda/ladda.min.js",
+          "control/content/assets/js/ladda/angular-ladda.min.js"
+      ], { base: "." })
       .pipe(concat("ladda.min.js"))
       .pipe(gulp.dest(destinationFolder + "/control/content/assets/js/ladda"));
 });
