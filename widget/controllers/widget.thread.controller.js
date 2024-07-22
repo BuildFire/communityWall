@@ -120,7 +120,7 @@
             }
 
             Thread.showComments = () => {
-                Thread.processedComments = true;                                
+                Thread.processedComments = true;
                 if (!$scope.$$phase) $scope.$digest();
             }
 
@@ -333,25 +333,25 @@
                             listItems.push({
                                 text: r ? 'Unfollow' : 'Follow'
                             });
-    
-                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true && post.userId != Thread.SocialItems.userDetails.userId) 
+
+                        if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.seeProfile == true && post.userId != Thread.SocialItems.userDetails.userId)
                             listItems.push({
                                 text: 'See Profile'
                             });
-    
+
                         if (Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.allowChat && !Thread.SocialItems.isPrivateChat
-                            && post.userId != Thread.SocialItems.userDetails.userId && ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false)){                        
+                            && post.userId != Thread.SocialItems.userDetails.userId && ((Thread.SocialItems.appSettings && !Thread.SocialItems.appSettings.disablePrivateChat) || Thread.SocialItems.appSettings.disablePrivateChat == false)){
                             listItems.push({
                                 text: 'Send Direct Message'
                             });
                         }
-    
+
                         if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "allUsers" && !Thread.SocialItems.isPrivateChat
                             && post.userId != Thread.SocialItems.userDetails.userId)
                             listItems.push({
                                 text: 'Send Direct Message'
                             });
-    
+
                         if (Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowChat == "selectedUsers" && !Thread.SocialItems.isPrivateChat
                             && post.userId != Thread.SocialItems.userDetails.userId) {
                             SubscribedUsersData.checkIfCanChat(userId, (err, response) => {
@@ -453,7 +453,7 @@
                         const drawerOptions = {
                             listItems: []
                         };
-            
+
                         // Add options based on user conditions
                         if (comment.userId === Thread.SocialItems.userDetails.userId) {
                             drawerOptions.listItems.push({
@@ -470,7 +470,7 @@
                                     }
                                 );
                             }
-                            
+
                             drawerOptions.listItems.push(
                                 {
                                     id: 'reportComment',
@@ -478,7 +478,7 @@
                                 }
                             );
                         }
-            
+
                         buildfire.components.drawer.open(drawerOptions, (err, result) => {
                             if (err) return console.error("Error opening drawer.", err);
                             if (result) {
@@ -501,7 +501,7 @@
                     }
                 });
             };
-            
+
             /**
              * likeThread method is used to like a post.
              * @param post
@@ -532,9 +532,9 @@
                             }
                             options.inAppMessage = options.text;
                             if(Thread.SocialItems.wid){
-                                options.queryString = `wid=${Thread.SocialItems.wid}`;
+                                options.queryString =`&dld=${encodeURIComponent(JSON.stringify({ wid: Thread.SocialItems.wid }))}`
                             }else{
-                                options.queryString = `postId=${Thread.post.id}`;
+                                options.queryString =`&dld=${encodeURIComponent(JSON.stringify({ postId: Thread.post.id }))}`
                             }
                             buildfire.notifications.pushNotification.schedule(options, function (err) {
                                 if (err) return console.error('Error while setting PN schedule.', err);
@@ -684,13 +684,13 @@
                             Buildfire.dialog.toast({
                                 message: Thread.SocialItems.languages.reportCommentFail || "This comment is already reported.",
                                 type: 'info'
-                            });                                
+                            });
                         }
                         if(result) {
                             Buildfire.dialog.toast({
                                 message: Thread.SocialItems.languages.reportCommentSuccess || "Report submitted and pending admin review.",
                                 type: 'info'
-                            });    
+                            });
                         }
                     }
                 );
@@ -770,7 +770,7 @@
                     }
                 });
             }
-            
+
             Thread.getPostContent = function (data) {
                 if (data && data.results && data.results.length > 0 && !data.cancelled) {
                     $scope.Thread.comment = data.results["0"].textValue;
@@ -850,7 +850,7 @@
                             message: Thread.SocialItems.languages.postDeleteSuccess || "Post successfully deleted",
                             type: 'info'
                         });
-                        
+
                         Location.goToHome();
                     }
                 };
@@ -877,7 +877,7 @@
                                 Buildfire.dialog.toast({
                                     message: "Post already deleted",
                                     type: 'info'
-                                }); 
+                                });
                             }
                             if (!$scope.$$phase)
                                 $scope.$digest();
@@ -897,7 +897,7 @@
                                 Buildfire.dialog.toast({
                                     message: "Comment already deleted",
                                     type: 'info'
-                                }); 
+                                });
                             break;
                         case "ASK_FOR_WALLID":
                             window.buildfire.messaging.sendMessageToControl({
