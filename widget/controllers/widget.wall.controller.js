@@ -25,6 +25,7 @@
             WidgetWall.loading = true;
             WidgetWall.scrollPosition = null;
             WidgetWall.skeletonActive = false;
+            WidgetWall.deepLinked = false;
 
             WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
                 type: 'list-item-avatar, list-item-two-line, image'});
@@ -522,7 +523,6 @@
             WidgetWall.init = function () {
 
                 WidgetWall.startSkeleton();
-
                 WidgetWall.SocialItems.getSettings((err, result) => {
                     if (err) {
                         WidgetWall.stopSkeleton();
@@ -557,6 +557,35 @@
 
             WidgetWall.init();
 
+            WidgetWall.handleDeepLinkActions = function (deeplinkData){
+                if (deeplinkData) {
+                    if (deeplinkData.fromReportAbuse) {
+                        WidgetWall.SocialItems.reportData = deeplinkData;
+                        $rootScope.showThread = false;
+                        $timeout(function () {
+                            Location.go('#/report');
+                        });
+                        return;
+                    }
+                    if (deeplinkData.postId) {
+                        WidgetWall.goInToThread(deeplinkData.postId);
+                        return;
+                    }
+                    let wallId = deeplinkData.wid
+                    let userIds = deeplinkData.userIds;
+                    if (!userIds && deeplinkData.wallId && wallId.length === 48) {
+                        const user1Id = wallId.slice(0, 24);
+                        const user2Id = wallId.slice(24, 48);
+                        const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
+                          user2Id : user1Id;
+
+                        WidgetWall.openChat(otherUser);
+                    } else {
+                        WidgetWall.openGroupChat(userIds, wallId);
+                    }
+                }
+            }
+
             WidgetWall.checkForPrivateChat = function () {
                 if (WidgetWall.SocialItems.isPrivateChat) {
                     SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
@@ -584,81 +613,17 @@
                     });
                 }
 
-                WidgetWall.parseDeeplinkData = function(deeplinkQueryString) {
-                    let cleanedString;
-                    if (typeof deeplinkQueryString === 'string') {
-                        cleanedString = deeplinkQueryString.replace(/^&dld=/, '');
-                    } else {
-                        return deeplinkQueryString;
-                    }
-                    try {
-                        const decodedString = decodeURIComponent(cleanedString);
-                        return JSON.parse(decodedString);
-                    } catch (error) {
-                        console.error('Error decoding deepLinkData:', error);
-                        return null;
-                    }
-                }
-
+            if (!WidgetWall.deepLinked){
                 Buildfire.deeplink.getData((data) => {
-                    if (window.deepLinked) return;
-                    window.deepLinked = true;
-
-                    const deeplinkData = WidgetWall.parseDeeplinkData(data);
-                    if (deeplinkData) {
-                        if (deeplinkData.fromReportAbuse) {
-                            WidgetWall.SocialItems.reportData = deeplinkData
-                            $rootScope.showThread = false;
-                            $timeout(function () {
-                                Location.go('#/report');
-                            });
-                            return;
-                        }
-                        if (deeplinkData.postId) {
-                            WidgetWall.goInToThread(deeplinkData.postId);
-                            return;
-                        }
-                        let wallId = new URLSearchParams(deeplinkData).get('wid');
-                        let userIds = new URLSearchParams(deeplinkData).get('userIds');
-                        if (!userIds && wallId && wallId.length === 48) {
-                            const user1Id = wallId.slice(0, 24);
-                            const user2Id = wallId.slice(24, 48);
-                            const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
-                              user2Id : user1Id;
-
-                            WidgetWall.openChat(otherUser);
-                        } else {
-                            WidgetWall.openGroupChat(userIds, wallId);
-                        }
-                    }
+                   WidgetWall.deepLinked = true;
+                    const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                    WidgetWall.handleDeepLinkActions(deeplinkData);
                 }, true);
+            }
 
                 Buildfire.deeplink.onUpdate((data) => {
-                    const deeplinkData = WidgetWall.parseDeeplinkData(data);
-                    if (deeplinkData.fromReportAbuse) {
-                        WidgetWall.SocialItems.reportData = deeplinkData
-                        $rootScope.showThread = false;
-                        $timeout(function () {
-                            Location.go('#/report');
-                        });
-                        return;
-                    }
-                    if (deeplinkData.postId) {
-                        WidgetWall.goInToThread(deeplinkData.postId);
-                        return;
-                    }
-                    let wallId = new URLSearchParams(deeplinkData).get('wid');
-                    let userIds = new URLSearchParams(deeplinkData).get('userIds');
-                    if (!userIds && wallId && wallId.length === 48) {
-                        const user1Id = wallId.slice(0, 24);
-                        const user2Id = wallId.slice(24, 48);
-                        const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
-                          user2Id : user1Id;
-
-                        WidgetWall.openChat(otherUser);
-                    } else {
-                        WidgetWall.openGroupChat(userIds, wallId);
-                    }
+                    const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                    WidgetWall.handleDeepLinkActions(deeplinkData);
                 }, true);
             }
 
@@ -1186,7 +1151,6 @@
                                     buildfire.auth.getCurrentUser((err, currentUser) => {
                                         if (err || !currentUser) return;
                                         else {
-                                            console.log(WidgetWall.postText);
                                             SocialDataStore.addFeedPost({
                                                 postText: WidgetWall.postText ? WidgetWall.postText : "",
                                                 postImages: $scope.WidgetWall.images || []
