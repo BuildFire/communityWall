@@ -573,7 +573,7 @@
                     }
                     let wallId = deeplinkData.wid
                     let userIds = deeplinkData.userIds;
-                    if (!userIds && deeplinkData.wallId && wallId.length === 48) {
+                    if (!userIds && wallId && wallId.length === 48) {
                         const user1Id = wallId.slice(0, 24);
                         const user2Id = wallId.slice(24, 48);
                         const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
