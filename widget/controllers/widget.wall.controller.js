@@ -25,10 +25,9 @@
           WidgetWall.loading = true;
           WidgetWall.scrollPosition = null;
           WidgetWall.skeletonActive = false;
-          WidgetWall.deepLinked = false;
 
           WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
-              type: 'list-item-avatar, list-item-two-line, image'});
+                type: 'list-item-avatar, list-item-two-line, image'});
 
           WidgetWall.startSkeleton = function () {
               WidgetWall.skeleton.start();
@@ -126,7 +125,7 @@
               let pinnedPostMessage = null;
               if (WidgetWall.SocialItems.appSettings && typeof WidgetWall.SocialItems.appSettings.pinnedPost !== 'undefined' && !WidgetWall.SocialItems.headerContent) {
                   pinnedPostMessage = WidgetWall.SocialItems.appSettings.pinnedPost;
-              } else if(WidgetWall.SocialItems.headerContent) {
+              } else if (WidgetWall.SocialItems.headerContent) {
                   pinnedPostMessage = WidgetWall.SocialItems.headerContent;
               }
 
@@ -153,7 +152,7 @@
               });
           }
 
-          WidgetWall.getPosts = function (callback = null)  {
+          WidgetWall.getPosts = function () {
               WidgetWall.SocialItems.getPosts(function (err, data) {
                   WidgetWall.postsLoaded = true;
                   WidgetWall.showUserLikes();
@@ -164,9 +163,6 @@
                       pinnedPost: WidgetWall.pinnedPost,
                       wid: WidgetWall.SocialItems.wid
                   });
-                  if (callback) {
-                      return callback(null, data);
-                  }
               });
           }
 
@@ -179,30 +175,21 @@
               $scope.$digest();
           }
 
-          WidgetWall.checkFollowingStatus = function (user = null, callback = null) {
+          WidgetWall.checkFollowingStatus = function (user = null) {
               WidgetWall.loading = true;
               SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                  if (err) {
-                      console.log('error while getting initial group following status.', err);
-                      if (callback) {
-                          return callback(err);
-                      }
-                  } else {
+                  if (err) console.log('error while getting initial group following status.', err);
+                  else {
                       if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
                           WidgetWall.loading = false;
-                          if (callback) {
-                              WidgetWall.followWall();
-                              return callback(null);
-                          } else {
-                              return WidgetWall.followWall();
-                          }
+                          return WidgetWall.followWall();
                       }
                       if (status.length) {
                           if (!status[0].data.leftWall) {
                               buildfire.notifications.pushNotification.subscribe({
                                   groupName: WidgetWall.SocialItems.wid === '' ?
                                     WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                              }, () => {});
+                                }, () => {});
                               WidgetWall.groupFollowingStatus = true;
                           } else if (status[0].data.banned) {
 
@@ -218,9 +205,6 @@
                       buildfire.spinner.hide();
                       WidgetWall.loading = false;
                       $scope.$digest();
-                      if (callback) {
-                          return callback(null, status);
-                      }
                   }
               });
           }
@@ -234,11 +218,13 @@
                       buildfire.notifications.pushNotification.unsubscribe({
                           groupName: WidgetWall.SocialItems.wid === '' ?
                             WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                      }, () => {});
+                      }, () => {
+                      });
                       const options = {
                           text: 'You have left this group'
                       };
-                      buildfire.components.toast.showToastMessage(options, () => {});
+                      buildfire.components.toast.showToastMessage(options, () => {
+                      });
                       $scope.$digest();
                   }
               });
@@ -274,7 +260,8 @@
                       buildfire.notifications.pushNotification.subscribe({
                           groupName: WidgetWall.SocialItems.wid === '' ?
                             WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                      }, () => {});
+                      }, () => {
+                      });
                       buildfire.spinner.hide();
                       WidgetWall.loading = false;
                       $scope.$digest();
@@ -301,7 +288,8 @@
                                       buildfire.notifications.pushNotification.subscribe({
                                           groupName: WidgetWall.SocialItems.wid === '' ?
                                             WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                                      }, () => {});
+                                      }, () => {
+                                      });
                                       WidgetWall.groupFollowingStatus = true;
                                   } else if (status.length && !status[0].data.leftWall)
                                       return WidgetWall.unfollowWall();
@@ -331,14 +319,7 @@
                   options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
 
               options.inAppMessage = options.text;
-
-              const queryStringObj = {};
-              if (WidgetWall.SocialItems.wid) {
-                  queryStringObj.wid = WidgetWall.SocialItems.wid;
-              }
-              else {
-                  queryStringObj.postId =post.id;
-              }
+              options.queryString = `wid=${WidgetWall.SocialItems.wid}`
 
               if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
@@ -346,8 +327,7 @@
 
                   let userIdsTosSend = [];
                   if (WidgetWall.SocialItems.userIds) {
-                      queryStringObj.userIds = WidgetWall.SocialItems.userIds;
-
+                      options.queryString += `&userIds=${WidgetWall.SocialItems.userIds}`
                       const userIds = WidgetWall.SocialItems.userIds.split(',').filter((userId) => userId !== WidgetWall.SocialItems.userDetails.userId);
                       userIdsTosSend = userIds;
                   } else {
@@ -357,8 +337,6 @@
                         user2Id : user1Id;
                       userIdsTosSend.push(userToSend);
                   }
-
-                  options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
 
                   for (const userToSend of userIdsTosSend) {
                       SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
@@ -390,7 +368,6 @@
                       });
                   }
               } else {
-                  options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
                   if (text === 'like') {
                       options.users.push(post.userId);
                   } else options.groupName = WidgetWall.SocialItems.wid === '' ?
@@ -401,6 +378,7 @@
                   });
               }
           }
+
 
           WidgetWall.openBottomDrawer = function (post) {
               let listItems = [];
@@ -444,7 +422,7 @@
                           })
 
                       if (WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.allowChat && !WidgetWall.SocialItems.isPrivateChat
-                        && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)){
+                        && post.userId != WidgetWall.SocialItems.userDetails.userId && ((WidgetWall.SocialItems.appSettings && !WidgetWall.SocialItems.appSettings.disablePrivateChat) || WidgetWall.SocialItems.appSettings.disablePrivateChat == false)) {
                           listItems.push({
                               text: 'Send Direct Message'
                           });
@@ -509,18 +487,18 @@
               }
           };
 
-          WidgetWall.getBlockedUsers = function(callback) {
-              SubscribedUsersData.getBlockedUsers((err, result)=>{
+          WidgetWall.getBlockedUsers = function (callback) {
+              SubscribedUsersData.getBlockedUsers((err, result) => {
                   if (err) {
                       callback("Fetching Blocked Users Failed", null);
-                  }
-                  else if(result) callback(null, result);
+                  } else if (result) callback(null, result);
                   else callback(null, null);
               })
           }
           WidgetWall.init = function () {
 
               WidgetWall.startSkeleton();
+
               WidgetWall.SocialItems.getSettings((err, result) => {
                   if (err) {
                       WidgetWall.stopSkeleton();
@@ -536,17 +514,15 @@
                       WidgetWall.getBlockedUsers((error, res) => {
                           if (err) console.log("Error while fetching blocked users ", err);
                           if (res) WidgetWall.SocialItems.blockedUsers = res;
-
+                          WidgetWall.getPosts();
                           WidgetWall.SocialItems.authenticateUserWOLogin(null, (err, user) => {
                               if (err) return console.error("Getting user failed.", err);
-                              WidgetWall.getPosts(()=>{
-                                  if (user) {
-                                      WidgetWall.checkFollowingStatus(user);
-                                      WidgetWall.checkForPrivateChat();
-                                  } else {
-                                      WidgetWall.groupFollowingStatus = false;
-                                  }
-                              });
+                              if (user) {
+                                  WidgetWall.checkFollowingStatus(user);
+                                  WidgetWall.checkForPrivateChat();
+                              } else {
+                                  WidgetWall.groupFollowingStatus = false;
+                              }
                           });
                       });
                   }
@@ -554,35 +530,6 @@
           };
 
           WidgetWall.init();
-
-          WidgetWall.handleDeepLinkActions = function (deeplinkData){
-              if (deeplinkData) {
-                  if (deeplinkData.fromReportAbuse) {
-                      WidgetWall.SocialItems.reportData = deeplinkData;
-                      $rootScope.showThread = false;
-                      $timeout(function () {
-                          Location.go('#/report');
-                      });
-                      return;
-                  }
-                  if (deeplinkData.postId) {
-                      WidgetWall.goInToThread(deeplinkData.postId);
-                      return;
-                  }
-                  let wallId = deeplinkData.wid
-                  let userIds = deeplinkData.userIds;
-                  if (!userIds && wallId && wallId.length === 48) {
-                      const user1Id = wallId.slice(0, 24);
-                      const user2Id = wallId.slice(24, 48);
-                      const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
-                        user2Id : user1Id;
-
-                      WidgetWall.openChat(otherUser);
-                  } else {
-                      WidgetWall.openGroupChat(userIds, wallId);
-                  }
-              }
-          }
 
           WidgetWall.checkForPrivateChat = function () {
               if (WidgetWall.SocialItems.isPrivateChat) {
@@ -611,17 +558,44 @@
                   });
               }
 
-              if (!WidgetWall.deepLinked){
-                  Buildfire.deeplink.getData((data) => {
-                      WidgetWall.deepLinked = true;
-                      const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                      WidgetWall.handleDeepLinkActions(deeplinkData);
-                  }, true);
-              }
+              Buildfire.deeplink.getData((deeplinkData) => {
+                  if (deeplinkData) {
+                      if (deeplinkData.fromReportAbuse) {
+                          WidgetWall.SocialItems.reportData = deeplinkData;
+                          $rootScope.showThread = false;
+                          $timeout(function () {
+                              Location.go('#/report');
+                          });
+                          return;
+                      }
+                  }
+              });
 
-              Buildfire.deeplink.onUpdate((data) => {
-                  const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                  WidgetWall.handleDeepLinkActions(deeplinkData);
+              Buildfire.deeplink.onUpdate((deeplinkData) => {
+                  if (deeplinkData.fromReportAbuse) {
+                      WidgetWall.SocialItems.reportData = deeplinkData
+                      $rootScope.showThread = false;
+                      $timeout(function () {
+                          Location.go('#/report');
+                      });
+                      return;
+                  }
+                  if (deeplinkData.split('=')[0] === 'postId') {
+                      WidgetWall.goInToThread(deeplinkData.split('=')[1]);
+                      return;
+                  }
+                  let wallId = new URLSearchParams(deeplinkData).get('wid');
+                  let userIds = new URLSearchParams(deeplinkData).get('userIds');
+                  if (!userIds && wallId && wallId.length === 48) {
+                      const user1Id = wallId.slice(0, 24);
+                      const user2Id = wallId.slice(24, 48);
+                      const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
+                        user2Id : user1Id;
+
+                      WidgetWall.openChat(otherUser);
+                  } else {
+                      WidgetWall.openGroupChat(userIds, wallId);
+                  }
               }, true);
           }
 
@@ -882,7 +856,6 @@
 
           WidgetWall.verifyWallId = function (user, wallId, callback) {
               if (!WidgetWall.SocialItems.userIds && (!wallId || wallId.length != 48)) {
-                  console.error("Invalid wall id");
                   return callback(new Error("Invalid wall id"));
               }
 
@@ -1063,7 +1036,7 @@
           function saveScrollPosition() {
               const postsContainer = document.querySelector('.post-infinite-scroll');
               if (postsContainer) {
-                  WidgetWall.scrollPosition =  postsContainer.scrollTop;
+                  WidgetWall.scrollPosition = postsContainer.scrollTop;
               }
           }
 
@@ -1176,7 +1149,7 @@
               });
           }
 
-          const followThread = () =>{
+          const followThread = () => {
               WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                   if (err) return console.error("Getting user failed.", err);
                   if (userData) {
@@ -1256,7 +1229,8 @@
                                 status[0].data && !status[0].data.leftWall && !liked) {
                                   Analytics.trackAction("post-liked");
                                   WidgetWall.scheduleNotification(post, 'like')
-                              };
+                              }
+                              ;
                           });
                       }, (err) => console.log(err));
                   }
@@ -1284,11 +1258,9 @@
               WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                   if (err) return console.error("Getting user failed.", err);
                   if (user) {
-                      WidgetWall.checkFollowingStatus(null , ()=>{
-                          if (threadId && !WidgetWall.SocialItems.userBanned) {
-                              Location.go('#/thread/' + threadId);
-                          }
-                      });
+                      WidgetWall.checkFollowingStatus();
+                      if (threadId && !WidgetWall.SocialItems.userBanned)
+                          Location.go('#/thread/' + threadId);
                   }
               });
           };
@@ -1330,10 +1302,10 @@
               buildfire.spinner.show();
               buildfire.components.drawer.closeDrawer();
               SubscribedUsersData.blockUser(userId, (err, result) => {
-                  if(err) {
+                  if (err) {
                       console.log(err);
                   }
-                  if(result) {
+                  if (result) {
                       buildfire.spinner.hide();
                       Buildfire.dialog.toast({
                           message: WidgetWall.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
@@ -1497,6 +1469,7 @@
                       }
                   });
               }
+
               get();
           }
 
@@ -1581,7 +1554,8 @@
               buildfire.notifications.pushNotification.unsubscribe({
                   groupName: WidgetWall.SocialItems.wid === '' ?
                     WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-              }, () => {});
+              }, () => {
+              });
               WidgetWall.privateChatSecurity();
               $scope.$digest();
           });
