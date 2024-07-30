@@ -491,7 +491,7 @@
            * @param type
            */
           Thread.scheduleNotification = function (post, text) {
-              SubscribedUsersData.getGroupFollowingStatus(post.userId, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
+              SubscribedUsersData.getGroupFollowingStatus(Thread.post.userId, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                   if (status.length && status[0].data && !status[0].data.leftWall) {
                       let followsPost = status[0].data.posts.find(el => el === Thread.post.id);
                       if (followsPost) {
