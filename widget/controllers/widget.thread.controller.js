@@ -207,25 +207,8 @@
                           Thread.handleDeletedUsers();
                           SubscribedUsersData.getThreadFollowingStatus(userData._id, Thread.post.id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
                               if (status) {
-                                  if (!status.leftWall)
-                                      Thread.followingStatus = true;
-                                  else
-                                      Thread.followingStatus = false;
-                              } else {
-                                  SubscribedUsersData.getGroupFollowingStatus(userData._id, Thread.SocialItems.wid, Thread.SocialItems.context.instanceId, function (err, status) {
-                                      if (err) console.error('Error while getting initial group following status.', err);
-                                      if (status.length) {
-                                          SubscribedUsersData.followThread({
-                                              userId: userData._id,
-                                              wallId: Thread.SocialItems.wid,
-                                              post: Thread.post.id
-                                          });
-                                          if (status[0].data && !status[0].data.leftWall) {
-                                              Thread.followingStatus = true;
-                                              $scope.$digest();
-                                          }
-                                      }
-                                  });
+                                    let followsPost = status.posts.find(el => el === Thread.post.id);
+                                    Thread.followingStatus = !!followsPost;
                               }
                               Thread.loaded = true;
                               Thread.skeletonPost.stop();
