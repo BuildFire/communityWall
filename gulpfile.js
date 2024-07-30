@@ -22,7 +22,7 @@ function releaseFolder() {
 console.log(">> Building to ", destinationFolder);
 
 const cssTasks = [
-    { name: "widgetCSS", src: "widget/**/*.css", dest: "/widget" },
+    { name: "widgetCSS", src: "widget/**/*.css", dest: "/widget/assets/css" },
     { name: "controlContentCSS", src: "control/content/**/**/*.css", dest: "/control/content" },
     { name: "controlDesignCSS", src: "control/design/**/**/*.css", dest: "/control/design" },
     { name: "controlSettingsCSS", src: "control/settings/**/**/*.css", dest: "/control/settings" },
@@ -132,6 +132,7 @@ gulp.task("controlHtml", function () {
           bundleCSSFiles: "styles.min.css?v=" + new Date().getTime(),
           bundleCFFiles: "../../widget/CommunityFeed/cfScripts.min.js?v=" + new Date().getTime(),
           bundleSharedJSFiles: "../../widget/scripts.shared-min.js?v=" + new Date().getTime(),
+          bundleLibFiles: "./assets/js/ladda/ladda.min.js?v=" + new Date().getTime(),
         })
       )
 
@@ -154,7 +155,7 @@ gulp.task("widgetHtml", function () {
           bundleCFFiles: "./CommunityFeed/cfScripts.min.js?v=" + new Date().getTime(),
           bundleJSFiles: "scripts.min.js?v=" + new Date().getTime(),
           bundleSharedJSFiles: "scripts.shared-min.js?v=" + new Date().getTime(),
-          bundleCSSFiles: "styles.min.css?v=" + new Date().getTime(),
+          bundleCSSFiles: "./assets/css/styles.min.css?v=" + new Date().getTime(),
         })
       )
 
@@ -172,10 +173,20 @@ gulp.task("resources", function () {
 
 gulp.task("images", function () {
   console.log(destinationFolder)
-  return gulp.src(["widget/images/*"], { base: "." }).pipe(imagemin()).pipe(gulp.dest(destinationFolder));
+  return gulp.src(["widget/assets/img/*"], { base: "." }).pipe(imagemin()).pipe(gulp.dest(destinationFolder));
+});
+gulp.task("lib", function () {
+    return gulp
+      .src([
+          "control/content/assets/js/ladda/spin.min.js",
+          "control/content/assets/js/ladda/ladda.min.js",
+          "control/content/assets/js/ladda/angular-ladda.min.js"
+      ], { base: "." })
+      .pipe(concat("ladda.min.js"))
+      .pipe(gulp.dest(destinationFolder + "/control/content/assets/js/ladda"));
 });
 
-var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS"];
+var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS" ,"lib"];
 
 cssTasks.forEach(function (task) {
   buildTasksToRun.push(task.name);

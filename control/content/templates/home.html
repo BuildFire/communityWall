@@ -2,7 +2,7 @@
     <div  class="item row">
         <div class="col-xs-12 text-right export-dropdown-group pull-right">
             <div class="btn-group margin-bottom-fifteen" dropdown>
-                <button ladda="ContentHome.exportingThreads" ng-click="ContentHome.exportMainWallPosts()" ng-disabled="ContentHome.exportingThreads"  data-style="zoom-in" id="export-button" type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle >
+                <button  ladda="ContentHome.exportingThreads" ng-click="ContentHome.exportMainWallPosts()" ng-disabled="ContentHome.exportingThreads || !ContentHome.posts.length"  data-style="zoom-in" id="export-button" type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle >
                     Export All Posts and Comments to CSV
                 </button>
             </div>
@@ -61,7 +61,7 @@
                 </div>
                 <div class="plugin-banner clearfix margin-bottom-fifteen">
                     <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}" ng-init="initHesGallery()">
-                        <img ng-repeat="image in post.images" src="https://czi3m2qn.cloudimg.io/v7/{{image}}" data-alt="Post image">
+                        <img ng-repeat="image in post.images" ng-src="https://czi3m2qn.cloudimg.io/v7/{{image}}" data-alt="Post image">
                     </div>
                 </div>
                 <!-- <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl" ng-init="setupImageList(post)">
@@ -104,7 +104,7 @@
                             </div>
                         </div> -->
                         <div class="hes-gallery post-images" data-wrap="true" ng-show="comment.imageUrl.length" data-img-count="{{comment.imageUrl.length}}" ng-init="initHesGallery()">
-                            <img ng-repeat="imageUrl in comment.imageUrl" src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
+                            <img ng-repeat="imageUrl in comment.imageUrl" ng-src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
                         </div>
                         <div class="social-footer flex">
                             <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.deleteComment(post, comment)">Delete Comment</a>

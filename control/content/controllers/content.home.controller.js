@@ -90,7 +90,7 @@
 									if (err) return console.error(err);
 									if (result1.totalRecord > 0 || result2.totalRecord > 0) {
 										PerfomanceIndexingService.showIndexingDialog();
-	
+
 									} // initial run or there is no data / no need for indexing fix it will take the updated index.
 									else if (data && data.data) {
 										if (!data.data.appSettings) {
@@ -342,6 +342,8 @@
             };
 
             ContentHome.exportMainWallPosts = function (mainCallback) {
+                if (ContentHome.posts.length === 0)
+                    return ;
                 var allPosts = [];
                 const pageSize = 50;
                 var page = 0;
@@ -381,7 +383,7 @@
                         }
                     });
 
-                    
+
                     csv = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
                     var link = document.createElement("a");
                     var _fileName = "Social App Chat" + ".csv";

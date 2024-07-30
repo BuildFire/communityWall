@@ -882,7 +882,6 @@
 
           WidgetWall.verifyWallId = function (user, wallId, callback) {
               if (!WidgetWall.SocialItems.userIds && (!wallId || wallId.length != 48)) {
-                  console.error("Invalid wall id");
                   return callback(new Error("Invalid wall id"));
               }
 
