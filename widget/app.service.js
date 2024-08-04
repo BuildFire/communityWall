@@ -119,6 +119,21 @@
                     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
                         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
                     );
+                },
+                parseDeeplinkData : function(deeplinkQueryString) {
+                    let cleanedString;
+                    if (typeof deeplinkQueryString === 'string') {
+                        cleanedString = deeplinkQueryString.replace(/^&dld=/, '');
+                    } else {
+                        return deeplinkQueryString;
+                    }
+                    try {
+                        const decodedString = decodeURIComponent(cleanedString);
+                        return JSON.parse(decodedString);
+                    } catch (error) {
+                        console.error('Error decoding deepLinkData:', error);
+                        return null;
+                    }
                 }
 
             }
@@ -352,7 +367,7 @@
                                 string1: `blockedUser_${blockedUser}`
                             });
                         });
-                    }                    
+                    }
                     return index;
                 },
                 checkIfCanChat: function (toUser, callback) {
@@ -409,7 +424,7 @@
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) callback(err, false);
                                 else if (data && data.length > 0) {
-                                    
+
                                     if(!data[0].data.blockedUsers) {
                                         data[0].data.blockedUsers = [];
                                     }
@@ -479,7 +494,7 @@
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) callback(err, false);
                                 else if (data && data.length > 0) {
-                                    
+
                                     if (data[0].data.blockedUsers) {
                                         callback(null, data[0].data.blockedUsers);
                                     } else {
@@ -612,7 +627,7 @@
                         }
                         return index;
                     }
-            
+
                     const createPost = (post, user, isPublic = false) =>{
                         let displayName = "Someone";
                         if(isPublic){
@@ -624,7 +639,7 @@
                             else if(!user.displayName && !user.lastName && user.firstName) displayName = user.firstName;
                             else if(!user.displayName && user.lastName && !user.firstName) displayName = user.lastName;
                             else if(!user.displayName && !user.firstName) displayName = "Someone";
-                            else displayName = "Someone";            
+                            else displayName = "Someone";
                         }
                         return new Post({
                             userId: !isPublic ? user._id : "publicPost",
@@ -633,24 +648,24 @@
                             postText: post.postText || "",
                             postImages: post.postImages || [],
                             isPublic,
-                            pluginInstance : {                                
-                                pluginInstanceId: (post && post.pluginInstance && post.pluginInstance.pluginInstanceId) 
-                                ? post.pluginInstance.pluginInstanceId 
+                            pluginInstance : {
+                                pluginInstanceId: (post && post.pluginInstance && post.pluginInstance.pluginInstanceId)
+                                ? post.pluginInstance.pluginInstanceId
                                 : buildfire.getContext().instanceId,
-                                pluginInstanceTitle: (post && post.pluginInstance && post.pluginInstance.pluginInstanceTitle) 
-                                                        ? post.pluginInstance.pluginInstanceTitle 
-                                                        : (buildfire.getContext().title || buildfire.getContext().pluginId)                                    
+                                pluginInstanceTitle: (post && post.pluginInstance && post.pluginInstance.pluginInstanceTitle)
+                                                        ? post.pluginInstance.pluginInstanceTitle
+                                                        : (buildfire.getContext().title || buildfire.getContext().pluginId)
                             },
                             _buildfire:{index : buildIndex({
-                                displayName : !isPublic ? (user.displayName || user.username) : (post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId) , 
+                                displayName : !isPublic ? (user.displayName || user.username) : (post.postTitle || buildfire.getContext().title ||buildfire.getContext().pluginId) ,
                                 userId: !isPublic ? (user && user._id ? user._id : undefined) : "publicPost",
                                 pluginTitle : buildfire.getContext().title || buildfire.getContext().pluginId,
                                 isPublic : isPublic ? 1 : 0,
                                 pluginInstanceId: buildfire.getContext().instanceId
                             })}
                         })
-                    } 
-            
+                    }
+
                     if ((!post.postText && !post.postImages) ||
                         (post && post.postImages && !Array.isArray(post.postImages)) ||
                         (post && post.postImages && Array.isArray(post.postImages) && post.postImages.length === 0 && !post.postText)) {
@@ -684,11 +699,11 @@
                                     Analytics.trackAction("post-deleted");
                                     callback(r);
                                 })
-            
+
                             })
                         })
                     })
-                }                
+                }
             }
         }])
         .factory('SocialItems', ['Util', '$rootScope', function (Util, $rootScope) {
@@ -860,9 +875,9 @@
 
             function getFilter() {
                 let filter = {};
-                
+
                 const blockedUserStrings = _this.blockedUsers.map(userId => `createdBy_${userId}`);
-            
+
                 if (_this.wid === "") {
                     filter = {
                         $and: [
@@ -895,7 +910,7 @@
                         ]
                     };
                 }
-            
+
                 return filter;
             }
 
@@ -910,18 +925,24 @@
                         buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                             if (error) return console.log(error);
                             if (data && data.length) {
-                                if (data[0].data.id === (_this.items.length && _this.items[0].id)) return;
                                 let items = [];
                                 data.map(item => items.push({...item.data, id: item.id}));
-                                _this.items = items;
-                                window.buildfire.messaging.sendMessageToControl({
-                                    name: 'SEND_POSTS_TO_CP',
-                                    posts: _this.items,
-                                });
+
+                                // Check if the new data is different from the current data
+                                if (JSON.stringify(items) !== JSON.stringify(_this.items)) {
+                                    _this.items = items;
+                                    window.buildfire.messaging.sendMessageToControl({
+                                        name: 'SEND_POSTS_TO_CP',
+                                        posts: _this.items,
+                                    });
+                                    $rootScope.$digest();
+                                } else {
+                                    return '';
+                                }
+                            } else {
+                                return '';
                             }
-                            $rootScope.$digest();
-                        });
-                    }, 10000);
+                        });}, 10000);
                 }
             }
 
