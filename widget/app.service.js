@@ -920,13 +920,16 @@
                         let searchOptions = {
                             filter: getFilter(),
                             sort: getSort(),
+                            pageSize: _this.pageSize,
                         }
 
                         buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
                             if (error) return console.log(error);
                             if (data && data.length) {
-                                let items = [];
-                                data.map(item => items.push({...item.data, id: item.id}));
+                                let items = data.map(item => {
+                                    const existItem = _this.items.find(_item => _item.id === item.id) || {};
+                                    return {...existItem, ...item.data, id: item.id};
+                                });
 
                                 // Check if the new data is different from the current data
                                 if (JSON.stringify(items) !== JSON.stringify(_this.items)) {
