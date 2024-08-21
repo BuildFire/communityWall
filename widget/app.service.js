@@ -921,7 +921,7 @@
                             filter: getFilter(),
                             sort: getSort(),
                             pageSize: _this.pageSize,
-                            page: _this.page,
+                            page: 0,
                         }
 
                         buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
