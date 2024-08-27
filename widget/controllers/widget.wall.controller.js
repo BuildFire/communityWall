@@ -788,29 +788,6 @@
               });
           }
 
-          var counter = 0;
-          $scope.setupImageList = function (post) {
-              if (post.imageUrl) {
-                  post.imageListId = "imageList_" + (counter++);
-                  setTimeout(function () {
-                      let imageList = document.getElementById(post.imageListId);
-                      imageList.addEventListener('imageSelected', (e) => {
-                          let selectedImage = e.detail.filter(image => image.selected);
-                          if (selectedImage && selectedImage[0] && selectedImage[0].name)
-                              selectedImage[0].name = selectedImage[0].name;
-                          buildfire.imagePreviewer.show({
-                              images: selectedImage
-                          });
-                      });
-                      if (Array.isArray(post.imageUrl)) {
-                          imageList.images = post.imageUrl;
-                      } else {
-                          imageList.images = [post.imageUrl];
-                      }
-
-                  }, 0);
-              }
-          };
           $scope.openThread = function (event, post) {
               if (event.target.nodeName != "BF-IMAGE-LIST")
                   window.location.href = " #/thread/" + post.id;
@@ -1080,6 +1057,7 @@
                     _id: postData.userDetails && postData.userDetails.userId ? postData.userDetails.userId : null
                 }, postData.text, () =>
                   SocialDataStore.createPost(postData).then((response) => {
+                      WidgetWall.SocialItems.setupImageList(postData);
                       WidgetWall.SocialItems.items.unshift(postData);
                       Buildfire.messaging.sendMessageToControl({
                           name: EVENTS.POST_CREATED,

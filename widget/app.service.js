@@ -835,7 +835,11 @@
 
                     if (data && data.result.length) {
                         const result = data.result.filter(item => !_this.items.find(_item => _item.id === item.id));
-                        result.map(item => _this.items.push({...item.data, id: item.id}))
+                        const newItems = result.map(item => {
+                            _this.setupImageList(item.data);
+                            return {...item.data, id: item.id};
+                        });
+                        _this.items = _this.items.concat(newItems);
                         if (data.totalRecord > _this.items.length) {
                             _this.showMorePosts = true;
                             _this.page++;
@@ -914,19 +918,54 @@
                 return filter;
             }
 
+            SocialItems.prototype.setupImageList = function(post) {
+                post.imageListId = "imageList_" + post.id;
+                if (post.imageUrl) {
+                    setTimeout(function () {
+                        let imageList = document.getElementById(post.imageListId);
+                        if (!imageList) return;
+                        if (Array.isArray(post.imageUrl)) {
+                            imageList.images = post.imageUrl;
+                        } else {
+                            imageList.images = [post.imageUrl];
+                        }
+                        imageList.addEventListener('imageSelected', (e) => {
+                            let selectedImage = e.detail.filter(image => image.selected);
+                            if (selectedImage && selectedImage[0] && selectedImage[0].name)
+                                selectedImage[0].name = selectedImage[0].name;
+                            buildfire.imagePreviewer.show({
+                                images: selectedImage
+                            });
+                        });
+                    }, 0);
+                }
+            };
+
             function startBackgroundService() {
                 if (!_this.newPostTimerChecker) {
                     _this.newPostTimerChecker = setInterval(function () {
                         let searchOptions = {
                             filter: getFilter(),
                             sort: getSort(),
+                            pageSize: _this.pageSize,
+                            page: 0,
+                            recordCount: true
                         }
 
-                        buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
+                        buildfire.publicData.search(searchOptions, 'posts', (error, results) => {
                             if (error) return console.log(error);
+
+                            const data = results.result;
+                            if (results.totalRecord > _this.pageSize) {
+                                _this.showMorePosts = true;
+                            } else _this.showMorePosts = false;
+                            
                             if (data && data.length) {
-                                let items = [];
-                                data.map(item => items.push({...item.data, id: item.id}));
+                                let items = data.map(item => {
+                                    const existItem = _this.items.find(_item => _item.id === item.id) || {};
+                                    _this.setupImageList(item.data);
+                                    return {...existItem, ...item.data, id: item.id};
+                                });
 
                                 // Check if the new data is different from the current data
                                 if (JSON.stringify(items) !== JSON.stringify(_this.items)) {
