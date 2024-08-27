@@ -356,6 +356,7 @@
                       let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId ?
                         user2Id : user1Id;
                       userIdsTosSend.push(userToSend);
+                      queryStringObj.userIds = [user1Id, user2Id];
                   }
 
                   options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
