@@ -82,6 +82,8 @@
                             <div class="post-infinite-scroll" id="top" ng-class="{'no-scroll': WidgetWall.skeletonActive}">
                                 <div>
                                     <div class="head wysiwyg-container" ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
+                                        ng-class="{'margin-top-fifty': WidgetWall.loadedPlugin && WidgetWall.allowFollowLeaveGroup ||
+                                            (!WidgetWall.allowFollowLeaveGroup && WidgetWall.SocialItems.appSettings.showMembers)}"
                                         id="pinnedPost">
                                     </div>
                                 </div>
