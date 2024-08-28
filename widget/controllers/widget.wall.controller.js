@@ -340,6 +340,10 @@
                   queryStringObj.postId =post.id;
               }
 
+              if (WidgetWall.SocialItems.pluginTitle) {
+                queryStringObj.wTitle = WidgetWall.SocialItems.pluginTitle;
+              }
+
               if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
               if (WidgetWall.SocialItems.isPrivateChat) {
