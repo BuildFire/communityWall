@@ -96,13 +96,13 @@
 										if (!data.data.appSettings) {
 											data.data.appSettings = {
 												indexingUpdateDone: true,
-                                                mainThreadUserTags: [],
-                                                sideThreadUserTags: [],
-                                                showMembers: true,
-                                                allowCommunityFeedFollow: false,
-                                                seeProfile: false,
-                                                allowAutoSubscribe: true,
-                                                allowChat: "allUsers",
+												mainThreadUserTags: [],
+												sideThreadUserTags: [],
+												showMembers: true,
+												allowCommunityFeedFollow: false,
+												seeProfile: false,
+												allowAutoSubscribe: true,
+												allowChat: "allUsers",
 											}
 										}
 										else {
