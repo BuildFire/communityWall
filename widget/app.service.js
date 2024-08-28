@@ -1076,22 +1076,6 @@
                             _this.formatLanguages(languages);
 
                             buildfire.datastore.get("Social", (err, response) => {
-                                if (err) return callback(err);
-
-                                if (!response.data.appSettings) response.data.appSettings = {};
-
-                                response.data = {
-                                    appSettings: {
-                                        ...response.data.appSettings,
-                                        "mainThreadUserTags": response.data.appSettings.mainThreadUserTags ? response.data.appSettings.mainThreadUserTags : [],
-                                        "sideThreadUserTags": response.data.appSettings.sideThreadUserTags ? response.data.appSettings.sideThreadUserTags : [],
-                                        "showMembers": typeof response.data.appSettings.showMembers === 'boolean' ? response.data.appSettings.showMembers : true,
-                                        "allowCommunityFeedFollow": typeof response.data.appSettings.allowCommunityFeedFollow === 'boolean' ? response.data.appSettings.allowCommunityFeedFollow : false,
-                                        "seeProfile": typeof response.data.appSettings.seeProfile === 'boolean' ? response.data.appSettings.seeProfile : false,
-                                        "allowAutoSubscribe": typeof response.data.appSettings.allowAutoSubscribe === 'boolean' ? response.data.appSettings.allowAutoSubscribe : true,
-                                        "allowChat": response.data.appSettings.allowChat ? response.data.appSettings.allowChat : "allUsers",
-                                    }
-                                }
                                 callback(err, response);
                             });
                         });
