@@ -1546,6 +1546,13 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
     padding-top: 0.125rem;
 }
 
+.wysiwyg-container {
+    height: 100%;
+}
+.margin-top-fifty {
+    margin-top: 50px;
+}
+
 .first-post{
     margin-top: 58px;
 }

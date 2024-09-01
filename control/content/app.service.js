@@ -262,7 +262,14 @@
                         buildfire.datastore.get('Social', (err, result) => {
                             if(!result.data.appSettings) {
                                 result.data.appSettings = {
-                                   indexingUpdateDone: true
+                                   indexingUpdateDone: true,
+                                   mainThreadUserTags: [],
+                                   sideThreadUserTags: [],
+                                   showMembers: true,
+                                   allowCommunityFeedFollow: false,
+                                   seeProfile: false,
+                                   allowAutoSubscribe: true,
+                                   allowChat: "allUsers",
                                 }
                             }
                             else result.data.appSettings.indexingUpdateDone = true;

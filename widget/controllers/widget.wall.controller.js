@@ -340,6 +340,10 @@
                   queryStringObj.postId =post.id;
               }
 
+              if (WidgetWall.SocialItems.pluginTitle) {
+                queryStringObj.wTitle = WidgetWall.SocialItems.pluginTitle;
+              }
+
               if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
               if (WidgetWall.SocialItems.isPrivateChat) {
@@ -356,6 +360,7 @@
                       let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId ?
                         user2Id : user1Id;
                       userIdsTosSend.push(userToSend);
+                      queryStringObj.userIds = [user1Id, user2Id];
                   }
 
                   options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
@@ -569,8 +574,9 @@
                       WidgetWall.goInToThread(deeplinkData.postId);
                       return;
                   }
-                  let wallId = deeplinkData.wid
-                  let userIds = deeplinkData.userIds;
+                  const wallId = deeplinkData.wid
+                  const userIds = deeplinkData.userIds;
+                  const wTitle = deeplinkData.wTitle;
                   if (!userIds && wallId && wallId.length === 48) {
                       const user1Id = wallId.slice(0, 24);
                       const user2Id = wallId.slice(24, 48);
@@ -579,7 +585,7 @@
 
                       WidgetWall.openChat(otherUser);
                   } else {
-                      WidgetWall.openGroupChat(userIds, wallId);
+                      WidgetWall.openGroupChat(userIds, wallId, wTitle);
                   }
               }
           }
@@ -690,17 +696,21 @@
               })
           }
 
-          WidgetWall.navigateToPrivateChat = function (user) {
+          WidgetWall.navigateToPrivateChat = function (privateChatData) {
 
               WidgetWall.SocialItems.isPrivateChat = true;
-              WidgetWall.SocialItems.wid = user.wid;
+              WidgetWall.SocialItems.wid = privateChatData.wid;
               WidgetWall.SocialItems.showMorePosts = false;
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
-              WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name;
+              if (privateChatData.wTitle) {
+                WidgetWall.SocialItems.pluginTitle = privateChatData.wTitle;
+              } else {
+                WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + privateChatData.name;
+              }
               WidgetWall.SocialItems.items = [];
 
-              buildfire.history.push(WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + user.name, {
+              buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
                   isPrivateChat: true,
                   showLabelInTitlebar: true
               });
@@ -750,7 +760,7 @@
               WidgetWall.init();
           });
 
-          WidgetWall.openGroupChat = function (userIds, wid) {
+          WidgetWall.openGroupChat = function (userIds, wid, wTitle) {
               if (WidgetWall.allowPrivateChat) {
                   WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
                       if (err) return console.error("Getting user failed.", err);
@@ -758,7 +768,8 @@
                           WidgetWall.navigateToPrivateChat({
                               id: userIds,
                               name: 'someone',
-                              wid: wid
+                              wid: wid,
+                              wTitle,
                           });
                       }
                   });

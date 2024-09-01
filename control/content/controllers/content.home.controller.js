@@ -95,7 +95,14 @@
 									else if (data && data.data) {
 										if (!data.data.appSettings) {
 											data.data.appSettings = {
-												indexingUpdateDone: true
+												indexingUpdateDone: true,
+												mainThreadUserTags: [],
+												sideThreadUserTags: [],
+												showMembers: true,
+												allowCommunityFeedFollow: false,
+												seeProfile: false,
+												allowAutoSubscribe: true,
+												allowChat: "allUsers",
 											}
 										}
 										else {
@@ -596,11 +603,32 @@
                 }
             });
 
+            ContentHome.saveDefaultSocial = () => {
+                appSettings=  {
+                    ...appSettings,
+                    "mainThreadUserTags": appSettings.mainThreadUserTags ? appSettings.mainThreadUserTags : [],
+                    "sideThreadUserTags": appSettings.sideThreadUserTags ? appSettings.sideThreadUserTags : [],
+                    "showMembers": typeof appSettings.showMembers === 'boolean' ? appSettings.showMembers : true,
+                    "allowCommunityFeedFollow": typeof appSettings.allowCommunityFeedFollow === 'boolean' ? appSettings.allowCommunityFeedFollow : false,
+                    "seeProfile": typeof appSettings.seeProfile === 'boolean' ? appSettings.seeProfile : false,
+                    "allowAutoSubscribe": typeof appSettings.allowAutoSubscribe === 'boolean' ? appSettings.allowAutoSubscribe : true,
+                    "allowChat": appSettings.allowChat ? appSettings.allowChat : "allUsers",
+                }
+                buildfire.datastore.save({ appSettings: appSettings }, "Social", (err, res) => {
+                    if (err) return console.error(err);
+                })
+            }
+
             window.onload = function () {
                 buildfire.datastore.get("Social", function (err, result) {
-                    if (result.data.appSettings && result.data.appSettings.pinnedPost) {
+                    if (result.data && result.data.appSettings) {
                         appSettings = result.data.appSettings;
-                        tinymce.activeEditor.setContent(result.data.appSettings.pinnedPost);
+
+                        if (appSettings.pinnedPost) tinymce.activeEditor.setContent(result.data.appSettings.pinnedPost);
+                    }
+                    
+                    if (!result.data.appSettings || typeof result.data.appSettings.allowAutoSubscribe !== 'boolean') {
+                        ContentHome.saveDefaultSocial();
                     }
                 });
                 setTimeout(() => {
