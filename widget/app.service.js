@@ -826,7 +826,9 @@
                     pageSize,
                     page,
                     filter: getFilter(),
-                    sort: getSort(),
+                    sort: {
+                        "_buildfire.index.date1": -1
+                    },
                     recordCount: true
                 }
 
@@ -946,7 +948,9 @@
                     _this.newPostTimerChecker = setInterval(function () {
                         let searchOptions = {
                             filter: getFilter(),
-                            sort: getSort(),
+                            sort: {
+                                "_buildfire.index.date1": -1
+                            },
                             pageSize: _this.pageSize,
                             page: 0,
                             recordCount: true

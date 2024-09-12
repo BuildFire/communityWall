@@ -108,17 +108,6 @@
         }])
         .factory("SocialDataStore", ['Buildfire', '$q', 'SERVER_URL', 'Util', '$http', function (Buildfire, $q, SERVER_URL, Util, $http) {
             return {
-                getPosts: function (data) {
-                    var deferred = $q.defer();
-                    buildfire.publicData.search({
-                        "$json.parentThreadId": data.parentThreadId,
-                        "sort": { "createdOn": -1 }
-                    }, 'posts', (error, data) => {
-                        if (error) return deferred.reject(error)
-                        else return deferred.resolve(data);
-                    });
-                    return deferred.promise;
-                },
                 getUsers: function (userIdsArray) {
                     var deferred = $q.defer();
                     var postDataObject = {};

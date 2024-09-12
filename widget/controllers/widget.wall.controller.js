@@ -1439,7 +1439,7 @@
                   buildfire.publicData.search({
                       filter: {
                           $or: [{
-                              "$json.userId": user._id
+                              "_buildfire.index.array1.string1": `createdBy_${user._id}`
                           },
                               {
                                   "$json.comments.userId": user._id
