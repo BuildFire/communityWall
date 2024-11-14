@@ -1,11 +1,13 @@
 class SearchTableHelper {
 
-  constructor(tableId, config, loading, headTable) {
+  constructor(tableId, config, loading, headTable, emptyTable) {
     if (!config) throw "No config provided";
     if (!tableId) throw "No tableId provided";
     this.table = document.getElementById(tableId);
     if (!this.table) throw "Cant find table with ID that was provided";
 
+    if (!emptyTable) throw "No empty container provided";
+    this.emptyTable = document.getElementById(emptyTable);
     if (!loading) throw "No loading provided";
     this.loading = document.getElementById(loading);
     if (!this.loading)
@@ -84,13 +86,14 @@ class SearchTableHelper {
     };
   }
 
-  search(filter) {
+  async search(filter) {
     this.tbody.innerHTML = "";
     this.table.classList.add("hidden");
-    this.headTable.classList.remove("hidden");
+    this.headTable.classList.add("hidden");
+    this.emptyTable.classList.add("hidden");
     this.loading.classList.remove("hidden");
     this.filter = filter;
-    this._fetchPageOfData(this.filter, 0);
+    await this._fetchPageOfData(this.filter, 0);
   }
 
   _fetchNextPage() {
@@ -102,53 +105,57 @@ class SearchTableHelper {
     });
   }
 
-  _fetchPageOfData(filter, pageIndex, callback) {
-    if (pageIndex > 0 && this.endReached) return;
-    let pageSize = 50;
-    this.pageIndex = pageIndex;
+  _fetchPageOfData(filter, pageIndex) {
+    return new Promise((resolve, reject) => {
+      if (pageIndex > 0 && this.endReached) return resolve();
+      let pageSize = 50;
+      this.pageIndex = pageIndex;
 
-    let searchFilter = {
-      $and: [{
-          "_buildfire.index.string1": ""
-        },
-        {
-          "$json.userDetails.hasAllowChat": true,
-        }
-      ]
-    }
+      let searchFilter = {
+        $and: [
+          { "_buildfire.index.string1": "" },
+          { "$json.userDetails.hasAllowChat": true }
+        ]
+      };
 
-    if (filter) {
-      searchFilter = filter;
-    }
-
-    let options = {
-      filter: searchFilter,
-      page: pageIndex,
-      pageSize: pageSize,
-    };
-
-
-    this.searchOptions = options;
-
-    let t = this;
-    window.buildfire.publicData.search(this.searchOptions, 'subscribedUsersData', function (err, data) {
-      if (err) console.error(err);
-      else if (data && data.length > 0) {
-        t.productsLength = data.length;
-        t.loading.classList.add("hidden");
-        t.table.classList.remove("hidden");
-        t.headTable.classList.remove("hidden");
-        t.tbody.innerHTML = "";
-        data.forEach((p) => t.renderRow(p));
-        t.endReached = data.length < pageSize;
-      } else {
-        t.tbody.innerHTML = "";
-        t.loading.classList.add("hidden");
-        t.headTable.classList.add("hidden");
+      if (filter) {
+        searchFilter = filter;
       }
-    })
-  }
 
+      let options = {
+        filter: searchFilter,
+        page: pageIndex,
+        pageSize: pageSize,
+      };
+
+      this.searchOptions = options;
+
+      let t = this;
+      window.buildfire.publicData.search(this.searchOptions, 'subscribedUsersData', function (err, data) {
+        if (err) {
+          console.error(err);
+          return reject(err);
+        } else if (data && data.length > 0) {
+          t.productsLength = data.length;
+          t.loading.classList.add("hidden");
+          t.emptyTable.classList.add("hidden");
+          t.table.classList.remove("hidden");
+          t.headTable.classList.remove("hidden");
+          t.tbody.innerHTML = "";
+          data.forEach((p) => t.renderRow(p));
+          t.endReached = data.length < pageSize;
+          return resolve();
+        } else {
+          console.log(t,'t');
+          t.tbody.innerHTML = "";
+          t.loading.classList.add("hidden");
+          t.headTable.classList.add("hidden");
+          t.emptyTable.classList.remove("hidden");
+          return resolve();
+        }
+      });
+    });
+  }
   _onCommand(obj, tr, command) {
     if (this.commands[command]) {
       this.commands[command](obj, tr);
@@ -262,7 +269,7 @@ class SearchTableHelper {
               message: "Are you sure you want to remove chat availability for " + (obj.data.userDetails.displayName ? obj.data.userDetails.displayName : (obj.data.userDetails.firstName + ' ' + obj.data.userDetails.lastName)) + " ?",
               confirmButton: {
                 text: "Remove User",
-                type: "warning",
+                type: "danger",
               },
             },
             (err, isConfirmed) => {
@@ -271,6 +278,8 @@ class SearchTableHelper {
               if (isConfirmed) {
                 //Go back
                 tr.classList.add("hidden");
+                this.loading.classList.remove("hidden");
+
                 obj.data.userDetails.hasAllowChat = false;
                 window.buildfire.publicData.update(obj.id, obj.data, 'subscribedUsersData', function (err, res2) {
                   if (err) tr.classList.remove("hidden");
@@ -314,10 +323,12 @@ class SearchTableHelper {
   }
 
   onRowDeleted(obj, tr) {
+    this.loading.classList.add("hidden");
     this.productsLength -= 1;
     if (this.productsLength == 0) {
       this.table.classList.add("hidden");
       this.headTable.classList.add("hidden");
+      this.emptyTable.classList.remove("hidden");
     }
   }
 }

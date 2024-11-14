@@ -162,7 +162,8 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
             "searchResults",
             searchTableConfig,
             "loading",
-            "headTable"
+            "headTable",
+            "emptyTableContainer",
         );
         $scope.searchTableHelper.search();
     }
@@ -178,19 +179,33 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
     }
 
     var verifyUsers = function (result) {
+        let nonSubscribedUsersLength = 0;
         result.userIds.forEach((userId, index) => {
             $scope.getById(userId, (err, res) => {
-                console.log(res)
                 if (res) {
                     res.data.userDetails.hasAllowChat = true;
                     $scope.update(res.id, res.data, (err, res2) => {
-                        console.log(res2)
-                        if (index == result.userIds.length - 1)
+                        if (index === result.userIds.length - 1) {
+                            if (nonSubscribedUsersLength > 0) {
+                                buildfire.dialog.toast({
+                                    message: "Only subscribed users can be added.",
+                                    type: 'danger'
+                                });
+                            }
                             $scope.searchTableHelper.search();
+                            }
                     });
                 } else {
-                    if (index == result.userIds.length - 1)
+                    nonSubscribedUsersLength++;
+                    if (index === result.userIds.length - 1) {
+                        if (nonSubscribedUsersLength > 0) {
+                            buildfire.dialog.toast({
+                                message: "Only subscribed users can be added.",
+                                type: 'danger'
+                            });
+                        }
                         $scope.searchTableHelper.search();
+                    }
                 }
             })
         });

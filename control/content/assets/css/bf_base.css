@@ -697,6 +697,9 @@ color: var(--c-info);
 .align-items-center{
   align-items: center;
 }
+.justify-content-center{
+  justify-content: center;
+}
 
 /* Search Bar */
 .search-bar-container{
