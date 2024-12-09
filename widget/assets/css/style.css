@@ -38,7 +38,7 @@
     src: url(https://fonts.gstatic.com/s/materialiconstwotone/v73/hESh6WRmNCxEqUmNyh3JDeGxjVVyMg4tHGctNCu0.woff2) format('woff2');
     font-display: block;
   }
-  
+
   .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
@@ -54,7 +54,7 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
   }
-  
+
   .material-icons-outlined {
     font-family: 'Material Icons Outlined';
     font-display: block;
@@ -71,7 +71,7 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
   }
-  
+
   .material-icons-round {
     font-family: 'Material Icons Round';
     font-weight: normal;
@@ -87,7 +87,7 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
   }
-  
+
   .material-icons-sharp {
     font-family: 'Material Icons Sharp';
     font-weight: normal;
@@ -103,7 +103,7 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
   }
-  
+
   .material-icons-two-tone {
     font-family: 'Material Icons Two Tone';
     font-weight: normal;
@@ -160,6 +160,7 @@ q:after {
 table {
     border-collapse: collapse;
     border-spacing: 0;
+    min-height: 240px;
 }
 html{
     font-size: 16px !important;
@@ -567,14 +568,14 @@ button.btn--lg,
     padding: .75rem;
     display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
 }
 
 .social-plugin .head-btn2 a{
     padding: .75rem;
     display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
 }
 .content{
     height:100%;
@@ -703,7 +704,7 @@ button.btn--lg,
  .social-comment {
      display: flex;
  }
- 
+
  .comments-list{
     border-top: 1px solid rgba(150,150,150,.3);
  }
@@ -719,7 +720,7 @@ button.btn--lg,
  .social-comment .comment-content{
      flex: auto;
  }
- .comment-content 
+ .comment-content
  .social-comment .status-footer{
      border-bottom: 0;
  }
@@ -767,7 +768,7 @@ button.btn--lg,
  }
  .status-footer .likes,
  .status-footer .comments{
-     
+
  }
 
 
@@ -1336,7 +1337,7 @@ html[safe-area="true"] .post-section.has-comment-box {
 html[buildfire][safe-area="true"] body {
     -webkit-overflow-scrolling: auto !important;
   }
-  
+
 
 .blankState {
     padding-top: 20px;
@@ -1407,8 +1408,8 @@ html[buildfire][safe-area="true"] body {
     max-height: calc(100vh - 50px);
 }
 
-.inner-addon { 
-    position: relative; 
+.inner-addon {
+    position: relative;
 }
 
 /* style icon */
