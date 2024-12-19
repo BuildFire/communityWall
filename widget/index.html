@@ -57,11 +57,8 @@
             <div class="backgroundColorTheme content">
                 <div class="padding-zero" style="height: 100%;">
                     <div class="social-plugin social-wall">
-                        <div ng-show="WidgetWall.loadedPlugin &&
-                        WidgetWall.allowFollowLeaveGroup
-                        ||
-                        (!WidgetWall.allowFollowLeaveGroup && WidgetWall.SocialItems.appSettings.showMembers)
-                        "
+                        <div ng-show="WidgetWall.loadedPlugin && WidgetWall.postsLoaded && WidgetWall.allowFollowLeaveGroup
+                        || (!WidgetWall.allowFollowLeaveGroup && WidgetWall.SocialItems.appSettings.showMembers)"
                         sticky-navbar scroll-container=".post-infinite-scroll"
                         ng-class="{'head-btn': WidgetWall.allowFollowLeaveGroup, 'head-btn2': !WidgetWall.allowFollowLeaveGroup}" class="text-center" id="socialHeader">
                             <p class="text-primary follow-btn" ng-click="WidgetWall.followUnfollow()"  ng-show="WidgetWall.allowFollowLeaveGroup">
@@ -79,7 +76,7 @@
                         </div>
                         <div ng-class="{'has-comment-box':WidgetWall.SocialItems.userDetails.userId == null || WidgetWall.allowCreateThread,'has-group-header' : WidgetWall.allowFollowLeaveGroup}"
                             class="post-section backgroundColorTheme">
-                            <div class="post-infinite-scroll" id="top" ng-class="{'no-scroll': WidgetWall.skeletonActive}">
+                            <div class="post-infinite-scroll" id="top" ng-class="{'no-scroll': !WidgetWall.postsLoaded}">
                                 <div>
                                     <div class="head wysiwyg-container" ng-show="WidgetWall.pinnedPost && !WidgetWall.SocialItems.isPrivateChat"
                                         ng-class="{'margin-top-fifty': WidgetWall.loadedPlugin && WidgetWall.allowFollowLeaveGroup ||
@@ -202,7 +199,7 @@
 
                         </div>
 
-                        <button ng-show="WidgetWall.allowCreateThread && WidgetWall.loadedPlugin" class="add-message btn btn--fab btn--add btn-success" id="addBtn"
+                        <button ng-show="WidgetWall.allowCreateThread && WidgetWall.loadedPlugin && WidgetWall.postsLoaded" class="add-message btn btn--fab btn--add btn-success" id="addBtn"
                             ng-click="WidgetWall.openPostSection()" on-touchend="WidgetWall.openPostSection()">
                             <svg style="fill: white !important;" height="16px" width="16px" version="1.1" viewBox="0 0 16 16"
                                 xmlns="http://www.w3.org/2000/svg">

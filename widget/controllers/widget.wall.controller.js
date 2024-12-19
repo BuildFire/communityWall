@@ -31,13 +31,18 @@
               type: 'list-item-avatar, list-item-two-line, image'});
 
           WidgetWall.startSkeleton = function () {
+            if (!WidgetWall.skeletonActive) {
               WidgetWall.skeleton.start();
               WidgetWall.skeletonActive = true;
+            }
           }
 
           WidgetWall.stopSkeleton = function () {
+            WidgetWall.postsLoaded = true;
+            if (WidgetWall.skeletonActive) {
               WidgetWall.skeleton.stop();
               WidgetWall.skeletonActive = false;
+            }
           }
 
           WidgetWall.showHideCommentBox = function () {
@@ -155,9 +160,7 @@
 
           WidgetWall.getPosts = function (callback = null)  {
               WidgetWall.SocialItems.getPosts(function (err, data) {
-                  WidgetWall.postsLoaded = true;
                   WidgetWall.showUserLikes();
-                  WidgetWall.stopSkeleton();
                   window.buildfire.messaging.sendMessageToControl({
                       name: 'SEND_POSTS_TO_CP',
                       posts: WidgetWall.SocialItems.items,
@@ -553,7 +556,6 @@
               WidgetWall.SocialItems.getSettings((err, result) => {
                   if (err) {
                       WidgetWall.stopSkeleton();
-                      WidgetWall.postsLoaded = true;
                       return console.error("Fetching settings failed.", err);
                   }
                   if (result) {
@@ -567,11 +569,15 @@
                           if (res) WidgetWall.SocialItems.blockedUsers = res;
 
                           WidgetWall.SocialItems.authenticateUserWOLogin(null, (err, user) => {
-                              if (err) return console.error("Getting user failed.", err);
+                              if (err) {
+                                WidgetWall.stopSkeleton();
+                                return console.error("Getting user failed.", err);
+                              }
                               WidgetWall.getPosts(()=>{
                                   if (user) {
                                       WidgetWall.checkFollowingStatus(user);
                                       WidgetWall.checkForPrivateChat();
+                                      WidgetWall.checkForDeeplinks();
                                   } else {
                                       WidgetWall.groupFollowingStatus = false;
                                   }
@@ -584,26 +590,33 @@
 
           WidgetWall.init();
 
-          WidgetWall.handleDeepLinkActions = function (deeplinkData){
+          WidgetWall.handleDeepLinkActions = function (deeplinkData, pushToHistory){
               if (deeplinkData) {
                   if (deeplinkData.fromReportAbuse) {
                       WidgetWall.SocialItems.reportData = deeplinkData;
                       $rootScope.showThread = false;
                       $timeout(function () {
-                          Location.go('#/report');
+                          Location.go('#/report', pushToHistory);
+                          if (pushToHistory) {
+                            WidgetWall.stopSkeleton();
+                          }
                       });
                       return;
                   }
                   if (deeplinkData.postId) {
                     let isPostExist = WidgetWall.SocialItems.items.find(post => post.id === deeplinkData.postId);
                     if (isPostExist) {
-                        return WidgetWall.goInToThread(deeplinkData.postId);
+                        return WidgetWall.goInToThread(deeplinkData.postId, pushToHistory);
                     } else {
                         return WidgetWall.SocialItems.getPostById(deeplinkData.postId, (err, res) => {
-                            if (err) console.error(err);
-                            else if (res && res.data && res.id) {
+                            if (err) {
+                                WidgetWall.stopSkeleton();
+                                console.error(err);
+                            } else if (res && res.data && res.id) {
                                 WidgetWall.SocialItems.items.push({...res.data, id: res.id});
-                                WidgetWall.goInToThread(deeplinkData.postId);
+                                WidgetWall.goInToThread(deeplinkData.postId, pushToHistory);
+                            } else {
+                                WidgetWall.stopSkeleton();
                             }
                         });
                     }
@@ -621,6 +634,10 @@
                   } else {
                       WidgetWall.openGroupChat(userIds, wallId, wTitle);
                   }
+                  WidgetWall.SocialItems.items = [];
+                  WidgetWall.stopSkeleton();
+              } else {
+                WidgetWall.stopSkeleton();
               }
           }
 
@@ -650,19 +667,21 @@
                       }
                   });
               }
+          }
 
-              if (!WidgetWall.deeplinkHandled){
-                  Buildfire.deeplink.getData((data) => {
-                      WidgetWall.deeplinkHandled = true;
-                      const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                      WidgetWall.handleDeepLinkActions(deeplinkData);
-                  }, true);
-              }
+          WidgetWall.checkForDeeplinks = function () {
+            if (!WidgetWall.deeplinkHandled){
+                Buildfire.deeplink.getData((data) => {
+                    WidgetWall.deeplinkHandled = true;
+                    const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                    WidgetWall.handleDeepLinkActions(deeplinkData, false);
+                }, true);
+            }
 
-              Buildfire.deeplink.onUpdate((data) => {
-                  const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                  WidgetWall.handleDeepLinkActions(deeplinkData);
-              }, true);
+            Buildfire.deeplink.onUpdate((data) => {
+                const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                WidgetWall.handleDeepLinkActions(deeplinkData, true);
+            }, true);
           }
 
           WidgetWall.sanitizeWall = function (callback) {
@@ -749,7 +768,9 @@
                   showLabelInTitlebar: true
               });
 
-              WidgetWall.getPosts();
+              WidgetWall.getPosts(() => {
+                document.getElementById('top').scrollTop = 0
+              });
           }
 
           $rootScope.$on('loadPrivateChat', function (event, error) {
@@ -1301,13 +1322,19 @@
                   return moment(timestamp.toString()).fromNow();
           };
 
-          WidgetWall.goInToThread = function (threadId) {
+          WidgetWall.goInToThread = function (threadId, pushToHistory) {
               WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
-                  if (err) return console.error("Getting user failed.", err);
+                  if (err) {
+                    WidgetWall.stopSkeleton();
+                    return console.error("Getting user failed.", err);
+                  }
                   if (user) {
                       WidgetWall.checkFollowingStatus(null , ()=>{
                           if (threadId && !WidgetWall.SocialItems.userBanned) {
-                              Location.go('#/thread/' + threadId);
+                              Location.go('#/thread/' + threadId, pushToHistory);
+                         }
+                         if (pushToHistory) {
+                            WidgetWall.stopSkeleton();
                           }
                       });
                   }
@@ -1505,7 +1532,6 @@
                                   if (postUpdate) {
                                       let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
                                       WidgetWall.SocialItems.items[postIndex] = item.data;
-                                    //   ----
                                   }
                                   buildfire.publicData.update(item.id, item.data, 'posts', (err, updatedPost) => {
                                       console.log(updatedPost)
