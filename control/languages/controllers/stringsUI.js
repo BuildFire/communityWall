@@ -9,15 +9,15 @@ const stringsUI = {
 		this._debouncers[key] = setTimeout(fn, 300);
 	},
 
-	capitalize(input) {  
-		var words = input.split(' ');  
-		var CapitalizedWords = [];  
-		words.forEach(element => {  
-			CapitalizedWords.push(element[0].toUpperCase() + element.slice(1, element.length));  
-		});  
-		return CapitalizedWords.join(' ');  
-	}  
-	
+	capitalize(input) {
+		var words = input.split(' ');
+		var CapitalizedWords = [];
+		words.forEach(element => {
+			CapitalizedWords.push(element[0].toUpperCase() + element.slice(1, element.length));
+		});
+		return CapitalizedWords.join(' ');
+	}
+
 	, init(containerId, strings, stringsConfig) {
 		this.strings = strings;
 		this.stringsConfig = stringsConfig;
@@ -47,14 +47,19 @@ const stringsUI = {
 		let sec = this.createAndAppend("section", "", [], container);
 
 		this.createIfNotEmpty("h1", this.capitalize(sectionObj.title), ["section-title"], sec);
-		for (let key in sectionObj.labels) this.buildLabel(sec, sectionProp + "." + key, sectionObj.labels[key]);
+		for (let key in sectionObj.labels) {
+			if (sectionObj.labels[key].subtitle) {
+				this.createIfNotEmpty("h4", this.capitalize(sectionObj.labels[key].subtitle), ["section-sub-title"], sec);
+			}
+			this.buildLabel(sec, sectionProp + "." + key, sectionObj.labels[key]);
+		}
 		container.appendChild(sec);
 	}
 	, buildLabel(container, prop, labelObj) {
 		let rowDiv = this.createAndAppend('div', '', ["item", "row", "margin-bottom-fifteen"], container);
 		let labelDiv = this.createAndAppend('div', '', [], rowDiv);
 		this.createAndAppend('span', labelObj.title, ["col-md-3", "labels", "pull-left"], labelDiv); // Label Text Span
-		
+
 		let inputDiv = this.createAndAppend('div', '', ["col-md-9", "pull-left"], rowDiv);
 
 		let inputElement;
