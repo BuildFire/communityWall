@@ -23,28 +23,6 @@
               type: 'list-item-avatar, list-item-two-line'
           });
 
-          var counter = 0;
-          $scope.setupImageList = function (comment) {
-              if (comment.imageUrl.length) {
-                  comment.imageListId = "commentImageList_" + (counter++);
-                  setTimeout(function () {
-                      let imageList = document.getElementById(comment.imageListId);
-                      if (Array.isArray(comment.imageUrl)) {
-                          imageList.images = comment.imageUrl;
-                      } else {
-                          imageList.images = [comment.imageUrl[0]]
-                      }
-                      imageList.addEventListener('imageSelected', (e) => {
-                          let selectedImage = e.detail.filter(image => image.selected);
-                          if (selectedImage && selectedImage[0] && selectedImage[0].name)
-                              selectedImage[0].name = selectedImage[0].name;
-                          buildfire.imagePreviewer.show({
-                              images: selectedImage
-                          });
-                      });
-                  }, 0);
-              }
-          };
           Thread.showHideCommentBox = function () {
               if (Thread.SocialItems && Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.allowSideThreadTags &&
                 Thread.SocialItems.appSettings.sideThreadUserTags && Thread.SocialItems.appSettings.sideThreadUserTags.length > 0
@@ -501,28 +479,43 @@
                               sendToSelf: false
                           };
 
-                          if (text === 'comment') {
-                              options.users = [Thread.post.userId];
-                              options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' commented on post: ' + Thread.SocialItems.context.title;
+                          Util.setExpression({title: Thread.SocialItems.context.title});
+
+                          let titleKey, messageKey, inAppMessageKey;
+                            if (text === 'likedComment') {
+                                options.users = [post.userId];
+                                titleKey = Thread.SocialItems.languages.commentLikeNotificationTitle;
+                                messageKey = Thread.SocialItems.languages.commentLikeNotificationMessageBody;
+                                inAppMessageKey = Thread.SocialItems.languages.commentLikeInAppMessageBody;
+                            } else if (text === 'likedPost') {
+                                options.users = [Thread.post.userId];
+                                titleKey = Thread.SocialItems.languages.postLikeNotificationTitle;
+                                messageKey = Thread.SocialItems.languages.postLikeNotificationMessageBody;
+                                inAppMessageKey = Thread.SocialItems.languages.postLikeInAppMessageBody;
+                            } else if (text === 'comment') {
+                                options.users = [Thread.post.userId];
+                                titleKey = Thread.SocialItems.languages.commentNotificationMessageTitle;
+                                messageKey = Thread.SocialItems.languages.commentNotificationMessageBody;
+                                inAppMessageKey = Thread.SocialItems.languages.commentInAppMessageBody;
                             }
-                            else if (text === 'likedComment'){
-                              options.users = [post.userId];
-                              options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a comment on ' + Thread.SocialItems.context.title;
-                            }
-                            else if (text === 'likedPost'){
-                              options.users = [Thread.post.userId];
-                              options.text = Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' liked a post on ' + Thread.SocialItems.context.title;
-                          }
-                          options.inAppMessage = options.text;
+
                           if (Thread.SocialItems.wid) {
                               options.queryString = `&dld=${encodeURIComponent(JSON.stringify({wid: Thread.SocialItems.wid}))}`
                           } else {
                               options.queryString = `&dld=${encodeURIComponent(JSON.stringify({postId: Thread.post.id}))}`
                           }
-                          buildfire.notifications.pushNotification.schedule(options, function (err) {
-                              if (err) return console.error('Error while setting PN schedule.', err);
-                              console.log("SENT NOTIFICATION", options);
-                          });
+
+                          Promise.all([Util.evaluateExpression(titleKey), Util.evaluateExpression(messageKey), Util.evaluateExpression(inAppMessageKey)])
+                            .then(([title, message, inAppMessage]) => {
+                                options.title = title;
+                                options.text = message;
+                                options.inAppMessage = inAppMessage;
+
+                                buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                    if (err) return console.error('Error while setting PN schedule.', err);
+                                    console.log("SENT NOTIFICATION", options);
+                                });
+                            })
                       }
                   }
               });
