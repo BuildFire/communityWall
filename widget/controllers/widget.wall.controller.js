@@ -595,8 +595,18 @@
                       return;
                   }
                   if (deeplinkData.postId) {
-                      WidgetWall.goInToThread(deeplinkData.postId);
-                      return;
+                    let isPostExist = WidgetWall.SocialItems.items.find(post => post.id === deeplinkData.postId);
+                    if (isPostExist) {
+                        return WidgetWall.goInToThread(deeplinkData.postId);
+                    } else {
+                        return WidgetWall.SocialItems.getPostById(deeplinkData.postId, (err, res) => {
+                            if (err) console.error(err);
+                            else if (res && res.data && res.id) {
+                                WidgetWall.SocialItems.items.push({...res.data, id: res.id});
+                                WidgetWall.goInToThread(deeplinkData.postId);
+                            }
+                        });
+                    }
                   }
                   const wallId = deeplinkData.wid
                   const userIds = deeplinkData.userIds;

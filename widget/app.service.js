@@ -883,6 +883,10 @@
                 });
             }
 
+            SocialItems.prototype.getPostById = function (id, callback) {
+                buildfire.publicData.getById(id, "posts", callback);
+            }
+
             function getSort() {
                 if (_this.indexingUpdateDone)
                     return {
