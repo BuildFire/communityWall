@@ -12,10 +12,12 @@
         .factory('Location', [function () {
             var _location = location;
             return {
-                go: function (path) {
+                go: function (path, pushToHistory = true) {
                     _location.href = path;
                     let label = path.includes('thread') ? 'thread' : path.includes('members') ? 'members' : 'report';
-                    buildfire.history.push(label, {});
+                    if (pushToHistory) {
+                        buildfire.history.push(label, {});
+                    }
                 },
                 goToHome: function () {
                     _location.href = _location.href.substr(0, _location.href.indexOf('#'));
@@ -963,6 +965,9 @@
             function startBackgroundService() {
                 if (!_this.newPostTimerChecker) {
                     _this.newPostTimerChecker = setInterval(function () {
+                        if (_this.items.length > _this.pageSize) {
+                            return clearInterval(_this.newPostTimerChecker);
+                        }
                         let searchOptions = {
                             filter: getFilter(),
                             sort: {
@@ -1042,7 +1047,7 @@
                     if (response.data && response.data.mainWall && response.data.sideThread && response.data.members && response.data.input && response.data.modal) {
                         strings = Object.assign({}, response.data.mainWall, response.data.sideThread, response.data.members, response.data.input, response.data.modal);
 
-                        const newProperties = ['publicPostNotificationMessage', 'commentNotificationMessage', 'personalNotificationMessage', 'postLikeNotification'];
+                        const newProperties = ['pushNotifications'];
                         newProperties.forEach((key) => {
                             if (response.data[key]) {
                                 strings = Object.assign(strings, response.data[key]);

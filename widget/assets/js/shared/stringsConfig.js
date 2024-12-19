@@ -185,115 +185,104 @@ const stringsConfig = {
 			}
 		}
 	},
-	publicPostNotificationMessage: {
-		title: "New Public Message Push Notification",
-		labels: {
-			publicNotificationMessageTitle: {
-				publicNotificationMessageTitle: "Title"
-				, placeholder: "New Post"
-				, maxLength: 25
-				, defaultValue: "New Post"
-			},
-			publicNotificationMessageBody: {
-				publicNotificationMessageBody: "Body"
-				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
-				, maxLength: 150
-				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
-			},
-			publicInAppMessageBody: {
-				publicInAppMessageBody: "In App Message"
-				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
-				, maxLength: 150
-				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
-			},
-		}
-	},
-	commentNotificationMessage: {
-		title: "New Post Comment",
-		labels: {
-			commentNotificationMessageTitle: {
-				commentNotificationMessageTitle: "Title"
-				, placeholder: "New Comment"
-				, maxLength: 25
-				, defaultValue: "New Comment"
-			},
-			commentNotificationMessageBody: {
-				commentNotificationMessageBody: "Body"
-				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
-				, maxLength: 150
-				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
-			},
-			commentInAppMessageBody: {
-				commentInAppMessageBody: "In App Message"
-				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
-				, maxLength: 150
-				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
-			},
-		}
-	},
-	personalNotificationMessage: {
-		title: "New Personal Message Push Notification",
+	pushNotifications: {
+		title: "Push Notifications",
 		labels: {
 			personalNotificationMessageTitle: {
-				personalNotificationMessageTitle: "Title"
+				title: "Title"
+				, subtitle: "Private Message Notification"
 				, placeholder: "New Private Message"
 				, maxLength: 25
 				, defaultValue: "New Private Message"
 			},
 			personalNotificationMessageBody: {
-				personalNotificationMessageBody: "Body"
+				title: "Body"
 				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} sent you a private message."
 				, maxLength: 150
 				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} sent you a private message."
 			},
 			personalInAppMessageBody: {
-				personalInAppMessageBody: "In App Message"
+				title: "In App Message"
 				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} sent you a private message."
 				, maxLength: 150
 				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} sent you a private message."
 			},
-		}
-	},
-	postLikeNotification: {
-		title: "Post Like Notification",
-		labels: {
+
+			publicNotificationMessageTitle: {
+				title: "Title"
+				, subtitle: "New Post Notification"
+				, placeholder: "New Post"
+				, maxLength: 25
+				, defaultValue: "New Post"
+			},
+			publicNotificationMessageBody: {
+				title: "Body"
+				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
+				, maxLength: 150
+				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
+			},
+			publicInAppMessageBody: {
+				title: "In App Message"
+				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
+				, maxLength: 150
+				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} added a new post on ${context.plugin.title}"
+			},
+
+			commentNotificationMessageTitle: {
+				title: "Title"
+				, subtitle: "New Comment Notification"
+				, placeholder: "New Comment"
+				, maxLength: 25
+				, defaultValue: "New Comment"
+			},
+			commentNotificationMessageBody: {
+				title: "Body"
+				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
+				, maxLength: 150
+				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
+			},
+			commentInAppMessageBody: {
+				title: "In App Message"
+				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
+				, maxLength: 150
+				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} commented on a post on ${context.plugin.title}"
+			},
+
 			postLikeNotificationTitle: {
-				personalInAppMessageTitle: "Title"
+				title: "Title"
+				, subtitle: "Post Like Notification"
 				, placeholder: "Post Like"
 				, maxLength: 25
 				, defaultValue: "Post Like"
 			},
 			postLikeNotificationMessageBody: {
-				personalInAppMessageTitle: "Body"
+				title: "Body"
 				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} liked your post."
 				, maxLength: 150
 				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} liked your post."
 			},
 			postLikeInAppMessageBody: {
-				personalInAppMessageTitle: "In App Message"
+				title: "In App Message"
 				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} liked your post."
 				, maxLength: 150
 				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} liked your post."
 			},
-		}
-	},
-	commentLikeNotification: {
-		title: "Comment Like Notification",
-		labels: {
+
 			commentLikeNotificationTitle: {
-				personalInAppMessageTitle: "Title"
+				title: "Title"
+				, subtitle: "Comment Like Notification"
 				, placeholder: "Comment Like"
 				, maxLength: 25
 				, defaultValue: "Comment Like"
 			},
 			commentLikeNotificationMessageBody: {
-				personalInAppMessageTitle: "Body"
+				title: "Body"
 				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} liked your comment."
 				, maxLength: 150
 				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} liked your comment."
 			},
 			commentLikeInAppMessageBody: {
-				personalInAppMessageTitle: "In App Message"
+				title: "In App Message"
 				, placeholder: "${context.appUser?context.appUser.displayName:'Someone'} liked your comment."
 				, maxLength: 150
 				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} liked your comment."
