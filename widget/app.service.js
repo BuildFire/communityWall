@@ -134,8 +134,23 @@
                         console.error('Error decoding deepLinkData:', error);
                         return null;
                     }
+                },
+                evaluateExpression(expression) {
+                    return new Promise((resolve, reject) => {
+                        buildfire.dynamic.expressions.evaluate({expression}, (err, result) => {
+                            if (err) return reject(err);
+                            resolve(result.evaluatedExpression);
+                        });
+                    })
+                },
+                setExpression(expression) {
+                    buildfire.dynamic.expressions.getContext = (options, callback) => {
+                        const context = {
+                          plugin: expression
+                        }
+                        callback(null, context)
+                    }
                 }
-
             }
         }])
         .factory("SubscribedUsersData", function () {
@@ -706,7 +721,7 @@
                 }
             }
         }])
-        .factory('SocialItems', ['Util', '$rootScope', function (Util, $rootScope) {
+        .factory('SocialItems', ['Util', '$rootScope', '$timeout', function (Util, $rootScope, $timeout) {
             var _this;
             var SocialItems = function () {
                 _this = this;
@@ -836,9 +851,8 @@
                     if (error) return console.log(error);
 
                     if (data && data.result.length) {
-                        const result = data.result.filter(item => !_this.items.find(_item => _item.id === item.id));
+                        const result = data.result.filter(newItem => !_this.items.some(existItem => existItem.id === newItem.id));
                         const newItems = result.map(item => {
-                            _this.setupImageList(item.data);
                             return {...item.data, id: item.id};
                         });
                         _this.items = _this.items.concat(newItems);
@@ -920,16 +934,15 @@
                 return filter;
             }
 
-            SocialItems.prototype.setupImageList = function(post) {
-                post.imageListId = "imageList_" + post.id;
-                if (post.imageUrl) {
-                    setTimeout(function () {
-                        let imageList = document.getElementById(post.imageListId);
+            SocialItems.prototype.setupImageList = function(listId, item) {
+                if (item.imageUrl) {
+                    $timeout(() => {
+                        let imageList = document.getElementById(listId);
                         if (!imageList) return;
-                        if (Array.isArray(post.imageUrl)) {
-                            imageList.images = post.imageUrl;
+                        if (Array.isArray(item.imageUrl)) {
+                            imageList.images = item.imageUrl;
                         } else {
-                            imageList.images = [post.imageUrl];
+                            imageList.images = [item.imageUrl];
                         }
                         imageList.addEventListener('imageSelected', (e) => {
                             let selectedImage = e.detail.filter(image => image.selected);
@@ -939,7 +952,7 @@
                                 images: selectedImage
                             });
                         });
-                    }, 0);
+                    });
                 }
             };
 
@@ -963,11 +976,10 @@
                             if (results.totalRecord > _this.pageSize) {
                                 _this.showMorePosts = true;
                             } else _this.showMorePosts = false;
-                            
+
                             if (data && data.length) {
                                 let items = data.map(item => {
                                     const existItem = _this.items.find(_item => _item.id === item.id) || {};
-                                    _this.setupImageList(item.data);
                                     return {...existItem, ...item.data, id: item.id};
                                 });
 
@@ -1015,16 +1027,30 @@
                         delete stringsCopy[defaultKey].labels;
                     });
                     let strings = {}
-                    strings = Object.assign({}, stringsCopy.mainWall, stringsCopy.sideThread, stringsCopy.members, stringsCopy.input, stringsCopy.modal);
+                    for (let key in stringsConfig) {
+                        strings = Object.assign(strings, stringsCopy[key]);
+                    }
                     Object.keys(strings).forEach(e => {
                         strings[e].value ? _this.languages[e] = strings[e].value : _this.languages[e] = strings[e].defaultValue;
                     });
                 } else {
                     let strings = {};
-                    if (response.data && response.data.mainWall && response.data.sideThread && response.data.members && response.data.input && response.data.modal)
+                    if (response.data && response.data.mainWall && response.data.sideThread && response.data.members && response.data.input && response.data.modal) {
                         strings = Object.assign({}, response.data.mainWall, response.data.sideThread, response.data.members, response.data.input, response.data.modal);
-                    else
-                        strings = Object.assign({}, stringsConfig.mainWall.labels, stringsConfig.sideThread.labels, stringsConfig.members.labels, stringsConfig.input.labels, stringsConfig.modal.labels);
+
+                        const newProperties = ['publicPostNotificationMessage', 'commentNotificationMessage', 'personalNotificationMessage', 'postLikeNotification'];
+                        newProperties.forEach((key) => {
+                            if (response.data[key]) {
+                                strings = Object.assign(strings, response.data[key]);
+                            } else {
+                                strings = Object.assign(strings, stringsConfig[key].labels);
+                            }
+                        });
+                    } else {
+                        for (let key in stringsConfig) {
+                            strings = Object.assign(strings, stringsCopy[key].labels);
+                        }
+                    }
                     Object.keys(strings).forEach(e => {
                         if (e == "specificChat" && strings[e].value == "")
                             _this.languages[e] = strings[e].value

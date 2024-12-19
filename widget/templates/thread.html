@@ -1,7 +1,7 @@
 <div class="padding-zero" style="height:100%;">
     <div class="social-plugin social-thread" style="height: 100%;">
 
-        <div ng-if="Thread.allowFollowLeaveGroup" 
+        <div ng-if="Thread.allowFollowLeaveGroup"
         sticky-navbar scroll-container=".social-plugin.social-thread .post-section"
         class="head-btn text-center backgroundColorTheme">
             <p class="text-primary follow-btn" ng-click="Thread.followUnfollow()">
@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <div class="footer">
-                    <div class="status-footer">                        
+                    <div class="status-footer">
                         <a class="likes social-icon ng-cloak" ng-click="Thread.likeThread(Thread.post, 'thread')">
                             <i class="material-icons-outlined" aria-hidden="true">{{!Thread.post.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                             <span class="iconsTheme iconsFont"
@@ -88,9 +88,9 @@
                                         {{Thread.SocialItems.languages.messageDeleted ? Thread.SocialItems.languages.messageDeleted  : "This message was deleted."}}
                                     </p>
                             </div>
-                            <div class="plugin-banner ellipsis" ng-init="setupImageList(comment)">
+                            <div class="plugin-banner ellipsis">
                                 <div class="plugin-slide text-center" style="max-height: none !important;">
-                                    <bf-image-list ng-if="comment.imageListId" id="{{comment.imageListId}}"
+                                    <bf-image-list ng-show="post.id" id="{{'imageComment_'+comment.id}}" ng-init="Thread.SocialItems.setupImageList('imageComment_'+comment.id, comment)"
                                         token="czi3m2qn"></bf-image-list>
                                 </div>
                             </div>
