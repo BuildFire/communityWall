@@ -45,7 +45,7 @@
                 </div>
                 <div class="plugin-banner clearfix" ng-if="Thread.post.imageUrl">
                     <div class="plugin-slide text-center" style="max-height: none !important;">
-                        <bf-image-list id="commentPostImage" token="czi3m2qn"></bf-image-list>
+                        <bf-image-list id="commentPostImage" ng-init="Thread.SocialItems.setupImageList('commentPostImage', Thread.post.imageUrl)" token="czi3m2qn"></bf-image-list>
                     </div>
                 </div>
                 <div class="footer">

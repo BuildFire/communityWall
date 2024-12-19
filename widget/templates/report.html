@@ -24,7 +24,7 @@
                                     <p class="time-ago opacity-seventy">
                                         {{Report.getDuration(Report.post.createdOn) | convertTimeFormat}}</p>
                                 </div>
-                            </div>    
+                            </div>
                         </div>
                     </div>
 
@@ -34,11 +34,11 @@
                 </div>
                 <div class="plugin-banner clearfix" ng-if="Report.post.imageUrl">
                     <div class="plugin-slide text-center" style="max-height: none !important;">
-                        <bf-image-list id="reportPostImage" token="czi3m2qn"></bf-image-list>
+                        <bf-image-list id="reportPostImage" token="czi3m2qn" ng-init="Report.SocialItems.setupImageList('reportPostImage', Report.post.imageUrl)"></bf-image-list>
                     </div>
                 </div>
                 <div class="footer">
-                    <div class="status-footer">                       
+                    <div class="status-footer">
                         <a class="likes social-icon ng-cloak">
                             <i class="material-icons-outlined" aria-hidden="true">thumb_up_off_alt</i>
                             <span class="iconsTheme iconsFont">{{Report.post.likes.length}}</span>
