@@ -325,12 +325,9 @@
                   sendToSelf: false
               };
 
-              if (text === 'post')
-                  options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' + WidgetWall.SocialItems.context.title;
-              else if (text === 'like')
-                  options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' liked a post on ' + WidgetWall.SocialItems.context.title;
+              if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
 
-              options.inAppMessage = options.text;
+              util.setExpression({ title: WidgetWall.SocialItems.context.title });
 
               const queryStringObj = {};
               if (WidgetWall.SocialItems.wid) {
@@ -344,66 +341,93 @@
                 queryStringObj.wTitle = WidgetWall.SocialItems.pluginTitle;
               }
 
-              if (text === 'like' && post.userId === WidgetWall.SocialItems.userDetails.userId) return;
-
+              let titleKey, messageKey, inAppMessageKey;
               if (WidgetWall.SocialItems.isPrivateChat) {
+                if (text === 'post') {
+                    titleKey = WidgetWall.SocialItems.languages.personalNotificationMessageTitle;
+                    messageKey = WidgetWall.SocialItems.languages.personalNotificationMessageBody;
+                    inAppMessageKey = WidgetWall.SocialItems.languages.personalInAppMessageBody;
+                } else if (text === 'like') {
+                    titleKey = WidgetWall.SocialItems.languages.postLikeNotificationTitle;
+                    messageKey = WidgetWall.SocialItems.languages.postLikeNotificationMessageBody;
+                    inAppMessageKey = WidgetWall.SocialItems.languages.postLikeInAppMessageBody;
+                }
+                    Promise.all([util.evaluateExpression(titleKey), util.evaluateExpression(messageKey), util.evaluateExpression(inAppMessageKey)])
+                    .then(([title, message, inAppMessage]) => {
+                        options.title = title;
+                        options.text = message;
+                        options.inAppMessage = inAppMessage;
 
-                  let userIdsTosSend = [];
-                  if (WidgetWall.SocialItems.userIds) {
-                      queryStringObj.userIds = WidgetWall.SocialItems.userIds;
+                        let userIdsTosSend = [];
+                        if (WidgetWall.SocialItems.userIds) {
+                            queryStringObj.userIds = WidgetWall.SocialItems.userIds;
 
-                      const userIds = WidgetWall.SocialItems.userIds.split(',').filter((userId) => userId !== WidgetWall.SocialItems.userDetails.userId);
-                      userIdsTosSend = userIds;
-                  } else {
-                      const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
-                      const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
-                      let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId ?
-                        user2Id : user1Id;
-                      userIdsTosSend.push(userToSend);
-                      queryStringObj.userIds = [user1Id, user2Id];
-                  }
+                            const userIds = WidgetWall.SocialItems.userIds.split(',').filter((userId) => userId !== WidgetWall.SocialItems.userDetails.userId);
+                            userIdsTosSend = userIds;
+                        } else {
+                            const user1Id = WidgetWall.SocialItems.wid.slice(0, 24);
+                            const user2Id = WidgetWall.SocialItems.wid.slice(24, 48);
+                            let userToSend = user1Id === WidgetWall.SocialItems.userDetails.userId ?
+                              user2Id : user1Id;
+                            userIdsTosSend.push(userToSend);
+                            queryStringObj.userIds = [user1Id, user2Id];
+                        }
 
-                  options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
+                        options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
 
-                  for (const userToSend of userIdsTosSend) {
-                      SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                          if (err) console.error('Error while getting initial group following status.', err);
-                          if (status.length && status[0].data && !status[0].data.leftWall) {
-                              options.users.push(userToSend);
-                              options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' +
-                                WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(status[0].data.userDetails);
+                        for (const userToSend of userIdsTosSend) {
+                            SubscribedUsersData.getGroupFollowingStatus(userToSend, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                                if (err) console.error('Error while getting initial group following status.', err);
+                                if (status.length && status[0].data && !status[0].data.leftWall) {
+                                    options.users.push(userToSend);
 
-                              buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                    buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                        if (err) return console.error('Error while setting PN schedule.', err);
+                                    });
+                                } else if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
+                                    buildfire.auth.getUserProfile({
+                                        userId: userToSend
+                                    }, (err, user) => {
+                                        if (err || !user) return console.error(err);
+                                        options.users.push(userToSend);
 
-                                  if (err) return console.error('Error while setting PN schedule.', err);
-
-                              });
-                          } else if (!status.length && WidgetWall.SocialItems.appSettings.allowAutoSubscribe) {
-                              buildfire.auth.getUserProfile({
-                                  userId: userToSend
-                              }, (err, user) => {
-                                  if (err || !user) return console.error(err);
-                                  options.users.push(userToSend);
-                                  options.text = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' added new post on ' +
-                                    WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + WidgetWall.SocialItems.getUserName(user);
-                                  buildfire.notifications.pushNotification.schedule(options, function (err) {
-                                      if (err) return console.error('Error while setting PN schedule.', err);
-                                      console.log("SENT NOTIFICATION", options);
-                                  });
-                              });
-                          }
-                      });
-                  }
+                                        buildfire.notifications.pushNotification.schedule(options, function (err) {
+                                            if (err) return console.error('Error while setting PN schedule.', err);
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    })
               } else {
-                  options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
-                  if (text === 'like') {
-                      options.users.push(post.userId);
-                  } else options.groupName = WidgetWall.SocialItems.wid === '' ?
-                    WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                  buildfire.notifications.pushNotification.schedule(options, function (err) {
-                      if (err) return console.error('Error while setting PN schedule.', err);
-                      console.log("SENT NOTIFICATION", options);
-                  });
+                if (text === 'post') {
+                    titleKey = WidgetWall.SocialItems.languages.publicNotificationMessageTitle;
+                    messageKey = WidgetWall.SocialItems.languages.publicNotificationMessageBody;
+                    inAppMessageKey = WidgetWall.SocialItems.languages.publicInAppMessageBody;
+                } else if (text === 'like') {
+                    titleKey = WidgetWall.SocialItems.languages.postLikeNotificationTitle;
+                    messageKey = WidgetWall.SocialItems.languages.postLikeNotificationMessageBody;
+                    inAppMessageKey = WidgetWall.SocialItems.languages.postLikeInAppMessageBody;
+                    options.users.push(post.userId);
+                }
+                    Promise.all([util.evaluateExpression(titleKey), util.evaluateExpression(messageKey), util.evaluateExpression(inAppMessageKey)])
+                    .then(([title, message, inAppMessage]) => {
+                        options.title = title;
+                        options.text = message;
+                        options.inAppMessage = inAppMessage;
+
+                        options.queryString =`&dld=${encodeURIComponent(JSON.stringify({...queryStringObj }))}`
+                        if (WidgetWall.SocialItems.wid) {
+                          options.groupName = WidgetWall.SocialItems.wid;
+                        } else {
+                          options.groupName = WidgetWall.SocialItems.context.instanceId;
+                        }
+
+                        buildfire.notifications.pushNotification.schedule(options, function (err) {
+                            if (err) return console.error('Error while setting PN schedule.', err);
+                            console.log("SENT NOTIFICATION", options);
+                        });
+                    })
               }
           }
 
@@ -1068,7 +1092,6 @@
                     _id: postData.userDetails && postData.userDetails.userId ? postData.userDetails.userId : null
                 }, postData.text, () =>
                   SocialDataStore.createPost(postData).then((response) => {
-                      WidgetWall.SocialItems.setupImageList(postData);
                       WidgetWall.SocialItems.items.unshift(postData);
                       Buildfire.messaging.sendMessageToControl({
                           name: EVENTS.POST_CREATED,
@@ -1472,6 +1495,7 @@
                                   if (postUpdate) {
                                       let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
                                       WidgetWall.SocialItems.items[postIndex] = item.data;
+                                    //   ----
                                   }
                                   buildfire.publicData.update(item.id, item.data, 'posts', (err, updatedPost) => {
                                       console.log(updatedPost)
