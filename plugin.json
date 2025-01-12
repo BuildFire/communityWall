@@ -1,11 +1,12 @@
 {
   "author": "Buildfire",
   "pluginName": "Community Wall",
-  "pluginDescription": "Boost engagement, foster collaboration, and create a vibrant user community.",
+  "pluginDescription": "Boost engagement, foster collaboration, and create a vibrant user community with a community wall, allowing seamless interaction, sharing, and connection.",
   "keywords": "communication,social,wall,messaging,message,group,conversation,chat",
   "supportEmail": "support@buildfire.com",
   "supportSite": "https://learn.appdocumentation.com/en/articles/5128512-how-to-use-the-community-wall-plugin",
   "pluginIcon": "icon.png",
+  "requireLogin": true,
   "control": {
     "content": {
       "enabled": true
