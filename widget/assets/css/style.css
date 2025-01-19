@@ -1600,3 +1600,7 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
     width: 40px;
     height: 40px;
 }
+
+.post-images-container {
+    margin: 2vh 0;
+}

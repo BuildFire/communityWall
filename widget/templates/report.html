@@ -33,9 +33,13 @@
                     <p class="margin-zero" ng-bind-html="Report.util.injectAnchors(Report.post.text) | newLine"></p>
                 </div>
                 <div class="plugin-banner clearfix" ng-if="Report.post.imageUrl">
-                    <div class="plugin-slide text-center" style="max-height: none !important;">
-                        <bf-image-list id="reportPostImage" token="czi3m2qn" ng-init="Report.SocialItems.setupImageList('reportPostImage', Report.post.imageUrl)"></bf-image-list>
+                    <div ng-init="Report.SocialItems.setupImageList('reportPostImage', Report.post.imageUrl)" class="plugin-slide text-center" style="max-height: none !important;">
+                        <img  ng-src="{{Report.util.resizeImage(image)}}" data-alt="Post image">
+                        <div ng-repeat="image in Report.post.imageUrl" class="post-images-container">
+                            <img  ng-src="{{Report.util.resizeImage(image)}}" data-alt="Post image">
+                        </div>
                     </div>
+                    
                 </div>
                 <div class="footer">
                     <div class="status-footer">
