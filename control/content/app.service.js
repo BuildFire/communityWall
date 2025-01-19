@@ -66,11 +66,18 @@
                     if (!results[2]) return '';
                     return decodeURIComponent(results[2].replace(/\+/g, " "));
                 },
-                resizeImage(imageUrl, size) {
+                resizeImage(imageUrl, options) {
+                    const calculateWidth = () => {
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+                        return { width: windowWidth, height: Math.floor(windowHeight / 3) };
+                    }
+                    if (!options) {
+                        options = calculateWidth();
+                    }
                     return buildfire.imageLib.resizeImage(
-                        imageUrl,
-                        { size: size, aspect: "16:9" }
-                      );
+                        imageUrl, options
+                    );
                 }
             }
         }])

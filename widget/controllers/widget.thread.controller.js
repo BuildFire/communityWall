@@ -192,7 +192,6 @@
                               Thread.skeletonPost.stop();
                               Thread.skeletonComments.stop();
                               Thread.setupThreadImage();
-                              console.log(Thread.post,'Threadpost');
                               $scope.$digest();
                           });
                       }
