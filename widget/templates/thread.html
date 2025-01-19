@@ -43,9 +43,11 @@
                 <div class="post-text copy" style="word-wrap: break-word">
                     <p class="margin-zero body-text-theme" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p><p></p>
                 </div>
-                <div class="plugin-banner clearfix" ng-if="Thread.post.imageUrl">
-                    <div class="plugin-slide text-center" style="max-height: none !important;">
-                        <bf-image-list id="commentPostImage" ng-init="Thread.SocialItems.setupImageList('commentPostImage', Thread.post.imageUrl)" token="czi3m2qn"></bf-image-list>
+                <div class="plugin-banner clearfix">
+                    <div ng-init="Thread.SocialItems.setupImageList('commentPostImage', Thread.post.imageUrl)" class="plugin-slide text-center" style="max-height: none !important;">
+                        <div ng-repeat="image in Thread.post.imageUrl" class="post-images-container">
+                            <img  ng-src="{{Thread.util.resizeImage(image,'full_width')}}" data-alt="Post image">
+                        </div>
                     </div>
                 </div>
                 <div class="footer">
@@ -89,9 +91,8 @@
                                     </p>
                             </div>
                             <div class="plugin-banner ellipsis">
-                                <div class="plugin-slide text-center" style="max-height: none !important;">
-                                    <bf-image-list id="{{'imageComment_'+comment.commentId}}" ng-init="Thread.SocialItems.setupImageList('imageComment_'+comment.commentId, comment)"
-                                        token="czi3m2qn"></bf-image-list>
+                                <div ng-init="Thread.SocialItems.setupImageList('imageComment_'+comment.commentId, comment)" class="plugin-slide text-center" style="max-height: none !important;">
+                                    <img ng-repeat="image in comment.imageUrl" ng-src="{{Thread.util.resizeImage(image,'full_width')}}" data-alt="Post image">
                                 </div>
                             </div>
                             <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">

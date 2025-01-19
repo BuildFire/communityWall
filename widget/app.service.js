@@ -152,6 +152,13 @@
                         }
                         callback(null, context)
                     }
+                },
+                resizeImage(imageUrl, size) {
+                    console.log(imageUrl)
+                    return buildfire.imageLib.resizeImage(
+                        imageUrl,
+                        { size: size, aspect: "16:9" }
+                      );
                 }
             }
         }])

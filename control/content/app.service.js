@@ -65,6 +65,12 @@
                     if (!results) return null;
                     if (!results[2]) return '';
                     return decodeURIComponent(results[2].replace(/\+/g, " "));
+                },
+                resizeImage(imageUrl, size) {
+                    return buildfire.imageLib.resizeImage(
+                        imageUrl,
+                        { size: size, aspect: "16:9" }
+                      );
                 }
             }
         }])

@@ -61,12 +61,11 @@
                 </div>
                 <div class="plugin-banner clearfix margin-bottom-fifteen">
                     <div class="hes-gallery post-images" data-wrap="true" data-img-count="{{post.images.length}}" ng-init="initHesGallery()">
-                        <img ng-repeat="image in post.images" ng-src="https://czi3m2qn.cloudimg.io/v7/{{image}}" data-alt="Post image">
+                        <img ng-repeat="image in post.images" ng-src="{{ContentHome.util.resizeImage(image,'full_width')}}" data-alt="Post image">
                     </div>
+                    
                 </div>
-                <!-- <div class="plugin-banner clearfix margin-bottom-fifteen" ng-if="post.imageUrl" ng-init="setupImageList(post)">
-                    <bf-image-list ng-if="post.imageListId" id="{{post.imageListId}}" token="czi3m2qn"></bf-image-list>
-                </div> -->
+                
                 <div class="social-footer">
                     <div class="status flex">
                         <a class="text-danger padded-sm caption" ng-click="ContentHome.deletePost(post.id)">Delete Post</a>
@@ -98,13 +97,8 @@
                                 This message was deleted.
                             </p>
                         </div>
-                        <!-- <div class="plugin-banner margin-bottom-fifteen" ng-if="comment.imageUrl.length > 0">
-                            <div ng-repeat="imageUrl in comment.imageUrl" class="plugin-slide text-center">
-                                <img  load-image="16x9" data-final-src="{{imageUrl | resizeImage : 555 : 337}}">
-                            </div>
-                        </div> -->
                         <div class="hes-gallery post-images" data-wrap="true" ng-show="comment.imageUrl.length" data-img-count="{{comment.imageUrl.length}}" ng-init="initHesGallery()">
-                            <img ng-repeat="imageUrl in comment.imageUrl" ng-src="https://czi3m2qn.cloudimg.io/v7/{{imageUrl}}" data-alt="Post image">
+                            <img ng-repeat="imageUrl in comment.imageUrl" ng-src="{{ContentHome.util.resizeImage(imageUrl,'full_width')}}" data-alt="Post image">
                         </div>
                         <div class="social-footer flex">
                             <a class="text-danger padded-sm caption padding-left-zero" ng-click="ContentHome.deleteComment(post, comment)">Delete Comment</a>

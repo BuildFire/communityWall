@@ -150,8 +150,12 @@
                                     <div class="plugin-banner">
                                         <div class="plugin-slide text-center" style="max-height: none !important;">
                                             <a ng-click="openThread($event,post)">
-                                                <bf-image-list id="{{'imageList_'+post.id}}" ng-init="WidgetWall.SocialItems.setupImageList('imageList_'+post.id, post)"
-                                                    token="czi3m2qn"></bf-image-list>
+                                                <div data-wrap="true" ng-init="WidgetWall.SocialItems.setupImageList('imageList_'+post.id, post)">
+                                                    <div ng-repeat="image in post.images" class="post-images-container">
+                                                        <img  ng-src="{{WidgetWall.util.resizeImage(image,'full_width')}}" data-alt="Post image">
+                                                    </div>
+                                                </div>
+                                            </a>
                                             </a>
                                         </div>
                                     </div>
