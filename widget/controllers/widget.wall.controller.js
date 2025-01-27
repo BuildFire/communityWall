@@ -1027,6 +1027,12 @@
                                 return callback(null, new WidgetWall.Thread(record));
                             });
                       } else {
+                          if (
+                            Array.isArray(records[0].data.users) && records[0].data.users.length === 2 &&
+                            records[0].data.users[0] && records[0].data.users[1]
+                          ) {
+                              records[0].data.wallTitle = WidgetWall.SocialItems.getUserName(records[0].data.users[0]) + ' | ' + WidgetWall.SocialItems.getUserName(records[0].data.users[1]);
+                          }
                           return callback(null, new WidgetWall.Thread(records[0]));
                       }
                   });
