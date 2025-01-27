@@ -289,6 +289,7 @@
                 Members.SocialItems.wid = user.wid;
                 Members.SocialItems.pageSize = 5;
                 Members.SocialItems.page = 0;
+                Members.SocialItems.pluginTitle = Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + user.name
                 $rootScope.showThread = true;
                 $rootScope.$broadcast("loadPrivateChat");
                 buildfire.history.push(Members.SocialItems.getUserName(Members.SocialItems.userDetails) + ' | ' + user.name, {
