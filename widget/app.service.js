@@ -152,6 +152,19 @@
                         }
                         callback(null, context)
                     }
+                },
+                resizeImage(imageUrl, options) {
+                    const calculateWidth = () => {
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+                        return { width: windowWidth, height: Math.floor(windowHeight / 3) };
+                    }
+                    if (!options) {
+                        options = calculateWidth();
+                    }
+                    return buildfire.imageLib.resizeImage(
+                        imageUrl, options
+                    );
                 }
             }
         }])
