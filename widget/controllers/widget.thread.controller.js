@@ -201,14 +201,24 @@
 
           Thread.init();
 
+          var watcher = $scope.$watch(function () {
+              return SocialItems.getInstance().items;
+          }, function (newVal, oldVal) {
+              Thread.post = newVal.find(el => el.id === $routeParams.threadId);
+              if (Thread.post === undefined) {
+                  Location.goToHome();
+              }
+          }, true);
+
           Thread.navigateToPrivateChat = function (user) {
               Thread.SocialItems.isPrivateChat = true;
               Thread.SocialItems.items = [];
               Thread.SocialItems.wid = user.wid;
               Thread.SocialItems.pageSize = 5;
               Thread.SocialItems.page = 0;
-
               $rootScope.showThread = true;
+              // destroy the watcher
+              watcher();
               $rootScope.$broadcast("loadPrivateChat");
               buildfire.history.push(Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' | ' + user.name, {
                   isPrivateChat: true,
@@ -937,13 +947,6 @@
                   Location.goToHome();
               });
           });
-          $scope.$watch(function () {
-              return SocialItems.getInstance().items;
-          }, function (newVal, oldVal) {
-              Thread.post = newVal.find(el => el.id === $routeParams.threadId);
-              if (Thread.post === undefined) {
-                  Location.goToHome();
-              }
-          }, true);
+
       }])
 })(window.angular);
