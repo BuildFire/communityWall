@@ -26,6 +26,7 @@
           WidgetWall.scrollPosition = null;
           WidgetWall.skeletonActive = false;
           WidgetWall.deeplinkHandled = false;
+          WidgetWall.deeplinkVisitor= false;
 
           WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
               type: 'list-item-avatar, list-item-two-line, image'});
@@ -674,6 +675,9 @@
                 Buildfire.deeplink.getData((data) => {
                     WidgetWall.deeplinkHandled = true;
                     const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                    if (deeplinkData) {
+                        WidgetWall.deeplinkVisitor = true;
+                    }
                     WidgetWall.handleDeepLinkActions(deeplinkData, false);
                 }, true);
             }
@@ -762,11 +766,19 @@
                 WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + privateChatData.name;
               }
               WidgetWall.SocialItems.items = [];
+              if (WidgetWall.deeplinkVisitor) {
+                  buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
+                      if (err) return console.error(err);
+                  });
 
-              buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
-                  isPrivateChat: true,
-                  showLabelInTitlebar: true
-              });
+              }
+              else {
+                  buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
+                      isPrivateChat: true,
+                      showLabelInTitlebar: true
+                  });
+              }
+              WidgetWall.deeplinkVisitor = false;
 
               WidgetWall.getPosts(() => {
                 document.getElementById('top').scrollTop = 0
