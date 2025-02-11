@@ -63,7 +63,9 @@
                 Members.searchOptions.page = 0;
                 SubscribedUsersData.getUsersWhoFollow(Members.userDetails._id, Members.wallId, function (err, users) {
                     if (err) return console.log(err);
-                    Members.users = users;
+                    Members.users = users.filter((item) => {
+                        return item.userId !== Members.userDetails._id
+                    });
                     $scope.$digest();
                 });
             }
