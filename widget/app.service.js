@@ -292,7 +292,9 @@
                             if (err) return cb(err, null);
                             data.result.map(item => allUsers.push(item.data));
                             if (allUsers.length === data.totalRecord) {
-                                allUsers = [...new Set(allUsers)];
+                                allUsers = allUsers.filter((item) => {
+                                    return item.userId !== userId
+                                });
                                 cb(null, allUsers);
                             } else {
                                 page++;
