@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-      .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', 'Util', 'SubscribedUsersData', function ($scope, SocialDataStore, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, SocialItems, $q, $anchorScroll, $location, $timeout, util, SubscribedUsersData) {
+      .controller('WidgetWallCtrl', ['$scope', 'SocialDataStore', 'Buildfire', '$rootScope', 'Location', 'EVENTS', 'GROUP_STATUS', 'MORE_MENU_POPUP', 'FILE_UPLOAD', 'SocialItems', '$q', '$anchorScroll', '$location', '$timeout', 'Util', 'SubscribedUsersData', 'AuthManager', function ($scope, SocialDataStore, Buildfire, $rootScope, Location, EVENTS, GROUP_STATUS, MORE_MENU_POPUP, FILE_UPLOAD, SocialItems, $q, $anchorScroll, $location, $timeout, util, SubscribedUsersData, AuthManager) {
           var WidgetWall = this;
 
           WidgetWall.userDetails = {};
@@ -580,7 +580,11 @@
                                       WidgetWall.checkForPrivateChat();
                                       WidgetWall.checkForDeeplinks();
                                   } else {
-                                      WidgetWall.groupFollowingStatus = false;
+                                    AuthManager.enforceLogin((user) => {
+                                      WidgetWall.checkFollowingStatus(user);
+                                      WidgetWall.checkForPrivateChat();
+                                      WidgetWall.checkForDeeplinks();
+                                    })
                                   }
                               });
                           });
@@ -1649,6 +1653,7 @@
                     WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
               }, () => {});
               WidgetWall.privateChatSecurity();
+              AuthManager.enforceLogin(WidgetWall.init);
               $scope.$digest();
           });
 

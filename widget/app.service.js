@@ -1144,6 +1144,33 @@
                 }
             };
         }])
+        .factory('AuthManager', function() {
+            /**
+             * Auth Notes:
+             * let's put all auth methods in this service and avoid calling them many times
+             */
+            let currentUser = null;
+
+            const enforceLogin = (callback) => {
+                buildfire.auth.getCurrentUser((err, user) => {
+                    if (!user) {
+                        buildfire.auth.login({ allowCancel: false }, (err, _user) => {
+                        if (!_user) return enforceLogin(callback);
+                        currentUser = _user;
+                        callback(currentUser);
+                    });
+                    } else {
+                        currentUser = user;
+                        callback(currentUser);
+                    }
+                });
+            };
+
+            return {
+                enforceLogin,
+                currentUser,
+            };
+        })
 })(window.angular, window.buildfire, window.location);
 
 function sendEmail(emailAddress) {
