@@ -182,7 +182,17 @@
                       
                       WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.map(post => {
                           if (post && post.userId) {
-                              post.userDetails = userLookup[post.userId] || null;
+                              if (userLookup[post.userId]) {
+                                  post.userDetails = {
+                                      displayName: userLookup[post.userId].displayName,
+                                      firstName: userLookup[post.userId].firstName,
+                                      lastName: userLookup[post.userId].lastName,
+                                      email: userLookup[post.userId].email,
+                                      lastUpdated: userLookup[post.userId].lastUpdated,
+                                      imageUrl: userLookup[post.userId].imageUrl,
+                                  }
+                              }
+                        
                           }
                           return post;
                       });
@@ -1118,7 +1128,16 @@
                   if (WidgetWall.SocialItems.isPrivateChat) {
                       WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.map(post => {
                               const user = WidgetWall.SocialItems.usersPrivateChat.find(u => u._id === post.userId);
-                              post.userDetails = user || null;
+                          if (user) {
+                              post.userDetails = {
+                                  displayName: user.displayName,
+                                  firstName: user.firstName,
+                                  lastName: user.lastName,
+                                  email: user.email,
+                                  lastUpdated: user.lastUpdated,
+                                  imageUrl: user.imageUrl,
+                              }
+                          }
                           return post;
                       });
                   }
