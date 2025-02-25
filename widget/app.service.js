@@ -1048,6 +1048,7 @@
                                         name: 'SEND_POSTS_TO_CP',
                                         posts: _this.items,
                                     });
+                                     $rootScope.$digest();
                                 } else {
                                     return '';
                                 }
