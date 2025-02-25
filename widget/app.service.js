@@ -165,7 +165,7 @@
                     return buildfire.imageLib.resizeImage(
                         imageUrl, options
                     );
-                }
+                },
             }
         }])
         .factory("SubscribedUsersData", function () {
@@ -754,6 +754,7 @@
                 _this.indexingUpdateDone = false;
                 _this.reportData = {};
                 _this.blockedUsers = [];
+                _this.usersPrivateChat = [];
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
@@ -848,7 +849,56 @@
                     }
                 });
             }
-
+            SocialItems.prototype.setTitleBar = function (privateChatData, pushToHistory) {
+                let pluginTitle = '';
+                
+                const userIds = [privateChatData.wid.slice(0, 24), privateChatData.wid.slice(24, 48)];
+                
+                // Convert buildfire.auth.getUserProfiles into a promise
+                const getUserProfiles = new Promise((resolve, reject) => {
+                    buildfire.auth.getUserProfiles({ userIds }, (err, users) => {
+                        if (err) return reject(err);
+                        resolve(users);
+                    });
+                });
+                
+                return getUserProfiles
+                        .then((users) => {
+                            this.usersPrivateChat = users;
+                            
+                            pluginTitle = (users[0] ? SocialItems.prototype.getUserName(users[0]) : null) +
+                                    ' | ' +
+                                    (users[1] ? SocialItems.prototype.getUserName(users[1]) : null);
+                        })
+                        .catch((err) => {
+                            console.error("Error fetching user profiles:", err);
+                            pluginTitle = SocialItems.prototype.getUserName(SocialItems.prototype.userDetails) + ' | ' + privateChatData.name;
+                        })
+                        .finally(() => {
+                            buildfire.history.get(
+                                    {
+                                        pluginBreadcrumbsOnly: false,
+                                    },
+                                    (err, result) => {
+                                        let pluginName = new URLSearchParams(result[result.length-1].options.pluginData.queryString).get('wTitle');
+                                        if (pluginName || !this.usersPrivateChat.length){
+                                            return;
+                                        }
+                                        else if (pushToHistory) {
+                                            buildfire.appearance.titlebar.setText({ text: pluginTitle }, (err) => {
+                                                if (err) console.error("Failed to update title bar:", err);
+                                            });
+                                        } else {
+                                            buildfire.history.push(pluginTitle, {
+                                                isPrivateChat: true,
+                                                showLabelInTitlebar: true
+                                            });
+                                        }
+                                    }
+                            );
+                      
+                        });
+            }
             SocialItems.prototype.getPosts = function (callback) {
                 let pageSize = _this.pageSize,
                     page = _this.page;
@@ -974,7 +1024,6 @@
                     });
                 }
             };
-
             function startBackgroundService() {
                 if (!_this.newPostTimerChecker) {
                     _this.newPostTimerChecker = setInterval(function () {
@@ -989,23 +1038,33 @@
                             pageSize: _this.pageSize,
                             page: 0,
                             recordCount: true
-                        }
-
+                        };
                         buildfire.publicData.search(searchOptions, 'posts', (error, results) => {
                             if (error) return console.log(error);
-
                             const data = results.result;
                             if (results.totalRecord > _this.pageSize) {
                                 _this.showMorePosts = true;
                             } else _this.showMorePosts = false;
-
                             if (data && data.length) {
                                 let items = data.map(item => {
                                     const existItem = _this.items.find(_item => _item.id === item.id) || {};
-                                    return {...existItem, ...item.data, id: item.id};
+                                    return { ...existItem, ...item.data, id: item.id };
                                 });
 
-                                // Check if the new data is different from the current data
+                                // Check if it's a private chat and update user details if needed
+                                if (SocialItems.prototype.isPrivateChat) {
+                                    items = items.map(item => {
+                                        if (item.userDetails) {
+                                            // Assuming you have a way to fetch the correct user details for private chats
+                                            const updatedUserDetails = SocialItems.prototype.usersPrivateChat.find(user => user.id === item.userDetails.id);
+                                            if (updatedUserDetails) {
+                                                item.userDetails = updatedUserDetails;
+                                            }
+                                        }
+                                        return item;
+                                    });
+                                }
+                                
                                 if (JSON.stringify(items) !== JSON.stringify(_this.items)) {
                                     _this.items = items;
                                     window.buildfire.messaging.sendMessageToControl({
@@ -1019,7 +1078,8 @@
                             } else {
                                 return '';
                             }
-                        });}, 10000);
+                        });
+                    }, 10000);
                 }
             }
 

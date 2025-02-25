@@ -219,10 +219,8 @@
               $rootScope.showThread = true;
               // destroy the watcher
               watcher();
-              $rootScope.$broadcast("loadPrivateChat");
-              buildfire.history.push(Thread.SocialItems.getUserName(Thread.SocialItems.userDetails) + ' | ' + user.name, {
-                  isPrivateChat: true,
-                  showLabelInTitlebar: true
+              Thread.SocialItems.setTitleBar({wid: user.wid}, true).then(()=>{
+                  $rootScope.$broadcast("loadPrivateChat");
               });
           }
 

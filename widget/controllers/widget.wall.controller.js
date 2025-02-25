@@ -159,8 +159,34 @@
               });
           }
 
-          WidgetWall.getPosts = function (callback = null)  {
+          WidgetWall.getPosts = async function (callback = null) {
+              if (WidgetWall.SocialItems.usersPrivateChat && WidgetWall.SocialItems.usersPrivateChat) {
+                  await WidgetWall.SocialItems.setTitleBar({wid: WidgetWall.SocialItems.wid}, true)
+              }
               WidgetWall.SocialItems.getPosts(function (err, data) {
+                  if (err) {
+                      console.error("Error fetching posts:", err);
+                      if (callback) return callback(err, null);
+                      return;
+                  }
+                  
+                  if (WidgetWall.SocialItems.isPrivateChat) {
+                      const usersPrivateChat = WidgetWall.SocialItems.usersPrivateChat || [];
+                      
+                      const userLookup = usersPrivateChat.reduce((acc, user) => {
+                          if (user && user._id) {
+                              acc[user._id] = user;
+                          }
+                          return acc;
+                      }, {});
+                      
+                      WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.map(post => {
+                          if (post && post.userId) {
+                              post.userDetails = userLookup[post.userId] || null;
+                          }
+                          return post;
+                      });
+                  }
                   WidgetWall.showUserLikes();
                   window.buildfire.messaging.sendMessageToControl({
                       name: 'SEND_POSTS_TO_CP',
@@ -172,7 +198,7 @@
                       return callback(null, data);
                   }
               });
-          }
+          };
 
           WidgetWall.showUserLikes = function () {
               WidgetWall.SocialItems.items.map(item => {
@@ -761,28 +787,16 @@
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
               if (privateChatData.wTitle) {
-                WidgetWall.SocialItems.pluginTitle = privateChatData.wTitle;
-              } else {
-                WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + privateChatData.name;
+                  WidgetWall.SocialItems.pluginTitle = privateChatData.wTitle;
               }
               WidgetWall.SocialItems.items = [];
-              if (WidgetWall.isFromDeepLink) {
-                  buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
-                      if (err) return console.error(err);
+              WidgetWall.SocialItems.setTitleBar(privateChatData,WidgetWall.isFromDeepLink).then(()=>{
+                  WidgetWall.isFromDeepLink = false;
+                  WidgetWall.getPosts(() => {
+                      document.getElementById('top').scrollTop = 0
+                      
                   });
-
-              }
-              else {
-                  buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
-                      isPrivateChat: true,
-                      showLabelInTitlebar: true
-                  });
-              }
-              WidgetWall.isFromDeepLink = false;
-
-              WidgetWall.getPosts(() => {
-                document.getElementById('top').scrollTop = 0
-              });
+              })
           }
 
           $rootScope.$on('loadPrivateChat', function (event, error) {
@@ -1101,6 +1115,13 @@
           WidgetWall.loadMorePosts = function () {
               saveScrollPosition();
               WidgetWall.SocialItems.getPosts(function (err, data) {
+                  if (WidgetWall.SocialItems.isPrivateChat) {
+                      WidgetWall.SocialItems.items = WidgetWall.SocialItems.items.map(post => {
+                              const user = WidgetWall.SocialItems.usersPrivateChat.find(u => u._id === post.userId);
+                              post.userDetails = user || null;
+                          return post;
+                      });
+                  }
                   window.buildfire.messaging.sendMessageToControl({
                       name: 'SEND_POSTS_TO_CP',
                       posts: WidgetWall.SocialItems.items,
