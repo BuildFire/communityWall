@@ -159,8 +159,10 @@
               });
           }
 
-          WidgetWall.getPosts = function (callback = null)  {
-              WidgetWall.SocialItems.getPosts(function (err, data) {
+          WidgetWall.getPosts = function () {
+                    return new Promise((resolve, reject) => {
+              WidgetWall.SocialItems.getPosts()
+                                .then(data => {
                   WidgetWall.showUserLikes();
                   window.buildfire.messaging.sendMessageToControl({
                       name: 'SEND_POSTS_TO_CP',
@@ -168,9 +170,9 @@
                       pinnedPost: WidgetWall.pinnedPost,
                       wid: WidgetWall.SocialItems.wid
                   });
-                  if (callback) {
-                      return callback(null, data);
-                  }
+                      resolve(data);
+                  })
+                  .catch(error => reject(error));
               });
           }
 
@@ -207,119 +209,118 @@
                                   groupName: WidgetWall.SocialItems.wid === '' ?
                                     WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
                               }, () => {});
-                              WidgetWall.groupFollowingStatus = true;
-                          } else if (status[0].data.banned) {
-
-                              WidgetWall.SocialItems.userBanned = true;
-                              WidgetWall.allowFollowLeaveGroup = false;
-                              WidgetWall.allowCreateThread = false;
-                              WidgetWall.SocialItems.appSettings.showMembers = false;
-                              WidgetWall.groupFollowingStatus = false;
-                          }
-                      }
-                      WidgetWall.showHideCommentBox();
-                      if (user) WidgetWall.statusCheck(status, user);
-                      buildfire.spinner.hide();
-                      WidgetWall.loading = false;
-                      $scope.$digest();
-                      if (callback) {
-                          return callback(null, status);
-                      }
-                  }
-              });
-          }
-
-          WidgetWall.unfollowWall = function () {
-              SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, result) {
-                  if (err) return console.error(err);
-                  else {
-                      Follows.unfollowPlugin((err, r) => err ? console.log(err) : console.log(r));
-                      WidgetWall.groupFollowingStatus = false;
-                      buildfire.notifications.pushNotification.unsubscribe({
-                          groupName: WidgetWall.SocialItems.wid === '' ?
-                            WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                      }, () => {});
-                      const options = {
-                          text: 'You have left this group'
-                      };
-                      buildfire.components.toast.showToastMessage(options, () => {});
-                      $scope.$digest();
-                  }
-              });
-          }
-
-          WidgetWall.followWall = function () {
-              let user = WidgetWall.SocialItems.userDetails;
-              var params = {
-                  userId: user.userId,
-                  userDetails: {
-                      displayName: user.displayName,
-                      firstName: user.firstName,
-                      lastName: user.lastName,
-                      imageUrl: user.imageUrl,
-                      email: user.email,
-                      lastUpdated: new Date().getTime(),
-                  },
-                  wallId: WidgetWall.SocialItems.wid,
-                  posts: [],
-                  _buildfire: {
-                      index: {
-                          text: user.userId + '-' + WidgetWall.SocialItems.wid,
-                          string1: WidgetWall.SocialItems.wid
-                      }
-                  }
-              };
-              Follows.followPlugin((e, u) => e ? console.log(e) : console.log(u));
-
-              SubscribedUsersData.save(params, function (err) {
-                  if (err) console.log('Error while saving subscribed user data.');
-                  else {
-                      WidgetWall.groupFollowingStatus = true;
-                      buildfire.notifications.pushNotification.subscribe({
-                          groupName: WidgetWall.SocialItems.wid === '' ?
-                            WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                      }, () => {});
-                      buildfire.spinner.hide();
-                      WidgetWall.loading = false;
-                      $scope.$digest();
-                  }
-              });
-          }
-
-          WidgetWall.followUnfollow = function () {
-              if (WidgetWall.groupFollowingStatus) return WidgetWall.unfollowWall();
-              else {
-                  WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
-                      if (err) return console.error("Getting user failed.", err);
-                      if (user) {
-                          WidgetWall.loading = true;
-                          buildfire.spinner.show();
-                          SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
-                              if (err) console.log('error while getting initial group following status.', err);
-                              else {
-                                  if (!status.length) return WidgetWall.followWall();
-                                  else if (status.length && status[0].data.leftWall) {
-                                      status[0].data.leftWall = false;
-                                      Follows.followPlugin((e, u) => e ? console.log(e) : console.log(u));
-                                      buildfire.publicData.update(status[0].id, SubscribedUsersData.getDataWithIndex(status[0]).data, 'subscribedUsersData', console.log);
-                                      buildfire.notifications.pushNotification.subscribe({
-                                          groupName: WidgetWall.SocialItems.wid === '' ?
-                                            WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
-                                      }, () => {});
-                                      WidgetWall.groupFollowingStatus = true;
-                                  } else if (status.length && !status[0].data.leftWall)
-                                      return WidgetWall.unfollowWall();
-                                  WidgetWall.showHideCommentBox();
-                                  if (user) WidgetWall.statusCheck(status, user);
-                                  buildfire.spinner.hide();
-                                  WidgetWall.loading = false;
-                                  $scope.$digest();
-                              }
-                          });
-                      }
-                  });
-              }
-          }
+                                    WidgetWall.groupFollowingStatus = true;
+                                } else if (status[0].data.banned) {
+                                    WidgetWall.SocialItems.userBanned = true;
+                                    WidgetWall.allowFollowLeaveGroup = false;
+                                    WidgetWall.allowCreateThread = false;
+                                    WidgetWall.SocialItems.appSettings.showMembers = false;
+                                    WidgetWall.groupFollowingStatus = false;
+                                }
+                            }
+                            WidgetWall.showHideCommentBox();
+                            if (user) WidgetWall.statusCheck(status, user);
+                            buildfire.spinner.hide();
+                            WidgetWall.loading = false;
+                            $scope.$digest();
+                            if (callback) {
+                                return callback(null, status);
+                            }
+                        }
+                    });
+                }
+                
+                WidgetWall.unfollowWall = function () {
+                    SubscribedUsersData.unfollowWall(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, result) {
+                        if (err) return console.error(err);
+                        else {
+                            Follows.unfollowPlugin((err, r) => err ? console.log(err) : console.log(r));
+                            WidgetWall.groupFollowingStatus = false;
+                            buildfire.notifications.pushNotification.unsubscribe({
+                                groupName: WidgetWall.SocialItems.wid === '' ?
+                                        WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                            }, () => {});
+                            const options = {
+                                text: 'You have left this group'
+                            };
+                            buildfire.components.toast.showToastMessage(options, () => {});
+                            $scope.$digest();
+                        }
+                    });
+                }
+                
+                WidgetWall.followWall = function () {
+                    let user = WidgetWall.SocialItems.userDetails;
+                    var params = {
+                        userId: user.userId,
+                        userDetails: {
+                            displayName: user.displayName,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            imageUrl: user.imageUrl,
+                            email: user.email,
+                            lastUpdated: new Date().getTime(),
+                        },
+                        wallId: WidgetWall.SocialItems.wid,
+                        posts: [],
+                        _buildfire: {
+                            index: {
+                                text: user.userId + '-' + WidgetWall.SocialItems.wid,
+                                string1: WidgetWall.SocialItems.wid
+                            }
+                        }
+                    };
+                    Follows.followPlugin((e, u) => e ? console.log(e) : console.log(u));
+                    
+                    SubscribedUsersData.save(params, function (err) {
+                        if (err) console.log('Error while saving subscribed user data.');
+                        else {
+                            WidgetWall.groupFollowingStatus = true;
+                            buildfire.notifications.pushNotification.subscribe({
+                                groupName: WidgetWall.SocialItems.wid === '' ?
+                                        WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                            }, () => {});
+                            buildfire.spinner.hide();
+                            WidgetWall.loading = false;
+                            $scope.$digest();
+                        }
+                    });
+                }
+                
+                WidgetWall.followUnfollow = function () {
+                    if (WidgetWall.groupFollowingStatus) return WidgetWall.unfollowWall();
+                    else {
+                        WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
+                            if (err) return console.error("Getting user failed.", err);
+                            if (user) {
+                                WidgetWall.loading = true;
+                                buildfire.spinner.show();
+                                SubscribedUsersData.getGroupFollowingStatus(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, WidgetWall.SocialItems.context.instanceId, function (err, status) {
+                                    if (err) console.log('error while getting initial group following status.', err);
+                                    else {
+                                        if (!status.length) return WidgetWall.followWall();
+                                        else if (status.length && status[0].data.leftWall) {
+                                            status[0].data.leftWall = false;
+                                            Follows.followPlugin((e, u) => e ? console.log(e) : console.log(u));
+                                            buildfire.publicData.update(status[0].id, SubscribedUsersData.getDataWithIndex(status[0]).data, 'subscribedUsersData', console.log);
+                                            buildfire.notifications.pushNotification.subscribe({
+                                                groupName: WidgetWall.SocialItems.wid === '' ?
+                                                        WidgetWall.SocialItems.context.instanceId : WidgetWall.SocialItems.wid
+                                            }, () => {});
+                                            WidgetWall.groupFollowingStatus = true;
+                                        } else if (status.length && !status[0].data.leftWall)
+                                            return WidgetWall.unfollowWall();
+                                        WidgetWall.showHideCommentBox();
+                                        if (user) WidgetWall.statusCheck(status, user);
+                                        buildfire.spinner.hide();
+                                        WidgetWall.loading = false;
+                                        $scope.$digest();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
 
           WidgetWall.scheduleNotification = function (post, text) {
               let options = {
@@ -573,16 +574,19 @@
                               if (err) {
                                 WidgetWall.stopSkeleton();
                                 return console.error("Getting user failed.", err);
-                              }
-                              WidgetWall.getPosts(()=>{
-                                  if (user) {
-                                      WidgetWall.checkFollowingStatus(user);
-                                      WidgetWall.checkForPrivateChat();
-                                      WidgetWall.checkForDeeplinks();
-                                  } else {
-                                      WidgetWall.groupFollowingStatus = false;
-                                  }
-                              });
+                                    }
+                                    WidgetWall.getPosts().then(() => {
+                                        if (user) {
+                                            WidgetWall.checkFollowingStatus(user);
+                                            WidgetWall.checkForPrivateChat();
+                                            WidgetWall.checkForDeeplinks();
+                                        } else {
+                                            WidgetWall.groupFollowingStatus = false;
+                                        }
+                                    }).catch(error => {
+                                        console.error("Error fetching posts:", error);
+                                    });
+                                    
                           });
                       });
                   }
@@ -760,30 +764,39 @@
               WidgetWall.SocialItems.showMorePosts = false;
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
-              if (privateChatData.wTitle) {
-                WidgetWall.SocialItems.pluginTitle = privateChatData.wTitle;
-              } else {
-                WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + privateChatData.name;
-              }
-              WidgetWall.SocialItems.items = [];
-              if (WidgetWall.isFromDeepLink) {
-                  buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
-                      if (err) return console.error(err);
-                  });
+              if (privateChatData.wid) {
+                        buildfire.auth.getUserProfiles({  userIds: [privateChatData.wid.slice(0, 24), privateChatData.wid.slice(24, 48)] }, (err, users) => {
+                            if (err) {
+                                if (privateChatData.wTitle) {
+                                    WidgetWall.SocialItems.pluginTitle = privateChatData.wTitle;
+                                } else {
+                                    WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + privateChatData.name;
+                                }
+                            }
+                            else {
+                                WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(users[0]) + ' | ' + WidgetWall.SocialItems.getUserName(users[1])
+                            }
+                            if (WidgetWall.isFromDeepLink) {
+                                buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
+                                    if (err) return console.error(err);
+                                });
 
-              }
-              else {
-                  buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
-                      isPrivateChat: true,
-                      showLabelInTitlebar: true
-                  });
-              }
-              WidgetWall.isFromDeepLink = false;
-
-              WidgetWall.getPosts(() => {
-                document.getElementById('top').scrollTop = 0
-              });
-          }
+                            }
+                            else {
+                                buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
+                                    isPrivateChat: true,
+                                    showLabelInTitlebar: true
+                                });
+                            }
+                            WidgetWall.isFromDeepLink = false;
+                        });
+                    }
+                    WidgetWall.SocialItems.items = [];
+                    
+                    WidgetWall.getPosts(() => {
+                        document.getElementById('top').scrollTop = 0
+                    });
+                }
 
           $rootScope.$on('loadPrivateChat', function (event, error) {
               WidgetWall.init();
