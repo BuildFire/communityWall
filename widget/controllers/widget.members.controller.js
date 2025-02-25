@@ -48,13 +48,60 @@
                         SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
                             if (err) return console.log(err);
                             Members.users = users;
-                            $scope.$digest();
-                            Members.skeleton.stop();
+                            Members.updateLatestUserName(()=>{
+                                $scope.$digest();
+                                Members.skeleton.stop();
+                            })
                         });
                     }
                 });
             }
-
+            
+            Members.updateLatestUserName = function (callback) {
+                if (!Members.users || !Array.isArray(Members.users) || Members.users.length === 0) {
+                    return callback && callback(new Error("No users available to update."));
+                }
+                
+                const userIds = Members.users.map(user => user.userId);
+                const chunkSize = 20;
+                const userChunks = [];
+                
+                // Split userIds into chunks of 20
+                for (let i = 0; i < userIds.length; i += chunkSize) {
+                    userChunks.push(userIds.slice(i, i + chunkSize));
+                }
+                
+                let errors = [];
+                
+                // Process each chunk sequentially
+                const processChunk = (index) => {
+                    if (index >= userChunks.length) {
+                        // All chunks processed, invoke callback
+                        return callback && callback(errors.length ? errors : null);
+                    }
+                    
+                    buildfire.auth.getUserProfiles({ userIds: userChunks[index] }, (err, users) => {
+                        if (err) {
+                            errors.push(err);
+                        } else if (users && Array.isArray(users)) {
+                            users.forEach(apiUser => {
+                                // Find matching user in Members.users and update userDetails
+                                let localUser = Members.users.find(member => member.userId === apiUser.userId);
+                                if (localUser) {
+                                    localUser.userDetails = apiUser;
+                                }
+                            });
+                        }
+                        
+                        // Process next chunk
+                        processChunk(index + 1);
+                    });
+                };
+                
+                processChunk(0);
+            };
+            
+            
             $scope.clear = function () {
                 $scope.searchInput = "";
                 Members.noResultsText = Members.languages.membersBlankState;
@@ -62,6 +109,9 @@
                 SubscribedUsersData.getUsersWhoFollow(Members.userDetails._id, Members.wallId, function (err, users) {
                     if (err) return console.log(err);
                     Members.users = users;
+                    Members.updateLatestUserName(()=>{
+                        $scope.$digest();
+                    })
                     $scope.$digest();
                 });
             }
@@ -142,8 +192,11 @@
                     }
 
                     Members.users = users.filter(el => el.userId !== Members.SocialItems.userDetails.userId);
-                    Members.skeleton.stop();
-                    $scope.$digest();
+                    Members.updateLatestUserName(()=>{
+                        Members.skeleton.stop();
+                        $scope.$digest();
+                    })
+                    
                 })
             }
 

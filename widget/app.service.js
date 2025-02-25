@@ -777,6 +777,22 @@
                     name = name.substring(0, 25) + '...';
                 return name;
             }
+                
+                SocialItems.prototype.getUserProfile = function (post, callback) {
+                    if (!post || !post.userId) {
+                        return callback({});
+                    }
+                    
+                    buildfire.auth.getUserProfile({ userId: post.userId }, function (err, data) {
+                        if (err || !data) {
+                            console.error('Error fetching user profile:', err);
+                            return callback({});
+                        }
+                        callback((data));
+                    });
+                };
+                
+                
             SocialItems.prototype.authenticateUser = function (loggedUser, callback) {
                 function prepareData(user) {
                     _this.userDetails = {
@@ -849,54 +865,74 @@
                 });
             }
 
-            SocialItems.prototype.getPosts = function (callback) {
-                let pageSize = _this.pageSize,
-                    page = _this.page;
-                let searchOptions = {
-                    pageSize,
-                    page,
-                    filter: getFilter(),
-                    sort: {
-                        "_buildfire.index.date1": -1
-                    },
-                    recordCount: true
-                }
+            SocialItems.prototype.getPosts = function () {
+                    return new Promise((resolve, reject) => {
+                        let pageSize = _this.pageSize,
+                            page = _this.page;
+                        let searchOptions = {
+                            pageSize,
+                            page,
+                            filter: getFilter(),
+                            sort: {
+                                "_buildfire.index.date1": -1
+                            },
+                            recordCount: true
+                        };
 
-                buildfire.publicData.search(searchOptions, 'posts', (error, data) => {
-                    if (error) return console.log(error);
+                        buildfire.publicData.search(searchOptions, 'posts', async (error, data) => {
+                            if (error) {
+                                console.log(error);
+                                return reject(error);
+                            }
 
-                    if (data && data.result.length) {
-                        const result = data.result.filter(newItem => !_this.items.some(existItem => existItem.id === newItem.id));
-                        const newItems = result.map(item => {
-                            return {...item.data, id: item.id};
+                            if (data && data.result.length) {
+                                const result = data.result.filter(newItem => !_this.items.some(existItem => existItem.id === newItem.id));
+                                const processPost = (post) => {
+                                    return new Promise((resolve) => {
+                                        SocialItems.prototype.getUserProfile(post, (data) => {
+                                            post.userDetails = data;
+                                            resolve(post);
+                                        });
+                                    });
+                                };
+                                
+                                try {
+                                    const newItems = await Promise.all(result.map(item => {
+                                        let post = { ...item.data, id: item.id };
+                                        return processPost(post);
+                                    }));
+                                    
+                                    _this.items = _this.items.concat(newItems);
+                                    _this.showMorePosts = data.totalRecord > _this.items.length;
+                                    if (_this.showMorePosts) {
+                                        _this.page++;
+                                    }
+                                    window.buildfire.messaging.sendMessageToControl({
+                                        name: 'SEND_POSTS_TO_CP',
+                                        posts: _this.items,
+                                    });
+                                    if (page === 0) startBackgroundService();
+                                    else clearInterval(_this.newPostTimerChecker);
+                                    $rootScope.$digest();
+                                    resolve(_this.items);
+                                } catch (err) {
+                                    reject(err);
+                                }
+                            } else {
+                                _this.showMorePosts = false;
+                                $rootScope.$digest();
+                                resolve((_this.items = []));
+                                
+                                startBackgroundService();
+                                if (window.URLSearchParams && window.location.search) {
+                                    var queryParamsInstance = new URLSearchParams(window.location.search);
+                                    var postId = queryParamsInstance.get('threadPostUniqueLink');
+                                    if (postId) location.href = '#/thread/' + postId;
+                                }
+                            }
                         });
-                        _this.items = _this.items.concat(newItems);
-                        if (data.totalRecord > _this.items.length) {
-                            _this.showMorePosts = true;
-                            _this.page++;
-                        } else _this.showMorePosts = false;
-                        window.buildfire.messaging.sendMessageToControl({
-                            name: 'SEND_POSTS_TO_CP',
-                            posts: _this.items,
-                        });
-                        if (page === 0) startBackgroundService();
-                        else clearInterval(_this.newPostTimerChecker);
-                        $rootScope.$digest();
-                        callback(null, data);
-                    } else {
-                        _this.showMorePosts = false;
-                        $rootScope.$digest();
-                        callback(null, _this.items = [])
-                        //Checking if user comming from notification for thread comment.
-                        startBackgroundService();
-                        if (window.URLSearchParams && window.location.search) {
-                            var queryParamsInstance = new URLSearchParams(window.location.search);
-                            var postId = queryParamsInstance.get('threadPostUniqueLink');
-                            if (postId) location.href = '#/thread/' + postId;
-                        }
-                    }
-                });
-            }
+                    });
+                };
 
             SocialItems.prototype.getPostById = function (id, callback) {
                 buildfire.publicData.getById(id, "posts", callback);
@@ -1012,7 +1048,6 @@
                                         name: 'SEND_POSTS_TO_CP',
                                         posts: _this.items,
                                     });
-                                    $rootScope.$digest();
                                 } else {
                                     return '';
                                 }
