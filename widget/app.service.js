@@ -1051,12 +1051,10 @@
                                     return { ...existItem, ...item.data, id: item.id };
                                 });
 
-                                // Check if it's a private chat and update user details if needed
-                                if (SocialItems.prototype.isPrivateChat) {
+                                if (_this.isPrivateChat) {
                                     items = items.map(item => {
                                         if (item.userDetails) {
-                                            // Assuming you have a way to fetch the correct user details for private chats
-                                            const updatedUserDetails = SocialItems.prototype.usersPrivateChat.find(user => user.id === item.userDetails.id);
+                                            const updatedUserDetails = _this.usersPrivateChat.find(user => user.userId === item.userId);
                                             if (updatedUserDetails) {
                                                 item.userDetails = updatedUserDetails;
                                             }
@@ -1064,7 +1062,6 @@
                                         return item;
                                     });
                                 }
-                                
                                 if (JSON.stringify(items) !== JSON.stringify(_this.items)) {
                                     _this.items = items;
                                     window.buildfire.messaging.sendMessageToControl({
