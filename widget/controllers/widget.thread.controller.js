@@ -219,9 +219,8 @@
               $rootScope.showThread = true;
               // destroy the watcher
               watcher();
-              Thread.SocialItems.setTitleBar({wid: user.wid}, true).then(()=>{
-                  $rootScope.$broadcast("loadPrivateChat");
-              });
+              $rootScope.$broadcast("loadPrivateChat");
+              Thread.SocialItems.setTitleBar({wid: user.wid}, true)
           }
 
           Thread.followPrivateWall = function (userId, wid, userName = null) {
