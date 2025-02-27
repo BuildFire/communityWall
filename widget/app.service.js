@@ -852,22 +852,21 @@
             
             SocialItems.prototype.setTitleBar = function (privateChatData, pushToHistory) {
                 let pluginTitle = '';
-                
                
                 const userIds = [privateChatData.wid.slice(0, 24), privateChatData.wid.slice(24, 48)];
-                
                 
                 let existingUsers = this.usersPrivateChat.filter(user => userIds.includes(user.userId)) || [];
                 let missingUserIds = userIds.filter(userId => !existingUsers.some(user => user.userId === userId));
                 
-                
                 const getUserProfiles = new Promise((resolve, reject) => {
-                    if (missingUserIds.length === 0) resolve(this.usersPrivateChat);
-                    buildfire.auth.getUserProfiles({ userIds }, (err, users) => {
-                        if (err) return reject(err);
-                        this.usersPrivateChat = users;
-                        resolve(users);
-                    });
+                    if (missingUserIds.length === 0 && this.usersPrivateChat.length) resolve(this.usersPrivateChat);
+                    else {
+                        buildfire.auth.getUserProfiles({ userIds }, (err, users) => {
+                            if (err) return reject(err);
+                            this.usersPrivateChat = users;
+                            resolve(users);
+                        });
+                    }
                 });
                 
                 return getUserProfiles
