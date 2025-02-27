@@ -160,8 +160,8 @@
           }
 
           WidgetWall.getPosts = async function (callback = null) {
-              if (WidgetWall.SocialItems.usersPrivateChat && WidgetWall.SocialItems.usersPrivateChat) {
-                  await WidgetWall.SocialItems.setTitleBar({wid: WidgetWall.SocialItems.wid}, true)
+              if (WidgetWall.SocialItems.usersPrivateChat && WidgetWall.SocialItems.isPrivateChat) {
+                  await WidgetWall.SocialItems.setTitleBar({wid: WidgetWall.SocialItems.wid}, false)
               }
               WidgetWall.SocialItems.getPosts(function (err, data) {
                   if (err) {
@@ -800,7 +800,7 @@
                   WidgetWall.SocialItems.pluginTitle = privateChatData.wTitle;
               }
               WidgetWall.SocialItems.items = [];
-              WidgetWall.SocialItems.setTitleBar(privateChatData,WidgetWall.isFromDeepLink).then(()=>{
+              WidgetWall.SocialItems.setTitleBar(privateChatData, !WidgetWall.isFromDeepLink).then(()=>{
                   WidgetWall.isFromDeepLink = false;
                   WidgetWall.getPosts(() => {
                       document.getElementById('top').scrollTop = 0
