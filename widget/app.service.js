@@ -876,8 +876,8 @@
                 const haveWallTitle = !!(new URLSearchParams(window.location.search).get('wTitle'));
                 if (haveWallTitle) return;
                 const users = await this.getUserProfiles(wallId);
-                this.pluginTitle = (users[0] ? SocialItems.prototype.getUserName(users[0]) : null) +
-                        ' | ' + (users[1] ? SocialItems.prototype.getUserName(users[1]) : null);
+                this.pluginTitle = (users[0] ? SocialItems.prototype.getUserName(users[0]) : 'Someone') +
+                        ' | ' + (users[1] ? SocialItems.prototype.getUserName(users[1]) : 'Someone');
             }
             
             SocialItems.prototype.getPosts = function (callback) {
