@@ -760,7 +760,7 @@
               WidgetWall.SocialItems.showMorePosts = false;
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
-              WidgetWall.SocialItems.getPrivateChatContext(privateChatData.wid).then(() => {
+              WidgetWall.SocialItems.setPrivateChatTitle(privateChatData.wid).then(() => {
                   if (WidgetWall.isFromDeepLink) {
                       buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
                           if (err) return console.error(err);

@@ -754,7 +754,7 @@
                 _this.indexingUpdateDone = false;
                 _this.reportData = {};
                 _this.blockedUsers = [];
-                _this.usersPrivateChat = {};
+                _this.cachedUserProfiles = {};
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
@@ -853,26 +853,26 @@
             SocialItems.prototype.getUserProfiles = function (wallId) {
                 let usersId = [wallId.slice(0, 24), wallId.slice(24, 48)];
                 usersId.forEach(userId => {
-                    if (this.usersPrivateChat[userId]) {
+                    if (this.cachedUserProfiles[userId]) {
                         usersId = usersId.filter(id => id !== userId);
                     }
                 })
                 return new Promise((resolve, reject) => {
                     if (usersId.length === 0) {
-                        resolve([this.usersPrivateChat[wallId.slice(0, 24)], this.usersPrivateChat[wallId.slice(24, 48)]]);
+                        resolve([this.cachedUserProfiles[wallId.slice(0, 24)], this.usersPrivateChat[wallId.slice(24, 48)]]);
                         return;
                     }
                     buildfire.auth.getUserProfiles({ userIds: usersId }, (err, users) => {
                         if (err) return reject(err);
                         users.forEach(user => {
-                            this.usersPrivateChat[user.userId] = user;
+                            this.cachedUserProfiles[user.userId] = user;
                         })
                         resolve(users);
                     });
                 });
             }
             
-            SocialItems.prototype.getPrivateChatContext = async function (wallId) {
+            SocialItems.prototype.setPrivateChatTitle = async function (wallId) {
                 const haveWallTitle = !!(new URLSearchParams(window.location.search).get('wTitle'));
                 if (haveWallTitle) return;
                 const users = await this.getUserProfiles(wallId);
@@ -909,7 +909,7 @@
                         if (_this.isPrivateChat) {
                             this.getUserProfiles(_this.wid).then((users) => {
                                 _this.items.forEach(item => {
-                                    const privateChatUser = this.usersPrivateChat[item.userId];
+                                    const privateChatUser = this.cachedUserProfiles[item.userId];
                                     if (privateChatUser) {
                                         item.userDetails = {
                                             displayName: privateChatUser.displayName,
@@ -1064,7 +1064,7 @@
                                     const existItem = _this.items.find(_item => _item.id === item.id) || {};
                                     let newItem = {...existItem, ...item.data, id: item.id};
                                     if (_this.isPrivateChat) {
-                                        const privateChatUser = _this.usersPrivateChat[newItem.userId];
+                                        const privateChatUser = _this.cachedUserProfiles[newItem.userId];
                                         if (privateChatUser) {
                                             newItem.userDetails = {
                                                 displayName: privateChatUser.displayName,

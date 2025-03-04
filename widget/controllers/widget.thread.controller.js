@@ -220,7 +220,7 @@
               // destroy the watcher
               watcher();
               $rootScope.$broadcast("loadPrivateChat");
-              Thread.SocialItems.getPrivateChatContext(Thread.SocialItems.wid).then(() => {
+              Thread.SocialItems.setPrivateChatTitle(Thread.SocialItems.wid).then(() => {
                   buildfire.history.push(Thread.SocialItems.pluginTitle, {
                       isPrivateChat: true,
                       showLabelInTitlebar: true
