@@ -165,7 +165,7 @@
                     return buildfire.imageLib.resizeImage(
                         imageUrl, options
                     );
-                }
+                },
             }
         }])
         .factory("SubscribedUsersData", function () {
@@ -754,6 +754,7 @@
                 _this.indexingUpdateDone = false;
                 _this.reportData = {};
                 _this.blockedUsers = [];
+                _this.cachedUserProfiles = {};
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
@@ -848,7 +849,37 @@
                     }
                 });
             }
-
+            
+            SocialItems.prototype.getUserProfiles = function (wallId) {
+                let usersId = [wallId.slice(0, 24), wallId.slice(24, 48)];
+                usersId.forEach(userId => {
+                    if (this.cachedUserProfiles[userId]) {
+                        usersId = usersId.filter(id => id !== userId);
+                    }
+                })
+                return new Promise((resolve, reject) => {
+                    if (usersId.length === 0) {
+                        resolve([this.cachedUserProfiles[wallId.slice(0, 24)], this.usersPrivateChat[wallId.slice(24, 48)]]);
+                        return;
+                    }
+                    buildfire.auth.getUserProfiles({ userIds: usersId }, (err, users) => {
+                        if (err) return reject(err);
+                        users.forEach(user => {
+                            this.cachedUserProfiles[user.userId] = user;
+                        })
+                        resolve(users);
+                    });
+                });
+            }
+            
+            SocialItems.prototype.setPrivateChatTitle = async function (wallId) {
+                const haveWallTitle = !!(new URLSearchParams(window.location.search).get('wTitle'));
+                if (haveWallTitle) return;
+                const users = await this.getUserProfiles(wallId);
+                this.pluginTitle = (users[0] ? SocialItems.prototype.getUserName(users[0]) : 'Someone') +
+                        ' | ' + (users[1] ? SocialItems.prototype.getUserName(users[1]) : 'Someone');
+            }
+            
             SocialItems.prototype.getPosts = function (callback) {
                 let pageSize = _this.pageSize,
                     page = _this.page;
@@ -875,14 +906,43 @@
                             _this.showMorePosts = true;
                             _this.page++;
                         } else _this.showMorePosts = false;
-                        window.buildfire.messaging.sendMessageToControl({
-                            name: 'SEND_POSTS_TO_CP',
-                            posts: _this.items,
-                        });
-                        if (page === 0) startBackgroundService();
-                        else clearInterval(_this.newPostTimerChecker);
-                        $rootScope.$digest();
-                        callback(null, data);
+                        if (_this.isPrivateChat) {
+                            this.getUserProfiles(_this.wid).then((users) => {
+                                _this.items.forEach(item => {
+                                    const privateChatUser = this.cachedUserProfiles[item.userId];
+                                    if (privateChatUser) {
+                                        item.userDetails = {
+                                            displayName: privateChatUser.displayName,
+                                            firstName: privateChatUser.firstName,
+                                            lastName: privateChatUser.lastName,
+                                            email: privateChatUser.email,
+                                            lastUpdated: privateChatUser.lastUpdated,
+                                            imageUrl: privateChatUser.imageUrl,
+                                        };
+                                    }
+                                });
+                                window.buildfire.messaging.sendMessageToControl({
+                                    name: 'SEND_POSTS_TO_CP',
+                                    posts: _this.items,
+                                });
+                                if (page === 0) startBackgroundService();
+                                else clearInterval(_this.newPostTimerChecker);
+                                $rootScope.$digest();
+                                callback(null, data);
+                            })
+                        
+                        }
+                        else {
+                            window.buildfire.messaging.sendMessageToControl({
+                                name: 'SEND_POSTS_TO_CP',
+                                posts: _this.items,
+                            });
+                            if (page === 0) startBackgroundService();
+                            else clearInterval(_this.newPostTimerChecker);
+                            $rootScope.$digest();
+                            callback(null, data);
+                        }
+
                     } else {
                         _this.showMorePosts = false;
                         $rootScope.$digest();
@@ -1002,7 +1062,21 @@
                             if (data && data.length) {
                                 let items = data.map(item => {
                                     const existItem = _this.items.find(_item => _item.id === item.id) || {};
-                                    return {...existItem, ...item.data, id: item.id};
+                                    let newItem = {...existItem, ...item.data, id: item.id};
+                                    if (_this.isPrivateChat) {
+                                        const privateChatUser = _this.cachedUserProfiles[newItem.userId];
+                                        if (privateChatUser) {
+                                            newItem.userDetails = {
+                                                displayName: privateChatUser.displayName,
+                                                firstName: privateChatUser.firstName,
+                                                lastName: privateChatUser.lastName,
+                                                email: privateChatUser.email,
+                                                lastUpdated: privateChatUser.lastUpdated,
+                                                imageUrl: privateChatUser.imageUrl,
+                                            };
+                                        }
+                                    }
+                                    return newItem;
                                 });
 
                                 // Check if the new data is different from the current data
