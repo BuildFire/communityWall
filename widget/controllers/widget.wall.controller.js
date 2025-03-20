@@ -760,29 +760,24 @@
               WidgetWall.SocialItems.showMorePosts = false;
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
-              if (privateChatData.wTitle) {
-                WidgetWall.SocialItems.pluginTitle = privateChatData.wTitle;
-              } else {
-                WidgetWall.SocialItems.pluginTitle = WidgetWall.SocialItems.getUserName(WidgetWall.SocialItems.userDetails) + ' | ' + privateChatData.name;
-              }
-              WidgetWall.SocialItems.items = [];
-              if (WidgetWall.isFromDeepLink) {
-                  buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
-                      if (err) return console.error(err);
+              WidgetWall.SocialItems.setPrivateChatTitle(privateChatData.wid).then(() => {
+                  if (WidgetWall.isFromDeepLink) {
+                      buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
+                          if (err) return console.error(err);
+                      });
+                  }
+                  else {
+                      buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
+                          isPrivateChat: true,
+                          showLabelInTitlebar: true
+                      });
+                  }
+                  WidgetWall.SocialItems.items = [];
+                  WidgetWall.isFromDeepLink = false;
+                  WidgetWall.getPosts(() => {
+                      document.getElementById('top').scrollTop = 0
                   });
-
-              }
-              else {
-                  buildfire.history.push(WidgetWall.SocialItems.pluginTitle, {
-                      isPrivateChat: true,
-                      showLabelInTitlebar: true
-                  });
-              }
-              WidgetWall.isFromDeepLink = false;
-
-              WidgetWall.getPosts(() => {
-                document.getElementById('top').scrollTop = 0
-              });
+              })
           }
 
           $rootScope.$on('loadPrivateChat', function (event, error) {
