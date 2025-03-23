@@ -850,6 +850,9 @@
             }
 
             SocialItems.prototype.getUserProfiles = function (wallId) {
+                if (wallId.length === 49 && wallId.length.indexOf('|') === 24) {
+                    wallId = wallId.replace("|", "");
+                }
                 let usersId = [wallId.slice(0, 24), wallId.slice(24, 48)];
                 usersId.forEach(userId => {
                     if (this.cachedUserProfiles[userId]) {
