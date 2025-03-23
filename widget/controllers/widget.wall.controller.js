@@ -622,7 +622,7 @@
                         });
                     }
                   }
-                  const wallId = await WidgetWall.SocialItems.validateOneToOneWallId(deeplinkData.wid);
+                  const wallId = await WidgetWall.SocialItems.getOneToOneWallId(deeplinkData.wid);
                   const userIds = deeplinkData.userIds;
                   const wTitle = deeplinkData.wTitle;
                   if (!userIds && wallId && wallId.length === 48) {

@@ -875,22 +875,17 @@
             }
 
             // this function is used to validate the wallId for private chat that received from deeplinks
-            SocialItems.prototype.validateOneToOneWallId = function (wallId) {
+            SocialItems.prototype.getOneToOneWallId = function (wallId) {
                 return new Promise(async (resolve) => {
-                    let wallWithPipe = false;
-                    if (wallId.length === 49 && wallId.length.indexOf('|') === 24) {
-                        wallId = wallId.replace("|", "");
-                        wallWithPipe = true;
-                    }
                     if (wallId.length !== 48) return resolve(wallId);
                     const users = await this.getUserProfiles(wallId);
 
                     if (users && users.length === 2) {
                         let validWid = '';
                         if (users[0].userId > users[1].userId) {
-                            validWid = `${users[0].userId}${wallWithPipe ? '|' : ''}${users[1].userId}`;
+                            validWid = `${users[0].userId}${users[1].userId}`;
                         } else {
-                            validWid = `${users[1].userId}${wallWithPipe ? '|' : ''}${users[0].userId}`;
+                            validWid = `${users[1].userId}${users[0].userId}`;
                         }
                         return resolve(validWid);
                     } else {
@@ -1200,13 +1195,13 @@
                             lastInHistory.options.pluginData.queryString) {
                             wallId = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('wid');
                             userIds = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('userIds');
-                            wallId = wallId ? await this.validateOneToOneWallId(wallId) : '';
+                            wallId = wallId ? await this.getOneToOneWallId(wallId) : '';
                             userIds = userIds ? userIds : '';
                         }
 
                         if (!_this.wid) {
                             _this.wid = Util.getParameterByName("wid") ?
-                            await this.validateOneToOneWallId(Util.getParameterByName("wid")) : wallId;
+                            await this.getOneToOneWallId(Util.getParameterByName("wid")) : wallId;
                             _this.mainWallID = _this.wid;
                         }
 
