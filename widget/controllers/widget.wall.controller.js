@@ -591,7 +591,7 @@
 
           WidgetWall.init();
 
-          WidgetWall.handleDeepLinkActions = function (deeplinkData, pushToHistory){
+          WidgetWall.handleDeepLinkActions = async function (deeplinkData, pushToHistory){
               if (deeplinkData) {
                   if (deeplinkData.fromReportAbuse) {
                       WidgetWall.SocialItems.reportData = deeplinkData;
@@ -622,7 +622,7 @@
                         });
                     }
                   }
-                  const wallId = deeplinkData.wid
+                  const wallId = await WidgetWall.SocialItems.validateOneToOneWallId(deeplinkData.wid);
                   const userIds = deeplinkData.userIds;
                   const wTitle = deeplinkData.wTitle;
                   if (!userIds && wallId && wallId.length === 48) {
