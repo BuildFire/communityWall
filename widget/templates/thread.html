@@ -53,9 +53,9 @@
                 <div class="footer">
                     <div class="status-footer">
                         <a class="likes social-icon ng-cloak" ng-click="Thread.likeThread(Thread.post, 'thread')">
-                            <i class="material-icons-outlined" aria-hidden="true">{{!isItemLiked(Thread.post, Thread.SocialItems.userDetails.userId)?"thumb_up_off_alt":"thumb_up_alt"}}</i>
+                            <i class="material-icons-outlined" aria-hidden="true">{{!Thread.post.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                             <span class="iconsTheme iconsFont"
-                                ng-class="{active: isItemLiked(Thread.post, Thread.SocialItems.userDetails.userId)}">{{Thread.post.likes.length}}</span>
+                                ng-class="{active: Thread.post.isUserLikeActive}">{{Thread.post.likes.length}}</span>
                         </a>
                     </div>
                 </div>
@@ -97,9 +97,9 @@
                             </div>
                             <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">
                                 <a class="social-icon likes" ng-click="!Thread.isBlockedUser(comment.userId) && Thread.likeComment(comment, 'comment')">
-                                    <i class="material-icons-outlined" ng-class="{notActive: !isItemLiked(comment, Thread.SocialItems.userDetails.userId) }" aria-hidden="true">{{!isItemLiked(comment, Thread.SocialItems.userDetails.userId)?"thumb_up_off_alt":"thumb_up_alt"}}</i>
+                                    <i class="material-icons-outlined" ng-class="{notActive: !comment.isUserLikeActive }" aria-hidden="true">{{!comment.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                                     <span class="iconsTheme iconsFont"
-                                        ng-class="{active: isItemLiked(comment, Thread.SocialItems.userDetails.userId)}">{{comment.likes.length}}</span>
+                                        ng-class="{active: comment.isUserLikeActive}">{{comment.likes.length}}</span>
                                 </a>
 
                             </div>

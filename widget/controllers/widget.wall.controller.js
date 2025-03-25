@@ -161,6 +161,7 @@
 
           WidgetWall.getPosts = function (callback = null)  {
               WidgetWall.SocialItems.getPosts(function (err, data) {
+                  WidgetWall.showUserLikes();
                   window.buildfire.messaging.sendMessageToControl({
                       name: 'SEND_POSTS_TO_CP',
                       posts: WidgetWall.SocialItems.items,
@@ -173,9 +174,13 @@
               });
           }
 
-          $rootScope.isItemLiked = function (post, userId) {
-            if (!post || !post.likes || !post.likes.length) return false;
-            return post.likes.includes(userId);
+          WidgetWall.showUserLikes = function () {
+              WidgetWall.SocialItems.items.map(item => {
+                  let liked = item.likes.find(like => like === WidgetWall.SocialItems.userDetails.userId);
+                  if (liked) item.isUserLikeActive = true;
+                  else item.isUserLikeActive = false;
+              });
+              $scope.$digest();
           }
 
           WidgetWall.checkFollowingStatus = function (user = null, callback = null) {
@@ -575,7 +580,7 @@
                                       WidgetWall.checkForPrivateChat();
                                       WidgetWall.checkForDeeplinks();
                                   } else {
-                                    WidgetWall.groupFollowingStatus = false;
+                                      WidgetWall.groupFollowingStatus = false;
                                   }
                               });
                           });
@@ -586,7 +591,7 @@
 
           WidgetWall.init();
 
-          WidgetWall.handleDeepLinkActions = async function (deeplinkData, pushToHistory){
+          WidgetWall.handleDeepLinkActions = function (deeplinkData, pushToHistory){
               if (deeplinkData) {
                   if (deeplinkData.fromReportAbuse) {
                       WidgetWall.SocialItems.reportData = deeplinkData;
@@ -617,7 +622,7 @@
                         });
                     }
                   }
-                  const wallId = await WidgetWall.SocialItems.getOneToOneWallId(deeplinkData.wid);
+                  const wallId = deeplinkData.wid
                   const userIds = deeplinkData.userIds;
                   const wTitle = deeplinkData.wTitle;
                   if (!userIds && wallId && wallId.length === 48) {
@@ -1285,6 +1290,7 @@
                       let postUpdate = WidgetWall.SocialItems.items.find(element => element.id === post.id)
                       if (liked !== undefined) {
                           post.likes.splice(index, 1)
+                          postUpdate.isUserLikeActive = false;
                           Buildfire.messaging.sendMessageToControl({
                               'name': EVENTS.POST_UNLIKED,
                               'id': postUpdate.id,
@@ -1292,6 +1298,7 @@
                           });
                       } else {
                           post.likes.push(WidgetWall.SocialItems.userDetails.userId);
+                          postUpdate.isUserLikeActive = true;
                           Buildfire.messaging.sendMessageToControl({
                               'name': EVENTS.POST_LIKED,
                               'id': postUpdate.id,
@@ -1497,27 +1504,61 @@
           });
 
           function updatePostsWithNames(user, status) {
-            // update posts with the user details
-            buildfire.publicData.searchAndUpdate({
-              "_buildfire.index.array1.string1": `createdBy_${user._id}`
-            }, {
-              $set: {
-                "userDetails": status[0].data.userDetails
-              }
-            }, 'posts', (err, res) => {
-              if (err) console.error('failed to update posts ' + err);
+              let page = 0,
+                pageSize = 50,
+                allPosts = [];
 
-              // update comments with the user details
-              buildfire.publicData.searchAndUpdate({
-                "$json.comments.userId": user._id
-              }, {
-                $set: {
-                  "comments.$.userDetails": status[0].data.userDetails
-                }
-              }, 'posts', (err, res) => {
-                if (err) console.error('failed to update comments ' + err);
-              })
-            });
+              function get() {
+                  buildfire.publicData.search({
+                      filter: {
+                          $or: [{
+                              "_buildfire.index.array1.string1": `createdBy_${user._id}`
+                          },
+                              {
+                                  "$json.comments.userId": user._id
+                              },
+                          ]
+                      },
+                      page,
+                      pageSize,
+                      recordCount: true
+                  }, 'posts', (err, posts) => {
+                      allPosts = allPosts.concat(posts.result);
+                      if (posts.totalRecord > allPosts.length) {
+                          page++;
+                          get();
+                      } else {
+                          allPosts.map(item => {
+                              var needsUpdate = false;
+                              if (item.data.userId === user._id) {
+                                  item.data.userDetails = status[0].data.userDetails;
+                                  needsUpdate = true;
+                              }
+                              item.data.comments.map(comment => {
+                                  if (comment.userId === user._id) {
+                                      comment.userDetails = status[0].data.userDetails;
+                                      needsUpdate = true;
+                                  }
+                              });
+                              if (needsUpdate) {
+                                  let postUpdate = WidgetWall.SocialItems.items.find(post => post.id === item.id);
+                                  if (postUpdate) {
+                                      let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
+                                      WidgetWall.SocialItems.items[postIndex] = item.data;
+                                  }
+                                  buildfire.publicData.update(item.id, item.data, 'posts', (err, updatedPost) => {
+                                      console.log(updatedPost)
+                                      if (!$scope.$$phase) $scope.$digest();
+
+                                  });
+                              }
+
+                          })
+                          if (!$scope.$$phase) $scope.$digest();
+                      }
+                  });
+              }
+              get();
           }
 
           WidgetWall.statusCheck = function (status, user) {
@@ -1588,6 +1629,7 @@
                       }
                   });
               } else WidgetWall.SocialItems.forcedToLogin = false;
+              WidgetWall.showUserLikes();
               Location.goToHome();
               if ($scope.$$phase) $scope.$digest();
           });

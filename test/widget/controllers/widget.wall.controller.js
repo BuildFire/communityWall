@@ -182,6 +182,8 @@ describe('Unit : Controller - WidgetWallCtrl', function () {
     describe('WidgetWall.isLikedByLoggedInUser', function () {
         it('it should pass if it calls SocialDataStore.likeThread is called', function () {
             WidgetWallCtrl.picFile = 'a';
+            WidgetWallCtrl.isUserLikeActive('asasasa');
+
         });
     });
 
