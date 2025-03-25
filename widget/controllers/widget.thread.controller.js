@@ -83,7 +83,6 @@
               if (Thread.post.imageUrl) {
                   setTimeout(function () {
                       let imageList = document.getElementById("commentPostImage");
-                      if (!imageList) return;
                       imageList.images = Thread.post.imageUrl;
                       imageList.addEventListener('imageSelected', (e) => {
                           let selectedImage = e.detail.filter(image => image.selected);
@@ -177,6 +176,9 @@
                   Thread.SocialItems.authenticateUser(null, (err, userData) => {
                       if (err) return console.error("Getting user failed.", err);
                       if (userData) {
+                          let liked = Thread.post.likes.find(element => element === Thread.SocialItems.userDetails.userId);
+                          if (liked !== undefined) Thread.post.isUserLikeActive = true;
+                          else Thread.post.isUserLikeActive = false;
                           Thread.showHideCommentBox();
                           Thread.showHidePrivateChat();
                           Thread.followLeaveGroupPermission();
@@ -539,6 +541,7 @@
                       let index = post.likes.indexOf(Thread.SocialItems.userDetails.userId);
                       if (liked !== undefined) {
                           post.likes.splice(index, 1)
+                          post.isUserLikeActive = false;
                           Buildfire.messaging.sendMessageToControl({
                               'name': EVENTS.POST_UNLIKED,
                               'id': post.id,
@@ -546,6 +549,7 @@
                           });
                       } else {
                           post.likes.push(Thread.SocialItems.userDetails.userId);
+                          post.isUserLikeActive = true;
                           Buildfire.messaging.sendMessageToControl({
                               'name': EVENTS.POST_LIKED,
                               'id': post.id,
@@ -569,8 +573,10 @@
                       let index = comment.likes.indexOf(Thread.SocialItems.userDetails.userId)
                       if (liked !== undefined) {
                           comment.likes.splice(index, 1)
+                          comment.isUserLikeActive = false;
                       } else {
                           comment.likes.push(Thread.SocialItems.userDetails.userId);
+                          comment.isUserLikeActive = true;
                           Buildfire.messaging.sendMessageToControl({
                               'name': EVENTS.COMMENT_LIKED,
                               'userId': comment.userId,
@@ -936,6 +942,7 @@
           $scope.$on('$destroy', function () {
               $rootScope.$broadcast('ROUTE_CHANGED', {
                   _id: Thread.post.id,
+                  isUserLikeActive: Thread.post.isUserLikeActive
               });
               onRefresh.clear();
               Buildfire.datastore.onRefresh(function () {
