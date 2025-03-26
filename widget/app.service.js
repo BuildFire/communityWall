@@ -894,6 +894,28 @@
                 });
             }
 
+            SocialItems.prototype.migrateBrokenOneToOneWallPosts = async function (oldWallId) {
+                return new Promise(async (resolve, reject) => {
+                    if (!oldWallId || oldWallId.length !== 48) return resolve();
+                    const updatedWallId = await this.getOneToOneWallId(oldWallId);
+                    if (oldWallId !== updatedWallId) {
+                        buildfire.publicData.searchAndUpdate({
+                            "_buildfire.index.string1": oldWallId
+                        }, {
+                            "$set": {
+                                "_buildfire.index.string1": updatedWallId,
+                                wid: updatedWallId
+                            }
+                        }, 'posts', (error, result) => {
+                            if (error) return reject(error);
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                })
+            }
+
             SocialItems.prototype.setPrivateChatTitle = async function (wallId) {
                 const haveWallTitle = !!(new URLSearchParams(window.location.search).get('wTitle'));
                 if (haveWallTitle) return;
@@ -1195,13 +1217,19 @@
                             lastInHistory.options.pluginData.queryString) {
                             wallId = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('wid');
                             userIds = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('userIds');
+                            await this.migrateBrokenOneToOneWallPosts(wallId);
                             wallId = wallId ? await this.getOneToOneWallId(wallId) : '';
                             userIds = userIds ? userIds : '';
                         }
 
                         if (!_this.wid) {
-                            _this.wid = Util.getParameterByName("wid") ?
-                               await this.getOneToOneWallId(Util.getParameterByName("wid")) : wallId;
+                            const paramWid = Util.getParameterByName("wid");
+                            if (paramWid) {
+                                await this.migrateBrokenOneToOneWallPosts(paramWid);
+                                _this.wid = await this.getOneToOneWallId(paramWid);
+                            } else {
+                                _this.wid = wallId;
+                            }
                             _this.mainWallID = _this.wid;
                         }
 
