@@ -161,7 +161,6 @@
 
           WidgetWall.getPosts = function (callback = null)  {
               WidgetWall.SocialItems.getPosts(function (err, data) {
-                  WidgetWall.showUserLikes();
                   window.buildfire.messaging.sendMessageToControl({
                       name: 'SEND_POSTS_TO_CP',
                       posts: WidgetWall.SocialItems.items,
@@ -174,13 +173,9 @@
               });
           }
 
-          WidgetWall.showUserLikes = function () {
-              WidgetWall.SocialItems.items.map(item => {
-                  let liked = item.likes.find(like => like === WidgetWall.SocialItems.userDetails.userId);
-                  if (liked) item.isUserLikeActive = true;
-                  else item.isUserLikeActive = false;
-              });
-              $scope.$digest();
+          $rootScope.isItemLiked = function (post, userId) {
+            if (!post || !post.likes || !post.likes.length) return false;
+            return post.likes.includes(userId);
           }
 
           WidgetWall.checkFollowingStatus = function (user = null, callback = null) {
@@ -1290,7 +1285,6 @@
                       let postUpdate = WidgetWall.SocialItems.items.find(element => element.id === post.id)
                       if (liked !== undefined) {
                           post.likes.splice(index, 1)
-                          postUpdate.isUserLikeActive = false;
                           Buildfire.messaging.sendMessageToControl({
                               'name': EVENTS.POST_UNLIKED,
                               'id': postUpdate.id,
@@ -1298,7 +1292,6 @@
                           });
                       } else {
                           post.likes.push(WidgetWall.SocialItems.userDetails.userId);
-                          postUpdate.isUserLikeActive = true;
                           Buildfire.messaging.sendMessageToControl({
                               'name': EVENTS.POST_LIKED,
                               'id': postUpdate.id,
@@ -1629,7 +1622,6 @@
                       }
                   });
               } else WidgetWall.SocialItems.forcedToLogin = false;
-              WidgetWall.showUserLikes();
               Location.goToHome();
               if ($scope.$$phase) $scope.$digest();
           });

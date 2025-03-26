@@ -555,7 +555,6 @@
                     var deferred = $q.defer();
                     postData.userToken = postData.userDetails.userToken;
                     postData.userId = postData.userDetails.userId;
-                    postData.isUserLikeActive = false;
                     postData.likes = [];
                     postData.comments = [];
                     postData.createdOn = new Date();
