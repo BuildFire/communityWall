@@ -586,7 +586,7 @@
 
           WidgetWall.init();
 
-          WidgetWall.handleDeepLinkActions = function (deeplinkData, pushToHistory){
+          WidgetWall.handleDeepLinkActions = async function (deeplinkData, pushToHistory){
               if (deeplinkData) {
                   if (deeplinkData.fromReportAbuse) {
                       WidgetWall.SocialItems.reportData = deeplinkData;
@@ -617,7 +617,7 @@
                         });
                     }
                   }
-                  const wallId = deeplinkData.wid
+                  const wallId = await WidgetWall.SocialItems.getOneToOneWallId(deeplinkData.wid);
                   const userIds = deeplinkData.userIds;
                   const wTitle = deeplinkData.wTitle;
                   if (!userIds && wallId && wallId.length === 48) {
@@ -1497,61 +1497,27 @@
           });
 
           function updatePostsWithNames(user, status) {
-              let page = 0,
-                pageSize = 50,
-                allPosts = [];
+            // update posts with the user details
+            buildfire.publicData.searchAndUpdate({
+              "_buildfire.index.array1.string1": `createdBy_${user._id}`
+              }, {
+                $set: {
+                  "userDetails": status[0].data.userDetails
+                }
+              }, 'posts', (err, res) => {
+                if (err) console.error('failed to update posts ' + err);
 
-              function get() {
-                  buildfire.publicData.search({
-                      filter: {
-                          $or: [{
-                              "_buildfire.index.array1.string1": `createdBy_${user._id}`
-                          },
-                              {
-                                  "$json.comments.userId": user._id
-                              },
-                          ]
-                      },
-                      page,
-                      pageSize,
-                      recordCount: true
-                  }, 'posts', (err, posts) => {
-                      allPosts = allPosts.concat(posts.result);
-                      if (posts.totalRecord > allPosts.length) {
-                          page++;
-                          get();
-                      } else {
-                          allPosts.map(item => {
-                              var needsUpdate = false;
-                              if (item.data.userId === user._id) {
-                                  item.data.userDetails = status[0].data.userDetails;
-                                  needsUpdate = true;
-                              }
-                              item.data.comments.map(comment => {
-                                  if (comment.userId === user._id) {
-                                      comment.userDetails = status[0].data.userDetails;
-                                      needsUpdate = true;
-                                  }
-                              });
-                              if (needsUpdate) {
-                                  let postUpdate = WidgetWall.SocialItems.items.find(post => post.id === item.id);
-                                  if (postUpdate) {
-                                      let postIndex = WidgetWall.SocialItems.items.indexOf(postUpdate);
-                                      WidgetWall.SocialItems.items[postIndex] = item.data;
-                                  }
-                                  buildfire.publicData.update(item.id, item.data, 'posts', (err, updatedPost) => {
-                                      console.log(updatedPost)
-                                      if (!$scope.$$phase) $scope.$digest();
-
-                                  });
-                              }
-
-                          })
-                          if (!$scope.$$phase) $scope.$digest();
-                      }
-                  });
-              }
-              get();
+                // update comments with the user details
+                buildfire.publicData.searchAndUpdate({
+                  "$json.comments.userId": user._id
+                }, {
+                  $set: {
+                    "comments.$.userDetails": status[0].data.userDetails
+                  }
+                }, 'posts', (err, res) => {
+                  if (err) console.error('failed to update comments ' + err);
+                });
+            });
           }
 
           WidgetWall.statusCheck = function (status, user) {
