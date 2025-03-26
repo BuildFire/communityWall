@@ -174,8 +174,8 @@
           }
 
           $rootScope.isItemLiked = function (post, userId) {
-			if (!post || !post.likes || !post.likes.length) return false;
-			return post.likes.includes(userId);
+            if (!post || !post.likes || !post.likes.length) return false;
+            return post.likes.includes(userId);
           }
 
           WidgetWall.checkFollowingStatus = function (user = null, callback = null) {
