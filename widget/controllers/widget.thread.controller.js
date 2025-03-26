@@ -83,6 +83,7 @@
               if (Thread.post.imageUrl) {
                   setTimeout(function () {
                       let imageList = document.getElementById("commentPostImage");
+                      if (!imageList) return;
                       imageList.images = Thread.post.imageUrl;
                       imageList.addEventListener('imageSelected', (e) => {
                           let selectedImage = e.detail.filter(image => image.selected);

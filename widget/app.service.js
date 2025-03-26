@@ -848,8 +848,11 @@
                     }
                 });
             }
-            
+
             SocialItems.prototype.getUserProfiles = function (wallId) {
+                if (wallId.length === 49 && wallId.length.indexOf('|') === 24) {
+                    wallId = wallId.replace("|", "");
+                }
                 let usersId = [wallId.slice(0, 24), wallId.slice(24, 48)];
                 usersId.forEach(userId => {
                     if (this.cachedUserProfiles[userId]) {
@@ -858,7 +861,7 @@
                 })
                 return new Promise((resolve, reject) => {
                     if (usersId.length === 0) {
-                        resolve([this.cachedUserProfiles[wallId.slice(0, 24)], this.usersPrivateChat[wallId.slice(24, 48)]]);
+                        resolve([this.cachedUserProfiles[wallId.slice(0, 24)], this.cachedUserProfiles[wallId.slice(24, 48)]]);
                         return;
                     }
                     buildfire.auth.getUserProfiles({ userIds: usersId }, (err, users) => {
@@ -870,7 +873,27 @@
                     });
                 });
             }
-            
+
+            // this function is used to validate the wallId for private chat that received from deeplinks
+            SocialItems.prototype.getOneToOneWallId = function (wallId) {
+                return new Promise(async (resolve) => {
+                    if (wallId.length !== 48) return resolve(wallId);
+                    const users = await this.getUserProfiles(wallId);
+
+                    if (users && users.length === 2) {
+                        let validWid = '';
+                        if (users[0].userId > users[1].userId) {
+                            validWid = `${users[0].userId}${users[1].userId}`;
+                        } else {
+                            validWid = `${users[1].userId}${users[0].userId}`;
+                        }
+                        return resolve(validWid);
+                    } else {
+                        return resolve(wallId);
+                    }
+                });
+            }
+
             SocialItems.prototype.setPrivateChatTitle = async function (wallId) {
                 const haveWallTitle = !!(new URLSearchParams(window.location.search).get('wTitle'));
                 if (haveWallTitle) return;
@@ -878,7 +901,7 @@
                 this.pluginTitle = (users[0] ? SocialItems.prototype.getUserName(users[0]) : 'Someone') +
                         ' | ' + (users[1] ? SocialItems.prototype.getUserName(users[1]) : 'Someone');
             }
-            
+
             SocialItems.prototype.getPosts = function (callback) {
                 let pageSize = _this.pageSize,
                     page = _this.page;
@@ -929,7 +952,7 @@
                                 $rootScope.$digest();
                                 callback(null, data);
                             })
-                        
+
                         }
                         else {
                             window.buildfire.messaging.sendMessageToControl({
@@ -1163,7 +1186,7 @@
 
                     buildfire.history.get({
                         pluginBreadcrumbsOnly: false
-                    }, (err, history) => {
+                    }, async (err, history) => {
                         if (err) return console.error(err);
                         let lastInHistory = history[history.length - 1];
                         let wallId = '';
@@ -1172,13 +1195,13 @@
                             lastInHistory.options.pluginData.queryString) {
                             wallId = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('wid');
                             userIds = new URLSearchParams(lastInHistory.options.pluginData.queryString).get('userIds');
-                            wallId = wallId ? wallId : '';
+                            wallId = wallId ? await this.getOneToOneWallId(wallId) : '';
                             userIds = userIds ? userIds : '';
                         }
 
                         if (!_this.wid) {
                             _this.wid = Util.getParameterByName("wid") ?
-                                Util.getParameterByName("wid") : wallId;
+                               await this.getOneToOneWallId(Util.getParameterByName("wid")) : wallId;
                             _this.mainWallID = _this.wid;
                         }
 
