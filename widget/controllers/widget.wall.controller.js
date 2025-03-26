@@ -617,6 +617,7 @@
                         });
                     }
                   }
+                  await WidgetWall.SocialItems.migrateBrokenOneToOneWallPosts(deeplinkData.wid);
                   const wallId = await WidgetWall.SocialItems.getOneToOneWallId(deeplinkData.wid);
                   const userIds = deeplinkData.userIds;
                   const wTitle = deeplinkData.wTitle;
