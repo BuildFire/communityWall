@@ -164,9 +164,9 @@
                                             <div class="status-footer">
                                                 <a class="social-icon likes ng-cloak"
                                                 ng-click="WidgetWall.likeThread(post)">
-                                                <i class="material-icons-outlined" aria-hidden="true">{{!post.isUserLikeActive?"thumb_up_off_alt":"thumb_up_alt"}}</i>
+                                                <i class="material-icons-outlined" aria-hidden="true">{{!isItemLiked(post, WidgetWall.SocialItems.userDetails.userId)?"thumb_up_off_alt":"thumb_up_alt"}}</i>
                                                 <span class="iconsTheme iconsFont"
-                                                ng-class="{notActive: !post.isUserLikeActive}">{{post.likes.length}}</span>
+                                                ng-class="{notActive: !isItemLiked(post, WidgetWall.SocialItems.userDetails.userId)}">{{post.likes.length}}</span>
                                             </a>
 
                                             <a ng-if="!WidgetWall.SocialItems.isPrivateChat"

@@ -176,7 +176,6 @@ describe('Unit : Controller - ThreadCtrl', function () {
         it('it should pass if Thread.likeComment is called', function () {
             var comment={};
             comment.waitAPICompletion=false;
-            comment.isUserLikeActive=true;
             ThreadCtrl.likeComment(comment,'comment');
         });
     });
