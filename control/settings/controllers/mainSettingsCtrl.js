@@ -50,14 +50,25 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                             } else
                                 result.data.appSettings.allowChat = "allUsers";
                         }
+                        if (!result.data.appSettings.chatFeature) {
+                            result.data.appSettings.chatFeature = {
+                                value: "default",
+                                actionItem: null
+                            };
+                        }
                     } else if (!result.data.appSettings) {
                         result.data.appSettings = {};
                         result.data.appSettings.showMembers = true;
                         result.data.appSettings.allowAutoSubscribe = true;
                         result.data.appSettings.allowChat = "allUsers";
+                        result.data.appSettings.chatFeature = {
+                            value: "default",
+                            actionItem: null
+                        };
                     }
                     $scope.data = result.data.appSettings;
 
+                    $scope.handleChatFeatureActionItem();
                     $scope.fillUsers();
                     $scope.$digest();
 
@@ -71,6 +82,13 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                     })
 
                     document.getElementById('selectedUsers').addEventListener('change', () => {
+                        $scope.save();
+                    })
+
+                    document.getElementById('ChatFeaturePluginsDefault').addEventListener('change', () => {
+                        $scope.save();
+                    })
+                    document.getElementById('chatFeatureActionItem').addEventListener('change', () => {
                         $scope.save();
                     })
                 }
@@ -111,6 +129,43 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         }
     }
 
+    $scope.handleChatFeatureActionItem = function () {
+        var chatFeatureActionsItems = new buildfire.components.actionItems.sortableList("#chatFeatureActions");
+        if ($scope.data.chatFeature.actionItem) {
+            chatFeatureActionsItems.loadItems([$scope.data.chatFeature.actionItem]);
+        }
+        chatFeatureActionsItems.onDeleteItem = function (event) {
+            delete $scope.data.chatFeature.actionItem;
+            $scope.save();
+        }
+
+        chatFeatureActionsItems.onItemChange = function (event) {
+            $scope.data.chatFeature.actionItem = chatFeatureActionsItems.items[0];
+            $scope.save();
+        }
+
+        chatFeatureActionsItems.onAddItems = function (items) {
+            if (!$scope.data.chatFeature.actionItem) {
+                $scope.data.chatFeature.actionItem = chatFeatureActionsItems.items[0];
+                $scope.save();
+            } else {
+                let items = [];
+                items.push($scope.data.chatFeature.actionItem);
+                chatFeatureActionsItems.loadItems(items)
+                buildfire.notifications.alert({
+                    title: "Adding Denied",
+                    message: "You can only have one action item",
+                    okButton: {
+                    text: 'Ok'
+                    }
+                }, function (e, data) {
+                    if (e) console.error(e);
+                    if (data) console.log(data);
+                });
+            }
+
+        }
+    }
 
     $scope.warn = function () {
         let el = document.getElementById("seeProfile");

@@ -521,20 +521,7 @@
           }
 
           WidgetWall.openChat = function (userId) {
-              if (WidgetWall.allowPrivateChat) {
-                  WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
-                      if (err) return console.error("Getting user failed.", err);
-                      if (user) {
-                          buildfire.auth.getUserProfile({
-                              userId: userId
-                          }, function (err, user) {
-                              if (err || !user) return console.error("Getting user profile failed.", err);
-                              if (userId === WidgetWall.SocialItems.userDetails.userId) return;
-                              WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
-                          });
-                      }
-                  });
-              }
+              WidgetWall.SocialItems.openChat(WidgetWall, userId);
           };
 
           WidgetWall.getBlockedUsers = function(callback) {

@@ -282,7 +282,6 @@ tags-input > div > div > input {
 
 .pull-right {
   float: right !important;
-  width: fit-content !important;
 }
 
 .radio-inline + .radio-inline,
@@ -433,4 +432,17 @@ tags-input > div > div > input {
 .tooltip-container .btn-info-icon:hover .cp-tooltip {
   opacity: 1;
   transform: scale(1);
+}
+
+#chatFeatureActions .main .clearfix, #actions .main .clearfix {
+	display: flex;
+	align-items: end;
+	justify-content: end;
+}
+#chatFeatureActions .d-item.double-line.square-icon.clearfix, #actions .d-item.double-line.square-icon.clearfix {
+	align-items: center;
+}
+
+.draggable-list-view.has-btn.links-list .d-item.double-line .copy .pull-right span.btn-icon {
+	top: 0 !important;
 }

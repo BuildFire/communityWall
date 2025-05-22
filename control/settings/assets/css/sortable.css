@@ -24,12 +24,10 @@
 .draggable-list-view .d-item span.icon{
   top: auto;
 }
-.draggable-list-view.has-btn.links-list .d-item.double-line .copy .pull-right span.btn-icon{
-  top: 5px;
-}
+
 .draggable-list-view .pull-right .btn-icon{
   width: 2.5rem;
-  height: 2.5rem; 
+  height: 2.5rem;
   border-radius: .25rem;
   font-size: 1.125rem;
   display: inline-flex;

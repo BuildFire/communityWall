@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row flex align-items-center justify-content-center" style="margin-bottom: 1.25rem;" ng-show="data.allowMainThreadTags">
             <div class="tooltip-container col-md-4">Tags
                 <span class="btn-info-icon btn-primary">
@@ -61,7 +61,7 @@
                     </span>
                 </span>
             </div>
-            
+
             <div class="col-md-8">
                 <tags-input class="margin-bottom-ten" ng-model="data.sideThreadUserTags" min-tags="{{data.allowSideThreadTags ? 1 : 0}}"
                     on-tag-added="save()" on-tag-removed="save()">
@@ -79,12 +79,12 @@
             </div>
             <div class="col-md-2 radio radio-primary radio-inline" style="width: 20% !important;">
                 <input id="AllUsers" type="radio" name="allowChat" ng-model="data.allowChat" value="allUsers">
-                <label class="subtitles-labels" for="AllUsers">All Users</label>
+                <label class="subtitles-labels" for="AllUsers">All users</label>
             </div>
             <div class="col-md-3 radio radio-primary radio-inline" style="width: 25% !important;">
                 <input id="selectedUsers" type="radio" name="allowChat" ng-model="data.allowChat" value="selectedUsers">
                 <label for="selectedUsers" class="tooltip-container bottom col-md-4">
-                    <span class="nowrap">Selected Users</span>
+                    <span class="nowrap">Selected users</span>
                     <span class="btn-info-icon btn-primary">
                         <span class="cp-tooltip">
                            Users added to the list will be able to send private messages to all users. Users that are not in the list, will be able to send private messages only to the users in the list.
@@ -93,7 +93,6 @@
                 </label>
             </div>
         </div>
-
         <div class="row" ng-show="data.allowChat == 'selectedUsers'">
             <div class="col-md-9">
                 <label class="subtitles-labels" style="font-size: 14px !important;">Allowed Users</label>
@@ -105,36 +104,68 @@
             </div>
         </div>
 
-        <div class="row" style="margin-bottom: 1.25rem;min-height: 240px;" ng-show="data.allowChat == 'selectedUsers'">
-            <div class="col-md-5">
-            </div>
-            <div class="col-md-7">
-                <table class="table table-bf hidden" id="headTable" style="margin-bottom: 0;">
-                    <thead>
-                    <th class="headerPadding" style="width: 56.5px;">
-                        <h5 class="headerCell text-left"></h5>
-                    </th>
-                    <th class="headerPadding" style="width: 162px;">
-                        <h5 class="headerCell text-left">User Name</h5>
-                    </th>
-                    <th class="editColumn"></th>
-                    </thead>
-                </table>
-                <div class="tableDiv">
-                    <table id="searchResults" class="table table-bf hidden"></table>
-                </div>
-                <div id="loading" class="well empty-state-lg">
-                    <h5 class="text-center" style="margin-bottom: 0px">
-                        Loading...
-                    </h5>
-                </div>
-                
-                <div id="emptyTableContainer" class="well empty-state-lg hidden">
-                    <h5 class="text-center">There is no any users added yet.</h5>
-                    <br>
-                </div>
-            </div>
-        </div>
+		<div class="row" style="margin-bottom: 1.25rem;min-height: 240px;" ng-show="data.allowChat == 'selectedUsers'">
+			<div class="col-md-5">
+			</div>
+			<div class="col-md-7">
+				<table class="table table-bf hidden" id="headTable" style="margin-bottom: 0;">
+					<thead>
+					<th class="headerPadding" style="width: 56.5px;">
+						<h5 class="headerCell text-left"></h5>
+					</th>
+					<th class="headerPadding" style="width: 162px;">
+						<h5 class="headerCell text-left">User Name</h5>
+					</th>
+					<th class="editColumn"></th>
+					</thead>
+				</table>
+				<div class="tableDiv">
+					<table id="searchResults" class="table table-bf hidden"></table>
+				</div>
+				<div id="loading" class="well empty-state-lg">
+					<h5 class="text-center" style="margin-bottom: 0px">
+						Loading...
+					</h5>
+				</div>
+
+				<div id="emptyTableContainer" class="well empty-state-lg hidden">
+					<h5 class="text-center">There is no any users added yet.</h5>
+					<br>
+				</div>
+			</div>
+		</div>
+
+
+		<!--here-->
+		<div ng-show="data.allowChat == 'selectedUsers' || data.allowChat == 'allUsers'" class="row" style="margin-bottom: 1.25rem;">
+			<div class="col-md-4">
+				<label class="label2" style="font-size: 14px !important;">
+					<div class="tooltip-container">
+						<span class="nowrap">Chat Feature</span>
+						<span class="btn-info-icon btn-primary">
+                            <span class="cp-tooltip">Stick with the built-in chat feature or switch to the new Action Item method,
+								which lets you select actions like the Chat plugin.</span>
+                        </span>
+					</div>
+				</label>
+
+			</div>
+			<div class="col-md-2 radio radio-primary radio-inline" style="width: 20% !important;">
+				<input id="ChatFeaturePluginsDefault" type="radio" name="chatFeature" ng-model="data.chatFeature.value" value="default">
+				<label class="subtitles-labels" for="ChatFeaturePluginsDefault">Plugin's default</label>
+			</div>
+			<div class="col-md-2 radio radio-primary radio-inline" style="width: 20% !important;">
+				<input id="chatFeatureActionItem" type="radio" name="chatFeature" ng-model="data.chatFeature.value" value="actionItem">
+				<label class="subtitles-labels" for="chatFeatureActionItem">Action item</label>
+			</div>
+		</div>
+
+		<div ng-show="data.chatFeature.value === 'actionItem' && (data.allowChat == 'selectedUsers' || data.allowChat == 'allUsers')">
+			<div id="chatFeatureActions" class="padding-bottom-ten"></div>
+		</div>
+
+		<!--here-->
+
         <div class="row">
             <div class="col-md-4">
                 <label class="label2" style="font-size: 14px !important;">Disable Follow/Leave Group</label>

@@ -379,18 +379,7 @@
           };
 
           Thread.openChat = function (userId) {
-              Thread.SocialItems.authenticateUser(null, (err, user) => {
-                  if (err) return console.error("Getting user failed.", err);
-                  if (user) {
-                      buildfire.auth.getUserProfile({
-                          userId: userId
-                      }, function (err, user) {
-                          if (err || !user) return console.error("Getting user profile failed.", err);
-                          if (userId === Thread.SocialItems.userDetails.userId) return;
-                          Thread.openPrivateChat(userId, Thread.SocialItems.getUserName(user));
-                      });
-                  }
-              });
+              Thread.SocialItems.openChat(Thread, userId);
           }
 
           Thread.openPrivateChat = function (userId, userName) {
