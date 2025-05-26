@@ -196,7 +196,19 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
 
     $scope.save = function () {
         buildfire.spinner.show();
-        _pluginData.data.appSettings = $scope.data;
+
+        const clonedData = JSON.parse(JSON.stringify($scope.data));
+
+        if (
+            clonedData.chatFeature &&
+            clonedData.chatFeature.value === 'actionItem' &&
+            !clonedData.chatFeature.actionItem
+        ) {
+            clonedData.chatFeature.value = 'default';
+        }
+
+        _pluginData.data.appSettings = clonedData;
+
         buildfire.datastore.save(_pluginData.data, 'Social', function (err, data) {
             if (err) {
                 console.error('App settings -- ', err);
