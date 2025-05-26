@@ -348,7 +348,7 @@
                   listItems: listItems
               }, (err, result) => {
                   if (err) return console.error(err);
-                  else if (result.text == "Send Direct Message") Thread.openChat(userId);
+                  else if (result.text == "Send Direct Message") Thread.SocialItems.openChat(Thread, userId);
                   else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                   else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
@@ -377,21 +377,6 @@
                   });
               }
           };
-
-          Thread.openChat = function (userId) {
-              Thread.SocialItems.authenticateUser(null, (err, user) => {
-                  if (err) return console.error("Getting user failed.", err);
-                  if (user) {
-                      buildfire.auth.getUserProfile({
-                          userId: userId
-                      }, function (err, user) {
-                          if (err || !user) return console.error("Getting user profile failed.", err);
-                          if (userId === Thread.SocialItems.userDetails.userId) return;
-                          Thread.openPrivateChat(userId, Thread.SocialItems.getUserName(user));
-                      });
-                  }
-              });
-          }
 
           Thread.openPrivateChat = function (userId, userName) {
               let wid = null;

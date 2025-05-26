@@ -509,7 +509,7 @@
                   listItems: listItems
               }, (err, result) => {
                   if (err) return console.error(err);
-                  else if (result.text == "Send Direct Message") WidgetWall.openChat(userId);
+                  else if (result.text == "Send Direct Message") WidgetWall.SocialItems.openChat(WidgetWall, userId);
                   else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                   else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
@@ -520,22 +520,6 @@
               });
           }
 
-          WidgetWall.openChat = function (userId) {
-              if (WidgetWall.allowPrivateChat) {
-                  WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
-                      if (err) return console.error("Getting user failed.", err);
-                      if (user) {
-                          buildfire.auth.getUserProfile({
-                              userId: userId
-                          }, function (err, user) {
-                              if (err || !user) return console.error("Getting user profile failed.", err);
-                              if (userId === WidgetWall.SocialItems.userDetails.userId) return;
-                              WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
-                          });
-                      }
-                  });
-              }
-          };
 
           WidgetWall.getBlockedUsers = function(callback) {
               SubscribedUsersData.getBlockedUsers((err, result)=>{
