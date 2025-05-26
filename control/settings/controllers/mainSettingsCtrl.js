@@ -163,7 +163,6 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                     if (data) console.log(data);
                 });
             }
-
         }
     }
 
@@ -197,8 +196,9 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
     $scope.save = function () {
         buildfire.spinner.show();
 
-        const clonedData = JSON.parse(JSON.stringify($scope.data));
+        const clonedData = structuredClone($scope.data);
 
+        // handle action item not selected
         if (
             clonedData.chatFeature &&
             clonedData.chatFeature.value === 'actionItem' &&

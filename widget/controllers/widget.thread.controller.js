@@ -348,7 +348,7 @@
                   listItems: listItems
               }, (err, result) => {
                   if (err) return console.error(err);
-                  else if (result.text == "Send Direct Message") Thread.openChat(userId);
+                  else if (result.text == "Send Direct Message") Thread.SocialItems.openChat(Thread, userId);
                   else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                   else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
@@ -377,10 +377,6 @@
                   });
               }
           };
-
-          Thread.openChat = function (userId) {
-              Thread.SocialItems.openChat(Thread, userId);
-          }
 
           Thread.openPrivateChat = function (userId, userName) {
               let wid = null;
