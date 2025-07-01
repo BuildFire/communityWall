@@ -1010,7 +1010,7 @@
                             false,
                             (err, record) => {
                                 if (err) return callback(err);
-								Analytics.trackAction("thread-created");
+                                Analytics.trackAction("thread-created");
                                 return callback(null, new WidgetWall.Thread(record));
                             }
                           );
