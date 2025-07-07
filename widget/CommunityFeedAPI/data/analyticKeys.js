@@ -1,35 +1,40 @@
-const analyticKeys = Object.freeze({ 
-    POST_ADDED: { 
-        title: 'New post added', 
-        key: 'post-added', 
-        description: 'A new post has been added', 
-    }, 
-    POST_DELETED: { 
-        title: 'New post deleted', 
-        key: 'post-deleted', 
-        description: 'A post has been deleted', 
-    }, 
-    POST_UPDATED: { 
-        title: 'New post updated', 
-        key: 'post-updated', 
-        description: 'A post has been updated', 
+const analyticKeys = Object.freeze({
+    POST_ADDED: {
+        title: 'New post added',
+        key: 'post-added',
+        description: 'A new post has been added',
     },
-    POST_LIKED: { 
-        title: 'New post liked',  
-        key: 'post-liked',  
-        description: 'A post has been liked', 
+    POST_DELETED: {
+        title: 'New post deleted',
+        key: 'post-deleted',
+        description: 'A post has been deleted',
     },
-    POST_REPORTED: { 
-        title: 'New post reported',   
-        key: 'post-reported',   
-        description: 'A post has been reported',  
+    POST_UPDATED: {
+        title: 'New post updated',
+        key: 'post-updated',
+        description: 'A post has been updated',
     },
-    POST_COMMENTED: { 
-        title: 'New post commented',   
-        key: 'post-commented',   
-        description: 'A post has been commented',  
+    POST_LIKED: {
+        title: 'New post liked',
+        key: 'post-liked',
+        description: 'A post has been liked',
     },
-    
+    POST_REPORTED: {
+        title: 'New post reported',
+        key: 'post-reported',
+        description: 'A post has been reported',
+    },
+    POST_COMMENTED: {
+        title: 'New post commented',
+        key: 'post-commented',
+        description: 'A post has been commented',
+    },
+    THREAD_CREATED: {
+        title: 'New thread created',
+        key: 'thread-created',
+        description: 'A new thread has been created',
+    },
+
 });
 
 
@@ -65,7 +70,7 @@ const Analytics = {
         });
       }
     },
-  
+
     init: () => {
       Analytics.registerEvent(
        analyticKeys.POST_ADDED,
@@ -75,7 +80,7 @@ const Analytics = {
           else return res;
         }
       );
-  
+
       Analytics.registerEvent(
        analyticKeys.POST_DELETED,
         { silentNotification: false },
@@ -84,7 +89,7 @@ const Analytics = {
           else console.log("from analytics",res);;
         }
       );
-  
+
       Analytics.registerEvent(
         analyticKeys.POST_UPDATED,
         { silentNotification: false },
@@ -93,7 +98,7 @@ const Analytics = {
           else return res;
         }
       );
-  
+
       Analytics.registerEvent(
         analyticKeys.POST_LIKED,
         { silentNotification: false },
@@ -120,6 +125,13 @@ const Analytics = {
           else return res;
         }
       );
+      Analytics.registerEvent(
+        analyticKeys.THREAD_CREATED,
+        { silentNotification: false },
+        (err, res) => {
+          if (err) console.error(err);
+          else return res;
+        }
+      );
     },
   };
-  
