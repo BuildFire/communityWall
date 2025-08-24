@@ -274,12 +274,12 @@ button.btn--lg,
 
 .btn.btn--act{
     display: flex;
-    width: 45px;
-    height: 45px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     position: fixed;
-    bottom: 5.5rem;
-    right: 1.8rem;
+    bottom: 6.5rem;
+    right: 0.8rem;
     box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.3);
     background-color: white !important;
     color: black;

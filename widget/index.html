@@ -20,8 +20,10 @@
     <script src="../../../scripts/angular/angular-animate.min.js"></script>
     <script src="../../../scripts/buildfire/components/skeleton/skeleton.js"></script>
     <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
+    <script src="../../../scripts/buildfire/components/fabSpeedDial/fabSpeedDial.js"></script>
 
     <link rel="stylesheet" href="../../../styles/components/skeleton.css" />
+    <link rel="stylesheet" href="../../../styles/components/fabSpeedDial/fabSpeedDial.css" />
 
     <!-- build:bundleCFFiles  -->
     <script src="./CommunityFeedAPI/data/analyticKeys.js"></script>
@@ -203,13 +205,7 @@
 
                         </div>
 
-                        <button ng-show="WidgetWall.allowCreateThread && WidgetWall.loadedPlugin && WidgetWall.postsLoaded" class="add-message btn btn--fab btn--add btn-success" id="addBtn"
-                            ng-click="WidgetWall.openPostSection()" on-touchend="WidgetWall.openPostSection()">
-                            <svg style="fill: white !important;" height="16px" width="16px" version="1.1" viewBox="0 0 16 16"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8 1v6H2v2h6v6h2V9h6V7H10V1H8z" />
-                            </svg>
-                    </button>
+                        <div ng-show="WidgetWall.allowCreateThread && WidgetWall.loadedPlugin && WidgetWall.postsLoaded" id="addBtn"></div>
                     </div>
                 </div>
             </div>

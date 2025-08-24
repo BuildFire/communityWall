@@ -46,6 +46,15 @@
             }
           }
 
+          WidgetWall.initFabButtons = function () {
+             const fabSpeedDial = new buildfire.components.fabSpeedDial('#addBtn',{
+                      mainButton: {
+                          content: `<span><svg style="fill: #fff !important;" height="16px" width="16px" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v6H2v2h6v6h2V9h6V7H10V1H8z"></path></svg></span>`,
+                          type: 'default',
+                      },});
+             fabSpeedDial.onMainButtonClick = () => WidgetWall.openPostSection()
+          }
+
           WidgetWall.showHideCommentBox = function () {
               if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
                 WidgetWall.SocialItems.appSettings.mainThreadUserTags && WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
@@ -152,8 +161,6 @@
                   }
                   WidgetWall.appTheme = obj.colors;
 
-                  elements[2].style.setProperty("fill", 'white', "important");
-                  document.getElementById('addBtn').style.setProperty("background-color", "var(--bf-theme-success)", "important");
                   document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
                   WidgetWall.loadedPlugin = true;
               });
@@ -544,6 +551,7 @@
                       WidgetWall.showHidePrivateChat();
                       WidgetWall.followLeaveGroupPermission();
                       WidgetWall.setAppTheme();
+                      WidgetWall.initFabButtons();
                       WidgetWall.getBlockedUsers((error, res) => {
                           if (err) console.log("Error while fetching blocked users ", err);
                           if (res) WidgetWall.SocialItems.blockedUsers = res;
