@@ -92,7 +92,13 @@
                   return;
               }
               WidgetWall.fabSpeedDial = new buildfire.components.fabSpeedDial('#addBtn',options);
-              WidgetWall.fabSpeedDial.onMainButtonClick = () => WidgetWall.openPostSection()
+              if (WidgetWall.allowCreateThread) {
+                  WidgetWall.fabSpeedDial.onMainButtonClick = () => WidgetWall.openPostSection()
+
+              }
+              else if (actionItem && actionItem.iconUrl) {
+                  WidgetWall.fabSpeedDial.onMainButtonClick = () => WidgetWall.navigateTo()
+              }
           }
 
           WidgetWall.showHideCommentBox = function () {
