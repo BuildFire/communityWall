@@ -51,7 +51,6 @@
                   WidgetWall.fabSpeedDial.destroy();
                   WidgetWall.fabSpeedDial = null;
               }
-              console.log(WidgetWall.SocialItems.appSettings);
               let options = {}
               let actionItem = WidgetWall.SocialItems.appSettings.actionItem;
               if (actionItem && actionItem.iconUrl && WidgetWall.allowCreateThread) {
