@@ -16,6 +16,7 @@
           Thread.util = Util;
           Thread.loaded = false;
           Thread.processedComments = false;
+          Thread.fabSpeedDial = null;
           Thread.skeletonPost = new Buildfire.components.skeleton('.social-item', {
               type: 'list-item-avatar, list-item-two-line, image'
           });
@@ -62,6 +63,16 @@
               }
           };
 
+          Thread.initCommentFabBtn = function () {
+              Thread.fabSpeedDial = new buildfire.components.fabSpeedDial('#addCommentBtn',{
+                  mainButton: {
+                      content: `<span class="material-icons">send</span>`,
+                      type: 'default',
+                  },});
+
+              Thread.fabSpeedDial.onMainButtonClick = () => Thread.openCommentSection()
+          }
+
           Thread.followLeaveGroupPermission = function () {
               if (Thread.SocialItems && Thread.SocialItems.appSettings && Thread.SocialItems.appSettings.disableFollowLeaveGroup) {
                   Thread.allowFollowLeaveGroup = false;
@@ -70,14 +81,6 @@
               }
           }
 
-          Thread.setAppTheme = function () {
-              buildfire.appearance.getAppTheme((err, obj) => {
-                  let elements = document.getElementsByTagName('svg');
-                  document.getElementById("addCommentBtn").style.setProperty("background-color", "var(--bf-theme-success)", "important");
-                  elements[3].style.setProperty("fill", obj.colors.titleBarTextAndIcons, "important");
-                  document.getElementById("add-comment-svg").style.setProperty("fill", 'white', "important");
-              });
-          }
 
           Thread.setupThreadImage = function () {
               if (Thread.post.imageUrl) {
@@ -168,7 +171,7 @@
           Thread.init = function () {
               Thread.skeletonPost.start();
               Thread.skeletonComments.start();
-              Thread.setAppTheme();
+              Thread.initCommentFabBtn();
               if ($routeParams.threadId) {
                   let post = Thread.SocialItems.items.find(el => el.id === $routeParams.threadId);
                   Thread.post = post || {};
@@ -924,6 +927,9 @@
               });
               onRefresh.clear();
               Buildfire.datastore.onRefresh(function () {
+                  if (Thread.fabSpeedDial) {
+                        Thread.fabSpeedDial.destroy();
+                  }
                   Location.goToHome();
               });
           });
