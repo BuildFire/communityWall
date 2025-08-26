@@ -54,6 +54,12 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
   }
+  #addBtn .material-icons, #addCommentBtn .material-icons {
+    color: #fff !important;
+ }
+  .fab-button {
+    padding: 0;
+ }
 
   .material-icons-outlined {
     font-family: 'Material Icons Outlined';

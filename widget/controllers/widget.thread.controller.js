@@ -16,6 +16,7 @@
           Thread.util = Util;
           Thread.loaded = false;
           Thread.processedComments = false;
+          Thread.fabSpeedDial = null;
           Thread.skeletonPost = new Buildfire.components.skeleton('.social-item', {
               type: 'list-item-avatar, list-item-two-line, image'
           });
@@ -63,16 +64,13 @@
           };
 
           Thread.initCommentFabBtn = function () {
-              const fabSpeedDial = new buildfire.components.fabSpeedDial('#addCommentBtn',{
+              Thread.fabSpeedDial = new buildfire.components.fabSpeedDial('#addCommentBtn',{
                   mainButton: {
-                      content: `<span><svg id="add-comment-svg" class="svgIcon" height="16px" width="16px" version="1.1" viewBox="0 0 16 16" x="0px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" y="0px" style="fill: white !important;">
-                                  <path d="M11,8.3L2.6,8.8C2.4,8.8,2.3,8.9,2.3,9l-1.2,4.1c-0.2,0.5,0,1.1,0.4,1.5C1.7,14.9,2,15,2.4,15c0.2,0,0.4,0,0.6-0.1l11.2-5.6 C14.8,9,15.1,8.4,15,7.8c-0.1-0.4-0.4-0.8-0.8-1L3,1.1C2.5,0.9,1.9,1,1.5,1.3C1,1.7,0.9,2.3,1.1,2.9L2.3,7c0,0.1,0.2,0.2,0.3,0.2 L11,7.7c0,0,0.3,0,0.3,0.3S11,8.3,11,8.3z"></path>
-                                </svg>
-                                </span>`,
+                      content: `<span class="material-icons">send</span>`,
                       type: 'default',
                   },});
 
-              fabSpeedDial.onMainButtonClick = () => Thread.openCommentSection()
+              Thread.fabSpeedDial.onMainButtonClick = () => Thread.openCommentSection()
           }
 
           Thread.followLeaveGroupPermission = function () {
@@ -929,6 +927,9 @@
               });
               onRefresh.clear();
               Buildfire.datastore.onRefresh(function () {
+                  if (Thread.fabSpeedDial) {
+                        Thread.fabSpeedDial.destroy();
+                  }
                   Location.goToHome();
               });
           });

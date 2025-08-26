@@ -47,12 +47,53 @@
           }
 
           WidgetWall.initFabButtons = function () {
-             const fabSpeedDial = new buildfire.components.fabSpeedDial('#addBtn',{
+              if (WidgetWall.fabSpeedDial) {
+                  WidgetWall.fabSpeedDial.destroy();
+                  WidgetWall.fabSpeedDial = null;
+              }
+              console.log(WidgetWall.SocialItems.appSettings);
+              let options = {}
+              let actionItem = WidgetWall.SocialItems.appSettings.actionItem;
+              if (actionItem && actionItem.iconUrl && WidgetWall.allowCreateThread) {
+                  options = {
                       mainButton: {
-                          content: `<span><svg style="fill: #fff !important;" height="16px" width="16px" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v6H2v2h6v6h2V9h6V7H10V1H8z"></path></svg></span>`,
+                          content: `<span class="material-icons">menu</span>`,
                           type: 'default',
-                      },});
-             fabSpeedDial.onMainButtonClick = () => WidgetWall.openPostSection()
+                      },
+                      buttons: [
+                          {
+                              content: '<i class="material-icons">add</i>',
+                              type: 'success',
+                              onClick: () => WidgetWall.openPostSection()
+                          },
+                          {
+                              content: `<span><img src="${actionItem.iconUrl}"</span>`,
+                              onClick: () => WidgetWall.navigateTo()
+                          },
+                      ]
+                  }
+              }
+              else if (WidgetWall.allowCreateThread) {
+                    options = {
+                        mainButton: {
+                            content: `<span class="material-icons">add</span>`,
+                            type: 'default',
+                        },
+                    }
+              }
+              else if (actionItem && actionItem.iconUrl) {
+                    options = {
+                        mainButton: {
+                            content: `<span><img src="${actionItem.iconUrl}"</span>`,
+                            type: 'default',
+                        },
+                    }
+              }
+              else {
+                  return;
+              }
+              WidgetWall.fabSpeedDial = new buildfire.components.fabSpeedDial('#addBtn',options);
+              WidgetWall.fabSpeedDial.onMainButtonClick = () => WidgetWall.openPostSection()
           }
 
           WidgetWall.showHideCommentBox = function () {
@@ -127,7 +168,7 @@
               let actionItem = WidgetWall.SocialItems.appSettings.actionItem;
               if (actionItem && actionItem.iconUrl) {
                   actionItem.iconUrl = buildfire.imageLib.cropImage(actionItem.iconUrl, {
-                      size: 'xss',
+                      size: 's',
                       aspect: '1:1'
                   })
                   angular.element('#actionBtn').attr('style', `background-image: url(${actionItem.iconUrl}) !important; background-size: cover !important;`);
@@ -551,7 +592,6 @@
                       WidgetWall.showHidePrivateChat();
                       WidgetWall.followLeaveGroupPermission();
                       WidgetWall.setAppTheme();
-                      WidgetWall.initFabButtons();
                       WidgetWall.getBlockedUsers((error, res) => {
                           if (err) console.log("Error while fetching blocked users ", err);
                           if (res) WidgetWall.SocialItems.blockedUsers = res;
@@ -779,10 +819,13 @@
                       if (err) return console.error("Fetching settings failed.", err);
                       if (result) {
                           WidgetWall.SocialItems.appSettings = result.data && result.data.appSettings ? result.data.appSettings : {};
+                          WidgetWall.setSettings(result);
+                          WidgetWall.initFabButtons();
 
                           Buildfire.datastore.onUpdate(function (response) {
                               if (response.tag === "Social") {
                                   WidgetWall.setSettings(response);
+                                  WidgetWall.initFabButtons()
                                   setTimeout(function () {
                                       if (!response.data.appSettings.disableFollowLeaveGroup) {
                                           let wallSVG = document.getElementById("WidgetWallSvg")
