@@ -1,0 +1,27 @@
+<div class="padding-zero" style="height:100%;">
+  <div class="social-plugin social-thread" style="height:100%;">
+    <div class="blocked-users">
+      <div ng-repeat="user in Blocked.users">
+        <div class="blocked-users-item">
+          <div class="head flex flex-space-between flex-items-center">
+            <div class="flex flex-items-center">
+              <div class="media-holder pull-left" style="margin-right: 10px;">
+                <img ng-if="user.imageUrl" load-image="1x1" data-final-src="{{user.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
+                <img ng-if="!user.imageUrl" load-image="1x1" data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40" crop-height="40" crop-type="default">
+              </div>
+              <div class="social-copy">
+                <p class="text-primary ellipsis margin-bottom-zero">{{Blocked.SocialItems.getUserName(user)}}</p>
+              </div>
+            </div>
+            <button class="btn btn-primary" ng-click="Blocked.unblockUser(user.userId)">Unblock</button>
+          </div>
+        </div>
+      </div>
+      <div ng-show="!Blocked.users.length">
+        <div class="empty_state text-center">
+        </div>
+        <p class="text-center">empty state</p>
+      </div>
+    </div>
+  </div>
+</div>

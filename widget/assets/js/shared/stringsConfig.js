@@ -75,6 +75,12 @@ const stringsConfig = {
 		title: "Members labels",
 		subtitle: "Change values to update members labels and messages",
 		labels: {
+			members: {
+				title: "Members"
+				, placeholder: "Members"
+				, maxLength: 30
+				, defaultValue: "Members"
+			},
 			membersBlankState: {
 				title: "Members Blank State Message"
 				, placeholder: "There are no other members except you."
@@ -110,6 +116,35 @@ const stringsConfig = {
 				, placeholder: "Write a post"
 				, maxLength: 30
 				, defaultValue: "Write a post"
+			}
+		}
+	},
+	unblockUser: {
+		title: "Unblock User",
+		labels: {
+			unblockUserTitleConfirmation: {
+				title: "Title"
+				, placeholder: "Unblock User"
+				, maxLength: 20
+				, defaultValue: "Unblock User"
+			},
+			unblockUserBodyConfirmation: {
+				title: "Body"
+				, placeholder: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
+				, maxLength: 150
+				, defaultValue: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
+			},
+			confirmBtn: {
+				title: "Confirm Button"
+				, placeholder: "Block"
+				, maxLength: 20
+				, defaultValue: "Block"
+			},
+			cancelBtn: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 20
+				, defaultValue: "Cancel"
 			}
 		}
 	},
@@ -158,6 +193,13 @@ const stringsConfig = {
 				, placeholder: "User has been blocked succesfully"
 				, maxLength: 50
 				, defaultValue: "User has been blocked succesfully"
+			},
+
+			unblockUserSuccess : {
+				title: "Unblock User Success"
+				, placeholder: "User has been unblocked"
+				, maxLength: 50
+				, defaultValue: "User has been unblocked"
 			},
 			reportComemntSuccess: {
 				title: "Report Comment Success"
@@ -287,6 +329,18 @@ const stringsConfig = {
 				, maxLength: 150
 				, defaultValue: "${context.appUser?context.appUser.displayName:'Someone'} liked your comment."
 			},
+		}
+	},
+	general: {
+		title: "General",
+		labels: {
+			blockedUsers: {
+				title: "Blocked Users"
+				, placeholder: "Blocked Users"
+				, maxLength: 30
+				, defaultValue: "Blocked Users"
+			},
+
 		}
 	},
 };

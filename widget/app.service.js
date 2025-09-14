@@ -168,8 +168,44 @@
                 },
             }
         }])
-        .factory("SubscribedUsersData", function () {
+        .factory('SkeletonHandler', [function () {
+            function _getSkeletonRows(count) {
+                let skeletonRows = '';
+                for (let i = 0; i < count; i++) {
+                    skeletonRows += 'list-item-avatar-two-line';
+                    if (i < count - 1) {
+                        skeletonRows += ', ';
+                    }
+                }
+                return skeletonRows;
+            }
 
+            return {
+                start: function (element, skeletonRowCounts = 5) {
+                    if (!element) return null;
+
+
+                    const skeleton = new buildfire.components.skeleton(
+                        element,
+                        { type: _getSkeletonRows(skeletonRowCounts) }
+                    );
+
+                    skeleton.start();
+                    return skeleton;
+                },
+                stop: function (element, skeletonInstance) {
+                    if (!element) return;
+
+
+                    if (skeletonInstance) {
+                        skeletonInstance.stop();
+                    }
+                }
+            };
+        }])
+
+        .factory("SubscribedUsersData", ['SocialItems',function (SocialItems) {
+            const SocialItemsInstance = SocialItems.getInstance();
             function continueToCheckCurrent(callback) {
                 window.buildfire.auth.getCurrentUser((err, currentUser) => {
                     if (err) {
@@ -255,6 +291,7 @@
                         })
                 },
                 getUsersWhoFollow: function (userId, wallId, cb) {
+                    const blockedUserStrings = SocialItemsInstance.blockedUsers.map(userId => `${userId}-`);
                     const pageSize = 50;
                     var allUsers = [];
                     let page = 0;
@@ -262,7 +299,10 @@
                     if (this.indexingUpdateDone) {
                         filter = {
                             '_buildfire.index.string1': wallId,
-                            '_buildfire.index.number1': 0
+                            '_buildfire.index.number1': 0,
+                            '_buildfire.index.array1.string1': {
+                                $nin: blockedUserStrings
+                            }
                         }
                     } else {
                         filter = {
@@ -377,12 +417,14 @@
                     return filter;
                 },
                 getDataWithIndex: function (item) {
+                    console.log(item);
                     item.data._buildfire = {
                         index: this.buildIndex(item.data)
                     }
                     return item;
                 },
                 buildIndex: function (data) {
+                    console.log(data ,'data');
                     var index = {
                         'string1': data.wallId,
                         'text': data.userId + '-' + data.wallId,
@@ -397,6 +439,11 @@
                                 string1: `blockedUser_${blockedUser}`
                             });
                         });
+                        if (data.blockedAt) {
+                            index.array1.push({
+                                date1: data.blockedAt
+                            });
+                        }
                     }
                     return index;
                 },
@@ -461,8 +508,10 @@
 
                                     if (!data[0].data.blockedUsers.includes(userId)) {
                                         data[0].data.blockedUsers.push(userId);
+                                        data[0].data.blockedAt = new Date()
                                     }
                                     buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
+                                        console.log(result);
                                         callback(null, result);
                                     });
                                 } else {
@@ -506,6 +555,40 @@
                         }
                     });
                 },
+                unblockUser: function (userId, callback) {
+                    let _this = this;
+                    buildfire.auth.getCurrentUser((err, currentUser) => {
+                        if (err) {
+                            callback(err, false);
+                        }
+                        if (currentUser) {
+                            buildfire.publicData.search({
+                                filter: {
+                                    $and: [{
+                                        "_buildfire.index.array1.string1": `${currentUser.userId}-`
+                                    }, {
+                                        "_buildfire.index.string1": ""
+                                    }]
+                                }
+                            }, 'subscribedUsersData', function (err, data) {
+                                if (err) return callback(err, false);
+                                console.log(data, 'data from subscribedUsersData');
+                                if (data && data.length > 0) {
+                                    console.log(data ,'data blocked users');
+                                    console.log(userId);
+                                    data[0].data.blockedUsers = (data[0].data.blockedUsers || []).filter(id => id !== userId);
+                                    buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
+                                        callback(err, result);
+                                    });
+                                } else {
+                                    callback(null, false);
+                                }
+                            });
+                        } else {
+                            callback(err, false);
+                        }
+                    });
+                },
                 getBlockedUsers: function(callback) {
                     let _this = this;
                     buildfire.auth.getCurrentUser((err, currentUser) => {
@@ -538,9 +621,39 @@
                             callback(err, false)
                         }
                     });
+                },
+                getBlockedUsersList: function(callback) {
+                    const blockedUserStrings = SocialItemsInstance.blockedUsers.map(userId => `${userId}-`);
+                    console.log(blockedUserStrings, 'blockedUserStrings');
+
+                    buildfire.auth.getCurrentUser((err, currentUser) => {
+                        if (err) {
+                            callback(err, false)
+                        }
+                        if (currentUser) {
+                            buildfire.publicData.search({
+                                filter: {
+                                    $and: [ {
+                                        '_buildfire.index.array1.string1': {
+                                            $in: blockedUserStrings
+                                        }
+                                    }]
+                                }
+                            }, 'subscribedUsersData', function (err, data) {
+                                if (err) callback(err, false);
+                                else if (data && data.length > 0) {
+                                    callback(null, data);
+                                } else {
+                                    callback(err, []);
+                                }
+                            })
+                        } else {
+                            callback(err, false)
+                        }
+                    });
                 }
             }
-        })
+        }])
         .factory("SocialDataStore", ['$q', function ($q) {
             return {
                 updatePost: function (postData) {
@@ -816,7 +929,6 @@
                 });
             }
 
-
             SocialItems.prototype.authenticateUserWOLogin = function (loggedUser, callback) {
                 function prepareData(user) {
                     _this.userDetails = {
@@ -1018,8 +1130,10 @@
 
             function getFilter() {
                 let filter = {};
+                console.log(_this.blockedUsers);
 
                 const blockedUserStrings = _this.blockedUsers.map(userId => `createdBy_${userId}`);
+                console.log(blockedUserStrings);
 
                 if (_this.wid === "") {
                     filter = {

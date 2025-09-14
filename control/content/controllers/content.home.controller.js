@@ -118,7 +118,7 @@
 
                         setTimeout(() => {
                             if (!ContentHome.posts.length)
-                                buildfire.messaging.sendMessageToWidget({ name: 'ASK_FOR_POSTS' });
+                                ContentHome.getPosts();
                         }, 500);
                     });
                 });
@@ -157,6 +157,51 @@
                 }
                 ContentHome.height = window.innerHeight;
                 ContentHome.noMore = false;
+            };
+
+            ContentHome.getPosts = function () {
+                ContentHome.loading = true;
+                const searchOptions = {
+                    sort: { "_buildfire.index.date1": -1 },
+                    recordCount: true
+                };
+                buildfire.publicData.search(searchOptions, 'posts', (err, data) => {
+                    if (err) {
+                        ContentHome.posts = [];
+                        ContentHome.loading = false;
+                        if (!$scope.$$phase) $scope.$digest();
+                        return console.error(err);
+                    }
+                    if (data && data.result) {
+                        ContentHome.posts = data.result.map(item => ({ ...item.data, id: item.id }));
+                        const ids = [];
+                        ContentHome.posts.forEach(post => {
+                            if (post.userId && ids.indexOf(post.userId) === -1)
+                                ids.push(post.userId);
+                        });
+                        if (ids.length) {
+                            SocialDataStore.getUsers(ids).then(res => {
+                                ContentHome.usersData = res.data && res.data.result ? res.data.result : [];
+                                ContentHome.posts.forEach(post => {
+                                    const user = ContentHome.usersData.find(u => u.userObject && u.userObject._id === post.userId);
+                                    if (user) post.userDetails = user.userObject;
+                                });
+                                ContentHome.loading = false;
+                                if (!$scope.$$phase) $scope.$digest();
+                            }, () => {
+                                ContentHome.loading = false;
+                                if (!$scope.$$phase) $scope.$digest();
+                            });
+                        } else {
+                            ContentHome.loading = false;
+                            if (!$scope.$$phase) $scope.$digest();
+                        }
+                    } else {
+                        ContentHome.posts = [];
+                        ContentHome.loading = false;
+                        if (!$scope.$$phase) $scope.$digest();
+                    }
+                });
             };
 
             ContentHome.showComments = function (post) {
@@ -547,15 +592,6 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
-                            break;
-                        case 'SEND_POSTS_TO_CP':
-                            ContentHome.posts = event.posts;
-                            setTimeout(() => {
-                                $scope.initHesGallery();
-                            });
-                            ContentHome.loading = false;
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;

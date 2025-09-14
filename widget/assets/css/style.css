@@ -1448,6 +1448,9 @@ html[buildfire][safe-area="true"] body {
 .flex-space-between {
     justify-content: space-between;
 }
+ .flex-items-center {
+     align-items: center;
+ }
 
 .margin-one-rem {
     margin: 1rem;
@@ -1543,11 +1546,18 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 .bf-skeleton-container .skeleton-list-item-avatar .skeleton-text {
     width: 86px;
 }
+.wallMembers .bf-skeleton-container {
+    padding-top: 3.5rem;
+}
 
 .skeleton-list-item-avatar .skeleton-text {
     width: 86px;
     overflow: hidden !important;
     flex: unset !important;
+}
+
+.social-top-banner {
+    padding: 0 0.75rem;
 }
 
 .follow-btn {
@@ -1580,4 +1590,8 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 
 .post-images-container {
     margin: 2vh 0;
+}
+
+.blocked-users-item {
+    padding: 1rem;
 }

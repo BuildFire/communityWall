@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('MembersCtrl', ['$scope', '$rootScope', '$routeParams', 'Buildfire', 'SubscribedUsersData', 'SocialItems', function ($scope, $rootScope, $routeParams, Buildfire, SubscribedUsersData, SocialItems) {
+        .controller('MembersCtrl', ['$scope', '$rootScope', '$routeParams', 'Buildfire', 'SubscribedUsersData', 'SocialItems', 'SkeletonHandler',  function ($scope, $rootScope, $routeParams, Buildfire, SubscribedUsersData, SocialItems, SkeletonHandler) {
 
             var Members = this;
             Members.userDetails = {};
@@ -18,20 +18,13 @@
             Members.languages = null;
             Members.appSettings = null;
             Members.SocialItems = SocialItems.getInstance();
-            Members.skeleton = new Buildfire.components.skeleton('.wallMembers', {
-                type: 'list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar',
-            });
+            Members.skeleton = null;
+            Members.setTimeoutSearrch = null;
+            Members.memberSkeletonContainer = '.wallMembers'
 
-            const initSkeleton = () => {
-                Members.skeleton.start();
-                document.querySelectorAll('.bf-skeleton-container .skeleton-list-item-avatar').forEach((el)=>{
-                    el.style.padding = '2rem 1rem';
-                });
-                document.querySelector('.wallMembers').style.marginTop = '5rem';
-            }
             Members.init = function () {
                 $rootScope.showThread = false;
-                initSkeleton();
+                Members.skeleton = SkeletonHandler.start(Members.memberSkeletonContainer);
                 Buildfire.appearance.getAppTheme((err, obj) => {
                     if (err) return console.log(err);
                     document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
@@ -48,8 +41,8 @@
                         SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
                             if (err) return console.log(err);
                             Members.users = users;
+                            SkeletonHandler.stop(Members.memberSkeletonContainer, Members.skeleton);
                             $scope.$digest();
-                            Members.skeleton.stop();
                         });
                     }
                 });
@@ -67,69 +60,73 @@
             }
 
             $scope.onSearchChange = function () {
-                let isEmptySearch = ($scope.searchInput.length === 0);
-                let minSearchLength = 1;
-                if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
+                if (Members.setTimeoutSearrch) clearTimeout(Members.setTimeoutSearrch);
+                Members.setTimeoutSearrch = setTimeout(function () {
+                    let isEmptySearch = ($scope.searchInput.length === 0);
+                    let minSearchLength = 1;
+                    if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
-                if (Members.appSettings.indexingUpdateDone) {
-                    Members.searchOptions.filter = {
-                        '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
-                        '_buildfire.index.number1': 0
+                    if (Members.appSettings.indexingUpdateDone) {
+                        Members.searchOptions.filter = {
+                            '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
+                            '_buildfire.index.number1': 0
+                        }
+                    } else {
+                        Members.searchOptions.filter = {
+                            '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
+                            $or: [{
+                                '$json.leftWall': {
+                                    $exists: true,
+                                    $eq: false
+                                }
+                            },
+                                {
+                                    '$json.leftWall': {
+                                        $exists: false
+                                    }
+                                }
+                            ]
+                        }
                     }
-                } else {
-                    Members.searchOptions.filter = {
-                        '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
-                        $or: [{
-                            '$json.leftWall': {
-                                $exists: true,
-                                $eq: false
+                    // Initialize Members.searchOptions.filter.$or as an empty array if it's not already initialized
+                    if (!Members.searchOptions.filter.$or) {
+                        Members.searchOptions.filter.$or = [];
+                    }
+
+                    Members.searchOptions.filter.$or.push(
+                        {
+                            "$json.userDetails.displayName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
                             }
                         },
                         {
-                            '$json.leftWall': {
-                                $exists: false
+                            "$json.userDetails.firstName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "$json.userDetails.lastName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "$json.userDetails.email": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
                             }
                         }
-                        ]
-                    }
-                }
-                // Initialize Members.searchOptions.filter.$or as an empty array if it's not already initialized
-                if (!Members.searchOptions.filter.$or) {
-                    Members.searchOptions.filter.$or = [];
-                }
-
-                Members.searchOptions.filter.$or.push(
-                    {
-                        "$json.userDetails.displayName": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    },
-                    {
-                        "$json.userDetails.firstName": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    },
-                    {
-                        "$json.userDetails.lastName": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    },
-                    {
-                        "$json.userDetails.email": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    }
-                );
-                Members.searchOptions.page = 0;
-                Members.executeSearch(Members.searchOptions);
+                    );
+                    Members.searchOptions.page = 0;
+                    Members.executeSearch(Members.searchOptions);
+                }, 500)
             };
 
             Members.executeSearch = function (query) {
-                initSkeleton();
+                console.log("query", query);
+                Members.skeleton = SkeletonHandler.start(Members.memberSkeletonContainer);
                 SubscribedUsersData.searchForUsers(query, function (err, users) {
                     if (err) return console.log(err);
                     if (users.length === Members.searchOptions.pageSize) {
@@ -142,7 +139,7 @@
                     }
 
                     Members.users = users.filter(el => el.userId !== Members.SocialItems.userDetails.userId);
-                    Members.skeleton.stop();
+                    SkeletonHandler.stop(Members.memberSkeletonContainer, Members.skeleton);
                     $scope.$digest();
                 })
             }

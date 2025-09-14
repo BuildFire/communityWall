@@ -24,6 +24,11 @@
                     controllerAs: 'Members',
                     controller: 'MembersCtrl'
                 })
+                .when('/blocked-users', {
+                    templateUrl: 'templates/blocked-users.html',
+                    controllerAs: 'Blocked',
+                    controller: 'BlockedUsersCtrl'
+                })
                 .when('/report', {
                     templateUrl: 'templates/report.html',
                     controllerAs: 'Report',

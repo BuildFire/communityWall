@@ -1303,6 +1303,34 @@
               }
           }
 
+          WidgetWall.showDrawer = function () {
+              // todo should change the function name
+              // todo add to lang
+              Buildfire.components.drawer.open({
+                  enableFilter: false,
+                  listItems: [
+                      {
+                          text: 'Member',
+                          id: 'member'
+                      },
+                      {
+                          text: 'Blocked Users',
+                          id: 'blocked',
+                      }
+                  ]
+              }, (err, result) => {
+                  if (err) return console.error(err);
+                  buildfire.components.drawer.closeDrawer();
+                  if (result.id ==='member') {
+                      WidgetWall.showMembers();
+                  }
+                  else if (result.id ==='blocked') {
+                      WidgetWall.showBlockedUsers();
+                  }
+              });
+
+          }
+
           WidgetWall.showMembers = function () {
               WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                   if (err) return console.error("Getting user failed.", err);
@@ -1314,6 +1342,13 @@
                           Location.go('#/members/home');
                       }
                   }
+              });
+          }
+
+          WidgetWall.showBlockedUsers = function () {
+              WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
+                  if (err) return console.error("Getting user failed.", err);
+                  Location.go('#/blocked-users/');
               });
           }
 
