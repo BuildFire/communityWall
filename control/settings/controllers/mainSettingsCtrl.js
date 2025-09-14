@@ -135,20 +135,35 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
     $scope.initUserTags = function () {
         $scope.mainThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowMainThreadTags", {});
 
-        $scope.mainThreadUserTagsContainer.append([
-            {
-                value: 'first tag',
-                tagName: 'first tag'
-            },
-            {
-                value: 'second tag',
-                tagName: 'second tag'
-            }
-        ]);
+        $scope.mainThreadUserTagsContainer.onUpdate = (tags) => {
+            console.log(tags);
+            $scope.data.mainThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
+            $scope.save();
+        };
 
-        $scope.mainThreadUserTagsContainer.onUpdate = (data) => {
-            console.log('tags updated ', data)
+        if ($scope.data.mainThreadUserTags && $scope.data.mainThreadUserTags.length) {
+            const tags = $scope.data.mainThreadUserTags.map(tag => ({
+                value: tag.text,
+                tagName: tag.text,
+            }));
+            $scope.mainThreadUserTagsContainer.append(tags);
         }
+
+        $scope.sideThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowSideThreadUserTags", {});
+
+        $scope.sideThreadUserTagsContainer.onUpdate = (tags) => {
+            $scope.data.sideThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
+            $scope.save();
+        };
+
+        if ($scope.data.sideThreadUserTags && $scope.data.sideThreadUserTags.length) {
+            const tags = $scope.data.sideThreadUserTags.map(tag => ({
+                value: tag.text,
+                tagName: tag.text,
+            }));
+            $scope.sideThreadUserTagsContainer.append(tags);
+        }
+
     }
 
     $scope.handleChatFeatureActionItem = function () {
