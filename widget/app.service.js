@@ -622,9 +622,10 @@
                         }
                     });
                 },
-                getBlockedUsersList: function(callback) {
+                getBlockedUsersList: function(options, callback) {
+                    const page = options && options.page ? options.page : 0;
+                    const pageSize = options && options.pageSize ? options.pageSize : 50;
                     const blockedUserStrings = SocialItemsInstance.blockedUsers.map(userId => `${userId}-`);
-                    console.log(blockedUserStrings, 'blockedUserStrings');
 
                     buildfire.auth.getCurrentUser((err, currentUser) => {
                         if (err) {
@@ -638,7 +639,9 @@
                                             $in: blockedUserStrings
                                         }
                                     }]
-                                }
+                                },
+                                pageSize,
+                                page
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) callback(err, false);
                                 else if (data && data.length > 0) {
@@ -1292,7 +1295,7 @@
                     if (response.data && response.data.mainWall && response.data.sideThread && response.data.members && response.data.input && response.data.modal) {
                         strings = Object.assign({}, response.data.mainWall, response.data.sideThread, response.data.members, response.data.input, response.data.modal);
 
-                        const newProperties = ['pushNotifications'];
+                        const newProperties = ['pushNotifications', 'general'];
                         newProperties.forEach((key) => {
                             if (response.data[key]) {
                                 strings = Object.assign(strings, response.data[key]);

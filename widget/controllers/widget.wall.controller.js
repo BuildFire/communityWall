@@ -567,7 +567,7 @@
                   else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.id == "reportPost") WidgetWall.reportPost(post);
-                  else if (result.id == "blockUser") WidgetWall.blockUser(userId);
+                  else if (result.id == "blockUser") WidgetWall.blockUser(userId, post.userDetails);
                   else if (result.id == "deletePost") WidgetWall.deletePost(post.id);
                   buildfire.components.drawer.closeDrawer();
               });
@@ -1303,33 +1303,32 @@
               }
           }
 
-          WidgetWall.showDrawer = function () {
-              // todo should change the function name
-              // todo add to lang
-              Buildfire.components.drawer.open({
-                  enableFilter: false,
-                  listItems: [
-                      {
-                          text: 'Member',
-                          id: 'member'
-                      },
-                      {
-                          text: 'Blocked Users',
-                          id: 'blocked',
-                      }
-                  ]
-              }, (err, result) => {
-                  if (err) return console.error(err);
-                  buildfire.components.drawer.closeDrawer();
-                  if (result.id ==='member') {
-                      WidgetWall.showMembers();
-                  }
-                  else if (result.id ==='blocked') {
-                      WidgetWall.showBlockedUsers();
-                  }
-              });
+         WidgetWall.showDrawer = function () {
+             const listItems = [];
+             if (WidgetWall.SocialItems.appSettings.showMembers) {
+                 listItems.push({
+                     text: WidgetWall.SocialItems.languages.members,
+                     id: 'member'
+                 });
+             }
+             listItems.push({
+                 text: WidgetWall.SocialItems.languages.blockedUsers,
+                 id: 'blocked'
+             });
+             Buildfire.components.drawer.open({
+                 enableFilter: false,
+                 listItems
+             }, (err, result) => {
+                 if (err) return console.error(err);
+                 buildfire.components.drawer.closeDrawer();
+                 if (result.id === 'member') {
+                     WidgetWall.showMembers();
+                 } else if (result.id === 'blocked') {
+                     WidgetWall.showBlockedUsers();
+                 }
+             });
 
-          }
+         }
 
           WidgetWall.showMembers = function () {
               WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
@@ -1457,21 +1456,31 @@
               SocialDataStore.deletePost(postId).then(success, error);
           };
 
-          WidgetWall.blockUser = function (userId) {
-              buildfire.spinner.show();
-              buildfire.components.drawer.closeDrawer();
-              SubscribedUsersData.blockUser(userId, (err, result) => {
-                  if(err) {
-                      console.log(err);
-                  }
-                  if(result) {
+          WidgetWall.blockUser = function (userId, userDetails) {
+              const userName = WidgetWall.SocialItems.getUserName(userDetails);
+              buildfire.dialog.confirm({
+                  title: `${WidgetWall.SocialItems.languages.blockUserTitleConfirmation} ${userName}`,
+                  message: WidgetWall.SocialItems.languages.blockUserBodyConfirmation,
+                  cancelButton: { text: WidgetWall.SocialItems.languages.blockUserCancelBtn },
+                  confirmButton: { text: WidgetWall.SocialItems.languages.blockUserConfirmBtn }
+              }, (err, isConfirmed) => {
+                  if (err) return console.error(err);
+                  if (!isConfirmed) return;
+                  buildfire.spinner.show();
+                  buildfire.components.drawer.closeDrawer();
+                  SubscribedUsersData.blockUser(userId, (err, result) => {
                       buildfire.spinner.hide();
-                      Buildfire.dialog.toast({
-                          message: WidgetWall.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
-                          type: 'info'
-                      });
-                      Location.goToHome();
-                  }
+                      if (err) {
+                          console.log(err);
+                      }
+                      if (result) {
+                          Buildfire.dialog.toast({
+                              message: `${userName} has been blocked`,
+                              type: 'info'
+                          });
+                          Location.goToHome();
+                      }
+                  });
               });
 
           }
