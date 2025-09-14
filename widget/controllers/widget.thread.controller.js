@@ -107,13 +107,13 @@
           }
 
           Thread.getDisplayName = (userId, userDetails) => {
-              const blockedUsers = Thread.SocialItems.blockedUsers;
+              const blockedUsers = Thread.SocialItems.blockedUsers.concat(Thread.SocialItems.blockedByUsers || []);
               if (blockedUsers.includes(userId)) return Thread.SocialItems.languages.blockedUser || "Blocked User";
               else return Thread.SocialItems.getUserName(userDetails);
           }
 
           Thread.isBlockedUser = (userId) => {
-              const blockedUsers = Thread.SocialItems.blockedUsers;
+              const blockedUsers = Thread.SocialItems.blockedUsers.concat(Thread.SocialItems.blockedByUsers || []);
               return blockedUsers.includes(userId);
           }
 
