@@ -1440,6 +1440,9 @@ html[buildfire][safe-area="true"] body {
     background-attachment: absolute !important;
     background-position: center !important;
 }
+.empty_state_text {
+    margin-top: -6vh;
+}
 
 .flex {
     display: flex;
