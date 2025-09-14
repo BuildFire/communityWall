@@ -2,8 +2,8 @@
 
 (function (angular) {
   angular.module('socialPluginWidget')
-      .controller('BlockedUsersCtrl', ['$scope', '$rootScope', 'Buildfire', 'SubscribedUsersData', 'SocialItems', 'Util', 'SkeletonHandler',
-        function ($scope, $rootScope, Buildfire, SubscribedUsersData, SocialItems, Util, SkeletonHandler) {
+      .controller('BlockedUsersCtrl', ['$scope', '$rootScope', 'Buildfire', 'SubscribedUsersData', 'SocialItems', 'Util', 'SkeletonHandler', 'Location',
+        function ($scope, $rootScope, Buildfire, SubscribedUsersData, SocialItems, Util, SkeletonHandler, Location) {
           var Blocked = this;
           Blocked.users = [];
           Blocked.SocialItems = SocialItems.getInstance();
@@ -47,8 +47,13 @@
           };
 
           Blocked.unblockUser = function (userId) {
+            const user = Blocked.users.find(u => (u._id || u.userId) === userId);
+            const userName = Blocked.SocialItems.getUserName(user);
             buildfire.dialog.confirm({
+              title: `${Blocked.SocialItems.languages.unblockUserTitleConfirmation} ${userName}`,
               message: Blocked.SocialItems.languages.unblockUserBodyConfirmation,
+              cancelButton: { text: Blocked.SocialItems.languages.unblockUserCancelBtn },
+              confirmButton: { text: Blocked.SocialItems.languages.unblockUserConfirmBtn }
             }, (err, isConfirmed) => {
               if (err) return console.error(err);
               if (!isConfirmed) return;
@@ -58,10 +63,19 @@
                   Blocked.users = Blocked.users.filter(u => (u._id || u.userId) !== userId);
                   Blocked.SocialItems.blockedUsers = Blocked.SocialItems.blockedUsers.filter(id => id !== userId);
                   Buildfire.dialog.toast({
-                    message: Blocked.SocialItems.languages.unblockUserSuccess,
+                    message: `${userName} has been unblocked`,
                     type: 'info'
                   });
+                  Blocked.SocialItems.items = [];
+                  Blocked.SocialItems.page = 0;
+                  Blocked.SocialItems.showMorePosts = false;
+                  Blocked.SocialItems.getPosts();
                   $scope.$digest();
+                  if (!Blocked.users.length) {
+                    setTimeout(() => {
+                      Location.goToHome();
+                    }, 1000);
+                  }
                 }
               });
             });
