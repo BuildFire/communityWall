@@ -219,9 +219,9 @@ const stringsConfig = {
 			},
 			blockUserSuccess : {
 				title: "Block User Success"
-				, placeholder: "User has been blocked succesfully"
+				, placeholder: "User has been blocked successfully"
 				, maxLength: 50
-				, defaultValue: "User has been blocked succesfully"
+				, defaultValue: "User has been blocked successfully"
 			},
 
 			unblockUserSuccess : {

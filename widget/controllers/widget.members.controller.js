@@ -246,9 +246,18 @@
                             } else {
                                 $scope.notYou = true;
                             }
+                            listItems.push({
+                                id: 'blockUser',
+                                text: Members.SocialItems.languages.blockUser
+                            });
+
                             Members.ContinueDrawer(user, listItems)
                         })
                     } else {
+                        listItems.push({
+                            id: 'blockUser',
+                            text: Members.SocialItems.languages.blockUser
+                        });
                         Members.ContinueDrawer(user, listItems)
                     }
 
@@ -275,9 +284,47 @@
                     else if (result.text == "Send Direct Message") Members.openPrivateChat(user);
                     else if (result.text == "Unfollow") Follows.unfollowUser(user.userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.text == "Follow") Follows.followUser(user.userId, (err, r) => err ? console.log(err) : console.log(r));
+                    else if (result.id == "blockUser") Members.blockUser(user);
                     buildfire.components.drawer.closeDrawer();
+
                 });
             }
+
+            Members.blockUser = function (user) {
+                const userName = Members.SocialItems.getUserName(user.userDetails);
+                buildfire.dialog.confirm({
+                    title: `${Members.SocialItems.languages.blockUserTitleConfirmation} ${userName}`,
+                    message: Members.SocialItems.languages.blockUserBodyConfirmation,
+                    cancelButton: { text: Members.SocialItems.languages.blockUserCancelBtn },
+                    confirmButton: { text: Members.SocialItems.languages.blockUserConfirmBtn }
+                }, (err, isConfirmed) => {
+                    if (err) return console.error(err);
+                    if (!isConfirmed) return;
+                    buildfire.spinner.show();
+                    buildfire.components.drawer.closeDrawer();
+                    SubscribedUsersData.blockUser(user.userId, (err, result) => {
+                        buildfire.spinner.hide();
+                        if (err) {
+                            console.log(err);
+                        }
+                        if (result) {
+                            Buildfire.dialog.toast({
+                                message: Members.SocialItems.languages.blockUserSuccess,
+                                type: 'info'
+                            });
+                            Members.users = Members.users.filter(u => u.userId !== user.userId);
+                            Members.SocialItems.blockedUsers.push(user.userId);
+                            Members.SocialItems.items = [];
+                            Members.SocialItems.page = 0;
+                            Members.SocialItems.showMorePosts = false;
+                            Members.SocialItems.getPosts();
+                            $scope.$digest();
+                        }
+                    });
+                });
+            }
+
+
 
 
             Members.navigateToPrivateChat = function (user) {

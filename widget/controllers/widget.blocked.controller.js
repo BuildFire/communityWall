@@ -12,6 +12,7 @@
           Blocked.blockedSkeletonContainer = '.social-plugin';
           Blocked.searchOptions = { pageSize: 50, page: 0 };
           Blocked.hasMoreData = false;
+          Blocked.goHomeTimeout = null
 
           Blocked.fetchBlockedUsers = function () {
             if (Blocked.loading) return;
@@ -65,6 +66,9 @@
             if (scrollContainer) {
               scrollContainer.removeEventListener('scroll', Blocked.onScroll);
             }
+            if (Blocked.goHomeTimeout) {
+              clearTimeout(Blocked.goHomeTimeout);
+            }
           });
 
           Blocked.unblockUser = function (userId) {
@@ -84,7 +88,7 @@
                   Blocked.users = Blocked.users.filter(u => (u._id || u.userId) !== userId);
                   Blocked.SocialItems.blockedUsers = Blocked.SocialItems.blockedUsers.filter(id => id !== userId);
                   Buildfire.dialog.toast({
-                    message: `${userName} has been unblocked`,
+                    message: `${userName} ${Blocked.SocialItems.languages.unblockUserSuccess}`,
                     type: 'info'
                   });
                   Blocked.SocialItems.items = [];
@@ -93,9 +97,9 @@
                   Blocked.SocialItems.getPosts();
                   $scope.$digest();
                   if (!Blocked.users.length) {
-                    setTimeout(() => {
+                    Blocked.goHomeTimeout = setTimeout(() => {
                       Location.goToHome();
-                    }, 1000);
+                    }, 3000);
                   }
                 }
               });
