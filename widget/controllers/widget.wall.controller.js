@@ -504,10 +504,6 @@
                             {
                                 id: 'reportPost',
                                 text: WidgetWall.SocialItems.languages.reportPost
-                            },
-                            {
-                                id: 'blockUser',
-                                text: WidgetWall.SocialItems.languages.blockUser
                             }
                           );
                       }
@@ -545,9 +541,21 @@
                                       text: 'Send Direct Message'
                                   });
                               }
+                              listItems.push(
+                                  {
+                                      id: 'blockUser',
+                                      text: WidgetWall.SocialItems.languages.blockUser
+                                  }
+                              );
                               WidgetWall.ContinueDrawer(post, listItems)
                           })
                       } else {
+                          listItems.push(
+                              {
+                                  id: 'blockUser',
+                                  text: WidgetWall.SocialItems.languages.blockUser
+                              }
+                          );
                           WidgetWall.ContinueDrawer(post, listItems)
                       }
                   });
