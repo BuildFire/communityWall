@@ -417,14 +417,12 @@
                     return filter;
                 },
                 getDataWithIndex: function (item) {
-                    console.log(item);
                     item.data._buildfire = {
                         index: this.buildIndex(item.data)
                     }
                     return item;
                 },
                 buildIndex: function (data) {
-                    console.log(data ,'data');
                     var index = {
                         'string1': data.wallId,
                         'text': data.userId + '-' + data.wallId,
@@ -439,11 +437,6 @@
                                 string1: `blockedUser_${blockedUser}`
                             });
                         });
-                        if (data.blockedAt) {
-                            index.array1.push({
-                                date1: data.blockedAt
-                            });
-                        }
                     }
                     return index;
                 },
@@ -508,10 +501,8 @@
 
                                     if (!data[0].data.blockedUsers.includes(userId)) {
                                         data[0].data.blockedUsers.push(userId);
-                                        data[0].data.blockedAt = new Date()
                                     }
                                     buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
-                                        console.log(result);
                                         callback(null, result);
                                     });
                                 } else {
@@ -572,10 +563,7 @@
                                 }
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) return callback(err, false);
-                                console.log(data, 'data from subscribedUsersData');
                                 if (data && data.length > 0) {
-                                    console.log(data ,'data blocked users');
-                                    console.log(userId);
                                     data[0].data.blockedUsers = (data[0].data.blockedUsers || []).filter(id => id !== userId);
                                     buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
                                         callback(err, result);
@@ -1133,10 +1121,8 @@
 
             function getFilter() {
                 let filter = {};
-                console.log(_this.blockedUsers);
 
                 const blockedUserStrings = _this.blockedUsers.map(userId => `createdBy_${userId}`);
-                console.log(blockedUserStrings);
 
                 if (_this.wid === "") {
                     filter = {
