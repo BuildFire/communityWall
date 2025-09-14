@@ -132,7 +132,7 @@
                   else WidgetWall.allowCreateThread = true;
               }
 
-              if (!WidgetWall.allowCreateThread && WidgetWall.SocialItems.isPrivateChat) {
+              if (WidgetWall.SocialItems.isPrivateChat) {
                   WidgetWall.allowCreateThread = true;
               }
               else if (!WidgetWall.SocialItems.appSettings.allowMainThreadTags) {
