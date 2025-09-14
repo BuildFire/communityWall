@@ -135,6 +135,9 @@
               if (!WidgetWall.allowCreateThread && WidgetWall.SocialItems.isPrivateChat) {
                   WidgetWall.allowCreateThread = true;
               }
+              else if (!WidgetWall.SocialItems.appSettings.allowMainThreadTags) {
+                  WidgetWall.allowCreateThread = false;
+              }
           };
 
           WidgetWall.showHidePrivateChat = function () {
@@ -166,6 +169,7 @@
               WidgetWall.showHidePrivateChat();
               WidgetWall.followLeaveGroupPermission();
               WidgetWall.showHideCommentBox();
+              WidgetWall.initFabButtons();
               let dldActionItem = new URLSearchParams(window.location.search).get('actionItem');
               if (dldActionItem)
                   WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
@@ -616,6 +620,7 @@
                                 WidgetWall.stopSkeleton();
                                 return console.error("Getting user failed.", err);
                               }
+                              WidgetWall.setSettings(result);
                               WidgetWall.SocialItems.checkBlockedUsers();
                               WidgetWall.getPosts(()=>{
                                   if (user) {
@@ -820,12 +825,13 @@
           }
 
           WidgetWall.navigateToPrivateChat = function (privateChatData) {
-
               WidgetWall.SocialItems.isPrivateChat = true;
               WidgetWall.SocialItems.wid = privateChatData.wid;
               WidgetWall.SocialItems.showMorePosts = false;
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
+              WidgetWall.allowCreateThread = true;
+              WidgetWall.initFabButtons();
               WidgetWall.SocialItems.setPrivateChatTitle(privateChatData.wid).then(() => {
                   if (WidgetWall.isFromDeepLink) {
                       buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
@@ -858,12 +864,10 @@
                       if (result) {
                           WidgetWall.SocialItems.appSettings = result.data && result.data.appSettings ? result.data.appSettings : {};
                           WidgetWall.setSettings(result);
-                          WidgetWall.initFabButtons();
 
                           Buildfire.datastore.onUpdate(function (response) {
                               if (response.tag === "Social") {
                                   WidgetWall.setSettings(response);
-                                  WidgetWall.initFabButtons()
                                   setTimeout(function () {
                                       if (!response.data.appSettings.disableFollowLeaveGroup) {
                                           let wallSVG = document.getElementById("WidgetWallSvg")

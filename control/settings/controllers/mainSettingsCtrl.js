@@ -11,6 +11,8 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         mainThreadUserTags: [],
         sideThreadUserTags: []
     };
+    $scope.mainThreadUserTagsContainer = null;
+    $scope.sideThreadUserTagsContainer = null;
 
     var load = function () {
         var editor = new buildfire.components.actionItems.sortableList("#actions");
@@ -92,6 +94,7 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                         $scope.save();
                     })
                 }
+                $scope.initUserTags();
             }
         });
 
@@ -126,6 +129,25 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                 });
             }
 
+        }
+    }
+
+    $scope.initUserTags = function () {
+        $scope.mainThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowMainThreadTags", {});
+
+        $scope.mainThreadUserTagsContainer.append([
+            {
+                value: 'first tag',
+                tagName: 'first tag'
+            },
+            {
+                value: 'second tag',
+                tagName: 'second tag'
+            }
+        ]);
+
+        $scope.mainThreadUserTagsContainer.onUpdate = (data) => {
+            console.log('tags updated ', data)
         }
     }
 
