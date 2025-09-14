@@ -291,7 +291,8 @@
                         })
                 },
                 getUsersWhoFollow: function (userId, wallId, cb) {
-                    const blockedUserStrings = SocialItemsInstance.blockedUsers.map(userId => `${userId}-`);
+                    const blockedUserIds = SocialItemsInstance.blockedUsers.concat(SocialItemsInstance.blockedByUsers || []);
+                    const blockedUserStrings = blockedUserIds.map(userId => `${userId}-`);
                     const pageSize = 50;
                     var allUsers = [];
                     let page = 0;
@@ -580,46 +581,50 @@
                 getBlockedUsers: function(callback) {
                     let _this = this;
                     buildfire.auth.getCurrentUser((err, currentUser) => {
-                        if (err) {
-                            callback(err, false)
-                        }
-                        if (currentUser) {
+                        if (err || !currentUser) return callback(err, false);
+
+                        buildfire.publicData.search({
+                            filter: {
+                                $and: [{
+                                    "_buildfire.index.array1.string1": `${currentUser.userId}-`
+                                }, {
+                                    "_buildfire.index.string1": ""
+                                }]
+                            }
+                        }, 'subscribedUsersData', function (err, data) {
+                            if (err) return callback(err, false);
+
+                            let blocked = [];
+                            if (data && data.length > 0 && data[0].data.blockedUsers) {
+                                blocked = data[0].data.blockedUsers;
+                            }
+
                             buildfire.publicData.search({
                                 filter: {
-                                    $and: [{
-                                        "_buildfire.index.array1.string1": `${currentUser.userId}-`
-                                    }, {
-                                        "_buildfire.index.string1": ""
-                                    }]
-                                }
-                            }, 'subscribedUsersData', function (err, data) {
-                                if (err) callback(err, false);
-                                else if (data && data.length > 0) {
-
-                                    if (data[0].data.blockedUsers) {
-                                        callback(null, data[0].data.blockedUsers);
-                                    } else {
-                                        callback(null, []);
-                                    }
+                                    "_buildfire.index.array1.string1": `blockedUser_${currentUser.userId}`
+                                },
+                                pageSize: 50
+                            }, 'subscribedUsersData', function (err2, blockedByData) {
+                                if (!err2 && blockedByData && blockedByData.length > 0) {
+                                    SocialItemsInstance.blockedByUsers = blockedByData.map(item => item.data.userId);
                                 } else {
-                                    callback(err, []);
+                                    SocialItemsInstance.blockedByUsers = [];
                                 }
-                            })
-                        } else {
-                            callback(err, false)
-                        }
+                                callback(null, blocked);
+                            });
+                        })
                     });
                 },
                 getBlockedUsersList: function(options, callback) {
                     const page = options && options.page ? options.page : 0;
                     const pageSize = options && options.pageSize ? options.pageSize : 50;
-                    const blockedUserStrings = SocialItemsInstance.blockedUsers.map(userId => `${userId}-`);
 
                     buildfire.auth.getCurrentUser((err, currentUser) => {
                         if (err) {
                             callback(err, false)
                         }
                         if (currentUser) {
+                            const blockedUserStrings = SocialItemsInstance.blockedUsers.map(userId => `${userId}-`);
                             buildfire.publicData.search({
                                 filter: {
                                     $and: [ {
@@ -858,6 +863,7 @@
                 _this.reportData = {};
                 _this.blockedUsers = [];
                 _this.cachedUserProfiles = {};
+                _this.blockedByUsers = [];
             };
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
@@ -1122,7 +1128,8 @@
             function getFilter() {
                 let filter = {};
 
-                const blockedUserStrings = _this.blockedUsers.map(userId => `createdBy_${userId}`);
+                const blockedUserIds = _this.blockedUsers.concat(_this.blockedByUsers || []);
+                const blockedUserStrings = blockedUserIds.map(userId => `createdBy_${userId}`);
 
                 if (_this.wid === "") {
                     filter = {
