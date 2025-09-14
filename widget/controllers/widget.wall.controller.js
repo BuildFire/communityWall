@@ -1343,7 +1343,6 @@
               });
           }
 
-
           WidgetWall.likeThread = function (post) {
               WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                   if (err) return console.error("Getting user failed.", err);

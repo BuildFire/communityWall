@@ -9,7 +9,7 @@
           Blocked.SocialItems = SocialItems.getInstance();
           Blocked.loading = false;
           Blocked.skeleton = null;
-          Blocked.blockedSkeletonContainer = '.social-plugin';
+          Blocked.blockedSkeletonContainer = '.blocked-users';
           Blocked.searchOptions = { pageSize: 50, page: 0 };
           Blocked.hasMoreData = false;
           Blocked.goHomeTimeout = null

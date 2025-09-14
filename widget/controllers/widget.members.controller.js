@@ -125,7 +125,6 @@
             };
 
             Members.executeSearch = function (query) {
-                console.log("query", query);
                 Members.skeleton = SkeletonHandler.start(Members.memberSkeletonContainer);
                 SubscribedUsersData.searchForUsers(query, function (err, users) {
                     if (err) return console.log(err);
