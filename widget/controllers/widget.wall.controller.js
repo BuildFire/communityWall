@@ -1324,7 +1324,7 @@
                   if (result.id === 'members') {
                       WidgetWall.showMembers();
                   } else if (result.id === 'blockedList') {
-                      WidgetWall.showBlockedUsers();
+                      Location.go('#/blocked-users/');
                   }
               });
 
@@ -1343,12 +1343,6 @@
               });
           }
 
-          WidgetWall.showBlockedUsers = function () {
-              WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
-                  if (err) return console.error("Getting user failed.", err);
-                  Location.go('#/blocked-users/');
-              });
-          }
 
           WidgetWall.likeThread = function (post) {
               WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
@@ -1474,7 +1468,7 @@
                       }
                       if (result) {
                           Buildfire.dialog.toast({
-                              message: `${userName} has been blocked`,
+                              message: `${userName} ${WidgetWall.SocialItems.languages.blockUserSuccess}`,
                               type: 'info'
                           });
                           Location.goToHome();

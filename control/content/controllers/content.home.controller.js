@@ -116,8 +116,9 @@
 							});
 						}
 
-                        if (!ContentHome.posts.length)
+                        if (!ContentHome.posts.length) {
                             ContentHome.getPosts();
+                        }
                     });
                 });
 

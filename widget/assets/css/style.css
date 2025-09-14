@@ -1596,6 +1596,11 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
     overflow: scroll;
 }
 
+ html[safe-area="true"] .blocked-users {
+     height: calc(100vh - constant(safe-area-inset-bottom)) !important;
+     height: calc(100vh - env(safe-area-inset-bottom)) !important;
+ }
+
 .blocked-users-item {
     padding: 1rem;
 }
