@@ -7,7 +7,7 @@
           <i class="glyphicon glyphicon-search" style="font-size: 1.3em; line-height: 15px;"></i>
           <input type="text"ng-model="searchInput" ng-change="onSearchChange()" class="form-control" placeholder="Search"/>
           <button ng-click="clear()" class="btn-icon icon icon-cross2 search-clear" alt="Clear" /></button>
-      </div>
+        </div>
       </form>
 
     </div>
@@ -18,11 +18,11 @@
           <div class="head">
             <div class="social-profile-photo">
               <div class="media-holder pull-left">
-                  <img ng-if="user.userId && user.userDetails.imageUrl" load-image="1x1"
-                  data-final-src="{{user.userDetails.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
+                <img ng-if="user.userId && user.userDetails.imageUrl" load-image="1x1"
+                     data-final-src="{{user.userDetails.imageUrl}}" crop-width="40" crop-height="40" crop-type="crop">
                 <img ng-if="!(user.userId && user.userDetails.imageUrl)" load-image="1x1"
-                  data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
-                  crop-height="40" crop-type="default">
+                     data-final-src="../../../styles/media/avatar-placeholder.png" data-img-type="local" crop-width="40"
+                     crop-height="40" crop-type="default">
               </div>
               <div class="social-copy">
                 <p class="text-primary ellipsis">
@@ -38,8 +38,10 @@
       </div>
       <div class="loadMorePosts" ng-show="Members.showMore" ng-click="Members.loadMore()">
         <button><a>Show More</a></button>
+      </div>
+      <div ng-show="Members.users.length<=0">
+        <h5 class="text-center" style="padding-top: 40px;">{{Members.SocialItems.languages.membersBlankState}}</h5>
+      </div>
     </div>
-    <div ng-show="Members.users.length<=0">
-      <h5 class="text-center" style="padding-top: 40px;">{{Members.SocialItems.languages.membersBlankState}}</h5>
   </div>
 </div>
