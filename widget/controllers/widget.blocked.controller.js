@@ -9,42 +9,63 @@
           Blocked.SocialItems = SocialItems.getInstance();
           Blocked.loading = false;
           Blocked.skeleton = null;
-          Blocked.setTimeoutSearrch = null;
-          Blocked.blockedSkeletonContainer = '.social-plugin'
+          Blocked.blockedSkeletonContainer = '.social-plugin';
+          Blocked.searchOptions = { pageSize: 50, page: 0 };
+          Blocked.hasMoreData = false;
 
-          const initSkeleton = () => {
-            Blocked.skeleton.start();
+          Blocked.fetchBlockedUsers = function () {
+            if (Blocked.loading) return;
             Blocked.loading = true;
-            document.querySelectorAll('.bf-skeleton-container .skeleton-list-item-avatar').forEach((el)=>{
-              el.style.padding = '2rem 1rem';
+            SubscribedUsersData.getBlockedUsersList(Blocked.searchOptions, (err, data) => {
+              if (err) {
+                Blocked.loading = false;
+                SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
+                return console.error('Error fetching blocked users', err);
+              }
+              if (!data || !data.length) {
+                Blocked.hasMoreData = false;
+                Blocked.loading = false;
+                SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
+                $scope.$digest();
+                return;
+              }
+
+              data.forEach(arr => Blocked.users.push({...arr.data.userDetails, userId: arr.data.userId}));
+              if (data.length === Blocked.searchOptions.pageSize) {
+                Blocked.searchOptions.page++;
+                Blocked.hasMoreData = true;
+              } else {
+                Blocked.hasMoreData = false;
+              }
+              Blocked.loading = false;
+              SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
+              $scope.$digest();
             });
-          }
+          };
+
+          var scrollContainer = null;
+          Blocked.onScroll = function () {
+            if (Blocked.loading || !Blocked.hasMoreData) return;
+            if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 50) {
+              Blocked.fetchBlockedUsers();
+            }
+          };
 
           Blocked.init = function () {
             $rootScope.showThread = false;
             Blocked.skeleton = SkeletonHandler.start(Blocked.blockedSkeletonContainer);
-            SubscribedUsersData.getBlockedUsersList((err, data) => {
-              if (err) {
-                Blocked.loading = false;
-                Blocked.skeleton.stop();
-                return console.error('Error fetching blocked users', err);
-              }
-              console.log(data ,'data got here');
-              if (!data) {
-                Blocked.loading = false;
-                Blocked.skeleton.stop();
-                $scope.$digest();
-                return;
-              }
-              console.log(data);
-              data.forEach(arr => Blocked.users = Blocked.users.concat({...arr.data.userDetails, userId:arr.data.userId}));
-              Blocked.loading = false;
-              SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
-              $scope.$digest();
-
-
-            });
+            scrollContainer = document.querySelector('.blocked-users');
+            if (scrollContainer) {
+              scrollContainer.addEventListener('scroll', Blocked.onScroll);
+            }
+            Blocked.fetchBlockedUsers();
           };
+
+          $scope.$on('$destroy', function () {
+            if (scrollContainer) {
+              scrollContainer.removeEventListener('scroll', Blocked.onScroll);
+            }
+          });
 
           Blocked.unblockUser = function (userId) {
             const user = Blocked.users.find(u => (u._id || u.userId) === userId);

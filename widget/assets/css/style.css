@@ -1575,8 +1575,7 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 #membersSvg {
     margin-bottom: 0px;
     top: 10px;
-    width: 2em;
-    right: 1em;
+    right: 1rem;
     position: absolute;
     padding-top: 0px;
     cursor: pointer;
@@ -1590,6 +1589,11 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 
 .post-images-container {
     margin: 2vh 0;
+}
+
+.blocked-users {
+    height: 100vh;
+    overflow: scroll;
 }
 
 .blocked-users-item {

@@ -363,18 +363,18 @@ const stringsConfig = {
 	general: {
 		title: "General",
 		labels: {
-                        blockedUsers: {
-                                title: "Blocked Users"
-                                , placeholder: "Blocked Users"
-                                , maxLength: 30
-                                , defaultValue: "Blocked Users"
-                        },
-                        noBlockedUsers: {
-                                title: "Blocked Users Empty State"
-                                , placeholder: "No blocked users."
-                                , maxLength: 50
-                                , defaultValue: "No blocked users."
-                        }
+			blockedUsers: {
+				title: "Blocked Users"
+				, placeholder: "Blocked Users"
+				, maxLength: 30
+				, defaultValue: "Blocked Users"
+			},
+			noBlockedUsers: {
+				title: "Blocked Users Empty State"
+				, placeholder: "No blocked users."
+				, maxLength: 50
+				, defaultValue: "No blocked users."
+			}
                 }
         },
 };

@@ -1304,33 +1304,31 @@
           }
 
           WidgetWall.showDrawer = function () {
-              // todo should change the function name
-              // todo add to lang
+              const listItems = [];
+              if (WidgetWall.SocialItems.appSettings.showMembers) {
+                  listItems.push({
+                      text: WidgetWall.SocialItems.languages.members,
+                      id: 'members'
+                  });
+              }
+              listItems.push({
+                  text: WidgetWall.SocialItems.languages.blockedUsers,
+                  id: 'blockedList'
+              });
               Buildfire.components.drawer.open({
                   enableFilter: false,
-                  listItems: [
-                      {
-                          text: 'Member',
-                          id: 'member'
-                      },
-                      {
-                          text: 'Blocked Users',
-                          id: 'blocked',
-                      }
-                  ]
+                  listItems
               }, (err, result) => {
                   if (err) return console.error(err);
                   buildfire.components.drawer.closeDrawer();
-                  if (result.id ==='member') {
+                  if (result.id === 'members') {
                       WidgetWall.showMembers();
-                  }
-                  else if (result.id ==='blocked') {
+                  } else if (result.id === 'blockedList') {
                       WidgetWall.showBlockedUsers();
                   }
               });
 
           }
-
           WidgetWall.showMembers = function () {
               WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                   if (err) return console.error("Getting user failed.", err);

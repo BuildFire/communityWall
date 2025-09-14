@@ -86,14 +86,14 @@
                                     <div class="empty_state"></div>
                                 </div>
                                 <div ng-show="!WidgetWall.postsLoaded">
-                                    <div class="social-item margin-top-half-rem" ng-class="{'first-post': WidgetWall.loadedPlugin && (WidgetWall.allowFollowLeaveGroup || WidgetWall.SocialItems.appSettings.showMembers)}"></div>
+                                    <div class="social-item margin-top-half-rem" ng-class="{'first-post': WidgetWall.loadedPlugin}"></div>
                                     <div class="social-item"></div>
                                     <div class="social-item"></div>
                                     <div class="social-item"></div>
                                     <div class="social-item"></div>
                                     <div class="social-item"></div>
                                 </div>
-                                <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items track by post.id" ng-class="{'first-post': $first && (WidgetWall.allowFollowLeaveGroup || WidgetWall.SocialItems.appSettings.showMembers)}">
+                                <div class="social-item" ng-repeat="post in WidgetWall.SocialItems.items track by post.id" ng-class="{'first-post': $first}">
                                     <div class="head flex flex-space-between">
                                         <div class="social-profile-photo pointer"
                                             ng-click="WidgetWall.SocialItems.userDetails.userId !== post.userId && WidgetWall.openBottomDrawer(post)">
