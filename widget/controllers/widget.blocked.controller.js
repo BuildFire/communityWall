@@ -98,6 +98,14 @@
                   $scope.$digest();
                   if (!Blocked.users.length) {
                     Blocked.goHomeTimeout = setTimeout(() => {
+                      buildfire.components.toast.closeToastMessage(
+                          {
+                            force: true,
+                          },
+                          (err) => {
+                            if (err) console.error(err);
+                          }
+                      );
                       Location.goToHome();
                     }, 3000);
                   }
