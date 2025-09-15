@@ -135,9 +135,6 @@
               if (WidgetWall.SocialItems.isPrivateChat) {
                   WidgetWall.allowCreateThread = true;
               }
-              else if (!WidgetWall.SocialItems.appSettings.allowMainThreadTags) {
-                  WidgetWall.allowCreateThread = false;
-              }
           };
 
           WidgetWall.showHidePrivateChat = function () {
