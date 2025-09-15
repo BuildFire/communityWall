@@ -1607,3 +1607,14 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 .blocked-users-item {
     padding: 1rem;
 }
+
+.blocked-user-item-username {
+    width: 25vh;
+}
+
+ .truncate {
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     display: inline-block;
+ }

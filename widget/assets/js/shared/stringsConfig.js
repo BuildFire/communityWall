@@ -219,16 +219,16 @@ const stringsConfig = {
 			},
 			blockUserSuccess : {
 				title: "Block User Success"
-				, placeholder: "User has been blocked successfully"
+				, placeholder: "has been blocked"
 				, maxLength: 50
-				, defaultValue: "User has been blocked successfully"
+				, defaultValue: "has been blocked"
 			},
 
 			unblockUserSuccess : {
 				title: "Unblock User Success"
-				, placeholder: "User has been unblocked"
+				, placeholder: "has been unblocked"
 				, maxLength: 50
-				, defaultValue: "User has been unblocked"
+				, defaultValue: "has been unblocked"
 			},
 			reportComemntSuccess: {
 				title: "Report Comment Success"
