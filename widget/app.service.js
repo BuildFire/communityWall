@@ -308,6 +308,7 @@
                     } else {
                         filter = {
                             '_buildfire.index.string1': wallId ? wallId : "",
+                            '_buildfire.index.array1.string1': { $nin: blockedUserStrings },
                             $or: [{
                                     '$json.leftWall': {
                                         $exists: true,
