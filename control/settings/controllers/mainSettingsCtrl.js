@@ -11,8 +11,8 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         mainThreadUserTags: [],
         sideThreadUserTags: []
     };
-    var mainThreadUserTagsContainer = null;
     var sideThreadUserTagsContainer = null;
+    var mainThreadUserTagsContainer = null;
 
     var load = function () {
         var editor = new buildfire.components.actionItems.sortableList("#actions");
