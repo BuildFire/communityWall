@@ -13,12 +13,19 @@
             ContentHome.socialAppId;
             ContentHome.parentThreadId;
             ContentHome.modalPopupThreadId;
-            ContentHome.startLoadingPosts = false;
+            ContentHome.startLoadingPosts = function () {
+                ContentHome.getPosts(true);
+            };
             ContentHome.privateThreads = [];
             ContentHome.exportingThreads = false;
             ContentHome.util = Util;
             var counter = 0;
             ContentHome.loading = true;
+            const POSTS_PAGE_SIZE = 10;
+            ContentHome.page = 0;
+            ContentHome.pageSize = POSTS_PAGE_SIZE;
+            ContentHome.totalPosts = 0;
+            ContentHome.postsBusy = false;
 
             $scope.setupImageList = function (post) {
                 if (post.imageUrl) {
@@ -158,27 +165,63 @@
                 ContentHome.noMore = false;
             };
 
-            ContentHome.getPosts = function () {
-                ContentHome.loading = true;
+            ContentHome.getPosts = function (isLoadMore) {
+                if (ContentHome.postsBusy || (isLoadMore && ContentHome.noMore)) return;
+
+                if (!isLoadMore) {
+                    ContentHome.page = 0;
+                    ContentHome.posts = [];
+                    ContentHome.totalPosts = 0;
+                    ContentHome.noMore = false;
+                }
+
+                ContentHome.postsBusy = true;
+                if (!isLoadMore) ContentHome.loading = true;
+
                 const searchOptions = {
                     sort: { "_buildfire.index.date1": -1 },
-                    recordCount: true
+                    recordCount: true,
+                    page: ContentHome.page,
+                    pageSize: ContentHome.pageSize
                 };
+
                 buildfire.publicData.search(searchOptions, 'posts', (err, data) => {
+                    ContentHome.postsBusy = false;
+                    ContentHome.loading = false;
+
                     if (err) {
-                        ContentHome.posts = [];
-                        ContentHome.loading = false;
+                        if (!isLoadMore) ContentHome.posts = [];
                         if (!$scope.$$phase) $scope.$digest();
                         return console.error(err);
                     }
-                    if (data && data.result) {
-                        ContentHome.posts = data.result.map(item => ({ ...item.data, id: item.id }));
-                    } else {
-                        ContentHome.posts = [];
-                        ContentHome.loading = false;
-                        if (!$scope.$$phase) $scope.$digest();
+
+                    const results = data && data.result ? data.result : [];
+                    const mappedPosts = results.map(item => ({ ...item.data, id: item.id }));
+
+                    if (!isLoadMore) {
+                        ContentHome.posts = mappedPosts;
+                    } else if (mappedPosts.length) {
+                        const existingIds = ContentHome.posts.map(post => post.id);
+                        const uniquePosts = mappedPosts.filter(post => existingIds.indexOf(post.id) === -1);
+                        if (uniquePosts.length) {
+                            ContentHome.posts = ContentHome.posts.concat(uniquePosts);
+                        }
                     }
-                    ContentHome.loading = false;
+
+                    const totalRecords = typeof data.totalRecord === 'number' ? data.totalRecord : ContentHome.totalPosts;
+                    ContentHome.totalPosts = typeof totalRecords === 'number' ? totalRecords : ContentHome.posts.length;
+
+                    if (mappedPosts.length && ContentHome.posts.length < ContentHome.totalPosts) {
+                        ContentHome.page += 1;
+                        ContentHome.noMore = false;
+                    } else {
+                        ContentHome.noMore = true;
+                    }
+
+                    if (!mappedPosts.length && !isLoadMore) {
+                        ContentHome.posts = [];
+                    }
+
                     if (!$scope.$$phase) $scope.$digest();
                 });
             };
