@@ -709,13 +709,15 @@
                 },
                 addComment: function (data) {
                     var deferred = $q.defer();
-                    if (data.userDetails.userTags) {
-                        delete data.userDetails.userTags
-                        delete data.userDetails.userToken
+                    const requestData = structuredClone(data);
+
+                    if (requestData.userDetails.userTags) {
+                        delete requestData.userDetails.userTags
+                        delete requestData.userDetails.userToken
                     }
-                    buildfire.publicData.getById(data.threadId, 'posts', function (err, post) {
+                    buildfire.publicData.getById(requestData.threadId, 'posts', function (err, post) {
                         if (err) return deferred.reject(err);
-                        post.data.comments.push(data);
+                        post.data.comments.push(requestData);
                         buildfire.publicData.update(post.id, post.data, 'posts', function (err, status) {
                             if (err) return deferred.reject(err);
                             else{
