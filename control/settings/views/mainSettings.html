@@ -33,10 +33,7 @@
                 </span>
             </div>
             <div class="col-md-8">
-                <tags-input class="margin-bottom-ten" ng-model="data.mainThreadUserTags"
-                            min-tags="{{data.allowMainThreadTags ? 1 : 0}}" on-tag-added="save()"
-                            on-tag-removed="save()">
-                </tags-input>
+                <div class="margin-bottom-ten" id="allowMainThreadTags"></div>
             </div>
         </div>
 
@@ -63,9 +60,7 @@
             </div>
 
             <div class="col-md-8">
-                <tags-input class="margin-bottom-ten" ng-model="data.sideThreadUserTags" min-tags="{{data.allowSideThreadTags ? 1 : 0}}"
-                    on-tag-added="save()" on-tag-removed="save()">
-                </tags-input>
+                <div class="margin-bottom-ten" id="allowSideThreadUserTags"></div>
             </div>
         </div>
 
