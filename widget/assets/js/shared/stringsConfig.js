@@ -119,61 +119,61 @@ const stringsConfig = {
 			}
 		}
 	},
-        unblockUser: {
-                title: "Unblock User",
-                labels: {
-                        unblockUserTitleConfirmation: {
-                                title: "Title"
-                                , placeholder: "Unblock"
-                                , maxLength: 20
-                                , defaultValue: "Unblock"
-                        },
-                        unblockUserBodyConfirmation: {
-                                title: "Body"
-                                , placeholder: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
-                                , maxLength: 150
-                                , defaultValue: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
-                        },
-                        unblockUserConfirmBtn: {
-                                title: "Confirm Button"
-                                , placeholder: "Unblock"
-                                , maxLength: 20
-                                , defaultValue: "Unblock"
-                        },
-                        unblockUserCancelBtn: {
-                                title: "Cancel Button"
-                                , placeholder: "Cancel"
-                                , maxLength: 20
-                                , defaultValue: "Cancel"
-                        }
-                }
+	unblockUser: {
+		title: "Unblock User",
+		labels: {
+			unblockUserTitleConfirmation: {
+				title: "Title"
+				, placeholder: "Unblock"
+				, maxLength: 20
+				, defaultValue: "Unblock"
+				},
+			unblockUserBodyConfirmation: {
+				title: "Body"
+				, placeholder: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
+				, maxLength: 150
+				, defaultValue: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
+				},
+			unblockUserConfirmBtn: {
+				title: "Confirm Button"
+				,placeholder: "Unblock"
+				,maxLength: 20
+				,defaultValue: "Unblock"
+				},
+			unblockUserCancelBtn: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 20
+				, defaultValue: "Cancel"
+				}
+			}
         },
-        blockUser: {
-                title: "Block User",
-                labels: {
-                        blockUserTitleConfirmation: {
-                                title: "Title"
-                                , placeholder: "Block"
-                                , maxLength: 20
-                                , defaultValue: "Block"
+	blockUser: {
+		title: "Block User",
+		labels: {
+			blockUserTitleConfirmation: {
+				title: "Title"
+				, placeholder: "Block"
+				, maxLength: 20
+				, defaultValue: "Block"
+				},
+			blockUserBodyConfirmation: {
+				title: "Body"
+				, placeholder: "Both of you won't be able to see each other's posts and send messages. The user won’t be notified that you blocked them."
+				, maxLength: 150
+				, defaultValue: "Both of you won't be able to see each other's posts and send messages. The user won’t be notified that you blocked them."
+			},
+			blockUserConfirmBtn: {
+				title: "Confirm Button"
+				, placeholder: "Block"
+				, maxLength: 20
+				, defaultValue: "Block"
                         },
-                        blockUserBodyConfirmation: {
-                                title: "Body"
-                                , placeholder: "Both of you won't be able to see each other's posts and send messages. The user won’t be notified that you blocked them."
-                                , maxLength: 150
-                                , defaultValue: "Both of you won't be able to see each other's posts and send messages. The user won’t be notified that you blocked them."
-                        },
-                        blockUserConfirmBtn: {
-                                title: "Confirm Button"
-                                , placeholder: "Block"
-                                , maxLength: 20
-                                , defaultValue: "Block"
-                        },
-                        blockUserCancelBtn: {
-                                title: "Cancel Button"
-                                , placeholder: "Cancel"
-                                , maxLength: 20
-                                , defaultValue: "Cancel"
+			blockUserCancelBtn: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 20
+				, defaultValue: "Cancel"
                         }
                 }
         },
@@ -363,6 +363,12 @@ const stringsConfig = {
 	general: {
 		title: "General",
 		labels: {
+			unblockBtn: {
+				title: "Unblock Button"
+				, placeholder: "Unblock"
+				, maxLength: 30
+				, defaultValue: "Unblock"
+			},
 			blockedUsers: {
 				title: "Blocked Users"
 				, placeholder: "Blocked Users"

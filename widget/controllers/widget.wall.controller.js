@@ -1311,7 +1311,7 @@
               }
           }
 
-          WidgetWall.showDrawer = function () {
+          WidgetWall.showTopDrawer = function () {
               const listItems = [];
               if (WidgetWall.SocialItems.appSettings.showMembers) {
                   listItems.push({
