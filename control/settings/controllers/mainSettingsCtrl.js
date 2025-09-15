@@ -11,8 +11,8 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         mainThreadUserTags: [],
         sideThreadUserTags: []
     };
-    $scope.mainThreadUserTagsContainer = null;
-    $scope.sideThreadUserTagsContainer = null;
+    var mainThreadUserTagsContainer = null;
+    var sideThreadUserTagsContainer = null;
 
     var load = function () {
         var editor = new buildfire.components.actionItems.sortableList("#actions");
@@ -94,7 +94,7 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                         $scope.save();
                     })
                 }
-                $scope.initUserTags();
+                initUserTags();
             }
         });
 
@@ -132,11 +132,10 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         }
     }
 
-    $scope.initUserTags = function () {
-        $scope.mainThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowMainThreadTags", {});
+    var initUserTags = function () {
+        mainThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowMainThreadTags", {});
 
-        $scope.mainThreadUserTagsContainer.onUpdate = (tags) => {
-            console.log(tags);
+        mainThreadUserTagsContainer.onUpdate = (tags) => {
             $scope.data.mainThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
             $scope.save();
         };
@@ -146,12 +145,12 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                 value: tag.text,
                 tagName: tag.text,
             }));
-            $scope.mainThreadUserTagsContainer.append(tags);
+            mainThreadUserTagsContainer.append(tags);
         }
 
-        $scope.sideThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowSideThreadUserTags", {});
+        sideThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowSideThreadUserTags", {});
 
-        $scope.sideThreadUserTagsContainer.onUpdate = (tags) => {
+        sideThreadUserTagsContainer.onUpdate = (tags) => {
             $scope.data.sideThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
             $scope.save();
         };
@@ -161,7 +160,7 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                 value: tag.text,
                 tagName: tag.text,
             }));
-            $scope.sideThreadUserTagsContainer.append(tags);
+            sideThreadUserTagsContainer.append(tags);
         }
 
     }
