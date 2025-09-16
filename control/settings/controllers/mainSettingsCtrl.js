@@ -11,8 +11,6 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         mainThreadUserTags: [],
         sideThreadUserTags: []
     };
-    var mainThreadUserTagsContainer = null;
-    var sideThreadUserTagsContainer = null;
 
     var load = function () {
         var editor = new buildfire.components.actionItems.sortableList("#actions");
@@ -94,7 +92,6 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                         $scope.save();
                     })
                 }
-                initUserTags();
             }
         });
 
@@ -130,39 +127,6 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
             }
 
         }
-    }
-
-    var initUserTags = function () {
-        mainThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowMainThreadTags", {});
-
-        mainThreadUserTagsContainer.onUpdate = (tags) => {
-            $scope.data.mainThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
-            $scope.save();
-        };
-
-        if ($scope.data.mainThreadUserTags && $scope.data.mainThreadUserTags.length) {
-            const tags = $scope.data.mainThreadUserTags.map(tag => ({
-                value: tag.text,
-                tagName: tag.text,
-            }));
-            mainThreadUserTagsContainer.append(tags);
-        }
-
-        sideThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowSideThreadUserTags", {});
-
-        sideThreadUserTagsContainer.onUpdate = (tags) => {
-            $scope.data.sideThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
-            $scope.save();
-        };
-
-        if ($scope.data.sideThreadUserTags && $scope.data.sideThreadUserTags.length) {
-            const tags = $scope.data.sideThreadUserTags.map(tag => ({
-                value: tag.text,
-                tagName: tag.text,
-            }));
-            sideThreadUserTagsContainer.append(tags);
-        }
-
     }
 
     $scope.handleChatFeatureActionItem = function () {

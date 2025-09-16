@@ -116,10 +116,7 @@
 							});
 						}
 
-                        setTimeout(() => {
-                            if (!ContentHome.posts.length)
-                                buildfire.messaging.sendMessageToWidget({ name: 'ASK_FOR_POSTS' });
-                        }, 500);
+						ContentHome.getPosts();
                     });
                 });
 
@@ -157,6 +154,31 @@
                 }
                 ContentHome.height = window.innerHeight;
                 ContentHome.noMore = false;
+            };
+
+            ContentHome.getPosts = function () {
+                ContentHome.loading = true;
+                const searchOptions = {
+                    sort: { "_buildfire.index.date1": -1 },
+                    recordCount: true
+                };
+                buildfire.publicData.search(searchOptions, 'posts', (err, data) => {
+                    if (err) {
+                        ContentHome.posts = [];
+                        ContentHome.loading = false;
+                        if (!$scope.$$phase) $scope.$digest();
+                        return console.error(err);
+                    }
+                    if (data && data.result) {
+                        ContentHome.posts = data.result.map(item => ({ ...item.data, id: item.id }));
+                    } else {
+                        ContentHome.posts = [];
+                        ContentHome.loading = false;
+                        if (!$scope.$$phase) $scope.$digest();
+                    }
+                    ContentHome.loading = false;
+                    if (!$scope.$$phase) $scope.$digest();
+                });
             };
 
             ContentHome.showComments = function (post) {
@@ -547,15 +569,6 @@
                                     return true;
                                 }
                             });
-                            if (!$scope.$$phase)
-                                $scope.$digest();
-                            break;
-                        case 'SEND_POSTS_TO_CP':
-                            ContentHome.posts = event.posts;
-                            setTimeout(() => {
-                                $scope.initHesGallery();
-                            });
-                            ContentHome.loading = false;
                             if (!$scope.$$phase)
                                 $scope.$digest();
                             break;
