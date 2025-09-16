@@ -313,17 +313,13 @@
                             });
                             Members.users = Members.users.filter(u => u.userId !== user.userId);
                             Members.SocialItems.blockedUsers.push(user.userId);
-                            Members.SocialItems.items = [];
-                            Members.SocialItems.page = 0;
-                            Members.SocialItems.showMorePosts = false;
+                            Members.SocialItems.resetState();
                             Members.SocialItems.getPosts();
                             $scope.$digest();
                         }
                     });
                 });
             }
-
-
 
 
             Members.navigateToPrivateChat = function (user) {

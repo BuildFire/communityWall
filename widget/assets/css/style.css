@@ -1433,16 +1433,22 @@ html[buildfire][safe-area="true"] body {
     overflow: hidden;
 }
 
-.empty_state {
-    height: 50vh;
+ .empty_state {
+    height: 70vh;
     background-image: url('../img/empty_page.svg') !important;
     background-repeat: no-repeat !important;
     background-attachment: absolute !important;
     background-position: center !important;
-}
-.empty_state_text {
-    margin-top: -6vh;
-}
+ }
+ .empty_state_text {
+    margin-top: -18vh;
+ }
+
+ @media (max-width: 330px) {
+    .empty_state_text {
+        margin-top: -12vh;
+     }
+ }
 
 .flex {
     display: flex;
@@ -1503,6 +1509,9 @@ html[buildfire][safe-area="true"] body {
 }
 .no-scroll {
     overflow: hidden !important;
+}
+.bg-none {
+    background-color: initial !important;
 }
 button.btn-danger-outlined {
     background-color: transparent !important;

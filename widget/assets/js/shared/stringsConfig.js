@@ -363,6 +363,12 @@ const stringsConfig = {
 	general: {
 		title: "General",
 		labels: {
+			someone: {
+				title: "Someone"
+				, placeholder: "Someone"
+				, maxLength: 30
+				, defaultValue: "Someone"
+			},
 			unblockBtn: {
 				title: "Unblock Button"
 				, placeholder: "Unblock"
@@ -381,6 +387,6 @@ const stringsConfig = {
 				, maxLength: 50
 				, defaultValue: "No blocked users."
 			}
-                }
+		}
         },
 };

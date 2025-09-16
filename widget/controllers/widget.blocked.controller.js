@@ -91,9 +91,7 @@
                     message: `${userName} ${Blocked.SocialItems.languages.unblockUserSuccess}`,
                     type: 'info'
                   });
-                  Blocked.SocialItems.items = [];
-                  Blocked.SocialItems.page = 0;
-                  Blocked.SocialItems.showMorePosts = false;
+                  Blocked.SocialItems.resetState();
                   Blocked.SocialItems.getPosts();
                   $scope.$digest();
                   if (!Blocked.users.length) {

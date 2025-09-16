@@ -550,12 +550,14 @@
                               WidgetWall.ContinueDrawer(post, listItems)
                           })
                       } else {
-                          listItems.push(
-                              {
-                                  id: 'blockUser',
-                                  text: WidgetWall.SocialItems.languages.blockUser
-                              }
-                          );
+                          if (post.userId != WidgetWall.SocialItems.userDetails.userId) {
+                              listItems.push(
+                                  {
+                                      id: 'blockUser',
+                                      text: WidgetWall.SocialItems.languages.blockUser
+                                  }
+                              );
+                          }
                           WidgetWall.ContinueDrawer(post, listItems)
                       }
                   });
