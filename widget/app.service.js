@@ -586,19 +586,36 @@
                                 currentUserSubscription = null;
                             }
 
-                            buildfire.publicData.search({
-                                filter: {
-                                    "_buildfire.index.array1.string1": `blockedUser_${currentUser.userId}`
-                                },
-                                pageSize: 50
-                            }, 'subscribedUsersData', function (err2, blockedByData) {
-                                if (!err2 && blockedByData && blockedByData.length > 0) {
-                                    SocialItemsInstance.blockedByUsers = blockedByData.map(item => item.data.userId);
-                                } else {
-                                    SocialItemsInstance.blockedByUsers = [];
-                                }
-                                callback(null, blocked);
-                            });
+                            const fetchBlockedByUsers = (page = 0, accumulated = []) => {
+                                buildfire.publicData.search({
+                                    filter: {
+                                        "_buildfire.index.array1.string1": `blockedUser_${currentUser.userId}`
+                                    },
+                                    pageSize: 50,
+                                    page
+                                }, 'subscribedUsersData', function (err2, blockedByData) {
+                                    if (err2) {
+                                        SocialItemsInstance.blockedByUsers = [];
+                                        return callback(null, blocked);
+                                    }
+
+                                    const results = Array.isArray(blockedByData) ? blockedByData : [];
+                                    const combinedResults = accumulated.concat(results);
+
+                                    if (results.length === 50) {
+                                        return fetchBlockedByUsers(page + 1, combinedResults);
+                                    }
+
+                                    if (combinedResults.length > 0) {
+                                        SocialItemsInstance.blockedByUsers = combinedResults.map(item => item.data.userId);
+                                    } else {
+                                        SocialItemsInstance.blockedByUsers = [];
+                                    }
+                                    callback(null, blocked);
+                                });
+                            };
+
+                            fetchBlockedByUsers();
                         })
                     });
                 },
