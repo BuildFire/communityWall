@@ -206,6 +206,7 @@
 
         .factory("SubscribedUsersData", ['SocialItems',function (SocialItems) {
             const SocialItemsInstance = SocialItems.getInstance();
+            let currentUserSubscription = null;
             function continueToCheckCurrent(callback) {
                 window.buildfire.auth.getCurrentUser((err, currentUser) => {
                     if (err) {
@@ -505,7 +506,13 @@
                                         data[0].data.blockedUsers.push(userId);
                                     }
                                     buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
-                                        callback(null, result);
+                                        if (!err && result) {
+                                            currentUserSubscription = {
+                                                id: data[0].id,
+                                                data: result.data
+                                            };
+                                        }
+                                        callback(err, result);
                                     });
                                 } else {
                                     const userDataObject = {
@@ -539,7 +546,13 @@
                                     };
                                     buildfire.publicData.save(_this.getDataWithIndex({data: userDataObject}).data, 'subscribedUsersData', (err, result) => {
                                         if(err) callback(err, false);
-                                        else callback(null, result);
+                                        else {
+                                            currentUserSubscription = {
+                                                id: result && result.id,
+                                                data: (result && result.data) ? result.data : userDataObject
+                                            };
+                                            callback(null, result);
+                                        }
                                     });
                                 }
                             })
@@ -550,11 +563,45 @@
                 },
                 unblockUser: function (userId, callback) {
                     let _this = this;
+
+                    const updateBlockedUsersRecord = (record) => {
+                        if (!record || !record.id) {
+                            return callback(null, false);
+                        }
+
+                        const stateBlockedUsers = Array.isArray(SocialItemsInstance.blockedUsers)
+                            ? SocialItemsInstance.blockedUsers.slice()
+                            : [];
+                        const recordBlockedUsers = Array.isArray(record.data && record.data.blockedUsers)
+                            ? record.data.blockedUsers.slice()
+                            : [];
+
+                        const baseBlockedUsers = stateBlockedUsers.length ? stateBlockedUsers : recordBlockedUsers;
+                        const updatedBlockedUsers = baseBlockedUsers.filter(id => id !== userId);
+
+                        record.data = record.data || {};
+                        record.data.blockedUsers = updatedBlockedUsers;
+
+                        buildfire.publicData.update(record.id, _this.getDataWithIndex(record).data, 'subscribedUsersData', (err, result) => {
+                            if (!err && result) {
+                                SocialItemsInstance.blockedUsers = updatedBlockedUsers;
+                                currentUserSubscription = {
+                                    id: record.id,
+                                    data: result.data
+                                };
+                            }
+                            callback(err, result);
+                        });
+                    };
+
                     buildfire.auth.getCurrentUser((err, currentUser) => {
                         if (err) {
-                            callback(err, false);
+                            return callback(err, false);
                         }
                         if (currentUser) {
+                            if (currentUserSubscription && currentUserSubscription.id) {
+                                return updateBlockedUsersRecord(currentUserSubscription);
+                            }
                             buildfire.publicData.search({
                                 filter: {
                                     $and: [{
@@ -566,16 +613,14 @@
                             }, 'subscribedUsersData', function (err, data) {
                                 if (err) return callback(err, false);
                                 if (data && data.length > 0) {
-                                    data[0].data.blockedUsers = (data[0].data.blockedUsers || []).filter(id => id !== userId);
-                                    buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
-                                        callback(err, result);
-                                    });
+                                    currentUserSubscription = data[0];
+                                    return updateBlockedUsersRecord(currentUserSubscription);
                                 } else {
-                                    callback(null, false);
+                                    return callback(null, false);
                                 }
                             });
                         } else {
-                            callback(err, false);
+                            return callback(err, false);
                         }
                     });
                 },
@@ -596,9 +641,15 @@
                             if (err) return callback(err, false);
 
                             let blocked = [];
-                            if (data && data.length > 0 && data[0].data.blockedUsers) {
-                                blocked = data[0].data.blockedUsers;
+                            if (data && data.length > 0) {
+                                currentUserSubscription = data[0];
+                                if (data[0].data.blockedUsers) {
+                                    blocked = data[0].data.blockedUsers;
+                                }
+                            } else {
+                                currentUserSubscription = null;
                             }
+                            SocialItemsInstance.blockedUsers = blocked;
 
                             buildfire.publicData.search({
                                 filter: {
@@ -869,6 +920,7 @@
             var instance;
             SocialItems.prototype.getUserName = function (userDetails) {
                 let name = null;
+                const fallbackName = (_this.languages && _this.languages.someone) ? _this.languages.someone : 'Someone';
                 const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 if (userDetails && userDetails.displayName !== 'Someone' && !re.test(String(userDetails.displayName).toLowerCase()) &&
                     userDetails.displayName) {
@@ -883,8 +935,8 @@
                 else if (userDetails && userDetails.lastName !== 'Someone' && !re.test(String(userDetails.lastName).toLowerCase()) &&
                     userDetails.lastName)
                     name = userDetails.lastName;
-                else name = 'Someone';
-                if (name.length > 25)
+                else name = fallbackName;
+                if (name && name.length > 25)
                     name = name.substring(0, 25) + '...';
                 return name;
             }

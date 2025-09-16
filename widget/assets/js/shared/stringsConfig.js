@@ -380,6 +380,12 @@ const stringsConfig = {
 				, placeholder: "No blocked users."
 				, maxLength: 50
 				, defaultValue: "No blocked users."
+			},
+			someone: {
+				title: "Fallback User Name"
+				, placeholder: "Someone"
+				, maxLength: 30
+				, defaultValue: "Someone"
 			}
                 }
         },
