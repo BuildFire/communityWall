@@ -206,7 +206,6 @@
 
         .factory("SubscribedUsersData", ['SocialItems',function (SocialItems) {
             const SocialItemsInstance = SocialItems.getInstance();
-            let currentUserSubscription = null;
             function continueToCheckCurrent(callback) {
                 window.buildfire.auth.getCurrentUser((err, currentUser) => {
                     if (err) {
@@ -481,82 +480,102 @@
                 },
                 blockUser: function (userId, callback) {
                     let _this = this;
-
                     buildfire.auth.getCurrentUser((err, currentUser) => {
                         if (err) {
-                            return callback(err, false);
+                            callback(err, false)
                         }
-
-                        if (!currentUser) {
-                            return callback(err, false);
-                        }
-
-                        const baseBlockedUsers = Array.isArray(currentUserSubscription.data && currentUserSubscription.data.blockedUsers)
-                            ? currentUserSubscription.data.blockedUsers.slice()
-                            : [];
-
-                        if (!baseBlockedUsers.includes(userId)) {
-                            baseBlockedUsers.push(userId);
-                        }
-
-                        currentUserSubscription.data = currentUserSubscription.data || {};
-                        currentUserSubscription.data.blockedUsers = baseBlockedUsers;
-
-                        buildfire.publicData.update(
-                            currentUserSubscription.id,
-                            _this.getDataWithIndex(currentUserSubscription).data,
-                            'subscribedUsersData',
-                            (err, result) => {
-                                if (!err && result) {
-                                    SocialItemsInstance.blockedUsers = baseBlockedUsers;
-                                    currentUserSubscription = {
-                                        id: currentUserSubscription.id,
-                                        data: result.data
-                                    };
+                        if (currentUser) {
+                            buildfire.publicData.search({
+                                filter: {
+                                    $and: [{
+                                        "_buildfire.index.array1.string1": `${currentUser.userId}-`
+                                    }, {
+                                        "_buildfire.index.string1": ""
+                                    }]
                                 }
-                                callback(err, result);
-                            }
-                        );
+                            }, 'subscribedUsersData', function (err, data) {
+                                if (err) callback(err, false);
+                                else if (data && data.length > 0) {
 
+                                    if(!data[0].data.blockedUsers) {
+                                        data[0].data.blockedUsers = [];
+                                    }
+
+                                    if (!data[0].data.blockedUsers.includes(userId)) {
+                                        data[0].data.blockedUsers.push(userId);
+                                    }
+                                    buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
+                                        callback(null, result);
+                                    });
+                                } else {
+                                    const userDataObject = {
+                                        userId: currentUser.userId,
+                                        userDetails: {
+                                            displayName: currentUser.displayName,
+                                            firstName: currentUser.firstName,
+                                            lastName: currentUser.lastName,
+                                            imageUrl: currentUser.imageUrl,
+                                            email: currentUser.email,
+                                            lastUpdated: new Date().getTime(),
+                                        },
+                                        wallId: "",
+                                        leftWall: true,
+                                        blockedUsers : [userId],
+                                        posts: [],
+                                        _buildfire: {
+                                            index: {
+                                                'text': currentUser.userId + '-',
+                                                'number1': 1,
+                                                array1: [
+                                                    {
+                                                        string1: currentUser.userId + '-'
+                                                    },
+                                                    {
+                                                        string1: `blockedUser_${userId}`
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    };
+                                    buildfire.publicData.save(_this.getDataWithIndex({data: userDataObject}).data, 'subscribedUsersData', (err, result) => {
+                                        if(err) callback(err, false);
+                                        else callback(null, result);
+                                    });
+                                }
+                            })
+                        } else {
+                            callback(err, false)
+                        }
                     });
                 },
                 unblockUser: function (userId, callback) {
                     let _this = this;
-
-                    const updateBlockedUsersRecord = (record) => {
-                        if (!record || !record.id) {
-                            return callback(null, false);
-                        }
-                    };
-
                     buildfire.auth.getCurrentUser((err, currentUser) => {
                         if (err) {
-                            return callback(err, false);
+                            callback(err, false);
                         }
                         if (currentUser) {
-                            if (currentUserSubscription && currentUserSubscription.id) {
-                                const baseBlockedUsers = Array.isArray(currentUserSubscription.data && currentUserSubscription.data.blockedUsers)
-                                    ? currentUserSubscription.data.blockedUsers.slice()
-                                    : [];
-
-                                const updatedBlockedUsers = baseBlockedUsers.filter(id => id !== userId);
-
-                                currentUserSubscription.data = currentUserSubscription.data || {};
-                                currentUserSubscription.data.blockedUsers = updatedBlockedUsers;
-
-                                buildfire.publicData.update(currentUserSubscription.id, _this.getDataWithIndex(currentUserSubscription).data, 'subscribedUsersData', (err, result) => {
-                                    if (!err && result) {
-                                        SocialItemsInstance.blockedUsers = updatedBlockedUsers;
-                                        currentUserSubscription = {
-                                            id: currentUserSubscription.id,
-                                            data: result.data
-                                        };
-                                    }
-                                    callback(err, result);
-                                });
-                            }
+                            buildfire.publicData.search({
+                                filter: {
+                                    $and: [{
+                                        "_buildfire.index.array1.string1": `${currentUser.userId}-`
+                                    }, {
+                                        "_buildfire.index.string1": ""
+                                    }]
+                                }
+                            }, 'subscribedUsersData', function (err, data) {
+                                if (err) return callback(err, false);
+                                if (data && data.length > 0) {
+                                    data[0].data.blockedUsers = (data[0].data.blockedUsers || []).filter(id => id !== userId);
+                                    buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
+                                        callback(err, result);
+                                    });
+                                } else {
+                                    callback(null, false);
+                                }
+                            });
                         } else {
-                            return callback(err, false);
+                            callback(err, false);
                         }
                     });
                 },
@@ -578,22 +597,18 @@
 
                             let blocked = [];
                             if (data && data.length > 0) {
-                                currentUserSubscription = data[0];
                                 if (data[0].data.blockedUsers) {
-                                    blocked = data[0].data.blockedUsers;
+                                blocked = data[0].data.blockedUsers;
                                 }
-                            } else {
-                                currentUserSubscription = null;
                             }
-
                             const fetchBlockedByUsers = (page = 0, accumulated = []) => {
-                                buildfire.publicData.search({
-                                    filter: {
-                                        "_buildfire.index.array1.string1": `blockedUser_${currentUser.userId}`
-                                    },
+                            buildfire.publicData.search({
+                                filter: {
+                                    "_buildfire.index.array1.string1": `blockedUser_${currentUser.userId}`
+                                },
                                     pageSize: 50,
                                     page
-                                }, 'subscribedUsersData', function (err2, blockedByData) {
+                            }, 'subscribedUsersData', function (err2, blockedByData) {
                                     if (err2) {
                                         SocialItemsInstance.blockedByUsers = [];
                                         return callback(null, blocked);
@@ -608,11 +623,11 @@
 
                                     if (combinedResults.length > 0) {
                                         SocialItemsInstance.blockedByUsers = combinedResults.map(item => item.data.userId);
-                                    } else {
-                                        SocialItemsInstance.blockedByUsers = [];
-                                    }
-                                    callback(null, blocked);
-                                });
+                                } else {
+                                    SocialItemsInstance.blockedByUsers = [];
+                                }
+                                callback(null, blocked);
+                            });
                             };
 
                             fetchBlockedByUsers();
@@ -1087,7 +1102,7 @@
                                 else clearInterval(_this.newPostTimerChecker);
                                 $rootScope.$digest();
                                 if (callback) {
-                                    callback(null, data);
+                                callback(null, data);
                                 }
                             })
 
@@ -1101,7 +1116,7 @@
                             else clearInterval(_this.newPostTimerChecker);
                             $rootScope.$digest();
                             if (callback) {
-                                callback(null, data);
+                            callback(null, data);
                             }
                         }
 
