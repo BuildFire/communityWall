@@ -581,13 +581,15 @@
                 },
                 addComment: function (data) {
                     var deferred = $q.defer();
-                    if (data.userDetails.userTags) {
-                        delete data.userDetails.userTags
-                        delete data.userDetails.userToken
+                    const requestData = structuredClone(data);
+
+                    if (requestData.userDetails.userTags) {
+                        delete requestData.userDetails.userTags
+                        delete requestData.userDetails.userToken
                     }
-                    buildfire.publicData.getById(data.threadId, 'posts', function (err, post) {
+                    buildfire.publicData.getById(requestData.threadId, 'posts', function (err, post) {
                         if (err) return deferred.reject(err);
-                        post.data.comments.push(data);
+                        post.data.comments.push(requestData);
                         buildfire.publicData.update(post.id, post.data, 'posts', function (err, status) {
                             if (err) return deferred.reject(err);
                             else{
@@ -1246,6 +1248,28 @@
 
                 });
             };
+
+            SocialItems.prototype.openChat =function (controller, userId) {
+                const SocialItems = controller.SocialItems;
+                const appSettings = SocialItems.appSettings;
+
+                if (appSettings.chatFeature && appSettings.chatFeature.value === 'actionItem' && appSettings.chatFeature.actionItem) {
+                    const queryStringObj = { receiverId: userId };
+                    appSettings.chatFeature.actionItem.queryString = `&dld=${encodeURIComponent(JSON.stringify(queryStringObj))}`;
+                    buildfire.navigation.navigateTo(appSettings.chatFeature.actionItem);
+                } else if (controller.allowPrivateChat !== false) {
+                    SocialItems.authenticateUser(null, (err, user) => {
+                        if (err) return console.error("Getting user failed.", err);
+                        if (user) {
+                            buildfire.auth.getUserProfile({ userId }, function (err, profile) {
+                            	if (err || !profile) return console.error("Getting user profile failed.", err);
+                            	if (userId === SocialItems.userDetails.userId) return;
+                            	controller.openPrivateChat(userId, SocialItems.getUserName(profile));
+                            	});
+                        }
+                    });
+                }
+            }
 
             return {
                 getInstance: function () {

@@ -299,36 +299,42 @@
             }
 
             Members.openPrivateChat = function (user) {
-                Members.SocialItems.authenticateUser(null, (err, userData) => {
+                if (Members.appSettings.chatFeature && Members.appSettings.chatFeature.value === 'actionItem' && Members.appSettings.chatFeature.actionItem) {
+                    const queryStringObj = { receiverId: user.userId };
+                    Members.appSettings.chatFeature.actionItem.queryString = `&dld=${encodeURIComponent(JSON.stringify(queryStringObj))}`;
+                    buildfire.navigation.navigateTo(Members.appSettings.chatFeature.actionItem);
+                }
+                else {
+                    Members.SocialItems.authenticateUser(null, (err, userData) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (userData) {
                         let wid = null;
 
-                        if (Members.SocialItems.userDetails.userId && Members.SocialItems.userDetails.userId !=
-                            user.userId) {
+                        if (Members.SocialItems.userDetails.userId && Members.SocialItems.userDetails.userId != user.userId) {
                             if (Members.SocialItems.userDetails.userId > user.userId)
                                 wid = Members.SocialItems.userDetails.userId + user.userId;
-                            else
-                                wid = user.userId + Members.SocialItems.userDetails.userId;
+                                else
+                                    wid = user.userId + Members.SocialItems.userDetails.userId;
 
-                            let userName = Members.SocialItems.getUserName(user.userDetails)
+                                let userName = Members.SocialItems.getUserName(user.userDetails)
 
-                            SubscribedUsersData.getGroupFollowingStatus(user.userId, wid, Members.SocialItems.context.instanceId, function (err, status) {
-                                if (err) console.error('Error while getting initial group following status.', err);
-                                if (!status.length) {
-                                    Members.followPrivateWall(user.userId, wid, userName);
-                                } else {
-                                    Members.navigateToPrivateChat({
-                                        id: user.userId,
-                                        name: userName,
-                                        wid: wid
-                                    });
-                                }
-                            });
+                                SubscribedUsersData.getGroupFollowingStatus(user.userId, wid, Members.SocialItems.context.instanceId, function (err, status) {
+                                    if (err) console.error('Error while getting initial group following status.', err);
+                                    if (!status.length) {
+                                        Members.followPrivateWall(user.userId, wid, userName);
+                                    } else {
+                                        Members.navigateToPrivateChat({
+                                            id: user.userId,
+                                            name: userName,
+                                            wid: wid
+                                        });
+                                    }
+                                });
 
+                            }
                         }
-                    }
-                });
+                    });
+                }
             };
 
             Members.init();

@@ -54,6 +54,12 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
   }
+  #addBtn .material-icons, #addCommentBtn .material-icons {
+    color: #fff !important;
+ }
+  .fab-button {
+    padding: 0;
+ }
 
   .material-icons-outlined {
     font-family: 'Material Icons Outlined';
@@ -263,35 +269,6 @@ button.btn--lg,
     margin-bottom: 0;
 }
 .btn--fab.btn--add span::before{
-    display: block;
-    content: '';
-    width: 1rem;
-    height: .125rem;
-    background-color: #fff;
-    margin-bottom: 0;
-    transform: rotate(90deg);
-}
-
-.btn.btn--act{
-    display: flex;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    position: fixed;
-    bottom: 5.5rem;
-    right: 1.8rem;
-    box-shadow: 0 .125rem .5rem rgba(50, 50, 50, 0.3);
-    background-color: white !important;
-    color: black;
-}
-.btn--act.btn--add span{
-    display: block;
-    width: 1rem;
-    height: .125rem;
-    background-color: #fff;
-    margin-bottom: 0;
-}
-.btn--act.btn--add span::before{
     display: block;
     content: '';
     width: 1rem;

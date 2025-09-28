@@ -11,6 +11,8 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         mainThreadUserTags: [],
         sideThreadUserTags: []
     };
+    var mainThreadUserTagsContainer = null;
+    var sideThreadUserTagsContainer = null;
 
     var load = function () {
         var editor = new buildfire.components.actionItems.sortableList("#actions");
@@ -50,14 +52,25 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                             } else
                                 result.data.appSettings.allowChat = "allUsers";
                         }
+                        if (!result.data.appSettings.chatFeature) {
+                            result.data.appSettings.chatFeature = {
+                                value: "default",
+                                actionItem: null
+                            };
+                        }
                     } else if (!result.data.appSettings) {
                         result.data.appSettings = {};
                         result.data.appSettings.showMembers = true;
                         result.data.appSettings.allowAutoSubscribe = true;
                         result.data.appSettings.allowChat = "allUsers";
+                        result.data.appSettings.chatFeature = {
+                            value: "default",
+                            actionItem: null
+                        };
                     }
                     $scope.data = result.data.appSettings;
 
+                    $scope.handleChatFeatureActionItem();
                     $scope.fillUsers();
                     $scope.$digest();
 
@@ -73,7 +86,15 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
                     document.getElementById('selectedUsers').addEventListener('change', () => {
                         $scope.save();
                     })
+
+                    document.getElementById('ChatFeaturePluginsDefault').addEventListener('change', () => {
+                        $scope.save();
+                    })
+                    document.getElementById('chatFeatureActionItem').addEventListener('change', () => {
+                        $scope.save();
+                    })
                 }
+                initUserTags();
             }
         });
 
@@ -111,6 +132,75 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
         }
     }
 
+    var initUserTags = function () {
+        mainThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowMainThreadTags", {});
+
+        mainThreadUserTagsContainer.onUpdate = (tags) => {
+            $scope.data.mainThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
+            $scope.save();
+        };
+
+        if ($scope.data.mainThreadUserTags && $scope.data.mainThreadUserTags.length) {
+            const tags = $scope.data.mainThreadUserTags.map(tag => ({
+                value: tag.text,
+                tagName: tag.text,
+            }));
+            mainThreadUserTagsContainer.append(tags);
+        }
+
+        sideThreadUserTagsContainer = new buildfire.components.control.userTagsInput("#allowSideThreadUserTags", {});
+
+        sideThreadUserTagsContainer.onUpdate = (tags) => {
+            $scope.data.sideThreadUserTags = tags.tags.map(tag => ({ text: tag.tagName }));
+            $scope.save();
+        };
+
+        if ($scope.data.sideThreadUserTags && $scope.data.sideThreadUserTags.length) {
+            const tags = $scope.data.sideThreadUserTags.map(tag => ({
+                value: tag.text,
+                tagName: tag.text,
+            }));
+            sideThreadUserTagsContainer.append(tags);
+        }
+
+    }
+
+    $scope.handleChatFeatureActionItem = function () {
+        var chatFeatureActionsItems = new buildfire.components.actionItems.sortableList("#chatFeatureActions");
+        if ($scope.data.chatFeature.actionItem) {
+            chatFeatureActionsItems.loadItems([$scope.data.chatFeature.actionItem]);
+        }
+        chatFeatureActionsItems.onDeleteItem = function (event) {
+            delete $scope.data.chatFeature.actionItem;
+            $scope.save();
+        }
+
+        chatFeatureActionsItems.onItemChange = function (event) {
+            $scope.data.chatFeature.actionItem = chatFeatureActionsItems.items[0];
+            $scope.save();
+        }
+
+        chatFeatureActionsItems.onAddItems = function (items) {
+            if (!$scope.data.chatFeature.actionItem) {
+                $scope.data.chatFeature.actionItem = chatFeatureActionsItems.items[0];
+                $scope.save();
+            } else {
+                let items = [];
+                items.push($scope.data.chatFeature.actionItem);
+                chatFeatureActionsItems.loadItems(items)
+                buildfire.notifications.alert({
+                    title: "Adding Denied",
+                    message: "You can only have one action item",
+                    okButton: {
+                    text: 'Ok'
+                    }
+                }, function (e, data) {
+                    if (e) console.error(e);
+                    if (data) console.log(data);
+                });
+            }
+        }
+    }
 
     $scope.warn = function () {
         let el = document.getElementById("seeProfile");
@@ -141,7 +231,20 @@ app.controller('MainSettingsCtrl', ['$scope', function ($scope) {
 
     $scope.save = function () {
         buildfire.spinner.show();
-        _pluginData.data.appSettings = $scope.data;
+
+        const clonedData = structuredClone($scope.data);
+
+        // handle action item not selected
+        if (
+            clonedData.chatFeature &&
+            clonedData.chatFeature.value === 'actionItem' &&
+            !clonedData.chatFeature.actionItem
+        ) {
+            clonedData.chatFeature.value = 'default';
+        }
+
+        _pluginData.data.appSettings = clonedData;
+
         buildfire.datastore.save(_pluginData.data, 'Social', function (err, data) {
             if (err) {
                 console.error('App settings -- ', err);

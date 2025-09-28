@@ -46,6 +46,61 @@
             }
           }
 
+          WidgetWall.initFabButtons = function () {
+              if (WidgetWall.fabSpeedDial) {
+                  WidgetWall.fabSpeedDial.destroy();
+                  WidgetWall.fabSpeedDial = null;
+              }
+              let options = {}
+              let actionItem = WidgetWall.SocialItems.appSettings.actionItem;
+              if (actionItem && actionItem.iconUrl && WidgetWall.allowCreateThread) {
+                  options = {
+                      mainButton: {
+                          content: `<span class="material-icons">menu</span>`,
+                          type: 'default',
+                      },
+                      buttons: [
+                          {
+                              content: '<i class="material-icons">add</i>',
+                              type: 'success',
+                              onClick: () => WidgetWall.openPostSection()
+                          },
+                          {
+                              content: `<span><img src="${actionItem.iconUrl}"</span>`,
+                              onClick: () => WidgetWall.navigateTo()
+                          },
+                      ]
+                  }
+              }
+              else if (WidgetWall.allowCreateThread) {
+                    options = {
+                        mainButton: {
+                            content: `<span class="material-icons">add</span>`,
+                            type: 'default',
+                        },
+                    }
+              }
+              else if (actionItem && actionItem.iconUrl) {
+                    options = {
+                        mainButton: {
+                            content: `<span><img src="${actionItem.iconUrl}"</span>`,
+                            type: 'default',
+                        },
+                    }
+              }
+              else {
+                  return;
+              }
+              WidgetWall.fabSpeedDial = new buildfire.components.fabSpeedDial('#addBtn',options);
+              if (WidgetWall.allowCreateThread) {
+                  WidgetWall.fabSpeedDial.onMainButtonClick = () => WidgetWall.openPostSection()
+
+              }
+              else if (actionItem && actionItem.iconUrl) {
+                  WidgetWall.fabSpeedDial.onMainButtonClick = () => WidgetWall.navigateTo()
+              }
+          }
+
           WidgetWall.showHideCommentBox = function () {
               if (WidgetWall.SocialItems && WidgetWall.SocialItems.appSettings && WidgetWall.SocialItems.appSettings.allowMainThreadTags &&
                 WidgetWall.SocialItems.appSettings.mainThreadUserTags && WidgetWall.SocialItems.appSettings.mainThreadUserTags.length > 0
@@ -111,6 +166,7 @@
               WidgetWall.showHidePrivateChat();
               WidgetWall.followLeaveGroupPermission();
               WidgetWall.showHideCommentBox();
+              WidgetWall.initFabButtons();
               let dldActionItem = new URLSearchParams(window.location.search).get('actionItem');
               if (dldActionItem)
                   WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
@@ -118,7 +174,7 @@
               let actionItem = WidgetWall.SocialItems.appSettings.actionItem;
               if (actionItem && actionItem.iconUrl) {
                   actionItem.iconUrl = buildfire.imageLib.cropImage(actionItem.iconUrl, {
-                      size: 'xss',
+                      size: 's',
                       aspect: '1:1'
                   })
                   angular.element('#actionBtn').attr('style', `background-image: url(${actionItem.iconUrl}) !important; background-size: cover !important;`);
@@ -152,8 +208,6 @@
                   }
                   WidgetWall.appTheme = obj.colors;
 
-                  elements[2].style.setProperty("fill", 'white', "important");
-                  document.getElementById('addBtn').style.setProperty("background-color", "var(--bf-theme-success)", "important");
                   document.getElementById('socialHeader').style.setProperty("background-color", obj.colors.backgroundColor, "important");
                   WidgetWall.loadedPlugin = true;
               });
@@ -509,7 +563,7 @@
                   listItems: listItems
               }, (err, result) => {
                   if (err) return console.error(err);
-                  else if (result.text == "Send Direct Message") WidgetWall.openChat(userId);
+                  else if (result.text == "Send Direct Message") WidgetWall.SocialItems.openChat(WidgetWall, userId);
                   else if (result.text == "See Profile") buildfire.auth.openProfile(userId);
                   else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
@@ -520,22 +574,6 @@
               });
           }
 
-          WidgetWall.openChat = function (userId) {
-              if (WidgetWall.allowPrivateChat) {
-                  WidgetWall.SocialItems.authenticateUser(null, (err, user) => {
-                      if (err) return console.error("Getting user failed.", err);
-                      if (user) {
-                          buildfire.auth.getUserProfile({
-                              userId: userId
-                          }, function (err, user) {
-                              if (err || !user) return console.error("Getting user profile failed.", err);
-                              if (userId === WidgetWall.SocialItems.userDetails.userId) return;
-                              WidgetWall.openPrivateChat(userId, WidgetWall.SocialItems.getUserName(user));
-                          });
-                      }
-                  });
-              }
-          };
 
           WidgetWall.getBlockedUsers = function(callback) {
               SubscribedUsersData.getBlockedUsers((err, result)=>{
@@ -556,9 +594,6 @@
                   }
                   if (result) {
                       WidgetWall.SocialItems.items = [];
-                      WidgetWall.setSettings(result);
-                      WidgetWall.showHidePrivateChat();
-                      WidgetWall.followLeaveGroupPermission();
                       WidgetWall.setAppTheme();
                       WidgetWall.getBlockedUsers((error, res) => {
                           if (err) console.log("Error while fetching blocked users ", err);
@@ -569,6 +604,7 @@
                                 WidgetWall.stopSkeleton();
                                 return console.error("Getting user failed.", err);
                               }
+                              WidgetWall.setSettings(result);
                               WidgetWall.getPosts(()=>{
                                   if (user) {
                                       WidgetWall.checkFollowingStatus(user);
@@ -750,12 +786,13 @@
           }
 
           WidgetWall.navigateToPrivateChat = function (privateChatData) {
-
               WidgetWall.SocialItems.isPrivateChat = true;
               WidgetWall.SocialItems.wid = privateChatData.wid;
               WidgetWall.SocialItems.showMorePosts = false;
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
+              WidgetWall.allowCreateThread = true;
+              WidgetWall.initFabButtons();
               WidgetWall.SocialItems.setPrivateChatTitle(privateChatData.wid).then(() => {
                   if (WidgetWall.isFromDeepLink) {
                       buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
@@ -787,6 +824,7 @@
                       if (err) return console.error("Fetching settings failed.", err);
                       if (result) {
                           WidgetWall.SocialItems.appSettings = result.data && result.data.appSettings ? result.data.appSettings : {};
+                          WidgetWall.setSettings(result);
 
                           Buildfire.datastore.onUpdate(function (response) {
                               if (response.tag === "Social") {
