@@ -1057,25 +1057,12 @@
                 return filter;
             }
 
-            SocialItems.prototype.setupImageList = function(listId, item) {
-                if (item.imageUrl) {
-                    $timeout(() => {
-                        let imageList = document.getElementById(listId);
-                        if (!imageList) return;
-                        if (Array.isArray(item.imageUrl)) {
-                            imageList.images = item.imageUrl;
-                        } else {
-                            imageList.images = [item.imageUrl];
-                        }
-                        imageList.addEventListener('imageSelected', (e) => {
-                            let selectedImage = e.detail.filter(image => image.selected);
-                            if (selectedImage && selectedImage[0] && selectedImage[0].name)
-                                selectedImage[0].name = selectedImage[0].name;
-                            buildfire.imagePreviewer.show({
-                                images: selectedImage
-                            });
-                        });
-                    });
+            SocialItems.prototype.previewImage = function(event, index, images) {
+                if (images && images.length) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    buildfire.imagePreviewer.show({ images, index });
                 }
             };
 

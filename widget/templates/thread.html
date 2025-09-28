@@ -44,9 +44,9 @@
                     <p class="margin-zero body-text-theme" ng-bind-html="Thread.util.injectAnchors(Thread.post.text) | newLine"></p><p></p>
                 </div>
                 <div class="plugin-banner clearfix">
-                    <div ng-init="Thread.SocialItems.setupImageList('commentPostImage', Thread.post.imageUrl)" class="plugin-slide text-center" style="max-height: none !important;">
-                        <div ng-repeat="image in Thread.post.imageUrl" class="post-images-container">
-                            <img  ng-src="{{Thread.util.resizeImage(image)}}" data-alt="Post image">
+                    <div class="plugin-slide text-center" style="max-height: none !important;">
+                        <div ng-repeat="image in Thread.post.imageUrl track by $index" class="post-images-container">
+                            <img ng-src="{{Thread.util.resizeImage(image)}}" data-alt="Post image" ng-click="Thread.SocialItems.previewImage($event, $index, Thread.post.imageUrl)">
                         </div>
                     </div>
                 </div>
@@ -91,8 +91,8 @@
                                     </p>
                             </div>
                             <div class="plugin-banner ellipsis">
-                                <div ng-init="Thread.SocialItems.setupImageList('imageComment_'+comment.commentId, comment)" class="plugin-slide text-center" style="max-height: none !important;">
-                                    <img ng-repeat="image in comment.imageUrl" ng-src="{{Thread.util.resizeImage(image)}}" data-alt="Post image">
+                                <div class="plugin-slide text-center" style="max-height: none !important;">
+                                    <img ng-repeat="image in comment.imageUrl track by $index" ng-src="{{Thread.util.resizeImage(image)}}" data-alt="Post image" ng-click="Thread.SocialItems.previewImage($event, $index, comment.imageUrl)">
                                 </div>
                             </div>
                             <div ng-show="comment.threadId && !comment.deletedOn" class="status-footer">
