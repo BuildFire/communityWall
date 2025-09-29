@@ -369,6 +369,12 @@ const stringsConfig = {
 				, maxLength: 30
 				, defaultValue: "Someone"
 			},
+			you: {
+				title: "You"
+				, placeholder: "You"
+				, maxLength: 10
+				, defaultValue: "You"
+			},
 			unblockBtn: {
 				title: "Unblock Button"
 				, placeholder: "Unblock"

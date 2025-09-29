@@ -1446,7 +1446,7 @@ html[buildfire][safe-area="true"] body {
      font-size: 14px;
  }
 
- @media (max-width: 330px) {
+ @media (max-width: 320px) {
     .empty_state_text {
         margin-top: -8vh;
      }
