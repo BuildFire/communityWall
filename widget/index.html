@@ -148,12 +148,11 @@
                                     <div class="plugin-banner">
                                         <div class="plugin-slide text-center" style="max-height: none !important;">
                                             <a ng-click="openThread($event,post)">
-                                                <div data-wrap="true" ng-init="WidgetWall.SocialItems.setupImageList('imageList_'+post.id, post)">
-                                                    <div ng-repeat="image in post.images" class="post-images-container">
-                                                        <img  ng-src="{{WidgetWall.util.resizeImage(image)}}" data-alt="Post image">
+                                                <div data-wrap="true">
+                                                    <div ng-repeat="image in post.images track by $index" class="post-images-container">
+                                                        <img  ng-src="{{WidgetWall.util.resizeImage(image)}}" data-alt="Post image" ng-click="WidgetWall.SocialItems.previewImage($event, $index, post.images)">
                                                     </div>
                                                 </div>
-                                            </a>
                                             </a>
                                         </div>
                                     </div>
