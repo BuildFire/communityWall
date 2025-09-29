@@ -26,7 +26,6 @@
           WidgetWall.scrollPosition = null;
           WidgetWall.skeletonActive = false;
           WidgetWall.deeplinkHandled = false;
-          WidgetWall.deepLinkOnUpdateHandled = false;
           WidgetWall.isFromDeepLink= false;
 
           WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
@@ -716,21 +715,21 @@
           }
 
           WidgetWall.checkForDeeplinks = function () {
-              if (WidgetWall.deeplinkHandled) return;
-              Buildfire.deeplink.getData((data) => {
-                  WidgetWall.deeplinkHandled = true;
-                  const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                  if (deeplinkData) {
-                      WidgetWall.isFromDeepLink = true;
-                      const isExistInBlockedList = WidgetWall.SocialItems.checkBlockedUsers(deeplinkData.wid);
-                      if (isExistInBlockedList) {
-                          WidgetWall.stopSkeleton();
-                          return;
-                      }
-                  }
-                  WidgetWall.handleDeepLinkActions(deeplinkData, false);
-              }, true);
-
+            if (!WidgetWall.deeplinkHandled){
+                Buildfire.deeplink.getData((data) => {
+                    WidgetWall.deeplinkHandled = true;
+                    const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                    if (deeplinkData) {
+                        WidgetWall.isFromDeepLink = true;
+                       const isExistInBlockedList = WidgetWall.SocialItems.checkBlockedUsers(deeplinkData.wid);
+                       if (isExistInBlockedList) {
+                           WidgetWall.stopSkeleton();
+                           return;
+                       }
+                    }
+                    WidgetWall.handleDeepLinkActions(deeplinkData, false);
+                }, true);
+            }
               Buildfire.deeplink.onUpdate((data) => {
                   let deeplinkData =  null;
                   if (typeof data === 'string') {
