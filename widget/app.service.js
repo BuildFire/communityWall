@@ -1416,14 +1416,14 @@
                 if (existInBlockedList) {
                     _this.wid = '';
                     _this.isPrivateChat = false;
-                    buildfire.history.get(
-                        {
-                            pluginBreadcrumbsOnly: false,
-                        },
-                        (err, result) => {
-                            buildfire.appearance.titlebar.setText({text: result[0].options.pluginData.title });
+                    const instanceId = buildfire.getContext().instanceId;
+                    buildfire.pluginInstance.get(instanceId, function(err, instance){
+                        if (err) {
+                            console.error(err);
+                        } else if (instance) {
+                            buildfire.appearance.titlebar.setText({text: instance.title });
                         }
-                    );
+                    });
                 }
 
                 return existInBlockedList;

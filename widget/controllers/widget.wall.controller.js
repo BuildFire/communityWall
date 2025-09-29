@@ -616,6 +616,7 @@
                                 WidgetWall.stopSkeleton();
                                 return console.error("Getting user failed.", err);
                               }
+                              WidgetWall.SocialItems.checkBlockedUsers();
                               WidgetWall.getPosts(()=>{
                                   if (user) {
                                       WidgetWall.checkFollowingStatus(user);
@@ -735,6 +736,9 @@
                   if (typeof data === 'string') {
                       deeplinkData = Object.fromEntries(new URLSearchParams(data));
                       if (deeplinkData.wid) {
+                          if (deeplinkData.wid !== WidgetWall.SocialItems.wid){
+                              WidgetWall.SocialItems.page = 0;
+                          }
                           WidgetWall.SocialItems.wid = deeplinkData.wid;
                       }
                   }

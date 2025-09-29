@@ -27,9 +27,10 @@
               <div class="social-copy">
                 <p class="text-primary ellipsis">
                   <a ng-click="Members.openBottomDrawer(user)">
-                    {{Members.SocialItems.getUserName(user.userDetails)}}<span ng-if="Members.SocialItems.userDetails.userId === user.userId">
-                    ({{Members.SocialItems.languages.you}})
-                  </span>
+                    {{Members.SocialItems.getUserName(user.userDetails)}}
+                    <span ng-if="Members.SocialItems.userDetails.userId === user.userId" class="text-primary">
+                    {{Members.SocialItems.languages.you}}
+                    </span>
                   </a>
                 </p>
               </div>
