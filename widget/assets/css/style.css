@@ -616,6 +616,7 @@ button.btn--lg,
 .social-item .social-copy p{
     margin: 0;
     line-height: 1.2;
+    width: 45vw;
 }
 
 .social-item .social-copy-user p{
@@ -1441,12 +1442,13 @@ html[buildfire][safe-area="true"] body {
     background-position: center !important;
  }
  .empty_state_text {
-    margin-top: -18vh;
+    margin-top: -15vh;
+     font-size: 14px;
  }
 
  @media (max-width: 330px) {
     .empty_state_text {
-        margin-top: -12vh;
+        margin-top: -8vh;
      }
  }
 

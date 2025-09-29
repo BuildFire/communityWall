@@ -21,10 +21,10 @@
             Members.skeleton = null;
             Members.setTimeoutSearrch = null;
             Members.memberSkeletonContainer = '.wallMembers'
+            $scope.searchInput = "";
 
             Members.init = function () {
                 $rootScope.showThread = false;
-                Members.skeleton = SkeletonHandler.start(Members.memberSkeletonContainer);
                 Buildfire.appearance.getAppTheme((err, obj) => {
                     if (err) return console.log(err);
                     document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
@@ -38,12 +38,7 @@
                 Members.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
-                        SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
-                            if (err) return console.log(err);
-                            Members.users = users;
-                            SkeletonHandler.stop(Members.memberSkeletonContainer, Members.skeleton);
-                            $scope.$digest();
-                        });
+                        $scope.onSearchChange(0);
                     }
                 });
             }
@@ -59,7 +54,7 @@
                 });
             }
 
-            $scope.onSearchChange = function () {
+            $scope.onSearchChange = function (timeOut = 500) {
                 if (Members.setTimeoutSearrch) clearTimeout(Members.setTimeoutSearrch);
                 Members.setTimeoutSearrch = setTimeout(function () {
                     let isEmptySearch = ($scope.searchInput.length === 0);
@@ -119,9 +114,17 @@
                             }
                         }
                     );
+                    const blockedUsers = Members.SocialItems.blockedUsers || [];
+                    if (blockedUsers.length) {
+                        Members.searchOptions.filter['$json.userId'] = {
+                            $nin: blockedUsers
+                        };
+                    }
+
+                    Members.searchOptions.filter['_buildfire.index.array1.string1'] = { $ne: `blockedUser_${Members.SocialItems.userDetails.userId}` }
                     Members.searchOptions.page = 0;
                     Members.executeSearch(Members.searchOptions);
-                }, 500)
+                }, timeOut)
             };
 
             Members.executeSearch = function (query) {
@@ -137,7 +140,7 @@
                         Members.showMore = false;
                     }
 
-                    Members.users = users.filter(el => el.userId !== Members.SocialItems.userDetails.userId);
+                    Members.users = users;
                     SkeletonHandler.stop(Members.memberSkeletonContainer, Members.skeleton);
                     $scope.$digest();
                 })
@@ -158,7 +161,6 @@
                     $scope.$digest();
                 });
             }
-
 
             Buildfire.datastore.onUpdate(function (response) {
                 if (response.tag === "languages") {
@@ -217,6 +219,7 @@
             }
 
             Members.openBottomDrawer = function (user) {
+                if (user && user.userId === Members.SocialItems.userDetails.userId) return;
                 $scope.notYou = false;
                 Follows.isFollowingUser(user.userId, (err, r) => {
                     let listItems = [];

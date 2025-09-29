@@ -1123,7 +1123,7 @@
                     } else {
                         _this.showMorePosts = false;
                         $rootScope.$digest();
-                        callback(null, _this.items = [])
+                        callback(null, _this.items || [])
                         //Checking if user comming from notification for thread comment.
                         startBackgroundService();
                         if (window.URLSearchParams && window.location.search) {
@@ -1414,6 +1414,33 @@
                         }
                     });
                 }
+            }
+
+            SocialItems.prototype.checkBlockedUsers = function (wall) {
+                let otherUserId;
+                const wallId = wall || _this.wid;
+                const user1 = wallId.slice(0,24);
+                const user2 = wallId.slice(24,48);
+                user1 !== _this.userDetails.userId ? otherUserId = user1 : otherUserId = user2;
+                let existInBlockedList = _this.blockedUsers.includes(otherUserId);
+                if (!existInBlockedList) {
+                    existInBlockedList = _this.blockedByUsers.includes(otherUserId);
+                }
+                if (existInBlockedList) {
+                    _this.wid = '';
+                    _this.isPrivateChat = false;
+                    buildfire.history.get(
+                        {
+                            pluginBreadcrumbsOnly: false,
+                        },
+                        (err, result) => {
+                            buildfire.appearance.titlebar.setText({text: result[0].options.pluginData.title });
+                        }
+                    );
+                }
+
+                return existInBlockedList;
+
             }
 
             SocialItems.prototype.resetState =function () {

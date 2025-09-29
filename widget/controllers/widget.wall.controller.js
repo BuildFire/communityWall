@@ -26,6 +26,7 @@
           WidgetWall.scrollPosition = null;
           WidgetWall.skeletonActive = false;
           WidgetWall.deeplinkHandled = false;
+          WidgetWall.deepLinkOnUpdateHandled = false;
           WidgetWall.isFromDeepLink= false;
 
           WidgetWall.skeleton = new Buildfire.components.skeleton('.social-item', {
@@ -674,7 +675,7 @@
                       const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
                         user2Id : user1Id;
 
-                      WidgetWall.openChat(otherUser);
+                      WidgetWall.SocialItems.openChat(WidgetWall, otherUser)
                   } else {
                       WidgetWall.openGroupChat(userIds, wallId, wTitle);
                   }
@@ -687,6 +688,7 @@
 
           WidgetWall.checkForPrivateChat = function () {
               if (WidgetWall.SocialItems.isPrivateChat) {
+                  WidgetWall.SocialItems.checkBlockedUsers();
                   SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
                       if (err) return console.log(err);
 
@@ -714,21 +716,39 @@
           }
 
           WidgetWall.checkForDeeplinks = function () {
-            if (!WidgetWall.deeplinkHandled){
-                Buildfire.deeplink.getData((data) => {
-                    WidgetWall.deeplinkHandled = true;
-                    const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                    if (deeplinkData) {
-                        WidgetWall.isFromDeepLink = true;
-                    }
-                    WidgetWall.handleDeepLinkActions(deeplinkData, false);
-                }, true);
-            }
+              if (WidgetWall.deeplinkHandled) return;
+              Buildfire.deeplink.getData((data) => {
+                  WidgetWall.deeplinkHandled = true;
+                  const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                  if (deeplinkData) {
+                      WidgetWall.isFromDeepLink = true;
+                      const isExistInBlockedList = WidgetWall.SocialItems.checkBlockedUsers(deeplinkData.wid);
+                      if (isExistInBlockedList) {
+                          WidgetWall.stopSkeleton();
+                          return;
+                      }
+                  }
+                  WidgetWall.handleDeepLinkActions(deeplinkData, false);
+              }, true);
 
-            Buildfire.deeplink.onUpdate((data) => {
-                const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                WidgetWall.handleDeepLinkActions(deeplinkData, true);
-            }, true);
+              Buildfire.deeplink.onUpdate((data) => {
+                  let deeplinkData =  null;
+                  if (typeof data === 'string') {
+                      deeplinkData = Object.fromEntries(new URLSearchParams(data));
+                      if (deeplinkData.wid) {
+                          WidgetWall.SocialItems.wid = deeplinkData.wid;
+                      }
+                  }
+                  else {
+                      deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                  }
+                  const isExistInBlockedList = WidgetWall.SocialItems.checkBlockedUsers(deeplinkData.wid);
+                  if (isExistInBlockedList) {
+                      WidgetWall.stopSkeleton();
+                      return;
+                  }
+                  WidgetWall.handleDeepLinkActions(deeplinkData, true);
+              }, true);
           }
 
           WidgetWall.sanitizeWall = function (callback) {
