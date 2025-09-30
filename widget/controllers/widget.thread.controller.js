@@ -725,7 +725,7 @@
           }
 
           Thread.blockUser = function (userId, userDetails) {
-              const defaultUserName = Thread.SocialItems.languages.blockedUser || "Blocked User";
+              const defaultUserName = Thread.SocialItems.languages.someone;
               const userName = Thread.SocialItems.getUserName(userDetails) || defaultUserName;
 
               buildfire.dialog.confirm({
