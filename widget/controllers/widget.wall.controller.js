@@ -166,7 +166,6 @@
               WidgetWall.showHidePrivateChat();
               WidgetWall.followLeaveGroupPermission();
               WidgetWall.showHideCommentBox();
-              WidgetWall.initFabButtons();
               let dldActionItem = new URLSearchParams(window.location.search).get('actionItem');
               if (dldActionItem)
                   WidgetWall.SocialItems.appSettings.actionItem = JSON.parse(dldActionItem);
@@ -505,10 +504,6 @@
                             {
                                 id: 'reportPost',
                                 text: WidgetWall.SocialItems.languages.reportPost
-                            },
-                            {
-                                id: 'blockUser',
-                                text: WidgetWall.SocialItems.languages.blockUser
                             }
                           );
                       }
@@ -546,9 +541,23 @@
                                       text: 'Send Direct Message'
                                   });
                               }
+                              listItems.push(
+                                  {
+                                      id: 'blockUser',
+                                      text: WidgetWall.SocialItems.languages.blockUser
+                                  }
+                              );
                               WidgetWall.ContinueDrawer(post, listItems)
                           })
                       } else {
+                          if (post.userId != WidgetWall.SocialItems.userDetails.userId) {
+                              listItems.push(
+                                  {
+                                      id: 'blockUser',
+                                      text: WidgetWall.SocialItems.languages.blockUser
+                                  }
+                              );
+                          }
                           WidgetWall.ContinueDrawer(post, listItems)
                       }
                   });
@@ -568,7 +577,7 @@
                   else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.id == "reportPost") WidgetWall.reportPost(post);
-                  else if (result.id == "blockUser") WidgetWall.blockUser(userId);
+                  else if (result.id == "blockUser") WidgetWall.blockUser(userId, post.userDetails);
                   else if (result.id == "deletePost") WidgetWall.deletePost(post.id);
                   buildfire.components.drawer.closeDrawer();
               });
@@ -594,6 +603,9 @@
                   }
                   if (result) {
                       WidgetWall.SocialItems.items = [];
+                      WidgetWall.setSettings(result);
+                      WidgetWall.showHidePrivateChat();
+                      WidgetWall.followLeaveGroupPermission();
                       WidgetWall.setAppTheme();
                       WidgetWall.getBlockedUsers((error, res) => {
                           if (err) console.log("Error while fetching blocked users ", err);
@@ -604,7 +616,7 @@
                                 WidgetWall.stopSkeleton();
                                 return console.error("Getting user failed.", err);
                               }
-                              WidgetWall.setSettings(result);
+                              WidgetWall.SocialItems.checkBlockedUsers();
                               WidgetWall.getPosts(()=>{
                                   if (user) {
                                       WidgetWall.checkFollowingStatus(user);
@@ -663,7 +675,7 @@
                       const otherUser = (user1Id.localeCompare(WidgetWall.SocialItems.userDetails.userId) === 0) ?
                         user2Id : user1Id;
 
-                      WidgetWall.openChat(otherUser);
+                      WidgetWall.SocialItems.openChat(WidgetWall, otherUser)
                   } else {
                       WidgetWall.openGroupChat(userIds, wallId, wTitle);
                   }
@@ -676,6 +688,7 @@
 
           WidgetWall.checkForPrivateChat = function () {
               if (WidgetWall.SocialItems.isPrivateChat) {
+                  WidgetWall.SocialItems.checkBlockedUsers();
                   SubscribedUsersData.getUsersWhoFollow(WidgetWall.SocialItems.userDetails.userId, WidgetWall.SocialItems.wid, function (err, users) {
                       if (err) return console.log(err);
 
@@ -709,15 +722,36 @@
                     const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
                     if (deeplinkData) {
                         WidgetWall.isFromDeepLink = true;
+                       const isExistInBlockedList = WidgetWall.SocialItems.checkBlockedUsers(deeplinkData.wid);
+                       if (isExistInBlockedList) {
+                           WidgetWall.stopSkeleton();
+                           return;
+                       }
                     }
                     WidgetWall.handleDeepLinkActions(deeplinkData, false);
                 }, true);
             }
-
-            Buildfire.deeplink.onUpdate((data) => {
-                const deeplinkData = WidgetWall.util.parseDeeplinkData(data);
-                WidgetWall.handleDeepLinkActions(deeplinkData, true);
-            }, true);
+              Buildfire.deeplink.onUpdate((data) => {
+                  let deeplinkData =  null;
+                  if (typeof data === 'string') {
+                      deeplinkData = Object.fromEntries(new URLSearchParams(data));
+                      if (deeplinkData.wid) {
+                          if (deeplinkData.wid !== WidgetWall.SocialItems.wid){
+                              WidgetWall.SocialItems.page = 0;
+                          }
+                          WidgetWall.SocialItems.wid = deeplinkData.wid;
+                      }
+                  }
+                  else {
+                      deeplinkData = WidgetWall.util.parseDeeplinkData(data);
+                  }
+                  const isExistInBlockedList = WidgetWall.SocialItems.checkBlockedUsers(deeplinkData.wid);
+                  if (isExistInBlockedList) {
+                      WidgetWall.stopSkeleton();
+                      return;
+                  }
+                  WidgetWall.handleDeepLinkActions(deeplinkData, true);
+              }, true);
           }
 
           WidgetWall.sanitizeWall = function (callback) {
@@ -786,13 +820,12 @@
           }
 
           WidgetWall.navigateToPrivateChat = function (privateChatData) {
+
               WidgetWall.SocialItems.isPrivateChat = true;
               WidgetWall.SocialItems.wid = privateChatData.wid;
               WidgetWall.SocialItems.showMorePosts = false;
               WidgetWall.SocialItems.pageSize = 5;
               WidgetWall.SocialItems.page = 0;
-              WidgetWall.allowCreateThread = true;
-              WidgetWall.initFabButtons();
               WidgetWall.SocialItems.setPrivateChatTitle(privateChatData.wid).then(() => {
                   if (WidgetWall.isFromDeepLink) {
                       buildfire.appearance.titlebar.setText({ text: WidgetWall.SocialItems.pluginTitle}, (err) => {
@@ -825,10 +858,12 @@
                       if (result) {
                           WidgetWall.SocialItems.appSettings = result.data && result.data.appSettings ? result.data.appSettings : {};
                           WidgetWall.setSettings(result);
+                          WidgetWall.initFabButtons();
 
                           Buildfire.datastore.onUpdate(function (response) {
                               if (response.tag === "Social") {
                                   WidgetWall.setSettings(response);
+                                  WidgetWall.initFabButtons()
                                   setTimeout(function () {
                                       if (!response.data.appSettings.disableFollowLeaveGroup) {
                                           let wallSVG = document.getElementById("WidgetWallSvg")
@@ -1301,6 +1336,32 @@
               }
           }
 
+          WidgetWall.showTopDrawer = function () {
+              const listItems = [];
+              if (WidgetWall.SocialItems.appSettings.showMembers) {
+                  listItems.push({
+                      text: WidgetWall.SocialItems.languages.members,
+                      id: 'members'
+                  });
+              }
+              listItems.push({
+                  text: WidgetWall.SocialItems.languages.blockedUsers,
+                  id: 'blockedList'
+              });
+              Buildfire.components.drawer.open({
+                  enableFilter: false,
+                  listItems
+              }, (err, result) => {
+                  if (err) return console.error(err);
+                  buildfire.components.drawer.closeDrawer();
+                  if (result.id === 'members') {
+                      WidgetWall.showMembers();
+                  } else if (result.id === 'blockedList') {
+                      Location.go('#/blocked-users/');
+                  }
+              });
+
+          }
           WidgetWall.showMembers = function () {
               WidgetWall.SocialItems.authenticateUser(null, (err, userData) => {
                   if (err) return console.error("Getting user failed.", err);
@@ -1420,21 +1481,31 @@
               SocialDataStore.deletePost(postId).then(success, error);
           };
 
-          WidgetWall.blockUser = function (userId) {
-              buildfire.spinner.show();
-              buildfire.components.drawer.closeDrawer();
-              SubscribedUsersData.blockUser(userId, (err, result) => {
-                  if(err) {
-                      console.log(err);
-                  }
-                  if(result) {
+          WidgetWall.blockUser = function (userId, userDetails) {
+              const userName = WidgetWall.SocialItems.getUserName(userDetails);
+              buildfire.dialog.confirm({
+                  title: `${WidgetWall.SocialItems.languages.blockUserTitleConfirmation} ${userName}`,
+                  message: WidgetWall.SocialItems.languages.blockUserBodyConfirmation,
+                  cancelButton: { text: WidgetWall.SocialItems.languages.blockUserCancelBtn },
+                  confirmButton: { text: WidgetWall.SocialItems.languages.blockUserConfirmBtn }
+              }, (err, isConfirmed) => {
+                  if (err) return console.error(err);
+                  if (!isConfirmed) return;
+                  buildfire.spinner.show();
+                  buildfire.components.drawer.closeDrawer();
+                  SubscribedUsersData.blockUser(userId, (err, result) => {
                       buildfire.spinner.hide();
-                      Buildfire.dialog.toast({
-                          message: WidgetWall.SocialItems.languages.blockUserSuccess || "User has been blocked succesfully",
-                          type: 'info'
-                      });
-                      Location.goToHome();
-                  }
+                      if (err) {
+                          console.log(err);
+                      }
+                      if (result) {
+                          Buildfire.dialog.toast({
+                              message: `${userName} ${WidgetWall.SocialItems.languages.blockUserSuccess}`,
+                              type: 'info'
+                          });
+                          Location.goToHome();
+                      }
+                  });
               });
 
           }

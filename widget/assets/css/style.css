@@ -616,6 +616,7 @@ button.btn--lg,
 .social-item .social-copy p{
     margin: 0;
     line-height: 1.2;
+    width: 45vw;
 }
 
 .social-item .social-copy-user p{
@@ -1433,13 +1434,23 @@ html[buildfire][safe-area="true"] body {
     overflow: hidden;
 }
 
-.empty_state {
-    height: 50vh;
+ .empty_state {
+    height: 70vh;
     background-image: url('../img/empty_page.svg') !important;
     background-repeat: no-repeat !important;
     background-attachment: absolute !important;
     background-position: center !important;
-}
+ }
+ .empty_state_text {
+    margin-top: -15vh;
+     font-size: 14px;
+ }
+
+ @media (max-width: 320px) {
+    .empty_state_text {
+        margin-top: -8vh;
+     }
+ }
 
 .flex {
     display: flex;
@@ -1448,6 +1459,9 @@ html[buildfire][safe-area="true"] body {
 .flex-space-between {
     justify-content: space-between;
 }
+ .flex-items-center {
+     align-items: center;
+ }
 
 .margin-one-rem {
     margin: 1rem;
@@ -1498,6 +1512,9 @@ html[buildfire][safe-area="true"] body {
 .no-scroll {
     overflow: hidden !important;
 }
+.bg-none {
+    background-color: initial !important;
+}
 button.btn-danger-outlined {
     background-color: transparent !important;
     color: var(--bf-theme-danger) !important;
@@ -1543,11 +1560,18 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 .bf-skeleton-container .skeleton-list-item-avatar .skeleton-text {
     width: 86px;
 }
+.wallMembers .bf-skeleton-container {
+    padding-top: 3.5rem;
+}
 
 .skeleton-list-item-avatar .skeleton-text {
     width: 86px;
     overflow: hidden !important;
     flex: unset !important;
+}
+
+.social-top-banner {
+    padding: 0 0.75rem;
 }
 
 .follow-btn {
@@ -1565,8 +1589,7 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 #membersSvg {
     margin-bottom: 0px;
     top: 10px;
-    width: 2em;
-    right: 1em;
+    right: 1rem;
     position: absolute;
     padding-top: 0px;
     cursor: pointer;
@@ -1581,3 +1604,28 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 .post-images-container {
     margin: 2vh 0;
 }
+
+.blocked-users {
+    height: 100vh;
+    overflow: scroll;
+}
+
+ html[safe-area="true"] .blocked-users {
+     height: calc(100vh - constant(safe-area-inset-bottom)) !important;
+     height: calc(100vh - env(safe-area-inset-bottom)) !important;
+ }
+
+.blocked-users-item {
+    padding: 1rem;
+}
+
+.blocked-user-item-username {
+    width: 25vh;
+}
+
+ .truncate {
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     display: inline-block;
+ }

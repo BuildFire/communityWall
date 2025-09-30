@@ -75,6 +75,12 @@ const stringsConfig = {
 		title: "Members labels",
 		subtitle: "Change values to update members labels and messages",
 		labels: {
+			members: {
+				title: "Members"
+				, placeholder: "Members"
+				, maxLength: 30
+				, defaultValue: "Members"
+			},
 			membersBlankState: {
 				title: "Members Blank State Message"
 				, placeholder: "There are no other members except you."
@@ -113,6 +119,64 @@ const stringsConfig = {
 			}
 		}
 	},
+	unblockUser: {
+		title: "Unblock User",
+		labels: {
+			unblockUserTitleConfirmation: {
+				title: "Title"
+				, placeholder: "Unblock"
+				, maxLength: 20
+				, defaultValue: "Unblock"
+				},
+			unblockUserBodyConfirmation: {
+				title: "Body"
+				, placeholder: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
+				, maxLength: 150
+				, defaultValue: "Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them."
+				},
+			unblockUserConfirmBtn: {
+				title: "Confirm Button"
+				,placeholder: "Unblock"
+				,maxLength: 20
+				,defaultValue: "Unblock"
+				},
+			unblockUserCancelBtn: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 20
+				, defaultValue: "Cancel"
+				}
+			}
+        },
+	blockUser: {
+		title: "Block User",
+		labels: {
+			blockUserTitleConfirmation: {
+				title: "Title"
+				, placeholder: "Block"
+				, maxLength: 20
+				, defaultValue: "Block"
+				},
+			blockUserBodyConfirmation: {
+				title: "Body"
+				, placeholder: "Both of you won't be able to see each other's posts and send messages. The user won’t be notified that you blocked them."
+				, maxLength: 150
+				, defaultValue: "Both of you won't be able to see each other's posts and send messages. The user won’t be notified that you blocked them."
+			},
+			blockUserConfirmBtn: {
+				title: "Confirm Button"
+				, placeholder: "Block"
+				, maxLength: 20
+				, defaultValue: "Block"
+                        },
+			blockUserCancelBtn: {
+				title: "Cancel Button"
+				, placeholder: "Cancel"
+				, maxLength: 20
+				, defaultValue: "Cancel"
+                        }
+                }
+        },
 	modal: {
 		title: "Modal labels",
 		subtitle: "Change values to update modal labels and messages",
@@ -155,9 +219,16 @@ const stringsConfig = {
 			},
 			blockUserSuccess : {
 				title: "Block User Success"
-				, placeholder: "User has been blocked succesfully"
+				, placeholder: "has been blocked"
 				, maxLength: 50
-				, defaultValue: "User has been blocked succesfully"
+				, defaultValue: "has been blocked"
+			},
+
+			unblockUserSuccess : {
+				title: "Unblock User Success"
+				, placeholder: "has been unblocked"
+				, maxLength: 50
+				, defaultValue: "has been unblocked"
 			},
 			reportComemntSuccess: {
 				title: "Report Comment Success"
@@ -289,4 +360,39 @@ const stringsConfig = {
 			},
 		}
 	},
+	general: {
+		title: "General",
+		labels: {
+			someone: {
+				title: "Someone"
+				, placeholder: "Someone"
+				, maxLength: 30
+				, defaultValue: "Someone"
+			},
+			you: {
+				title: "You"
+				, placeholder: "(You)"
+				, maxLength: 15
+				, defaultValue: "(You)"
+			},
+			unblockBtn: {
+				title: "Unblock Button"
+				, placeholder: "Unblock"
+				, maxLength: 30
+				, defaultValue: "Unblock"
+			},
+			blockedUsers: {
+				title: "Blocked Users"
+				, placeholder: "Blocked Users"
+				, maxLength: 30
+				, defaultValue: "Blocked Users"
+			},
+			noBlockedUsers: {
+				title: "Blocked Users Empty State"
+				, placeholder: "No blocked users."
+				, maxLength: 50
+				, defaultValue: "No blocked users."
+			}
+		}
+        },
 };

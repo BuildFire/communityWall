@@ -2,7 +2,7 @@
 
 (function (angular) {
     angular.module('socialPluginWidget')
-        .controller('MembersCtrl', ['$scope', '$rootScope', '$routeParams', 'Buildfire', 'SubscribedUsersData', 'SocialItems', function ($scope, $rootScope, $routeParams, Buildfire, SubscribedUsersData, SocialItems) {
+        .controller('MembersCtrl', ['$scope', '$rootScope', '$routeParams', 'Buildfire', 'SubscribedUsersData', 'SocialItems', 'SkeletonHandler',  function ($scope, $rootScope, $routeParams, Buildfire, SubscribedUsersData, SocialItems, SkeletonHandler) {
 
             var Members = this;
             Members.userDetails = {};
@@ -18,20 +18,13 @@
             Members.languages = null;
             Members.appSettings = null;
             Members.SocialItems = SocialItems.getInstance();
-            Members.skeleton = new Buildfire.components.skeleton('.wallMembers', {
-                type: 'list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar, list-item-avatar',
-            });
+            Members.skeleton = null;
+            Members.setTimeoutSearrch = null;
+            Members.memberSkeletonContainer = '.wallMembers'
+            $scope.searchInput = "";
 
-            const initSkeleton = () => {
-                Members.skeleton.start();
-                document.querySelectorAll('.bf-skeleton-container .skeleton-list-item-avatar').forEach((el)=>{
-                    el.style.padding = '2rem 1rem';
-                });
-                document.querySelector('.wallMembers').style.marginTop = '5rem';
-            }
             Members.init = function () {
                 $rootScope.showThread = false;
-                initSkeleton();
                 Buildfire.appearance.getAppTheme((err, obj) => {
                     if (err) return console.log(err);
                     document.getElementsByClassName("glyphicon")[0].style.setProperty("color", obj.colors.icons);
@@ -45,12 +38,7 @@
                 Members.SocialItems.authenticateUser(null, (err, user) => {
                     if (err) return console.error("Getting user failed.", err);
                     if (user) {
-                        SubscribedUsersData.getUsersWhoFollow(user._id, Members.wallId, function (err, users) {
-                            if (err) return console.log(err);
-                            Members.users = users;
-                            $scope.$digest();
-                            Members.skeleton.stop();
-                        });
+                        $scope.onSearchChange(0);
                     }
                 });
             }
@@ -66,70 +54,81 @@
                 });
             }
 
-            $scope.onSearchChange = function () {
-                let isEmptySearch = ($scope.searchInput.length === 0);
-                let minSearchLength = 1;
-                if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
+            $scope.onSearchChange = function (timeOut = 500) {
+                if (Members.setTimeoutSearrch) clearTimeout(Members.setTimeoutSearrch);
+                Members.setTimeoutSearrch = setTimeout(function () {
+                    let isEmptySearch = ($scope.searchInput.length === 0);
+                    let minSearchLength = 1;
+                    if ($scope.searchInput.length === minSearchLength && !isEmptySearch) return;
 
-                if (Members.appSettings.indexingUpdateDone) {
-                    Members.searchOptions.filter = {
-                        '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
-                        '_buildfire.index.number1': 0
+                    if (Members.appSettings.indexingUpdateDone) {
+                        Members.searchOptions.filter = {
+                            '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
+                            '_buildfire.index.number1': 0
+                        }
+                    } else {
+                        Members.searchOptions.filter = {
+                            '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
+                            $or: [{
+                                '$json.leftWall': {
+                                    $exists: true,
+                                    $eq: false
+                                }
+                            },
+                                {
+                                    '$json.leftWall': {
+                                        $exists: false
+                                    }
+                                }
+                            ]
+                        }
                     }
-                } else {
-                    Members.searchOptions.filter = {
-                        '_buildfire.index.string1': Members.wallId ? Members.wallId : "",
-                        $or: [{
-                            '$json.leftWall': {
-                                $exists: true,
-                                $eq: false
+                    // Initialize Members.searchOptions.filter.$or as an empty array if it's not already initialized
+                    if (!Members.searchOptions.filter.$or) {
+                        Members.searchOptions.filter.$or = [];
+                    }
+
+                    Members.searchOptions.filter.$or.push(
+                        {
+                            "$json.userDetails.displayName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
                             }
                         },
                         {
-                            '$json.leftWall': {
-                                $exists: false
+                            "$json.userDetails.firstName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "$json.userDetails.lastName": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "$json.userDetails.email": {
+                                $regex: $scope.searchInput,
+                                $options: 'i'
                             }
                         }
-                        ]
+                    );
+                    const blockedUsers = Members.SocialItems.blockedUsers || [];
+                    if (blockedUsers.length) {
+                        Members.searchOptions.filter['$json.userId'] = {
+                            $nin: blockedUsers
+                        };
                     }
-                }
-                // Initialize Members.searchOptions.filter.$or as an empty array if it's not already initialized
-                if (!Members.searchOptions.filter.$or) {
-                    Members.searchOptions.filter.$or = [];
-                }
 
-                Members.searchOptions.filter.$or.push(
-                    {
-                        "$json.userDetails.displayName": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    },
-                    {
-                        "$json.userDetails.firstName": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    },
-                    {
-                        "$json.userDetails.lastName": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    },
-                    {
-                        "$json.userDetails.email": {
-                            $regex: $scope.searchInput,
-                            $options: 'i'
-                        }
-                    }
-                );
-                Members.searchOptions.page = 0;
-                Members.executeSearch(Members.searchOptions);
+                    Members.searchOptions.filter['_buildfire.index.array1.string1'] = { $ne: `blockedUser_${Members.SocialItems.userDetails.userId}` }
+                    Members.searchOptions.page = 0;
+                    Members.executeSearch(Members.searchOptions);
+                }, timeOut)
             };
 
             Members.executeSearch = function (query) {
-                initSkeleton();
+                Members.skeleton = SkeletonHandler.start(Members.memberSkeletonContainer);
                 SubscribedUsersData.searchForUsers(query, function (err, users) {
                     if (err) return console.log(err);
                     if (users.length === Members.searchOptions.pageSize) {
@@ -141,8 +140,8 @@
                         Members.showMore = false;
                     }
 
-                    Members.users = users.filter(el => el.userId !== Members.SocialItems.userDetails.userId);
-                    Members.skeleton.stop();
+                    Members.users = users;
+                    SkeletonHandler.stop(Members.memberSkeletonContainer, Members.skeleton);
                     $scope.$digest();
                 })
             }
@@ -162,7 +161,6 @@
                     $scope.$digest();
                 });
             }
-
 
             Buildfire.datastore.onUpdate(function (response) {
                 if (response.tag === "languages") {
@@ -221,6 +219,7 @@
             }
 
             Members.openBottomDrawer = function (user) {
+                if (user && user.userId === Members.SocialItems.userDetails.userId) return;
                 $scope.notYou = false;
                 Follows.isFollowingUser(user.userId, (err, r) => {
                     let listItems = [];
@@ -249,9 +248,18 @@
                             } else {
                                 $scope.notYou = true;
                             }
+                            listItems.push({
+                                id: 'blockUser',
+                                text: Members.SocialItems.languages.blockUser
+                            });
+
                             Members.ContinueDrawer(user, listItems)
                         })
                     } else {
+                        listItems.push({
+                            id: 'blockUser',
+                            text: Members.SocialItems.languages.blockUser
+                        });
                         Members.ContinueDrawer(user, listItems)
                     }
 
@@ -278,7 +286,41 @@
                     else if (result.text == "Send Direct Message") Members.openPrivateChat(user);
                     else if (result.text == "Unfollow") Follows.unfollowUser(user.userId, (err, r) => err ? console.log(err) : console.log(r));
                     else if (result.text == "Follow") Follows.followUser(user.userId, (err, r) => err ? console.log(err) : console.log(r));
+                    else if (result.id == "blockUser") Members.blockUser(user);
                     buildfire.components.drawer.closeDrawer();
+
+                });
+            }
+
+            Members.blockUser = function (user) {
+                const userName = Members.SocialItems.getUserName(user.userDetails);
+                buildfire.dialog.confirm({
+                    title: `${Members.SocialItems.languages.blockUserTitleConfirmation} ${userName}`,
+                    message: Members.SocialItems.languages.blockUserBodyConfirmation,
+                    cancelButton: { text: Members.SocialItems.languages.blockUserCancelBtn },
+                    confirmButton: { text: Members.SocialItems.languages.blockUserConfirmBtn }
+                }, (err, isConfirmed) => {
+                    if (err) return console.error(err);
+                    if (!isConfirmed) return;
+                    buildfire.spinner.show();
+                    buildfire.components.drawer.closeDrawer();
+                    SubscribedUsersData.blockUser(user.userId, (err, result) => {
+                        buildfire.spinner.hide();
+                        if (err) {
+                            console.log(err);
+                        }
+                        if (result) {
+                            Buildfire.dialog.toast({
+                                message: `${userName} ${Members.SocialItems.languages.blockUserSuccess}`,
+                                type: 'info'
+                            });
+                            Members.users = Members.users.filter(u => u.userId !== user.userId);
+                            Members.SocialItems.blockedUsers.push(user.userId);
+                            Members.SocialItems.resetState();
+                            Members.SocialItems.getPosts();
+                            $scope.$digest();
+                        }
+                    });
                 });
             }
 

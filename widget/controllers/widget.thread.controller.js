@@ -356,11 +356,8 @@
                   else if (result.text == "Unfollow") Follows.unfollowUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.text == "Follow") Follows.followUser(userId, (err, r) => err ? console.log(err) : console.log(r));
                   else if (result.id == "reportPost") Thread.reportPost(post);
-                  else if (result.id == "blockUser") Thread.blockUser(userId);
-                  else if (result.id == "deletePost") {
-                      buildfire.components.drawer.closeDrawer();
-                      Thread.deletePost(post.id)
-                  }
+                  else if (result.id == "blockUser") Thread.blockUser(userId, post.userDetails);
+                  else if (result.id == "deletePost") Thread.deletePost(post.id)
                   buildfire.components.drawer.closeDrawer();
               });
           }
@@ -452,9 +449,10 @@
                                       break;
                                   case 'blockUser':
                                       // Call the existing block function
-                                      Thread.blockUser(comment.userId);
+                                      Thread.blockUser(comment.userId, comment.userDetails);
                                       break;
                               }
+                              buildfire.components.drawer.closeDrawer();
                           }
                       });
                   }
@@ -726,18 +724,37 @@
                 });
           }
 
-          Thread.blockUser = function (userId) {
-              SubscribedUsersData.blockUser(userId, (err, blockResult) => {
-                  if (err) {
-                      return console.error("Error blocking user.", err);
-                  }
-                  if (blockResult) {
-                      Buildfire.dialog.toast({
-                          message: Thread.SocialItems.languages.blockUserSuccess || "User has been blocked successfully.",
-                          type: 'info'
-                      });
-                      Location.goToHome();
-                  }
+          Thread.blockUser = function (userId, userDetails) {
+              const defaultUserName = Thread.SocialItems.languages.someone;
+              const userName = Thread.SocialItems.getUserName(userDetails) || defaultUserName;
+
+              buildfire.dialog.confirm({
+                  title: `${Thread.SocialItems.languages.blockUserTitleConfirmation} ${userName}`,
+                  message: Thread.SocialItems.languages.blockUserBodyConfirmation,
+                  cancelButton: { text: Thread.SocialItems.languages.blockUserCancelBtn },
+                  confirmButton: { text: Thread.SocialItems.languages.blockUserConfirmBtn }
+              }, (err, isConfirmed) => {
+                  if (err) return console.error(err);
+                  if (!isConfirmed) return;
+
+                  buildfire.spinner.show();
+                  buildfire.components.drawer.closeDrawer();
+                  SubscribedUsersData.blockUser(userId, (blockErr, blockResult) => {
+                      buildfire.spinner.hide();
+                      if (blockErr) {
+                          return console.error("Error blocking user.", blockErr);
+                      }
+                      if (blockResult) {
+                          const successMessage = Thread.SocialItems.languages.blockUserSuccess
+                              ? `${userName} ${Thread.SocialItems.languages.blockUserSuccess}`
+                              : `${userName} has been blocked successfully.`;
+                          Buildfire.dialog.toast({
+                              message: successMessage,
+                              type: 'info'
+                          });
+                          Location.goToHome();
+                      }
+                  });
               });
           }
 
