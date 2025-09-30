@@ -311,7 +311,7 @@
                         }
                         if (result) {
                             Buildfire.dialog.toast({
-                                message: Members.SocialItems.languages.blockUserSuccess,
+                                message: `${userName} ${Members.SocialItems.languages.blockUserSuccess}`,
                                 type: 'info'
                             });
                             Members.users = Members.users.filter(u => u.userId !== user.userId);
