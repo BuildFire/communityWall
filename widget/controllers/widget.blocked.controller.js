@@ -25,24 +25,26 @@
               }
 
               const subscribedUsers = Array.isArray(data) ? data : [];
+              const blockedIds = Array.isArray(Blocked.SocialItems.blockedUsers) ? Blocked.SocialItems.blockedUsers : [];
               const returnedUserIds = [];
 
               subscribedUsers.forEach(item => {
                 const userId = item.data.userId;
-                if (!userId) return;
                 returnedUserIds.push(userId);
-                const userDetails = item.data.userDetails || {};
-                Blocked.users.push({ ...userDetails, userId });
+                const exists = Blocked.users.some(user => user.userId === userId);
+                if (!exists) {
+                  const userDetails = item.data.userDetails || {};
+                  Blocked.users.push({ ...userDetails, userId });
+                }
               });
 
-              if (subscribedUsers.length === Blocked.searchOptions.pageSize) {
+              if (blockedIds.length > Blocked.users.length) {
                 Blocked.searchOptions.page++;
                 Blocked.hasMoreData = true;
               } else {
                 Blocked.hasMoreData = false;
               }
 
-              const blockedIds = Array.isArray(Blocked.SocialItems.blockedUsers) ? Blocked.SocialItems.blockedUsers : [];
               const missingUserIds = blockedIds
                   .filter(id => !returnedUserIds.includes(id))
                   .filter(id => !Blocked.users.some(user => (user._id || user.userId) === id));
@@ -59,12 +61,17 @@
               }
 
               if (missingUserIds.length) {
-                buildfire.auth.getUserProfiles({ userIds: missingUserIds }, (profilesErr, users) => {
+                const userIdsToFetch = missingUserIds.slice(0, 50);
+                buildfire.auth.getUserProfiles({ userIds: userIdsToFetch }, (profilesErr, users) => {
                   if (profilesErr) {
                     console.error('Error fetching blocked user profiles', profilesErr);
                   } else if (Array.isArray(users) && users.length) {
                     users.forEach(profile => {
-                      Blocked.users.push(profile);
+                      const userId = profile.userId;
+                      const exists = Blocked.users.some(user => (user._id || user.userId) === userId);
+                      if (!exists) {
+                        Blocked.users.push({ ...profile, userId });
+                      }
                     });
                   }
                   finalize();
