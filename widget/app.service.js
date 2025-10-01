@@ -505,6 +505,12 @@
                                         data[0].data.blockedUsers.push(userId);
                                     }
                                     buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
+                                        if (!err && result) {
+                                            if (!Array.isArray(SocialItemsInstance.blockedUsers)) SocialItemsInstance.blockedUsers = [];
+                                            if (!SocialItemsInstance.blockedUsers.includes(userId)) {
+                                                SocialItemsInstance.blockedUsers.push(userId);
+                                            }
+                                        }
                                         callback(null, result);
                                     });
                                 } else {
@@ -538,6 +544,12 @@
                                         }
                                     };
                                     buildfire.publicData.save(_this.getDataWithIndex({data: userDataObject}).data, 'subscribedUsersData', (err, result) => {
+                                        if(!err && result) {
+                                            if (!Array.isArray(SocialItemsInstance.blockedUsers)) SocialItemsInstance.blockedUsers = [];
+                                            if (!SocialItemsInstance.blockedUsers.includes(userId)) {
+                                                SocialItemsInstance.blockedUsers.push(userId);
+                                            }
+                                        }
                                         if(err) callback(err, false);
                                         else callback(null, result);
                                     });
@@ -568,6 +580,9 @@
                                 if (data && data.length > 0) {
                                     data[0].data.blockedUsers = (data[0].data.blockedUsers || []).filter(id => id !== userId);
                                     buildfire.publicData.update(data[0].id, _this.getDataWithIndex(data[0]).data, 'subscribedUsersData', (err, result) => {
+                                        if (!err && result && Array.isArray(SocialItemsInstance.blockedUsers)) {
+                                            SocialItemsInstance.blockedUsers = SocialItemsInstance.blockedUsers.filter(id => id !== userId);
+                                        }
                                         callback(err, result);
                                     });
                                 } else {
@@ -626,6 +641,7 @@
                                 } else {
                                     SocialItemsInstance.blockedByUsers = [];
                                 }
+                                SocialItemsInstance.blockedUsers = blocked;
                                 callback(null, blocked);
                             });
                             };

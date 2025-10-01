@@ -23,24 +23,69 @@
                 SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
                 return console.error('Error fetching blocked users', err);
               }
-              if (!data || !data.length) {
-                Blocked.hasMoreData = false;
-                Blocked.loading = false;
-                SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
-                $scope.$digest();
-                return;
-              }
 
-              data.forEach(arr => Blocked.users.push({...arr.data.userDetails, userId: arr.data.userId}));
-              if (data.length === Blocked.searchOptions.pageSize) {
+              const subscribedUsers = Array.isArray(data) ? data : [];
+              const returnedUserIds = [];
+
+              subscribedUsers.forEach(item => {
+                if (!item || !item.data) return;
+                const userId = item.data.userId;
+                if (!userId) return;
+                returnedUserIds.push(userId);
+
+                const exists = Blocked.users.some(user => (user._id || user.userId) === userId);
+                if (!exists) {
+                  const userDetails = item.data.userDetails || {};
+                  Blocked.users.push({ ...userDetails, userId });
+                }
+              });
+
+              if (subscribedUsers.length === Blocked.searchOptions.pageSize) {
                 Blocked.searchOptions.page++;
                 Blocked.hasMoreData = true;
               } else {
                 Blocked.hasMoreData = false;
               }
-              Blocked.loading = false;
-              SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
-              $scope.$digest();
+
+              const blockedIds = Array.isArray(Blocked.SocialItems.blockedUsers) ? Blocked.SocialItems.blockedUsers : [];
+              const missingUserIds = blockedIds
+                .filter(id => id)
+                .filter(id => !returnedUserIds.includes(id))
+                .filter(id => !Blocked.users.some(user => (user._id || user.userId) === id));
+
+              const finalize = () => {
+                Blocked.loading = false;
+                SkeletonHandler.stop(Blocked.blockedSkeletonContainer, Blocked.skeleton);
+                $scope.$digest();
+              };
+
+              if (!subscribedUsers.length && !missingUserIds.length) {
+                Blocked.hasMoreData = false;
+                return finalize();
+              }
+
+              if (missingUserIds.length) {
+                buildfire.auth.getUserProfiles({ userIds: missingUserIds }, (profilesErr, users) => {
+                  if (profilesErr) {
+                    console.error('Error fetching blocked user profiles', profilesErr);
+                  } else if (Array.isArray(users) && users.length) {
+                    users.forEach(profile => {
+                      const userId = profile && (profile._id || profile.userId);
+                      if (!userId) return;
+
+                      const exists = Blocked.users.some(user => (user._id || user.userId) === userId);
+                      if (!exists) {
+                        const userDetails = profile || {};
+                        Blocked.users.push({ ...userDetails, userId });
+                      }
+                    });
+                  }
+
+                  finalize();
+                });
+              } else {
+                finalize();
+              }
             });
           };
 
