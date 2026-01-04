@@ -202,8 +202,13 @@
                         
                         const scrollTop = scrollContainer.scrollTop;
                         if (scrollTop > lastScrollTop) {
-                            // User is scrolling down
-                            navbar.style.transform = 'translateY(-100%)';
+                            const safeAreaTopValue = getComputedStyle(document.documentElement).getPropertyValue('--bf-safe-area-inset-top').trim();
+                            if (parseFloat(safeAreaTopValue)) {
+                                navbar.style.transform = 'translateY(calc(-150% - var(--bf-safe-area-inset-top)))';
+                            }
+                            else {
+                                navbar.style.transform = 'translateY(-100%)';
+                            }
                         } else {
                             // User is scrolling up
                             navbar.style.transform = 'translateY(0)';

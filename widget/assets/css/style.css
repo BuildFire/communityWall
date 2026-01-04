@@ -144,7 +144,7 @@ body {
     line-height: 1;
     height: 100%;
     overflow: hidden !important;
-    position: absolute;
+    position: relative;
     top: 0%;
     right: 0;
     left: 0%;
@@ -170,6 +170,11 @@ table {
 }
 html{
     font-size: 16px !important;
+}
+
+body {
+    margin-top: var(--bf-safe-area-inset-top) !important;
+    margin-bottom: var(--bf-safe-area-inset-bottom) !important;
 }
 /* Fixed Bottom */
 .main_view,.main-thread-section{height: 100%; overflow: hidden !important;}
@@ -1273,19 +1278,7 @@ textarea {
     vertical-align: 3px;
     color: #5f5f5f !important;
 }
-html[safe-area="true"] body {
-    padding-bottom: 0px !important;
-    -webkit-overflow-scrolling: auto;
-}
-html[safe-area="true"] .holder.bottom-post {
-    height: calc(env(safe-area-inset-bottom) + 43px);
-    height: calc(constant(safe-area-inset-bottom) + 43px);
-}
 
-html[safe-area="true"] .post-section.has-comment-box {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 43px);
-    padding-bottom: calc(constant(safe-area-inset-bottom) + 43px);
-}
 .plus-minus-toggle {
     cursor: pointer;
       /*  padding-left: 30px;
@@ -1311,11 +1304,6 @@ html[safe-area="true"] .post-section.has-comment-box {
 .plus-minus-toggle.collapsed:before {
     transform: rotate(180deg);
 }
-
-html[buildfire][safe-area="true"] body {
-    -webkit-overflow-scrolling: auto !important;
-  }
-
 
 .blankState {
     padding-top: 20px;
@@ -1535,6 +1523,7 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
     transition: transform .3s ease-in-out;
     position: fixed;
     z-index: 1000 !important;
+    transform: translateY(0);
 }
 
 .head-btn p.text-primary {
@@ -1609,11 +1598,6 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
     height: 100vh;
     overflow: scroll;
 }
-
- html[safe-area="true"] .blocked-users {
-     height: calc(100vh - constant(safe-area-inset-bottom)) !important;
-     height: calc(100vh - env(safe-area-inset-bottom)) !important;
- }
 
 .blocked-users-item {
     padding: 1rem;
