@@ -204,10 +204,10 @@
                         if (scrollTop > lastScrollTop) {
                             const safeAreaTopValue = getComputedStyle(document.documentElement).getPropertyValue('--bf-safe-area-inset-top').trim();
                             if (parseFloat(safeAreaTopValue)) {
-                                navbar.style.transform = 'translateY(calc(-150% - var(--bf-safe-area-inset-top)))';
+                                navbar.style.transform = 'translateY(calc(-50px - var(--bf-safe-area-inset-top)))';
                             }
                             else {
-                                navbar.style.transform = 'translateY(-100%)';
+                                navbar.style.transform = 'translateY(-50px)';
                             }
                         } else {
                             // User is scrolling up
