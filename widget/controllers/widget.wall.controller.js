@@ -1706,7 +1706,6 @@
           // On Logout
           Buildfire.auth.onLogout(function () {
               console.log('User loggedOut from Widget Wall Page');
-              buildfire.appearance.titlebar.show();
               WidgetWall.SocialItems.userDetails = {};
               WidgetWall.groupFollowingStatus = false;
               buildfire.notifications.pushNotification.unsubscribe({
