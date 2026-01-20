@@ -1278,13 +1278,11 @@ html[safe-area="true"] body {
     -webkit-overflow-scrolling: auto;
 }
 html[safe-area="true"] .holder.bottom-post {
-    height: calc(env(safe-area-inset-bottom) + 43px);
-    height: calc(constant(safe-area-inset-bottom) + 43px);
+    height: calc(var(--bf-safe-area-inset-bottom) + 43px);
 }
 
 html[safe-area="true"] .post-section.has-comment-box {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 43px);
-    padding-bottom: calc(constant(safe-area-inset-bottom) + 43px);
+    padding-bottom: calc(var(--bf-safe-area-inset-bottom) + 43px);
 }
 .plus-minus-toggle {
     cursor: pointer;
@@ -1611,8 +1609,7 @@ button.btn-danger-outlined:hover, button.btn-danger-outlined:focus{
 }
 
  html[safe-area="true"] .blocked-users {
-     height: calc(100vh - constant(safe-area-inset-bottom)) !important;
-     height: calc(100vh - env(safe-area-inset-bottom)) !important;
+     height: calc(100vh - var(--bf-safe-area-inset-bottom)) !important;
  }
 
 .blocked-users-item {
