@@ -1,0 +1,210 @@
+{
+  "events": [
+    {
+      "name": "postCreated",
+      "displayName": "Post Created",
+      "description": "Someone shared a new post on the wall.",
+      "data": {
+        "postId": {
+          "type": "string",
+          "displayName": "Post ID",
+          "description": "The new post's id."
+        },
+        "text": {
+          "type": "string",
+          "displayName": "Post Text",
+          "description": "What the post says."
+        },
+        "images": {
+          "type": "array",
+          "displayName": "Images",
+          "description": "The pictures in the post."
+        },
+        "wallId": {
+          "type": "string",
+          "displayName": "Wall ID",
+          "description": "The wall it was posted on; empty for the main wall."
+        },
+        "isPrivateChat": {
+          "type": "boolean",
+          "displayName": "Private Chat",
+          "description": "Whether it was sent in a private chat."
+        },
+        "createdOn": {
+          "type": "datetime",
+          "displayName": "Posted On",
+          "description": "When it was posted."
+        },
+        "postedBy": {
+          "type": "object",
+          "displayName": "Posted By",
+          "description": "Who posted it.",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "displayName": "User ID",
+              "description": "Their id."
+            },
+            "displayName": {
+              "type": "string",
+              "displayName": "Name",
+              "description": "Their name."
+            },
+            "email": {
+              "type": "string",
+              "displayName": "Email",
+              "description": "Their email."
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "commentCreated",
+      "displayName": "Comment Created",
+      "description": "Someone commented on a post.",
+      "data": {
+        "commentId": {
+          "type": "string",
+          "displayName": "Comment ID",
+          "description": "The new comment's id."
+        },
+        "postId": {
+          "type": "string",
+          "displayName": "Post ID",
+          "description": "The post it was added to."
+        },
+        "text": {
+          "type": "string",
+          "displayName": "Comment Text",
+          "description": "What the comment says."
+        },
+        "images": {
+          "type": "array",
+          "displayName": "Images",
+          "description": "The pictures in the comment."
+        },
+        "wallId": {
+          "type": "string",
+          "displayName": "Wall ID",
+          "description": "The wall the post is on; empty for the main wall."
+        },
+        "createdOn": {
+          "type": "datetime",
+          "displayName": "Commented On",
+          "description": "When it was written."
+        },
+        "commentedBy": {
+          "type": "object",
+          "displayName": "Commented By",
+          "description": "Who wrote it.",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "displayName": "User ID",
+              "description": "Their id."
+            },
+            "displayName": {
+              "type": "string",
+              "displayName": "Name",
+              "description": "Their name."
+            },
+            "email": {
+              "type": "string",
+              "displayName": "Email",
+              "description": "Their email."
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "postDeleted",
+      "displayName": "Post Deleted",
+      "description": "A post was removed from the wall.",
+      "data": {
+        "postId": {
+          "type": "string",
+          "displayName": "Post ID",
+          "description": "The removed post's id."
+        },
+        "text": {
+          "type": "string",
+          "displayName": "Post Text",
+          "description": "What the post said."
+        },
+        "wallId": {
+          "type": "string",
+          "displayName": "Wall ID",
+          "description": "The wall it was on; empty for the main wall."
+        },
+        "postedBy": {
+          "type": "object",
+          "displayName": "Posted By",
+          "description": "Who had posted it.",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "displayName": "User ID",
+              "description": "Their id."
+            },
+            "displayName": {
+              "type": "string",
+              "displayName": "Name",
+              "description": "Their name."
+            },
+            "email": {
+              "type": "string",
+              "displayName": "Email",
+              "description": "Their email."
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "commentDeleted",
+      "displayName": "Comment Deleted",
+      "description": "A comment was removed from a post.",
+      "data": {
+        "commentId": {
+          "type": "string",
+          "displayName": "Comment ID",
+          "description": "The removed comment's id, if it had one."
+        },
+        "postId": {
+          "type": "string",
+          "displayName": "Post ID",
+          "description": "The post it was on."
+        },
+        "text": {
+          "type": "string",
+          "displayName": "Comment Text",
+          "description": "What the comment said."
+        },
+        "commentedBy": {
+          "type": "object",
+          "displayName": "Commented By",
+          "description": "Who had written it.",
+          "properties": {
+            "userId": {
+              "type": "string",
+              "displayName": "User ID",
+              "description": "Their id."
+            },
+            "displayName": {
+              "type": "string",
+              "displayName": "Name",
+              "description": "Their name."
+            },
+            "email": {
+              "type": "string",
+              "displayName": "Email",
+              "description": "Their email."
+            }
+          }
+        }
+      }
+    }
+  ]
+}

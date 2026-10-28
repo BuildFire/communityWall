@@ -1,0 +1,206 @@
+{
+  "name": "searchPosts",
+  "displayName": "Search posts",
+  "type": "function",
+  "crudMode": "read",
+  "flags": [
+    "immutable",
+    "safe",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "searchPosts",
+    "hosts": [
+      "widgetBackground",
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Shows the posts on the walls, newest first, with their comments and likes.",
+  "parameters": {
+    "wallId": {
+      "type": "string",
+      "displayName": "Wall id",
+      "required": false,
+      "description": "Only show posts on this wall. Leave it out to look through every wall, or leave it empty for the main wall.",
+      "sampleValue": "[wall id]"
+    },
+    "text": {
+      "type": "string",
+      "displayName": "Post text",
+      "required": false,
+      "description": "Only show posts with exactly this text. Leave it out to show posts with any text.",
+      "sampleValue": "[post text]"
+    },
+    "userId": {
+      "type": "user",
+      "displayName": "Posted by",
+      "required": false,
+      "description": "Only show this person's posts, given by their id or email. Leave it out to show everyone's posts.",
+      "sampleValue": "[user id]"
+    },
+    "page": {
+      "type": "number",
+      "displayName": "Page",
+      "required": false,
+      "minValue": 0,
+      "description": "Which page to show, counting from 0. Leave it out for the first page.",
+      "sampleValue": 0
+    },
+    "pageSize": {
+      "type": "number",
+      "displayName": "Posts per page",
+      "required": false,
+      "minValue": 1,
+      "maxValue": 50,
+      "description": "How many posts a page holds, up to 50. Leave it out for 20.",
+      "sampleValue": 20
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the search is done.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it didn't work, if it didn't."
+        },
+        "result": {
+          "type": "object",
+          "description": "The posts that were found.",
+          "properties": {
+            "posts": {
+              "type": "array",
+              "description": "The posts found, newest first.",
+              "items": {
+                "type": "object",
+                "description": "One post.",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The post's id."
+                  },
+                  "wallId": {
+                    "type": "string",
+                    "description": "The wall the post is on; empty for the main wall."
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "What the post says."
+                  },
+                  "images": {
+                    "type": "array",
+                    "description": "The pictures in the post.",
+                    "items": {
+                      "type": "string",
+                      "description": "One picture."
+                    }
+                  },
+                  "createdOn": {
+                    "type": "datetime",
+                    "description": "When it was posted."
+                  },
+                  "author": {
+                    "type": "object",
+                    "description": "Who posted it.",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "description": "The person's id."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Their name, as the wall shows it."
+                      },
+                      "imageUrl": {
+                        "type": "string",
+                        "description": "Their profile picture, if they have one."
+                      }
+                    }
+                  },
+                  "likesCount": {
+                    "type": "number",
+                    "description": "How many people liked it."
+                  },
+                  "commentsCount": {
+                    "type": "number",
+                    "description": "How many comments it has."
+                  },
+                  "comments": {
+                    "type": "array",
+                    "description": "Its comments, oldest first.",
+                    "items": {
+                      "type": "object",
+                      "description": "One comment.",
+                      "properties": {
+                        "commentId": {
+                          "type": "string",
+                          "description": "The comment's id, if it has one."
+                        },
+                        "text": {
+                          "type": "string",
+                          "description": "What the comment says."
+                        },
+                        "images": {
+                          "type": "array",
+                          "description": "The pictures in the comment.",
+                          "items": {
+                            "type": "string",
+                            "description": "One picture."
+                          }
+                        },
+                        "createdOn": {
+                          "type": "datetime",
+                          "description": "When it was written."
+                        },
+                        "author": {
+                          "type": "object",
+                          "description": "Who wrote it.",
+                          "properties": {
+                            "userId": {
+                              "type": "string",
+                              "description": "The person's id."
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Their name, as the wall shows it."
+                            },
+                            "imageUrl": {
+                              "type": "string",
+                              "description": "Their profile picture, if they have one."
+                            }
+                          }
+                        },
+                        "likesCount": {
+                          "type": "number",
+                          "description": "How many people liked it."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "total": {
+              "type": "number",
+              "description": "How many posts match in all."
+            },
+            "page": {
+              "type": "number",
+              "description": "Which page this is, counting from 0."
+            },
+            "hasMore": {
+              "type": "boolean",
+              "description": "Whether there are more posts after this page."
+            }
+          }
+        }
+      }
+    }
+  }
+}
