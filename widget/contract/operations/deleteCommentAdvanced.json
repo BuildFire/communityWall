@@ -1,0 +1,75 @@
+{
+  "name": "deleteCommentAdvanced",
+  "displayName": "Delete comment",
+  "type": "function",
+  "crudMode": "delete",
+  "flags": [
+    "mutable",
+    "dangerous",
+    "unthrottable"
+  ],
+  "usage": "advanced",
+  "alternatives": [
+    {
+      "operationName": "deleteComment",
+      "label": "Basic"
+    }
+  ],
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "deleteCommentAdvanced",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Permanently removes a comment from a post, using the post's and the comment's ids.",
+  "parameters": {
+    "postId": {
+      "type": "string",
+      "displayName": "Post id",
+      "required": true,
+      "description": "The id of the post the comment is on, as shown in search results.",
+      "sampleValue": "[post id]"
+    },
+    "commentId": {
+      "type": "string",
+      "displayName": "Comment id",
+      "required": true,
+      "description": "The comment's id, as shown in search results.",
+      "sampleValue": "[comment id]"
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the comment is removed.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it wasn't removed, such as no comment having that id on that post."
+        },
+        "result": {
+          "type": "object",
+          "description": "The comment that was removed.",
+          "properties": {
+            "commentId": {
+              "type": "string",
+              "description": "The removed comment's id, if it had one."
+            },
+            "postId": {
+              "type": "string",
+              "description": "The post it was on."
+            },
+            "status": {
+              "type": "string",
+              "description": "Says the comment was removed."
+            }
+          }
+        }
+      }
+    }
+  }
+}

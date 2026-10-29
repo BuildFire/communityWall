@@ -1,0 +1,117 @@
+{
+  "name": "searchMembers",
+  "displayName": "Search members",
+  "type": "function",
+  "crudMode": "read",
+  "flags": [
+    "immutable",
+    "safe",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "searchMembers",
+    "hosts": [
+      "widgetBackground",
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Shows the people who are members of a wall.",
+  "parameters": {
+    "wallId": {
+      "type": "string",
+      "displayName": "Wall id",
+      "required": false,
+      "description": "The wall whose members are shown. Leave it out, or leave it empty, for the main wall.",
+      "sampleValue": "[wall id]"
+    },
+    "name": {
+      "type": "string",
+      "displayName": "Name",
+      "required": false,
+      "description": "Only show members whose name or email contains this text. Leave it out to show every member.",
+      "sampleValue": "[member name]"
+    },
+    "page": {
+      "type": "number",
+      "displayName": "Page",
+      "required": false,
+      "minValue": 0,
+      "description": "Which page to show, counting from 0. Leave it out for the first page.",
+      "sampleValue": 0
+    },
+    "pageSize": {
+      "type": "number",
+      "displayName": "Members per page",
+      "required": false,
+      "minValue": 1,
+      "maxValue": 50,
+      "description": "How many members a page holds, up to 50. Leave it out for 50.",
+      "sampleValue": 20
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the search is done.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it didn't work, if it didn't."
+        },
+        "result": {
+          "type": "object",
+          "description": "The members that were found.",
+          "properties": {
+            "members": {
+              "type": "array",
+              "description": "The members found.",
+              "items": {
+                "type": "object",
+                "description": "One member.",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "description": "The member's id."
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "Their display name, if they have one."
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "description": "Their first name, if they have one."
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "Their last name, if they have one."
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "description": "Their profile picture, if they have one."
+                  }
+                }
+              }
+            },
+            "total": {
+              "type": "number",
+              "description": "How many members match in all."
+            },
+            "page": {
+              "type": "number",
+              "description": "Which page this is, counting from 0."
+            },
+            "hasMore": {
+              "type": "boolean",
+              "description": "Whether there are more members after this page."
+            }
+          }
+        }
+      }
+    }
+  }
+}

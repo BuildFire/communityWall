@@ -1,0 +1,172 @@
+{
+  "name": "updateSettings",
+  "displayName": "Update settings",
+  "type": "function",
+  "crudMode": "update",
+  "flags": [
+    "mutable",
+    "safe",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "availableFor": [
+    "API"
+  ],
+  "context": {
+    "functionName": "updateSettings",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Changes how the wall works and the message pinned at its top, keeping every setting that isn't given.",
+  "parameters": {
+    "allowAutoSubscribe": {
+      "type": "boolean",
+      "displayName": "Allow autosubscribe",
+      "required": false,
+      "description": "Whether people join the wall automatically when they open it. Leave it out to keep the current choice.",
+      "sampleValue": true
+    },
+    "disableFollowLeaveGroup": {
+      "type": "boolean",
+      "displayName": "Disable follow/leave group",
+      "required": false,
+      "description": "Whether to hide the join and leave button. Leave it out to keep the current choice.",
+      "sampleValue": false
+    },
+    "showMembers": {
+      "type": "boolean",
+      "displayName": "Show members",
+      "required": false,
+      "description": "Whether people can see the list of members. Leave it out to keep the current choice.",
+      "sampleValue": true
+    },
+    "allowCommunityFeedFollow": {
+      "type": "boolean",
+      "displayName": "Allow users to follow other users",
+      "required": false,
+      "description": "Whether people can follow each other. Leave it out to keep the current choice.",
+      "sampleValue": false
+    },
+    "chatFeature": {
+      "type": "select",
+      "displayName": "Chat feature",
+      "required": false,
+      "description": "How private chats open. Choosing the action item without one set keeps the plugin's own chat. Leave it out to keep the current choice.",
+      "enums": [
+        {
+          "label": "Plugin's default",
+          "value": "default"
+        },
+        {
+          "label": "Action item",
+          "value": "actionItem"
+        }
+      ],
+      "allowEnumCustomOption": false,
+      "sampleValue": "default"
+    },
+    "chatFeatureAction": {
+      "type": "action",
+      "displayName": "Chat feature action item",
+      "required": false,
+      "nullable": true,
+      "description": "What opens a private chat when the action item is chosen, such as another plugin. Leave it out to keep the current one, or leave it empty to remove it.",
+      "sampleValue": {
+        "title": "Chat",
+        "action": "linkToWeb",
+        "url": "https://example.com"
+      }
+    },
+    "actionItem": {
+      "type": "action",
+      "displayName": "Action item",
+      "required": false,
+      "nullable": true,
+      "description": "What the extra button on the wall does, such as opening a website or another plugin. Leave it out to keep the current one, or leave it empty to remove it.",
+      "sampleValue": {
+        "title": "Visit website",
+        "action": "linkToWeb",
+        "url": "https://example.com"
+      }
+    },
+    "pinnedPost": {
+      "type": "wysiwyg",
+      "displayName": "Pinned post",
+      "required": false,
+      "nullable": true,
+      "description": "The message pinned at the top of the wall, as formatted text. Leave it out to keep the current one, or leave it empty to remove it.",
+      "sampleValue": "<p>[pinned message]</p>"
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the settings are saved.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why they weren't saved, such as no setting being given."
+        },
+        "result": {
+          "type": "object",
+          "description": "The settings as they now stand.",
+          "properties": {
+            "allowAutoSubscribe": {
+              "type": "boolean",
+              "description": "Whether people join the wall automatically when they open it."
+            },
+            "disableFollowLeaveGroup": {
+              "type": "boolean",
+              "description": "Whether the join and leave button is hidden."
+            },
+            "showMembers": {
+              "type": "boolean",
+              "description": "Whether people can see the list of members."
+            },
+            "allowCommunityFeedFollow": {
+              "type": "boolean",
+              "description": "Whether people can follow each other."
+            },
+            "chatFeature": {
+              "type": "string",
+              "description": "How private chats open: the plugin's own chat or an action item."
+            },
+            "chatFeatureAction": {
+              "type": "object",
+              "description": "What opens a private chat when the action item is chosen, if one is set.",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Its label."
+                },
+                "action": {
+                  "type": "string",
+                  "description": "What kind of action it is, such as opening a website."
+                }
+              }
+            },
+            "actionItem": {
+              "type": "object",
+              "description": "The extra button's action on the wall, if one is set.",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Its label."
+                },
+                "action": {
+                  "type": "string",
+                  "description": "What kind of action it is, such as opening a website."
+                }
+              }
+            },
+            "pinnedPost": {
+              "type": "string",
+              "description": "The message pinned at the top of the wall, as formatted text, if there is one."
+            }
+          }
+        }
+      }
+    }
+  }
+}

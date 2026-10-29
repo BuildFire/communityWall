@@ -616,6 +616,16 @@
           Thread.deleteComment = function (comment) {
               SocialDataStore.deleteComment(Thread.post.id, comment).then(
                 function (data) {
+                    if (buildfire.services.contract) buildfire.services.contract.events.send('commentDeleted', {
+                        commentId: comment.commentId || null,
+                        postId: Thread.post.id,
+                        text: decodeURIComponent(comment.comment || ''),
+                        commentedBy: {
+                            userId: comment.userId || null,
+                            displayName: Thread.SocialItems.getUserName(comment.userDetails),
+                            email: (comment.userDetails && comment.userDetails.email) || null
+                        }
+                    });
                     Buildfire.messaging.sendMessageToControl({
                         name: EVENTS.COMMENT_DELETED,
                         comment: comment,
@@ -710,6 +720,19 @@
               SocialDataStore.addComment(commentData).then(
                 function (data) {
                     console.log('Add Comment Successsss------------------', data);
+                    if (buildfire.services.contract) buildfire.services.contract.events.send('commentCreated', {
+                        commentId: commentData.commentId,
+                        postId: Thread.post.id,
+                        text: Thread.comment || '',
+                        images: commentData.imageUrl || [],
+                        wallId: Thread.SocialItems.wid || '',
+                        createdOn: commentData.createdOn.toISOString(),
+                        commentedBy: {
+                            userId: commentData.userId || null,
+                            displayName: Thread.SocialItems.getUserName(commentData.userDetails),
+                            email: (commentData.userDetails && commentData.userDetails.email) || null
+                        }
+                    });
                     Thread.comment = '';
                     Thread.waitAPICompletion = false;
                     commentData.id = data.data.id;
@@ -824,6 +847,17 @@
                       Buildfire.messaging.sendMessageToControl({
                           'name': EVENTS.POST_DELETED,
                           'id': postId
+                      });
+                      let deletedPost = Thread.post && Thread.post.id === postId ? Thread.post : null;
+                      if (buildfire.services.contract && deletedPost) buildfire.services.contract.events.send('postDeleted', {
+                          postId: postId,
+                          text: decodeURIComponent(deletedPost.text || ''),
+                          wallId: deletedPost.wid || '',
+                          postedBy: {
+                              userId: deletedPost.userId || null,
+                              displayName: Thread.SocialItems.getUserName(deletedPost.userDetails),
+                              email: (deletedPost.userDetails && deletedPost.userDetails.email) || null
+                          }
                       });
                       let postToDelete = Thread.SocialItems.items.find(element => element.id === postId)
                       let index = Thread.SocialItems.items.indexOf(postToDelete);
