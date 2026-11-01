@@ -1,0 +1,96 @@
+{
+  "name": "deletePostsAdvanced",
+  "displayName": "Delete posts",
+  "type": "function",
+  "crudMode": "delete",
+  "flags": [
+    "mutable",
+    "dangerous",
+    "throttable"
+  ],
+  "usage": "advanced",
+  "availableFor": [
+    "API"
+  ],
+  "context": {
+    "functionName": "deletePostsAdvanced",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Permanently removes several posts and their comments at once, up to 50.",
+  "parameters": {
+    "posts": {
+      "type": "list",
+      "displayName": "Posts",
+      "required": true,
+      "minValue": 1,
+      "maxValue": 50,
+      "description": "The posts to remove, up to 50 at a time.",
+      "items": {
+        "postId": {
+          "type": "string",
+          "displayName": "Post id",
+          "required": true,
+          "description": "The post's id, as shown in search results."
+        }
+      },
+      "sampleValue": [
+        {
+          "postId": "[post id]"
+        },
+        {
+          "postId": "[post id]"
+        }
+      ]
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when all the posts are done.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why nothing was removed, such as a post that no longer exists."
+        },
+        "result": {
+          "type": "object",
+          "description": "How each post went.",
+          "properties": {
+            "posts": {
+              "type": "array",
+              "description": "One result per post, in the order they were given.",
+              "items": {
+                "type": "object",
+                "description": "How one post went.",
+                "properties": {
+                  "index": {
+                    "type": "number",
+                    "description": "Which post this is, counting from 0."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The removed post's id, if it was removed."
+                  },
+                  "error": {
+                    "type": "string",
+                    "description": "Why it wasn't removed, if it wasn't."
+                  }
+                }
+              }
+            },
+            "succeeded": {
+              "type": "number",
+              "description": "How many posts were removed."
+            },
+            "failed": {
+              "type": "number",
+              "description": "How many posts weren't removed."
+            }
+          }
+        }
+      }
+    }
+  }
+}

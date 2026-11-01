@@ -1,0 +1,433 @@
+{
+  "operations": [
+    {
+      "name": "searchPosts",
+      "displayName": "Search posts",
+      "type": "function",
+      "crudMode": "read",
+      "flags": [
+        "immutable",
+        "safe",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "searchPosts",
+        "hosts": [
+          "widgetBackground",
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Shows the posts on the walls, newest first, with their comments and likes.",
+      "parameters": [
+        "wallId",
+        "text",
+        "userId",
+        "page",
+        "pageSize"
+      ],
+      "definitionPath": "operations/searchPosts.json"
+    },
+    {
+      "name": "deletePost",
+      "displayName": "Delete post",
+      "type": "function",
+      "crudMode": "delete",
+      "flags": [
+        "mutable",
+        "dangerous",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "alternatives": [
+        {
+          "operationName": "deletePostAdvanced",
+          "label": "Advanced"
+        }
+      ],
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "deletePost",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Permanently removes a post and its comments from the wall.",
+      "parameters": [
+        "postText",
+        "userId",
+        "wallId"
+      ],
+      "definitionPath": "operations/deletePost.json"
+    },
+    {
+      "name": "deletePostAdvanced",
+      "displayName": "Delete post",
+      "type": "function",
+      "crudMode": "delete",
+      "flags": [
+        "mutable",
+        "dangerous",
+        "unthrottable"
+      ],
+      "usage": "advanced",
+      "alternatives": [
+        {
+          "operationName": "deletePost",
+          "label": "Basic"
+        }
+      ],
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "deletePostAdvanced",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Permanently removes a post and its comments from the wall, using the post's id.",
+      "parameters": [
+        "postId"
+      ],
+      "definitionPath": "operations/deletePostAdvanced.json"
+    },
+    {
+      "name": "deletePostsAdvanced",
+      "displayName": "Delete posts",
+      "type": "function",
+      "crudMode": "delete",
+      "flags": [
+        "mutable",
+        "dangerous",
+        "throttable"
+      ],
+      "usage": "advanced",
+      "availableFor": [
+        "API"
+      ],
+      "context": {
+        "functionName": "deletePostsAdvanced",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Permanently removes several posts and their comments at once, up to 50.",
+      "parameters": [
+        "posts"
+      ],
+      "definitionPath": "operations/deletePostsAdvanced.json"
+    },
+    {
+      "name": "deleteComment",
+      "displayName": "Delete comment",
+      "type": "function",
+      "crudMode": "delete",
+      "flags": [
+        "mutable",
+        "dangerous",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "alternatives": [
+        {
+          "operationName": "deleteCommentAdvanced",
+          "label": "Advanced"
+        }
+      ],
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "deleteComment",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Permanently removes a comment from a post.",
+      "parameters": [
+        "commentText",
+        "postText",
+        "userId"
+      ],
+      "definitionPath": "operations/deleteComment.json"
+    },
+    {
+      "name": "deleteCommentAdvanced",
+      "displayName": "Delete comment",
+      "type": "function",
+      "crudMode": "delete",
+      "flags": [
+        "mutable",
+        "dangerous",
+        "unthrottable"
+      ],
+      "usage": "advanced",
+      "alternatives": [
+        {
+          "operationName": "deleteComment",
+          "label": "Basic"
+        }
+      ],
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "deleteCommentAdvanced",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Permanently removes a comment from a post, using the post's and the comment's ids.",
+      "parameters": [
+        "postId",
+        "commentId"
+      ],
+      "definitionPath": "operations/deleteCommentAdvanced.json"
+    },
+    {
+      "name": "deleteCommentsAdvanced",
+      "displayName": "Delete comments",
+      "type": "function",
+      "crudMode": "delete",
+      "flags": [
+        "mutable",
+        "dangerous",
+        "throttable"
+      ],
+      "usage": "advanced",
+      "availableFor": [
+        "API"
+      ],
+      "context": {
+        "functionName": "deleteCommentsAdvanced",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Permanently removes several comments at once, up to 50.",
+      "parameters": [
+        "comments"
+      ],
+      "definitionPath": "operations/deleteCommentsAdvanced.json"
+    },
+    {
+      "name": "searchMembers",
+      "displayName": "Search members",
+      "type": "function",
+      "crudMode": "read",
+      "flags": [
+        "immutable",
+        "safe",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "searchMembers",
+        "hosts": [
+          "widgetBackground",
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Shows the people who are members of a wall.",
+      "parameters": [
+        "wallId",
+        "name",
+        "page",
+        "pageSize"
+      ],
+      "definitionPath": "operations/searchMembers.json"
+    },
+    {
+      "name": "getSettings",
+      "displayName": "Get settings",
+      "type": "function",
+      "crudMode": "read",
+      "flags": [
+        "immutable",
+        "safe",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "getSettings",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Shows how the wall is set up, including the message pinned at its top.",
+      "parameters": [],
+      "definitionPath": "operations/getSettings.json"
+    },
+    {
+      "name": "updateSettings",
+      "displayName": "Update settings",
+      "type": "function",
+      "crudMode": "update",
+      "flags": [
+        "mutable",
+        "safe",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "availableFor": [
+        "API"
+      ],
+      "context": {
+        "functionName": "updateSettings",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Changes how the wall works and the message pinned at its top, keeping every setting that isn't given.",
+      "parameters": [
+        "allowAutoSubscribe",
+        "disableFollowLeaveGroup",
+        "showMembers",
+        "allowCommunityFeedFollow",
+        "chatFeature",
+        "chatFeatureAction",
+        "actionItem",
+        "pinnedPost"
+      ],
+      "definitionPath": "operations/updateSettings.json"
+    },
+    {
+      "name": "getLabels",
+      "displayName": "Get labels",
+      "type": "function",
+      "crudMode": "read",
+      "flags": [
+        "immutable",
+        "safe",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "getLabels",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Shows the wording of every label and message in the app, from the Languages tab.",
+      "parameters": [],
+      "definitionPath": "operations/getLabels.json"
+    },
+    {
+      "name": "updateLabels",
+      "displayName": "Update labels",
+      "type": "function",
+      "crudMode": "update",
+      "flags": [
+        "mutable",
+        "safe",
+        "unthrottable"
+      ],
+      "usage": "basic",
+      "availableFor": [
+        "API",
+        "form"
+      ],
+      "context": {
+        "functionName": "updateLabels",
+        "hosts": [
+          "controlBackground",
+          "headlessSdk"
+        ]
+      },
+      "description": "Changes the wording of labels and messages in the app, keeping every label that isn't given.",
+      "parameters": [
+        "leaveGroup",
+        "joinGroup",
+        "specificChat",
+        "messageDeleted",
+        "followPost",
+        "unfollowPost",
+        "deleteComment",
+        "reportComment",
+        "postDeleteSuccess",
+        "blockedUser",
+        "members",
+        "membersBlankState",
+        "membersNoResults",
+        "cancelPost",
+        "confirmPost",
+        "writePost",
+        "unblockUserTitleConfirmation",
+        "unblockUserBodyConfirmation",
+        "unblockUserConfirmBtn",
+        "unblockUserCancelBtn",
+        "blockUserTitleConfirmation",
+        "blockUserBodyConfirmation",
+        "blockUserConfirmBtn",
+        "blockUserCancelBtn",
+        "moreOptions",
+        "reportPost",
+        "blockUser",
+        "deletePost",
+        "reportPostSuccess",
+        "reportPostFail",
+        "blockUserSuccess",
+        "unblockUserSuccess",
+        "reportComemntSuccess",
+        "reportCommentFail",
+        "reportPostAlreadyReported",
+        "reportPostUserBanned",
+        "personalNotificationMessageTitle",
+        "personalNotificationMessageBody",
+        "personalInAppMessageBody",
+        "publicNotificationMessageTitle",
+        "publicNotificationMessageBody",
+        "publicInAppMessageBody",
+        "commentNotificationMessageTitle",
+        "commentNotificationMessageBody",
+        "commentInAppMessageBody",
+        "postLikeNotificationTitle",
+        "postLikeNotificationMessageBody",
+        "postLikeInAppMessageBody",
+        "commentLikeNotificationTitle",
+        "commentLikeNotificationMessageBody",
+        "commentLikeInAppMessageBody",
+        "someone",
+        "you",
+        "unblockBtn",
+        "blockedUsers",
+        "noBlockedUsers"
+      ],
+      "definitionPath": "operations/updateLabels.json"
+    }
+  ]
+}

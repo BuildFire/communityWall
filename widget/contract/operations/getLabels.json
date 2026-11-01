@@ -1,0 +1,73 @@
+{
+  "name": "getLabels",
+  "displayName": "Get labels",
+  "type": "function",
+  "crudMode": "read",
+  "flags": [
+    "immutable",
+    "safe",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "getLabels",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Shows the wording of every label and message in the app, from the Languages tab.",
+  "parameters": {
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the labels are read.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it didn't work, if it didn't."
+        },
+        "result": {
+          "type": "object",
+          "description": "The labels.",
+          "properties": {
+            "labels": {
+              "type": "array",
+              "description": "Every label, in the order the Languages tab lists them.",
+              "items": {
+                "type": "object",
+                "description": "One label.",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "The label's name."
+                  },
+                  "section": {
+                    "type": "string",
+                    "description": "The part of the app it belongs to."
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "What the label is for."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Your text for it, if you changed it."
+                  },
+                  "defaultValue": {
+                    "type": "string",
+                    "description": "The original text."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

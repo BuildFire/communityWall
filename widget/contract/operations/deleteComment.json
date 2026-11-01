@@ -1,0 +1,82 @@
+{
+  "name": "deleteComment",
+  "displayName": "Delete comment",
+  "type": "function",
+  "crudMode": "delete",
+  "flags": [
+    "mutable",
+    "dangerous",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "alternatives": [
+    {
+      "operationName": "deleteCommentAdvanced",
+      "label": "Advanced"
+    }
+  ],
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "deleteComment",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Permanently removes a comment from a post.",
+  "parameters": {
+    "commentText": {
+      "type": "string",
+      "displayName": "Comment text",
+      "required": true,
+      "description": "The exact text of the comment to remove.",
+      "sampleValue": "[comment text]"
+    },
+    "postText": {
+      "type": "string",
+      "displayName": "Post text",
+      "required": false,
+      "description": "The exact text of the post the comment is on. Leave it out to look through every post.",
+      "sampleValue": "[post text]"
+    },
+    "userId": {
+      "type": "user",
+      "displayName": "Commented by",
+      "required": false,
+      "description": "The person who wrote the comment, given by their id or email. Leave it out to look through everyone's comments.",
+      "sampleValue": "[user id]"
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the comment is removed.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it wasn't removed, such as no comment or several comments having that text."
+        },
+        "result": {
+          "type": "object",
+          "description": "The comment that was removed.",
+          "properties": {
+            "commentId": {
+              "type": "string",
+              "description": "The removed comment's id, if it had one."
+            },
+            "postId": {
+              "type": "string",
+              "description": "The post it was on."
+            },
+            "status": {
+              "type": "string",
+              "description": "Says the comment was removed."
+            }
+          }
+        }
+      }
+    }
+  }
+}

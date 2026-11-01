@@ -1,0 +1,78 @@
+{
+  "name": "deletePost",
+  "displayName": "Delete post",
+  "type": "function",
+  "crudMode": "delete",
+  "flags": [
+    "mutable",
+    "dangerous",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "alternatives": [
+    {
+      "operationName": "deletePostAdvanced",
+      "label": "Advanced"
+    }
+  ],
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "deletePost",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Permanently removes a post and its comments from the wall.",
+  "parameters": {
+    "postText": {
+      "type": "string",
+      "displayName": "Post text",
+      "required": true,
+      "description": "The exact text of the post to remove.",
+      "sampleValue": "[post text]"
+    },
+    "userId": {
+      "type": "user",
+      "displayName": "Posted by",
+      "required": false,
+      "description": "The person who posted it, given by their id or email. Leave it out to look through everyone's posts.",
+      "sampleValue": "[user id]"
+    },
+    "wallId": {
+      "type": "string",
+      "displayName": "Wall id",
+      "required": false,
+      "description": "The wall the post is on. Leave it out to look through every wall, or leave it empty for the main wall.",
+      "sampleValue": "[wall id]"
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the post is removed.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it wasn't removed, such as no post or several posts having that text."
+        },
+        "result": {
+          "type": "object",
+          "description": "The post that was removed.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The removed post's id."
+            },
+            "status": {
+              "type": "string",
+              "description": "Says the post was removed."
+            }
+          }
+        }
+      }
+    }
+  }
+}

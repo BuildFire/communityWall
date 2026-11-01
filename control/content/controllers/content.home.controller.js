@@ -233,6 +233,16 @@
                                 console.log('inside success of delete post', response);
                                 if (response) {
                                     Buildfire.messaging.sendMessageToWidget({ 'name': EVENTS.POST_DELETED, 'id': postId });
+                                    if (buildfire.services.contract && postToDelete) buildfire.services.contract.events.send('postDeleted', {
+                                        postId: postId,
+                                        text: decodeURIComponent(postToDelete.text || ''),
+                                        wallId: postToDelete.wid || '',
+                                        postedBy: {
+                                            userId: postToDelete.userId || null,
+                                            displayName: $scope.getUserName(postToDelete.userDetails),
+                                            email: (postToDelete.userDetails && postToDelete.userDetails.email) || null
+                                        }
+                                    });
                                     console.log('post successfully deleted');
 
                                     ContentHome.posts = ContentHome.posts.filter(function (el) {
@@ -284,6 +294,16 @@
                             var success = function (response) {
                                 console.log('inside success of delete comment', response);
                                 if (response) {
+                                    if (buildfire.services.contract) buildfire.services.contract.events.send('commentDeleted', {
+                                        commentId: commentId.commentId || null,
+                                        postId: post.id,
+                                        text: decodeURIComponent(commentId.comment || ''),
+                                        commentedBy: {
+                                            userId: commentId.userId || null,
+                                            displayName: $scope.getUserName(commentId.userDetails),
+                                            email: (commentId.userDetails && commentId.userDetails.email) || null
+                                        }
+                                    });
                                     Buildfire.messaging.sendMessageToWidget({
                                         'name': EVENTS.COMMENT_DELETED,
                                         'comment': commentId,

@@ -1,0 +1,95 @@
+{
+  "name": "getSettings",
+  "displayName": "Get settings",
+  "type": "function",
+  "crudMode": "read",
+  "flags": [
+    "immutable",
+    "safe",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "getSettings",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Shows how the wall is set up, including the message pinned at its top.",
+  "parameters": {
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the settings are read.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it didn't work, if it didn't."
+        },
+        "result": {
+          "type": "object",
+          "description": "The current settings.",
+          "properties": {
+            "allowAutoSubscribe": {
+              "type": "boolean",
+              "description": "Whether people join the wall automatically when they open it."
+            },
+            "disableFollowLeaveGroup": {
+              "type": "boolean",
+              "description": "Whether the join and leave button is hidden."
+            },
+            "showMembers": {
+              "type": "boolean",
+              "description": "Whether people can see the list of members."
+            },
+            "allowCommunityFeedFollow": {
+              "type": "boolean",
+              "description": "Whether people can follow each other."
+            },
+            "chatFeature": {
+              "type": "string",
+              "description": "How private chats open: the plugin's own chat or an action item."
+            },
+            "chatFeatureAction": {
+              "type": "object",
+              "description": "What opens a private chat when the action item is chosen, if one is set.",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Its label."
+                },
+                "action": {
+                  "type": "string",
+                  "description": "What kind of action it is, such as opening a website."
+                }
+              }
+            },
+            "actionItem": {
+              "type": "object",
+              "description": "The extra button's action on the wall, if one is set.",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Its label."
+                },
+                "action": {
+                  "type": "string",
+                  "description": "What kind of action it is, such as opening a website."
+                }
+              }
+            },
+            "pinnedPost": {
+              "type": "string",
+              "description": "The message pinned at the top of the wall, as formatted text, if there is one."
+            }
+          }
+        }
+      }
+    }
+  }
+}

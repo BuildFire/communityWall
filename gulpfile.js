@@ -77,7 +77,7 @@ cfTasks.forEach(function (task){
 
 
 const jsTasks = [
-    { name: "widgetJS", src: ["widget/**/**/**/*.js","!widget/CommunityFeedAPI/data/*.js","!widget/CommunityFeedAPI/dataAccess/*.js"], dest: "/widget" },
+    { name: "widgetJS", src: ["widget/**/**/**/*.js","!widget/CommunityFeedAPI/data/*.js","!widget/CommunityFeedAPI/dataAccess/*.js","!widget/contract/**"], dest: "/widget" },
     { name: "controlContentJS", src: "control/content/**/**/**/*.js", dest: "/control/content" },
     { name: "controlDesignJS", src: "control/design/**/**/*.js", dest: "/control/design" },
     { name: "controlSettingsJS", src: "control/settings/**/**/*.js", dest: "/control/settings"},
@@ -167,6 +167,11 @@ gulp.task("widgetHtml", function () {
   );
 });
 
+// The contract ships as is: the platform fetches its files by path from widget/contract/.
+gulp.task("contract", function () {
+  return gulp.src(["widget/contract/**/*"], { base: "." }).pipe(gulp.dest(destinationFolder));
+});
+
 gulp.task("resources", function () {
   return gulp.src(["resources/*", "plugin.json"], { base: "." }).pipe(gulp.dest(destinationFolder));
 });
@@ -186,7 +191,7 @@ gulp.task("lib", function () {
       .pipe(gulp.dest(destinationFolder + "/control/content/assets/js/ladda"));
 });
 
-var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS" ,"lib"];
+var buildTasksToRun = ["widgetHtml", "controlHtml", "resources", "images", "sharedJS" ,"lib", "contract"];
 
 cssTasks.forEach(function (task) {
   buildTasksToRun.push(task.name);

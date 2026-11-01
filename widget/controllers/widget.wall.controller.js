@@ -1215,6 +1215,19 @@
                       });
                       postData.id = response.data.id;
                       postData.uniqueLink = response.data.uniqueLink;
+                      if (buildfire.services.contract) buildfire.services.contract.events.send('postCreated', {
+                          postId: response.id,
+                          text: WidgetWall.postText || '',
+                          images: response.data.images || [],
+                          wallId: response.data.wid || '',
+                          isPrivateChat: !!WidgetWall.SocialItems.isPrivateChat,
+                          createdOn: response.data.createdOn,
+                          postedBy: {
+                              userId: postData.userDetails.userId || null,
+                              displayName: WidgetWall.SocialItems.getUserName(postData.userDetails),
+                              email: postData.userDetails.email || null
+                          }
+                      });
                       WidgetWall.scheduleNotification(postData, 'post');
                       // window.scrollTo(0, 0);
                       // $location.hash('top');
@@ -1458,6 +1471,16 @@
                       });
                       let postToDelete = WidgetWall.SocialItems.items.find(element => element.id === postId)
                       console.log(postToDelete);
+                      if (buildfire.services.contract && postToDelete) buildfire.services.contract.events.send('postDeleted', {
+                          postId: postId,
+                          text: decodeURIComponent(postToDelete.text || ''),
+                          wallId: postToDelete.wid || '',
+                          postedBy: {
+                              userId: postToDelete.userId || null,
+                              displayName: WidgetWall.SocialItems.getUserName(postToDelete.userDetails),
+                              email: (postToDelete.userDetails && postToDelete.userDetails.email) || null
+                          }
+                      });
                       SocialDataStore.deleteFeedPost({
                           userId: postToDelete.userId,
                           postText: postToDelete.text,

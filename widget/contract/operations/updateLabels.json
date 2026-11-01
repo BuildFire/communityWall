@@ -1,0 +1,521 @@
+{
+  "name": "updateLabels",
+  "displayName": "Update labels",
+  "type": "function",
+  "crudMode": "update",
+  "flags": [
+    "mutable",
+    "safe",
+    "unthrottable"
+  ],
+  "usage": "basic",
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "updateLabels",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Changes the wording of labels and messages in the app, keeping every label that isn't given.",
+  "parameters": {
+    "leaveGroup": {
+      "type": "string",
+      "displayName": "Leave group",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Leave Group\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "joinGroup": {
+      "type": "string",
+      "displayName": "Join group",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Join Group\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "specificChat": {
+      "type": "string",
+      "displayName": "Restricted chat message",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Direct message is only set for specific users!\". Up to 100 characters. Leave it out to keep the current text, or leave it empty to show no message.",
+      "sampleValue": "[label text]"
+    },
+    "messageDeleted": {
+      "type": "string",
+      "displayName": "Message deleted",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"This message has been deleted.\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "followPost": {
+      "type": "string",
+      "displayName": "Follow post",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Follow Post\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "unfollowPost": {
+      "type": "string",
+      "displayName": "Unfollow post",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Unfollow Post\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "deleteComment": {
+      "type": "string",
+      "displayName": "Delete comment",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Delete Comment\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportComment": {
+      "type": "string",
+      "displayName": "Report comment",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Report Comment\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "postDeleteSuccess": {
+      "type": "string",
+      "displayName": "Delete post success",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Post successfully deleted\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockedUser": {
+      "type": "string",
+      "displayName": "Blocked user",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Blocked User\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "members": {
+      "type": "string",
+      "displayName": "Members",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Members\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "membersBlankState": {
+      "type": "string",
+      "displayName": "Members empty message",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"There are no other members except you.\". Up to 60 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "membersNoResults": {
+      "type": "string",
+      "displayName": "Members no results message",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"No results found.\". Up to 60 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "cancelPost": {
+      "type": "string",
+      "displayName": "Cancel post",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Cancel\". Up to 9 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[text]"
+    },
+    "confirmPost": {
+      "type": "string",
+      "displayName": "Confirm post",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Post\". Up to 9 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[text]"
+    },
+    "writePost": {
+      "type": "string",
+      "displayName": "Post input placeholder",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Write a post\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "unblockUserTitleConfirmation": {
+      "type": "string",
+      "displayName": "Unblock dialog title",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Unblock\". Up to 20 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "unblockUserBodyConfirmation": {
+      "type": "string",
+      "displayName": "Unblock dialog body",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Both of you will again be able to see each other's posts and send messages. The user won’t be notified that you unblocked them.\". Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "unblockUserConfirmBtn": {
+      "type": "string",
+      "displayName": "Unblock dialog confirm button",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Unblock\". Up to 20 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "unblockUserCancelBtn": {
+      "type": "string",
+      "displayName": "Unblock dialog cancel button",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Cancel\". Up to 20 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockUserTitleConfirmation": {
+      "type": "string",
+      "displayName": "Block dialog title",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Block\". Up to 20 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockUserBodyConfirmation": {
+      "type": "string",
+      "displayName": "Block dialog body",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Both of you won't be able to see each other's posts and send messages. The user won’t be notified that you blocked them.\". Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockUserConfirmBtn": {
+      "type": "string",
+      "displayName": "Block dialog confirm button",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Block\". Up to 20 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockUserCancelBtn": {
+      "type": "string",
+      "displayName": "Block dialog cancel button",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Cancel\". Up to 20 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "moreOptions": {
+      "type": "string",
+      "displayName": "More options",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"More Options\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportPost": {
+      "type": "string",
+      "displayName": "Report post",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Report Post\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockUser": {
+      "type": "string",
+      "displayName": "Block user",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Block User\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "deletePost": {
+      "type": "string",
+      "displayName": "Delete post",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Delete Post\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportPostSuccess": {
+      "type": "string",
+      "displayName": "Report post success",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Report submitted and pending admin review.\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportPostFail": {
+      "type": "string",
+      "displayName": "Report post failure",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"This post is already reported.\". Up to 100 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockUserSuccess": {
+      "type": "string",
+      "displayName": "Block user success",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"has been blocked\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "unblockUserSuccess": {
+      "type": "string",
+      "displayName": "Unblock user success",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"has been unblocked\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportComemntSuccess": {
+      "type": "string",
+      "displayName": "Report comment success",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Report submitted and pending admin review.\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportCommentFail": {
+      "type": "string",
+      "displayName": "Report comment failure",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"This comment is already reported.\". Up to 100 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportPostAlreadyReported": {
+      "type": "string",
+      "displayName": "Post already reported",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"This post has already been reported.\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "reportPostUserBanned": {
+      "type": "string",
+      "displayName": "Post owner already banned",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Owner of this post is already banned.\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "personalNotificationMessageTitle": {
+      "type": "string",
+      "displayName": "Private message notification title",
+      "required": false,
+      "nullable": true,
+      "description": "The title of the private message notification. Up to 25 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "personalNotificationMessageBody": {
+      "type": "string",
+      "displayName": "Private message notification body",
+      "required": false,
+      "nullable": true,
+      "description": "The body of the private message notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "personalInAppMessageBody": {
+      "type": "string",
+      "displayName": "Private message notification in-app message",
+      "required": false,
+      "nullable": true,
+      "description": "The in-app message of the private message notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "publicNotificationMessageTitle": {
+      "type": "string",
+      "displayName": "New post notification title",
+      "required": false,
+      "nullable": true,
+      "description": "The title of the new post notification. Up to 25 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "publicNotificationMessageBody": {
+      "type": "string",
+      "displayName": "New post notification body",
+      "required": false,
+      "nullable": true,
+      "description": "The body of the new post notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "publicInAppMessageBody": {
+      "type": "string",
+      "displayName": "New post notification in-app message",
+      "required": false,
+      "nullable": true,
+      "description": "The in-app message of the new post notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "commentNotificationMessageTitle": {
+      "type": "string",
+      "displayName": "New comment notification title",
+      "required": false,
+      "nullable": true,
+      "description": "The title of the new comment notification. Up to 25 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "commentNotificationMessageBody": {
+      "type": "string",
+      "displayName": "New comment notification body",
+      "required": false,
+      "nullable": true,
+      "description": "The body of the new comment notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "commentInAppMessageBody": {
+      "type": "string",
+      "displayName": "New comment notification in-app message",
+      "required": false,
+      "nullable": true,
+      "description": "The in-app message of the new comment notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "postLikeNotificationTitle": {
+      "type": "string",
+      "displayName": "Post like notification title",
+      "required": false,
+      "nullable": true,
+      "description": "The title of the post like notification. Up to 25 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "postLikeNotificationMessageBody": {
+      "type": "string",
+      "displayName": "Post like notification body",
+      "required": false,
+      "nullable": true,
+      "description": "The body of the post like notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "postLikeInAppMessageBody": {
+      "type": "string",
+      "displayName": "Post like notification in-app message",
+      "required": false,
+      "nullable": true,
+      "description": "The in-app message of the post like notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "commentLikeNotificationTitle": {
+      "type": "string",
+      "displayName": "Comment like notification title",
+      "required": false,
+      "nullable": true,
+      "description": "The title of the comment like notification. Up to 25 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "commentLikeNotificationMessageBody": {
+      "type": "string",
+      "displayName": "Comment like notification body",
+      "required": false,
+      "nullable": true,
+      "description": "The body of the comment like notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "commentLikeInAppMessageBody": {
+      "type": "string",
+      "displayName": "Comment like notification in-app message",
+      "required": false,
+      "nullable": true,
+      "description": "The in-app message of the comment like notification. Up to 150 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "someone": {
+      "type": "string",
+      "displayName": "Someone",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Someone\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "you": {
+      "type": "string",
+      "displayName": "You",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"(You)\". Up to 15 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "unblockBtn": {
+      "type": "string",
+      "displayName": "Unblock button",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Unblock\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "blockedUsers": {
+      "type": "string",
+      "displayName": "Blocked users",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"Blocked Users\". Up to 30 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "noBlockedUsers": {
+      "type": "string",
+      "displayName": "Blocked users empty message",
+      "required": false,
+      "nullable": true,
+      "description": "The app's text for \"No blocked users.\". Up to 50 characters. Leave it out to keep the current text, or leave it empty to go back to the original.",
+      "sampleValue": "[label text]"
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the labels are saved.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why they weren't saved, such as a text that is too long."
+        },
+        "result": {
+          "type": "object",
+          "description": "The labels as they now stand.",
+          "properties": {
+            "labels": {
+              "type": "array",
+              "description": "Every label, in the order the Languages tab lists them.",
+              "items": {
+                "type": "object",
+                "description": "One label.",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "The label's name."
+                  },
+                  "section": {
+                    "type": "string",
+                    "description": "The part of the app it belongs to."
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "What the label is for."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Your text for it, if you changed it."
+                  },
+                  "defaultValue": {
+                    "type": "string",
+                    "description": "The original text."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

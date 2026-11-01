@@ -1,0 +1,64 @@
+{
+  "name": "deletePostAdvanced",
+  "displayName": "Delete post",
+  "type": "function",
+  "crudMode": "delete",
+  "flags": [
+    "mutable",
+    "dangerous",
+    "unthrottable"
+  ],
+  "usage": "advanced",
+  "alternatives": [
+    {
+      "operationName": "deletePost",
+      "label": "Basic"
+    }
+  ],
+  "availableFor": [
+    "API",
+    "form"
+  ],
+  "context": {
+    "functionName": "deletePostAdvanced",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Permanently removes a post and its comments from the wall, using the post's id.",
+  "parameters": {
+    "postId": {
+      "type": "string",
+      "displayName": "Post id",
+      "required": true,
+      "description": "The post's id, as shown in search results.",
+      "sampleValue": "[post id]"
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when the post is removed.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why it wasn't removed, such as no post having that id."
+        },
+        "result": {
+          "type": "object",
+          "description": "The post that was removed.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The removed post's id."
+            },
+            "status": {
+              "type": "string",
+              "description": "Says the post was removed."
+            }
+          }
+        }
+      }
+    }
+  }
+}

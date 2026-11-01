@@ -1,0 +1,104 @@
+{
+  "name": "deleteCommentsAdvanced",
+  "displayName": "Delete comments",
+  "type": "function",
+  "crudMode": "delete",
+  "flags": [
+    "mutable",
+    "dangerous",
+    "throttable"
+  ],
+  "usage": "advanced",
+  "availableFor": [
+    "API"
+  ],
+  "context": {
+    "functionName": "deleteCommentsAdvanced",
+    "hosts": [
+      "controlBackground",
+      "headlessSdk"
+    ]
+  },
+  "description": "Permanently removes several comments at once, up to 50.",
+  "parameters": {
+    "comments": {
+      "type": "list",
+      "displayName": "Comments",
+      "required": true,
+      "minValue": 1,
+      "maxValue": 50,
+      "description": "The comments to remove, up to 50 at a time.",
+      "items": {
+        "postId": {
+          "type": "string",
+          "displayName": "Post id",
+          "required": true,
+          "description": "The id of the post the comment is on, as shown in search results."
+        },
+        "commentId": {
+          "type": "string",
+          "displayName": "Comment id",
+          "required": true,
+          "description": "The comment's id, as shown in search results."
+        }
+      },
+      "sampleValue": [
+        {
+          "postId": "[post id]",
+          "commentId": "[comment id]"
+        },
+        {
+          "postId": "[post id]",
+          "commentId": "[comment id]"
+        }
+      ]
+    },
+    "callback": {
+      "type": "function",
+      "required": true,
+      "description": "Runs when all the comments are done.",
+      "parameters": {
+        "error": {
+          "type": "object|string",
+          "description": "Why nothing was removed, such as a comment that no longer exists."
+        },
+        "result": {
+          "type": "object",
+          "description": "How each comment went.",
+          "properties": {
+            "comments": {
+              "type": "array",
+              "description": "One result per comment, in the order they were given.",
+              "items": {
+                "type": "object",
+                "description": "How one comment went.",
+                "properties": {
+                  "index": {
+                    "type": "number",
+                    "description": "Which comment this is, counting from 0."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The removed comment's id, if it was removed."
+                  },
+                  "error": {
+                    "type": "string",
+                    "description": "Why it wasn't removed, if it wasn't."
+                  }
+                }
+              }
+            },
+            "succeeded": {
+              "type": "number",
+              "description": "How many comments were removed."
+            },
+            "failed": {
+              "type": "number",
+              "description": "How many comments weren't removed."
+            }
+          }
+        }
+      }
+    }
+  }
+}

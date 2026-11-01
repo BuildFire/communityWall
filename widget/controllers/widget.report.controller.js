@@ -101,6 +101,16 @@
             let success = function (response) {
                 let goBack = Buildfire.navigation.onBackButtonClick;
                 if (response) {
+                    if (buildfire.services.contract && Report.post) buildfire.services.contract.events.send('postDeleted', {
+                        postId: postId,
+                        text: decodeURIComponent(Report.post.text || ''),
+                        wallId: Report.post.wid || '',
+                        postedBy: {
+                            userId: Report.post.userId || null,
+                            displayName: Report.SocialItems.getUserName(Report.post.userDetails),
+                            email: (Report.post.userDetails && Report.post.userDetails.email) || null
+                        }
+                    });
                     let postToDelete = Report.SocialItems.items.find(element => element.id === postId);
                     if(postToDelete) {
                         let index = Report.SocialItems.items.indexOf(postToDelete);
@@ -127,6 +137,16 @@
             SocialDataStore.deleteComment(postId, commentId).then(
                 function (data) {
                     let goBack = Buildfire.navigation.onBackButtonClick;
+                    if (buildfire.services.contract && Report.post) buildfire.services.contract.events.send('commentDeleted', {
+                        commentId: commentId || null,
+                        postId: postId,
+                        text: decodeURIComponent(Report.post.comment || ''),
+                        commentedBy: {
+                            userId: Report.post.userId || null,
+                            displayName: Report.SocialItems.getUserName(Report.post.userDetails),
+                            email: (Report.post.userDetails && Report.post.userDetails.email) || null
+                        }
+                    });
                     Buildfire.dialog.toast({
                         message: "Reported comment deleted successfully",
                         type: 'info'
