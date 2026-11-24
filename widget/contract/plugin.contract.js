@@ -133,14 +133,53 @@ const requireStringParams = (options, names, callback) => {
 };
 
 /**
- * The first problem with the optional options, or null. Text options may be empty (an empty wall id is the main wall); user options must be a non-empty id or email.
+ * The first problem with the optional text options, or null. They may be empty (an empty wall id is the main wall).
  */
-const checkOptional = (options, { texts = [], users = [] }) => {
+const checkOptional = (options, { texts = [] }) => {
   const badText = texts.find((name) => options[name] !== undefined && typeof options[name] !== 'string');
   if (badText) return `${badText} must be text`;
-  const badUser = users.find((name) => options[name] !== undefined && (typeof options[name] !== 'string' || !options[name]));
-  if (badUser) return `${badUser} must be a user id or an email`;
   return null;
+};
+
+// An action item as the action items component saves it: an object naming its kind of action.
+const isActionItem = (value) => !!value && typeof value === 'object' && !Array.isArray(value)
+  && typeof value.action === 'string' && !!value.action;
+
+// What each list type this contract takes holds, for checking its entries and naming them in a message.
+const LIST_ENTRIES = {
+  user: { noun: 'app user', valid: (entry) => typeof entry === 'string' && !!entry.trim() }, // id or email
+  action: { noun: 'action item', valid: isActionItem },
+};
+
+// The action items dialog's options each action param declares. Both lists are edited with the settings tab's
+// actionItems.sortableList, which opens the dialog with its defaults; the wall's extra button shows its icon, the chat action's is never shown.
+const CHAT_ACTION_DIALOG = { showIcon: false, imgLibOptions: { showIcons: false }, showTitle: false, hideActionText: false, allowNoAction: true, removePurchase: false, removePushNotifications: false };
+const WALL_ACTION_DIALOG = { showIcon: true, imgLibOptions: { showIcons: true }, showTitle: false, hideActionText: false, allowNoAction: true, removePurchase: false, removePushNotifications: false };
+
+/**
+ * A user or action param, checked against its declared count. These types are declared and sent as lists, even for a single value. A single value on its own (a user id string, one action item object) is still accepted as a one-item list: the previous contract declared them that way, and those callers keep working.
+ * An action param's entries are also checked against its declared dialogOptions, as its picker would have offered them.
+ * @param {*} value - the param as passed
+ * @param {{ name: string, type: 'user'|'action', minValue: number, maxValue?: number, dialogOptions?: object }} declared - exactly as declared
+ * @returns {{ list?: Array, error?: string }}
+ */
+const readList = (value, { name, type, minValue, maxValue, dialogOptions }) => {
+  const { noun, valid } = LIST_ENTRIES[type];
+  const range = maxValue === undefined ? `at least ${minValue}`
+    : (minValue === maxValue ? `exactly ${minValue}` : (minValue === 0 ? `up to ${maxValue}` : `${minValue} to ${maxValue}`));
+  // backward compatible: a single value is the older way of sending one entry
+  if (!Array.isArray(value)) value = (value === undefined || value === null || value === '') ? [] : [value];
+  if (value.length < minValue || (maxValue !== undefined && value.length > maxValue)) {
+    return { error: `${name} must hold ${range} ${noun}${maxValue === 1 ? '' : 's'}; got ${value.length}` };
+  }
+  if (!value.every(valid)) return { error: `${name} must contain only ${noun}s` };
+  if (type === 'action' && dialogOptions) {
+    const refused = value.find((item) => (item.action === 'noAction' && !dialogOptions.allowNoAction)
+      || (item.action === 'purchase' && dialogOptions.removePurchase)
+      || (item.action === 'sendPushNotification' && dialogOptions.removePushNotifications));
+    if (refused) return { error: `${name} does not allow a "${refused.action}" action item` };
+  }
+  return { list: value };
 };
 
 /**
@@ -240,33 +279,41 @@ const tellWidget = (message) => {
 };
 
 /**
- * The app user a caller named, by id or by email. An email is recognized by its @ and looked up in the app's users.
- * @param {string|undefined} value
- * @param {function(Error=, string=)} callback - (error, user id, or undefined when none was given)
+ * The app users a caller named, each by id or by email, in the order given. An email is recognized by its @; every email is looked up in the app's users with one getUsersByEmail call.
+ * @param {string[]} entries - already checked by readList
+ * @param {function(Error=, string[]=)} callback - (error, user ids)
  */
-const resolveUserId = (value, callback) => {
-  if (value === undefined) return callback(null, undefined);
-  if (value.indexOf('@') < 0) return callback(null, value);
-  buildfire.auth.getUsersByEmail({ emails: [value] }, (err, users) => {
+const resolveUserIds = (entries, callback) => {
+  const emails = entries.filter((entry) => entry.indexOf('@') >= 0);
+  if (!emails.length) return callback(null, entries.slice());
+  buildfire.auth.getUsersByEmail({ emails }, (err, users) => {
     if (err) return callback(err, undefined);
-    const list = Array.isArray(users) ? users : ((users && users.result) || []);
-    const user = list.find((u) => u && typeof u.email === 'string' && u.email.toLowerCase() === value.toLowerCase()) || list[0];
-    const id = user && (user._id || user.userId);
-    if (!id) return callback(new Error(`No app user has the email "${value}"`), undefined);
-    callback(null, id);
+    const list = (Array.isArray(users) ? users : ((users && users.result) || [])).filter(Boolean);
+    const ids = [];
+    const unknown = [];
+    entries.forEach((entry) => {
+      if (entry.indexOf('@') < 0) return ids.push(entry);
+      const user = list.find((u) => typeof u.email === 'string' && u.email.toLowerCase() === entry.toLowerCase())
+        || (emails.length === 1 ? list[0] : undefined);
+      const id = user && (user._id || user.userId);
+      if (id) ids.push(id);
+      else unknown.push(entry);
+    });
+    if (unknown.length) return callback(new Error(`No app user has the email "${unknown.join('", "')}"`), undefined);
+    callback(null, ids);
   });
 };
 
 /**
  * The posts filter, mirroring the widget's own wall filter (app.service.js getFilter): the main wall is an empty wall id,
- * any other wall is matched the way the widget matches it.
+ * any other wall is matched the way the widget matches it. Authors are matched with $in, so one author matches exactly as an equality did.
  */
-const postsFilter = ({ wallId, text, userId }) => {
+const postsFilter = ({ wallId, text, userIds }) => {
   const conditions = [];
   if (wallId === '') conditions.push({ '_buildfire.index.string1': { $eq: '' } });
   else if (wallId !== undefined) conditions.push({ '_buildfire.index.string1': { $regex: wallId, $options: 'i' } });
   if (text !== undefined) conditions.push({ '$json.text': encodeText(text) });
-  if (userId !== undefined) conditions.push({ '$json.userId': userId });
+  if (userIds && userIds.length) conditions.push({ '$json.userId': { $in: userIds } });
   return conditions.length ? { $and: conditions } : null;
 };
 
@@ -274,8 +321,8 @@ const postsFilter = ({ wallId, text, userId }) => {
  * The one post a caller named by its exact text, optionally narrowed by its author and wall. A text several posts share is refused rather than resolved to one of them: picking would mean deleting a post the caller did not mean.
  * @param {function(Error=, object=)} callback - (error, post record)
  */
-const resolvePost = ({ postText, userId, wallId }, callback) => {
-  const filter = postsFilter({ wallId, text: postText, userId });
+const resolvePost = ({ postText, userIds, wallId }, callback) => {
+  const filter = postsFilter({ wallId, text: postText, userIds });
   buildfire.publicData.search({ filter, page: 0, pageSize: MAX_PAGE_SIZE, recordCount: true }, POSTS_TAG, (err, response) => {
     if (err) return callback(err, undefined);
     const found = ((response && response.result) || []).filter((record) => record && record.id);
@@ -461,10 +508,6 @@ const toSettingsResult = (settings) => ({
   pinnedPost: settings.pinnedPost === undefined ? null : settings.pinnedPost,
 });
 
-// An action item as the action items component saves it: an object naming its kind of action.
-const isActionItem = (value) => !!value && typeof value === 'object' && !Array.isArray(value)
-  && typeof value.action === 'string' && !!value.action;
-
 /**
  * The labels document as the Languages tab builds it before saving. Mirrors widget/assets/js/shared/strings.js (the Strings service: every label's defaultValue, then the saved values) and, for the older single-screen format, the migration in control/languages/controllers/languages.js loadLanguage (a saved value moves to the label with the same original text).
  */
@@ -526,20 +569,23 @@ widgetContract = {
 
   /**
    * hosts: widgetBackground, controlBackground, headlessSdk. Lists posts newest first (index date1, as the control panel's content list sorts them), with their comments, narrowed by wall, exact text and author. Uses only buildfire.publicData (and buildfire.auth to resolve an email), which behave the same in both frames and on the server; it only reads, so nothing needs watching: Background in both frames. A function rather than a declarative search because it resolves an author's email, encodes the text the way the widget stores it, and leaves the user tokens the widget stores with each post out of the result. Covers the control panel's posts list and its CSV export, whose rows are these posts and their comments.
-   * @param {{ wallId?: string, text?: string, userId?: string, page?: number, pageSize?: number }} options
+   * userId is a user list (a single id or email, the older way, still counts as one entry): the posts of any person in it; an empty list shows everyone's, as leaving it out does. Each search asks for one page of at most 50 posts with recordCount, and whether more follow is told by totalRecord.
+   * @param {{ wallId?: string, text?: string, userId?: string[]|string, page?: number, pageSize?: number }} options
    * @param {function(Error=, object=)} callback - (error, { posts, total, page, hasMore })
    */
   searchPosts(options, callback) {
     if (!requireStringParams(options, [], callback)) return;
-    const problem = checkOptional(options, { texts: ['wallId', 'text'], users: ['userId'] });
+    const problem = checkOptional(options, { texts: ['wallId', 'text'] });
     if (problem) return callback(new Error(problem), undefined);
+    const users = readList(options.userId, { name: 'userId', type: 'user', minValue: 0 });
+    if (users.error) return callback(new Error(users.error), undefined);
     const { page, pageSize, error } = readPaging(options, 20);
     if (error) return callback(new Error(error), undefined);
 
-    resolveUserId(options.userId, (userErr, userId) => {
+    resolveUserIds(users.list, (userErr, userIds) => {
       if (userErr) return callback(userErr, undefined);
       const searchOptions = { sort: { '_buildfire.index.date1': -1 }, page, pageSize, recordCount: true };
-      const filter = postsFilter({ wallId: options.wallId, text: options.text, userId });
+      const filter = postsFilter({ wallId: options.wallId, text: options.text, userIds });
       if (filter) searchOptions.filter = filter;
       buildfire.publicData.search(searchOptions, POSTS_TAG, (err, response) => {
         if (err) return callback(err, undefined);
@@ -552,17 +598,20 @@ widgetContract = {
 
   /**
    * hosts: controlBackground, headlessSdk. usage: basic; its advanced alternative is deletePostAdvanced. Deletes one post, named by its exact text (narrowed by author and wall when given), the way the control panel's Delete Post does, via removePost. Uses buildfire.publicData, buildfire.appData and buildfire.auth, which behave the same in the control panel and on the server; the refresh message to the widget is skipped where messaging does not exist. No widget host: app users can delete only their own posts, which is acting as them, so moderating the wall stays with the owner. Background: removing a post publishes nothing and contacts no one; the dangerous flag makes the owner confirm.
-   * @param {{ postText: string, userId?: string, wallId?: string }} options
+   * userId is a user list holding at most one person (a single id or email, the older way, still counts as one entry).
+   * @param {{ postText: string, userId?: string[]|string, wallId?: string }} options
    * @param {function(Error=, object=)} callback - (error, { id, status })
    */
   deletePost(options, callback) {
     if (!requireStringParams(options, ['postText'], callback)) return;
-    const problem = checkOptional(options, { texts: ['wallId'], users: ['userId'] });
+    const problem = checkOptional(options, { texts: ['wallId'] });
     if (problem) return callback(new Error(problem), undefined);
+    const users = readList(options.userId, { name: 'userId', type: 'user', minValue: 0, maxValue: 1 });
+    if (users.error) return callback(new Error(users.error), undefined);
 
-    resolveUserId(options.userId, (userErr, userId) => {
+    resolveUserIds(users.list, (userErr, userIds) => {
       if (userErr) return callback(userErr, undefined);
-      resolvePost({ postText: options.postText, userId, wallId: options.wallId }, (err, record) => {
+      resolvePost({ postText: options.postText, userIds, wallId: options.wallId }, (err, record) => {
         if (err) return callback(err, undefined);
         removePost(record, callback);
       });
@@ -602,16 +651,20 @@ widgetContract = {
 
   /**
    * hosts: controlBackground, headlessSdk. usage: basic; its advanced alternative is deleteCommentAdvanced. Deletes one comment, named by its exact text (narrowed by its post's text and its author when given), the way the control panel's Delete Comment does, via removeComment. Finding it is a search over the posts holding a comment with that text; a text several comments share is refused, saying how many. Same host reasoning as deletePost.
-   * @param {{ commentText: string, postText?: string, userId?: string }} options
+   * userId is a user list holding at most one person (a single id or email, the older way, still counts as one entry). The search asks for one page of at most 50 posts with recordCount; when totalRecord says more posts hold that text, the call is refused rather than guessing.
+   * @param {{ commentText: string, postText?: string, userId?: string[]|string }} options
    * @param {function(Error=, object=)} callback - (error, { commentId, postId, status })
    */
   deleteComment(options, callback) {
     if (!requireStringParams(options, ['commentText'], callback)) return;
-    const problem = checkOptional(options, { texts: ['postText'], users: ['userId'] });
+    const problem = checkOptional(options, { texts: ['postText'] });
     if (problem) return callback(new Error(problem), undefined);
+    const users = readList(options.userId, { name: 'userId', type: 'user', minValue: 0, maxValue: 1 });
+    if (users.error) return callback(new Error(users.error), undefined);
 
-    resolveUserId(options.userId, (userErr, userId) => {
+    resolveUserIds(users.list, (userErr, userIds) => {
       if (userErr) return callback(userErr, undefined);
+      const userId = userIds[0];
       const encoded = encodeText(options.commentText);
       const conditions = [{ '$json.comments.comment': encoded }];
       if (options.postText !== undefined) conditions.push({ '$json.text': encodeText(options.postText) });
@@ -722,7 +775,8 @@ widgetContract = {
 
   /**
    * hosts: controlBackground, headlessSdk. Changes only the settings passed, the way the Settings tab saves them (mainSettingsCtrl.js save): reads the document, applies the form's defaults, merges, turns an action-item chat feature with no action item back to the default as the form does, and saves the whole document with datastore.save. The widget refreshes itself from the datastore, as it does after the tab saves. Clearing an action item removes its key, as the action items list's delete does; the pinned post, edited on the Content tab, is stored as passed. Who may post, chat or see profiles are access settings and are not offered. Uses only buildfire.datastore, the same in the control panel and on the server. No widget host: app users must not change the owner's configuration. Background: it changes configuration and contacts no one.
-   * @param {{ allowAutoSubscribe?: boolean, disableFollowLeaveGroup?: boolean, showMembers?: boolean, allowCommunityFeedFollow?: boolean, chatFeature?: string, chatFeatureAction?: object|null, actionItem?: object|null, pinnedPost?: string|null }} options
+   * chatFeatureAction and actionItem are action lists holding at most one item, since each setting keeps one action object (the tab refuses a second); a single action object, the older way, still counts as one entry. The item is stored as one object, as the tab stores it; null or an empty list removes it.
+   * @param {{ allowAutoSubscribe?: boolean, disableFollowLeaveGroup?: boolean, showMembers?: boolean, allowCommunityFeedFollow?: boolean, chatFeature?: string, chatFeatureAction?: object[]|object|null, actionItem?: object[]|object|null, pinnedPost?: string|null }} options
    * @param {function(Error=, object=)} callback - (error, settings)
    */
   updateSettings(options, callback) {
@@ -733,8 +787,16 @@ widgetContract = {
     if (options.chatFeature !== undefined && ['default', 'actionItem'].indexOf(options.chatFeature) < 0) {
       return callback(new Error('chatFeature must be one of: default, actionItem'), undefined);
     }
-    const badAction = ['chatFeatureAction', 'actionItem'].find((name) => options[name] !== undefined && options[name] !== null && !isActionItem(options[name]));
-    if (badAction) return callback(new Error(`${badAction} must be an action item, with its kind of action, or empty`), undefined);
+    // left out: undefined; removed: null; set: the one action object
+    const actions = {};
+    const actionProblem = [['chatFeatureAction', CHAT_ACTION_DIALOG], ['actionItem', WALL_ACTION_DIALOG]].map(([name, dialogOptions]) => {
+      if (options[name] === undefined) return null;
+      const { list, error: listError } = readList(options[name], { name, type: 'action', minValue: 0, maxValue: 1, dialogOptions });
+      if (listError) return listError;
+      actions[name] = list.length ? list[0] : null;
+      return null;
+    }).find(Boolean);
+    if (actionProblem) return callback(new Error(actionProblem), undefined);
     if (options.pinnedPost !== undefined && options.pinnedPost !== null && typeof options.pinnedPost !== 'string') {
       return callback(new Error('pinnedPost must be formatted text, or empty'), undefined);
     }
@@ -751,10 +813,10 @@ widgetContract = {
         if (options[name] !== undefined) settings[name] = options[name];
       });
       if (options.chatFeature !== undefined) settings.chatFeature.value = options.chatFeature;
-      if (options.chatFeatureAction === null) delete settings.chatFeature.actionItem;
-      else if (options.chatFeatureAction !== undefined) settings.chatFeature.actionItem = options.chatFeatureAction;
-      if (options.actionItem === null) delete settings.actionItem;
-      else if (options.actionItem !== undefined) settings.actionItem = options.actionItem;
+      if (actions.chatFeatureAction === null) delete settings.chatFeature.actionItem;
+      else if (actions.chatFeatureAction !== undefined) settings.chatFeature.actionItem = actions.chatFeatureAction;
+      if (actions.actionItem === null) delete settings.actionItem;
+      else if (actions.actionItem !== undefined) settings.actionItem = actions.actionItem;
       if (options.pinnedPost !== undefined) settings.pinnedPost = options.pinnedPost;
       // The form never saves an action-item chat feature without its action item.
       if (settings.chatFeature.value === 'actionItem' && !settings.chatFeature.actionItem) settings.chatFeature.value = 'default';

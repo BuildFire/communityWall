@@ -252,8 +252,11 @@
           "type": "user",
           "displayName": "Posted by",
           "required": false,
-          "description": "Only show this person's posts, given by their id or email. Leave it out to show everyone's posts.",
-          "sampleValue": "[user id]"
+          "minValue": 0,
+          "description": "Only show these people's posts, given by their id or email. Leave it out to show everyone's posts.",
+          "sampleValue": [
+            "[user id]"
+          ]
         },
         "page": {
           "type": "number",
@@ -456,8 +459,12 @@
           "type": "user",
           "displayName": "Posted by",
           "required": false,
+          "minValue": 0,
+          "maxValue": 1,
           "description": "The person who posted it, given by their id or email. Leave it out to look through everyone's posts.",
-          "sampleValue": "[user id]"
+          "sampleValue": [
+            "[user id]"
+          ]
         },
         "wallId": {
           "type": "string",
@@ -701,8 +708,12 @@
           "type": "user",
           "displayName": "Commented by",
           "required": false,
+          "minValue": 0,
+          "maxValue": 1,
           "description": "The person who wrote the comment, given by their id or email. Leave it out to look through everyone's comments.",
-          "sampleValue": "[user id]"
+          "sampleValue": [
+            "[user id]"
+          ]
         },
         "callback": {
           "type": "function",
@@ -1200,24 +1211,54 @@
           "displayName": "Chat feature action item",
           "required": false,
           "nullable": true,
+          "minValue": 0,
+          "maxValue": 1,
+          "dialogOptions": {
+            "showIcon": false,
+            "imgLibOptions": {
+              "showIcons": false
+            },
+            "showTitle": false,
+            "hideActionText": false,
+            "allowNoAction": true,
+            "removePurchase": false,
+            "removePushNotifications": false
+          },
           "description": "What opens a private chat when the action item is chosen, such as another plugin. Leave it out to keep the current one, or leave it empty to remove it.",
-          "sampleValue": {
-            "title": "Chat",
-            "action": "linkToWeb",
-            "url": "https://example.com"
-          }
+          "sampleValue": [
+            {
+              "title": "Chat",
+              "action": "linkToWeb",
+              "url": "https://example.com"
+            }
+          ]
         },
         "actionItem": {
           "type": "action",
           "displayName": "Action item",
           "required": false,
           "nullable": true,
+          "minValue": 0,
+          "maxValue": 1,
+          "dialogOptions": {
+            "showIcon": true,
+            "imgLibOptions": {
+              "showIcons": true
+            },
+            "showTitle": false,
+            "hideActionText": false,
+            "allowNoAction": true,
+            "removePurchase": false,
+            "removePushNotifications": false
+          },
           "description": "What the extra button on the wall does, such as opening a website or another plugin. Leave it out to keep the current one, or leave it empty to remove it.",
-          "sampleValue": {
-            "title": "Visit website",
-            "action": "linkToWeb",
-            "url": "https://example.com"
-          }
+          "sampleValue": [
+            {
+              "title": "Visit website",
+              "action": "linkToWeb",
+              "url": "https://example.com"
+            }
+          ]
         },
         "pinnedPost": {
           "type": "wysiwyg",

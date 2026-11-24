@@ -41,8 +41,11 @@
       "type": "user",
       "displayName": "Posted by",
       "required": false,
-      "description": "Only show this person's posts, given by their id or email. Leave it out to show everyone's posts.",
-      "sampleValue": "[user id]"
+      "minValue": 0,
+      "description": "Only show these people's posts, given by their id or email. Leave it out to show everyone's posts.",
+      "sampleValue": [
+        "[user id]"
+      ]
     },
     "page": {
       "type": "number",

@@ -46,8 +46,12 @@
       "type": "user",
       "displayName": "Commented by",
       "required": false,
+      "minValue": 0,
+      "maxValue": 1,
       "description": "The person who wrote the comment, given by their id or email. Leave it out to look through everyone's comments.",
-      "sampleValue": "[user id]"
+      "sampleValue": [
+        "[user id]"
+      ]
     },
     "callback": {
       "type": "function",

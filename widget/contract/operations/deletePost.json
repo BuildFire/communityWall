@@ -39,8 +39,12 @@
       "type": "user",
       "displayName": "Posted by",
       "required": false,
+      "minValue": 0,
+      "maxValue": 1,
       "description": "The person who posted it, given by their id or email. Leave it out to look through everyone's posts.",
-      "sampleValue": "[user id]"
+      "sampleValue": [
+        "[user id]"
+      ]
     },
     "wallId": {
       "type": "string",
